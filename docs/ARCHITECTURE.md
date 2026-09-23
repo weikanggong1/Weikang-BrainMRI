@@ -2,7 +2,7 @@
 
 [返回首页](../README.md) · [新增功能](ADDING_FUNCTIONS.md)
 
-源码、说明文档和测试按功能组织（0.2.0）；0.3.0 加入 WMH-SynthSeg。命令行、权重定位和批量调度放在共享层，模型及其空间运算放在各功能目录。
+源码、说明文档和测试按功能组织。0.3.0 加入 WMH-SynthSeg，0.4.0 加入 SynthSR。命令行、权重定位和批量调度放在共享层，模型及其空间运算放在各功能目录。
 
 ```text
 src/freesurfer_torch/
@@ -28,12 +28,19 @@ src/freesurfer_torch/
 │   ├── pipeline.py              # 预处理、推理和结果对象
 │   ├── spatial.py               # 方向调整与重采样
 │   └── README.md               # 代码目录入口
+├── synthsr/                    # 单幅影像合成 1 mm T1w
+│   ├── __init__.py              # 功能公开接口
+│   ├── model.py                 # 3D U-Net 与 HDF5 权重读取
+│   ├── pipeline.py              # 预处理、推理和结果保存
+│   ├── spatial.py               # 重采样、方向调整与填充
+│   └── README.md               # 代码目录入口
 ├── spatial.py                  # 旧导入路径的转导出
 └── synthmorph_models.py         # 旧导入路径的转导出
 docs/
 ├── synthstrip/README.md         # 参数、用法、源码分析和验证
 ├── synthmorph/README.md
 ├── wmh_synthseg/README.md
+├── synthsr/README.md
 ├── WEIGHTS.md                  # 官方权重获取与许可
 ├── COMPARISON.md               # 0.1.0 对照实验
 ├── ARCHITECTURE.md
@@ -42,6 +49,7 @@ tests/
 ├── synthstrip/
 ├── synthmorph/
 ├── wmh_synthseg/
+├── synthsr/
 ├── batch/
 └── test_public_api.py
 ```
@@ -57,6 +65,7 @@ from freesurfer_torch import (
     SynthStrip, StripResult,
     SynthMorph, RegistrationResult, apply_transform,
     WMHSynthSeg, WMHResult,
+    SynthSR, SynthSRResult, SynthSRImage,
     BatchRunner, BatchResult, run_batch,
 )
 ```
@@ -67,11 +76,12 @@ from freesurfer_torch import (
 from freesurfer_torch.synthstrip import SynthStrip
 from freesurfer_torch.synthmorph import SynthMorph, apply_transform
 from freesurfer_torch.wmh_synthseg import WMHSynthSeg
+from freesurfer_torch.synthsr import SynthSR
 ```
 
 顶层按需导入：`import freesurfer_torch` 本身不加载 Torch、Surfa 或权重。旧路径 `freesurfer_torch.spatial` 和 `freesurfer_torch.synthmorph_models` 转导出新目录中的对象；新增代码直接从 `freesurfer_torch.synthmorph.spatial` 和 `freesurfer_torch.synthmorph.models` 导入。
 
-构造函数加载模型并选择设备；调用实例处理输入，返回带影像几何的结果对象。调用者决定保存哪些输出。权重查找顺序为显式路径、`FREESURFER_TORCH_WEIGHTS`、配置脚本保存的目录、用户缓存目录、已设置的 `FREESURFER_HOME/models/`。最后一项是兼容已有安装的回退，运行时不要求安装 FreeSurfer。WMH-SynthSeg 的模型输出使用 RAS/1 mm 网格，通常与输入图像网格不同；详见[专属文档](wmh_synthseg/README.md)。
+构造函数加载模型并选择设备；调用实例处理输入，返回带影像几何的结果对象。调用者决定保存哪些输出。权重查找顺序为显式路径、`FREESURFER_TORCH_WEIGHTS`、配置脚本保存的目录、用户缓存目录、已设置的 `FREESURFER_HOME/models/`。最后一项兼容已有安装，运行时不要求安装 FreeSurfer。WMH-SynthSeg 和 SynthSR 输出的空间网格通常与输入不同；分别见 [WMH-SynthSeg](wmh_synthseg/README.md) 和 [SynthSR](synthsr/README.md) 的说明。
 
 ## 批量执行
 
@@ -110,18 +120,24 @@ from freesurfer_torch.wmh_synthseg import WMHSynthSeg
     "model": {"weights": "/path/to/weights"},
     "kwargs": {"image": "/data/sub03_FLAIR.nii.gz", "crop": true},
     "outputs": {"segmentation": "/results/sub03_wmh_seg.nii.gz"}
+  },
+  {
+    "task": "synthsr",
+    "model": {"lowfield": false},
+    "kwargs": {"image": "/data/sub04_FLAIR.nii.gz"},
+    "outputs": {"image": "/results/sub04_synthsr.nii.gz"}
   }
 ]
 ```
 
 | 字段 | 规则 |
 |---|---|
-| `task` | `synthstrip`、`synthmorph` 或 `wmh_synthseg` |
-| `model` | 可省略；模型构造参数，不包含 `device`；SynthMorph 内层 `model` 指配准模式 |
-| `kwargs` | 实例调用参数；SynthStrip 和 WMH-SynthSeg 至少有 `image`，SynthMorph 至少有 `moving` 和 `fixed` |
+| `task` | `synthstrip`、`synthmorph`、`wmh_synthseg` 或 `synthsr` |
+| `model` | 可省略；模型构造参数，不包含 `device`；SynthMorph 内层 `model` 指配准模式，SynthSR 可在此选 `lowfield` 或 `v1` |
+| `kwargs` | 实例调用参数；SynthStrip、WMH-SynthSeg、SynthSR 至少有 `image`，SynthMorph 至少有 `moving` 和 `fixed` |
 | `outputs` | 至少一个输出，键为结果属性，值为文件路径 |
 
-SynthStrip 输出键为 `image`、`mask`、`distance`；SynthMorph 为 `moved`、`fixed_moved`、`transform`、`inverse`；WMH-SynthSeg 为 `segmentation`、`lesion_probability`。若请求 WMH 病灶概率输出，worker 会启用相应推理选项。`volumes_mm3` 是 Python 返回的软体积字典，不是可调用 `.save()` 的批量输出。变换应用 `apply_transform` 是 CPU 后处理，不是当前 batch 的任务类型；可按需循环应用。
+SynthStrip 输出键为 `image`、`mask`、`distance`；SynthMorph 为 `moved`、`fixed_moved`、`transform`、`inverse`；WMH-SynthSeg 为 `segmentation`、`lesion_probability`；SynthSR 为 `image`。若请求 WMH 病灶概率输出，worker 会启用相应推理选项。`volumes_mm3` 是 Python 返回的软体积字典，不是可调用 `.save()` 的批量输出。变换应用 `apply_transform` 是 CPU 后处理，不是当前 batch 的任务类型；可按需循环应用。
 
 ```bash
 fs-torch batch jobs.json --devices cuda:0 cuda:1 \
@@ -157,7 +173,7 @@ if __name__ == "__main__":
 
 `cuda:N` 遵循 `CUDA_VISIBLE_DEVICES` 的编号映射。默认每设备一个 worker；同 GPU 可设 `workers_per_device=2`，每个进程独立保留模型、激活和卷积工作区。多个模型参数组合会增加缓存量，增加 worker 数不保证吞吐提升。
 
-`BatchRunner` 默认每 worker 1 个 Torch 线程，批量 CLI 默认每 worker 4 个线程，可显式设定。功能构造函数也可能设置当前进程的 Torch 线程数；批量任务通常只在 runner 指定线程数，避免模型参数覆盖它。SynthStrip 和 SynthMorph 构造时关闭当前进程的 PyTorch TF32；SynthStrip 还设置其官方卷积后端选项。
+`BatchRunner` 默认每 worker 1 个 Torch 线程，批量 CLI 默认每 worker 4 个线程，可显式设定。功能构造函数也可能设置当前进程的 Torch 线程数；批量任务通常只在 runner 指定线程数，避免模型参数覆盖它。SynthStrip、SynthMorph 和 SynthSR 在 CUDA 构造时关闭当前进程的 PyTorch TF32；SynthStrip 还设置其官方卷积后端选项。
 
 批次先整体检查输出路径，再创建目录和分发。默认拒绝覆盖已有文件，`overwrite=True` / `--overwrite` 可允许覆盖。即使允许覆盖，同批任务之间也不能共享输出路径。SynthMorph 的调试目录三个输出同样参与冲突检查。
 

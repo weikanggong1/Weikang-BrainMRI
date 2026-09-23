@@ -21,6 +21,7 @@ _OUTPUTS = {
     "synthstrip": {"image", "mask", "distance"},
     "synthmorph": {"moved", "fixed_moved", "transform", "inverse"},
     "wmh_synthseg": {"segmentation", "lesion_probability"},
+    "synthsr": {"image"},
 }
 _models = {}
 _device = None
@@ -70,6 +71,9 @@ def _model_class(task):
     if task == "wmh_synthseg":
         from .wmh_synthseg import WMHSynthSeg
         return WMHSynthSeg
+    if task == "synthsr":
+        from .synthsr import SynthSR
+        return SynthSR
     raise ValueError(f"Unknown task: {task}")
 
 

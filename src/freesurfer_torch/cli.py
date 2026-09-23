@@ -69,9 +69,55 @@ def _run_wmh(args):
         print(args.csv_vols)
 
 
+def _synthsr_suffix(path):
+    name = Path(path).name
+    for suffix in ('.nii.gz', '.nii', '.mgz', '.npz'):
+        if name.endswith(suffix):
+            return name[:-len(suffix)], suffix
+    raise ValueError('SynthSR supports .nii, .nii.gz, .mgz and .npz images')
+
+
+def _run_synthsr(args):
+    from .synthsr import SynthSR
+
+    source, target = Path(args.i), Path(args.o)
+    if source.is_dir():
+        if target.name.endswith(('.nii', '.nii.gz', '.mgz', '.npz', '.txt')):
+            raise ValueError('Directory input requires an output directory')
+        inputs = sorted(path for path in source.iterdir() if path.is_file()
+                        and path.name.endswith(('.nii', '.nii.gz', '.mgz', '.npz')))
+        cases = [(path, target / f'{_synthsr_suffix(path)[0]}_synthsr{_synthsr_suffix(path)[1]}')
+                 for path in inputs]
+    elif source.is_file() and source.suffix == '.txt':
+        if target.suffix != '.txt':
+            raise ValueError('A .txt input list requires a .txt output list')
+        inputs = [Path(line.strip()) for line in source.read_text().splitlines() if line.strip()]
+        outputs = [Path(line.strip()) for line in target.read_text().splitlines() if line.strip()]
+        if len(inputs) != len(outputs):
+            raise ValueError('Input and output lists must have equal length')
+        cases = list(zip(inputs, outputs))
+    elif source.is_file():
+        _synthsr_suffix(source)
+        if target.name.endswith(('.nii', '.nii.gz', '.mgz', '.npz')):
+            cases = [(source, target)]
+        else:
+            stem, suffix = _synthsr_suffix(source)
+            cases = [(source, target / f'{stem}_synthsr{suffix}')]
+    else:
+        raise FileNotFoundError(source)
+    if not cases:
+        raise ValueError(f'No supported MRI images in {source}')
+    model = SynthSR(weights=args.weights, device='cpu' if args.cpu else args.device,
+                    lowfield=args.lowfield, v1=args.v1, threads=args.threads)
+    for image, output in cases:
+        model(image, ct=args.ct, disable_flipping=args.disable_flipping,
+              disable_sharpening=args.disable_sharpening).image.save(output)
+        print(output)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(prog='fs-torch')
-    parser.add_argument('--version', action='version', version='freesurfer-torch 0.3.0')
+    parser.add_argument('--version', action='version', version='freesurfer-torch 0.4.0')
     commands = parser.add_subparsers(dest='command', required=True)
     strip = commands.add_parser('synthstrip', help='brain extraction')
     strip.add_argument('-i', '--image', required=True)
@@ -120,6 +166,18 @@ def main(argv=None):
     wmh.add_argument('--crop', action='store_true')
     wmh.add_argument('--save_lesion_probabilities', '--save-lesion-probabilities', action='store_true')
     wmh.add_argument('--weights', help='official checkpoint file or containing directory')
+    sr = commands.add_parser('synthsr', help='synthesize a 1 mm T1-weighted image')
+    sr.add_argument('--i', '-i', required=True, help='input image, directory, or .txt path list')
+    sr.add_argument('--o', '-o', required=True, help='output image, directory, or .txt path list')
+    sr.add_argument('--device', default='cpu')
+    sr.add_argument('--cpu', action='store_true', help='use CPU, matching the original --cpu')
+    sr.add_argument('--threads', type=int, default=1)
+    sr.add_argument('--ct', action='store_true')
+    sr.add_argument('--lowfield', action='store_true')
+    sr.add_argument('--v1', action='store_true')
+    sr.add_argument('--disable_sharpening', action='store_true')
+    sr.add_argument('--disable_flipping', action='store_true')
+    sr.add_argument('--weights', '--model', help='official checkpoint file or containing directory')
     batch = commands.add_parser('batch', help='run a JSON list of jobs with persistent GPU workers')
     batch.add_argument('manifest')
     batch.add_argument('--devices', nargs='+', default=['cuda:0'])
@@ -139,6 +197,9 @@ def main(argv=None):
         raise SystemExit(int(any(result.error for result in results)))
     if args.command == 'wmh-synthseg':
         _run_wmh(args)
+        return
+    if args.command == 'synthsr':
+        _run_synthsr(args)
         return
     if args.command == 'synthstrip':
         from .synthstrip import SynthStrip

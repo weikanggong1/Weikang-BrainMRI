@@ -1,14 +1,15 @@
 # Weikang-BrainMRI
 
-这个独立 Python 包提供 **SynthStrip 脑提取**、**SynthMorph 配准**和 **WMH-SynthSeg 脑结构及白质高信号分割**。单例可在 CPU 或 CUDA 上运行；批量任务可分配到多张 GPU。推理无需安装 FreeSurfer、TensorFlow、VoxelMorph 或 Neurite。
+这个独立 Python 包提供 **SynthStrip 脑提取**、**SynthMorph 配准**、**WMH-SynthSeg 脑结构及白质高信号分割**和 **SynthSR 1 mm T1w 合成**。单例可在 CPU 或 CUDA 上运行；批量任务可分配到多张 GPU。推理无需安装 FreeSurfer、TensorFlow、VoxelMorph 或 Neurite。
 
-仓库名为 `Weikang-BrainMRI`。安装包名 `freesurfer-torch`、Python 导入名 `freesurfer_torch` 和命令 `fs-torch` 保持已有接口不变。0.3.0 增加了 WMH-SynthSeg；各功能独立存放，便于继续扩展。
+仓库名为 `Weikang-BrainMRI`。安装包名 `freesurfer-torch`、Python 导入名 `freesurfer_torch` 和命令 `fs-torch` 保持已有接口不变。0.4.0 增加了 SynthSR；各功能分别存放源码、测试和说明。
 
 | 功能 | 专属文档 | 实现目录 |
 |---|---|---|
 | 脑提取、脑掩膜、距离场 | [SynthStrip](docs/synthstrip/README.md) | [synthstrip/](src/freesurfer_torch/synthstrip/) |
 | 刚性、仿射、非线性、联合配准及应用变换 | [SynthMorph](docs/synthmorph/README.md) | [synthmorph/](src/freesurfer_torch/synthmorph/) |
 | 脑结构及白质高信号分割 | [WMH-SynthSeg](docs/wmh_synthseg/README.md) | [wmh_synthseg/](src/freesurfer_torch/wmh_synthseg/) |
+| 单幅 MRI/CT 合成 1 mm T1w | [SynthSR](docs/synthsr/README.md) | [synthsr/](src/freesurfer_torch/synthsr/) |
 | 多 GPU / 同 GPU 多进程批量调度 | [批量使用与架构](docs/ARCHITECTURE.md#批量执行) | [batch.py](src/freesurfer_torch/batch.py) |
 
 仓库附有 [3 例 T1w](examples/README.md) 和 [3 例 FLAIR](examples/WMH.md) 供直接试运行。它们来自 [OpenNeuro ds000114](https://openneuro.org/datasets/ds000114) 和 [ds003592](https://openneuro.org/datasets/ds003592) 的 CC0 影像；发布前清除了远离脑组织的影像强度。原图地址、处理过程及校验值见 [T1w 清单](examples/data/SOURCES.json) 和 [FLAIR 清单](examples/wmh_data/SOURCES.json)。
@@ -26,17 +27,18 @@ python -m pip install .
 python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
 ```
 
-**Git 仓库和 wheel 均不包含模型权重。** 下列脚本从 FreeSurfer 官方下载文件、校验哈希，并保存权重目录；后续 Python API 和 CLI 会自动使用该目录。SynthStrip 与 joint SynthMorph 共需三个文件，WMH-SynthSeg 另需一个约 791 MB 的 checkpoint：
+**Git 仓库和 wheel 均不包含模型权重。** 下列脚本从 FreeSurfer 官方地址下载文件、校验哈希，并保存权重目录；后续 Python API 和 CLI 会自动使用该目录。下面分别准备默认 SynthStrip、joint SynthMorph、WMH-SynthSeg 和默认 SynthSR 所需的文件：
 
 ```bash
-python tools/setup_weights.py --model synthstrip --model synthmorph-joint --model wmh-synthseg
+python tools/setup_weights.py --model synthstrip --model synthmorph-joint \
+  --model wmh-synthseg --model synthsr
 ```
 
 `python tools/setup_weights.py --all` 会配置全部官方权重。安装后也可运行 `fs-torch-setup-weights`。文件默认存入用户缓存目录；`--dest /path/to/weights` 可改下载位置，`--verify-only` 可检查已有文件。调用时可通过 Python 的 `weights=`、CLI 的 `--weights` 或环境变量 `FREESURFER_TORCH_WEIGHTS` 指定另一目录。推理过程不会联网下载。各权重的地址、版本、SHA-256 和许可见[权重说明](docs/WEIGHTS.md)。
 
 ## 单例 Python 调用：输入、输出和每步作用
 
-先配置权重，并将下面的示例路径换成自己的文件。Python API 接受文件路径或 `surfa.Volume`，返回对象；只有调用 `.save()` 才写文件。SynthStrip 保留输入网格，SynthMorph 返回目标网格中的重采样图，WMH-SynthSeg 使用处理后的 1 mm 网格。保存文件前，需由调用者创建输出目录。
+先配置权重，并将下面的示例路径换成自己的文件。Python API 接受文件路径或 `surfa.Volume`，返回对象；只有调用 `.save()` 才写文件。SynthStrip 保留输入网格，SynthMorph 返回目标网格中的重采样图，WMH-SynthSeg 和 SynthSR 输出处理后的 1 mm 网格。前三个功能保存前需创建输出目录；SynthSR 的 `.save()` 会自动创建父目录。
 
 ```python
 from pathlib import Path
@@ -88,14 +90,28 @@ print(result.volumes_mm3[77])  # WMH 软体积，单位 mm³，对应原版 CSV 
 
 `result.segmentation` 是 `surfa.Volume`；显式请求概率图时，`result.lesion_probability` 也是 `surfa.Volume`，否则为 `None`。两者位于处理后的 RAS、1 mm 网格，与原版输出位置相同，可能不同于输入网格。`result.volumes_mm3` 是各标签的软体积字典，由后验概率求和得到，不等于整数标签体素数；上面的 Python 调用不会写 CSV。文件格式与 `crop` 的细节见 [WMH-SynthSeg 说明](docs/wmh_synthseg/README.md)。
 
+SynthSR 从单幅 MRI 或 CT 合成 1 mm T1w。这里以 FLAIR 为输入；模型构造一次后可继续处理其他病例：
+
+```python
+from freesurfer_torch import SynthSR
+
+sr = SynthSR(device="cuda:0")              # 加载官方通用 v2 权重到 GPU 0。
+synthetic = sr("subject_FLAIR.nii.gz")       # 对应原版 mri_synthsr --i；输出 1 mm 合成 T1w。
+synthetic.image.save("results/subject_synthsr.nii.gz")  # 对应原版 --o。
+print(synthetic.image.data.shape, synthetic.image.affine)
+```
+
+`synthetic.image.data` 是 3D `uint8` 数组，`synthetic.image.affine` 是输出的 RAS 仿射矩阵；1 mm 输出通常与原图不同形状。`SynthSR(weights=None, device="cpu", lowfield=False, v1=False, threads=None)` 可选择权重、低场或 v1 模型、设备和 CPU 线程；`sr(image, ct=False, disable_flipping=False, disable_sharpening=False)` 对应原版的 CT 截断、翻转推理和锐化开关。输入支持 `.nii`、`.nii.gz`、`.mgz`、`.npz` 路径或 `surfa.Volume`；`.npz` 的原版输出规则与 NIfTI/MGZ 不同，见 [SynthSR 说明](docs/synthsr/README.md#python-输入与输出)。
+
 | Python 输入与类型 | 返回字段与类型 | 原版文件指令 |
 |---|---|---|
 | `strip(image, border=1, fill=None)`：3D/4D NIfTI 等文件路径或 `surfa.Volume` | `image`、`mask`、`distance`：原输入网格的 `surfa.Volume`，距离单位 mm | `mri_synthstrip -i ... -o ... -m ... -d ...` |
 | `morph(moving, fixed, init=None, mid_space=False, header_only=False)`：两幅单帧 3D 路径或 `surfa.Volume` | `moved`、`fixed_moved`：各自目标网格的 `surfa.Volume`；`transform`、`inverse`：带几何的仿射或 RAS 位移场 | `mri_synthmorph register moving fixed -o ... -O ... -t ... -T ...` |
 | `apply_transform(image, transformation, method="linear", fill=0, dtype="float32")`：3D/4D 影像及已有变换 | 重采样后的 `surfa.Volume` | `mri_synthmorph apply transform image output` |
 | `wmh(image, crop=False, save_lesion_probabilities=False)`：3D T1w/FLAIR 路径或 `surfa.Volume` | `segmentation`：33 类标签图；按需返回 `lesion_probability`；`volumes_mm3`：各类软体积 | `mri_WMHsynthseg --i ... --o ... [--crop] [--save_lesion_probabilities] [--csv_vols ...]` |
+| `sr(image, ct=False, disable_flipping=False, disable_sharpening=False)`：单幅 3D MRI/CT 路径或 `surfa.Volume` | `image`：含 `uint8` 体素、1 mm 网格仿射矩阵和 `.save(path)` 的 `SynthSRImage` | `mri_synthsr --i ... --o ... [--ct] [--disable_flipping] [--disable_sharpening]` |
 
-`morph` 的正向变换把 moving 的影像或标签送到 fixed 空间，反向变换用于相反方向。其他参数和几何约定见 [SynthStrip](docs/synthstrip/README.md) 与 [SynthMorph](docs/synthmorph/README.md)。
+`morph` 的正向变换把 moving 的影像或标签送到 fixed 空间，反向变换用于相反方向。各功能的其余参数与几何约定见上表链接的专属文档。
 
 ## 单例命令行：与 FreeSurfer 原指令逐项对应
 
@@ -118,14 +134,18 @@ fs-torch apply results/subject_to_template.mgz subject_labels.nii.gz \
 fs-torch wmh-synthseg --i subject_FLAIR.nii.gz \
   --o results/subject_wmh_seg.nii.gz --device cuda:0 --threads 4 --crop \
   --save_lesion_probabilities --csv_vols results/subject_wmh_volumes.csv
+
+fs-torch synthsr --i subject_FLAIR.nii.gz \
+  --o results/subject_synthsr.nii.gz --device cuda:0 --threads 4
 ```
 
-这四条命令依次完成：
+这五条命令依次完成：
 
 1. `synthstrip` 读取 `-i` 指定的 T1w，分别用 `-o`、`-m`、`-d` 保存脑图、掩膜和距离场；至少指定一个输出。`--device cuda:0` 选择 GPU 0。
 2. `synthmorph` 把第一个位置参数 moving 配准到第二个位置参数 fixed。`-m joint` 选择仿射加非线性模型，`-o/-O` 保存两个方向的重采样图，`-t/-T` 保存正反变换；`--device` 选择网络运行设备。
 3. `apply` 用正向变换把 moving 空间的标签映射到 fixed 空间。`--method nearest` 保持标签值，`--dtype int16` 指定输出类型；已有变换的重采样在 CPU 上执行。
 4. `wmh-synthseg` 从 `--i` 读取 3D FLAIR，向 `--o` 写解剖与 WMH 标签。`--crop` 先定位脑再裁出推理区域，`--save_lesion_probabilities` 另写 `subject_wmh_seg.lesion_probs.nii.gz`，`--csv_vols` 写软体积表；`--device` 与 `--threads` 选择设备和 PyTorch CPU 线程。
+5. `synthsr` 从 `--i` 读取单幅 3D FLAIR，用通用 v2 模型生成 1 mm T1w，并由 `--o` 写出 `uint8` 图像；`--device` 选择 GPU，`--threads` 设置 PyTorch CPU 线程。`--lowfield`、`--v1`、`--ct`、`--disable_flipping`、`--disable_sharpening` 和 `--model` 对应原版同名选项。
 
 CLI 会创建输出父目录；更多参数见 `fs-torch --help`。
 
@@ -148,9 +168,12 @@ mri_synthmorph apply -m nearest -t int16 \
 mri_WMHsynthseg --i subject_FLAIR.nii.gz \
   --o results/subject_wmh_seg.nii.gz --device cpu --threads 4 --crop \
   --save_lesion_probabilities --csv_vols results/subject_wmh_volumes.csv
+
+mri_synthsr --i subject_FLAIR.nii.gz \
+  --o results/subject_synthsr.nii.gz --threads 4
 ```
 
-原版 `mri_synthstrip` 的 `-i/-o/-m/-d` 分别对应新 CLI 的同名参数和 Python 的 `StripResult.image/mask/distance`。原版 `mri_synthmorph register` 的 `-o/-O/-t/-T` 对应 `RegistrationResult.moved/fixed_moved/transform/inverse`；`register` 一词在原版中可省略。原版 `apply -m nearest -t int16` 对应新 CLI 的 `apply --method nearest --dtype int16`。原版一条 `apply` 指令可处理多组影像，新 CLI 每次处理一组，Python 可循环。WMH 两版的 `--i/--o/--crop/--save_lesion_probabilities/--csv_vols` 对应相同文件。gpucw1 上安装的原生 `fspython` 只有 CPU 版 PyTorch；CUDA 对照使用相同权重和**未改动的官方 `inference.py`**，在 CUDA PyTorch 环境中运行。
+原版 `mri_synthstrip` 的 `-i/-o/-m/-d` 分别对应新 CLI 的同名参数和 Python 的 `StripResult.image/mask/distance`。原版 `mri_synthmorph register` 的 `-o/-O/-t/-T` 对应 `RegistrationResult.moved/fixed_moved/transform/inverse`；`register` 一词在原版中可省略。原版 `apply -m nearest -t int16` 对应新 CLI 的 `apply --method nearest --dtype int16`。原版一条 `apply` 指令可处理多组影像，新 CLI 每次处理一组，Python 可循环。WMH 两版的 `--i/--o/--crop/--save_lesion_probabilities/--csv_vols` 对应相同文件。gpucw1 上安装的原生 `fspython` 只有 CPU 版 PyTorch；CUDA 对照使用相同权重和**未改动的官方 `inference.py`**，在 CUDA PyTorch 环境中运行。SynthSR 两版的 `--i/--o` 也相同；原版 TensorFlow 自动选择可用 GPU，本包用 `--device cuda:N` 指定设备，`--cpu` 可强制使用 CPU。
 
 | 其余原版选项 | 本包对应 | 说明 |
 |---|---|---|
@@ -159,10 +182,13 @@ mri_WMHsynthseg --i subject_FLAIR.nii.gz \
 | SynthMorph `-m`、`-r`、`-n`、`-e` | 同名短选项；Python `model`、`hyper`、`steps`、`extent` | 默认分别为 joint、0.5、7、256；`deform` 要求事先对齐或使用初始仿射。|
 | SynthMorph `-i`、`-M`、`-H` | 同名短选项；Python `init`、`mid_space`、`header_only` | `-M` 需搭配 `-i`；`-H` 只适用于 affine/rigid。|
 | SynthMorph `-g`、`-j`、可重复的 `-w` | `--device`、`-j`、`--weights`；Python `device`、`weights` | 新 CLI 从权重目录取所需 H5；原版 `-w` 可多次指定文件。原版 `-j` 管 TensorFlow 线程，新 CLI 管 Torch 线程。|
+| SynthSR `--lowfield`、`--v1`、`--ct`、`--disable_flipping`、`--disable_sharpening`、`--model` | 同名选项；`--weights` 是本包 `--model` 的别名 | `--v1` 优先于 `--lowfield`；CT 输入须以 Hounsfield 单位保存。|
 
 **与原版的输出比较。** SynthStrip 的三类输出保留原输入网格；12 例真实 T1w 的同设备脑图、掩膜和距离场均逐元素相同。SynthMorph 的 moving/fixed 顺序、输出方向和目标几何对应原版。TensorFlow 到 PyTorch 的浮点运算存在差异：12 例默认 joint 配准的变换最大差为 0.000790 mm，文件并非逐字节相同。原版普通配准只重采样请求保存的方向，Python API 会计算双向结果。原版 `-d` 调试目录生成 6 个文件，本包生成两幅网络输入和 `network_transforms.npz`；原版允许不指定保存输出，新 CLI 至少要求一个输出或调试目录。参考构建的原生 `-i` 初始化因 dtype 错误失败，该分支与两行修复后的参考源码比较。逐例结果及运行时间见[对照报告](docs/COMPARISON.md)。
 
 WMH-SynthSeg 的 `--i`、`--o`、可选 `.lesion_probs` 概率图和 `--csv_vols` 软体积表与原版对应，输出位于处理后的 RAS/1 mm 网格。12 例公开 FLAIR 中，**CPU 对 CPU**、**CUDA 对 CUDA** 的标签、概率体素、数值仿射及 CSV 软体积均与原版相同。完整命令的时间中位数为：原版 CPU **97.38 s**、本包 CPU **70.69 s**；原版源码 CUDA **8.25 s**、本包 CUDA **8.41 s**。原生 CPU 与本包使用不同 PyTorch 版本，不能只凭时间差判断算法加速。两版 NIfTI 的 qform/sform code 可能不同，因此文件字节不一定相同。病例选择、环境、逐例结果和复现命令见[WMH 验证记录](validation/wmh/README.md)。
+
+SynthSR 在 gpucw1 上以同一官方通用 v2 权重验证了 12 例真实 T1w。原版 CPU/GPU 与本包 CPU/GPU 四组输出的形状、仿射和 `uint8` 类型均一致；本包 GPU 对原版 CPU 的逐例体素完全一致比例不低于 **99.992%**，最大差值 1 灰度级。完整单例命令的时间中位数依次为原版 CPU **103.60 s**、原版 GPU **53.27 s**、本包 CPU **42.32 s**、本包 GPU **13.80 s**。不同框架的启动、模型加载及共享节点负载都进入该计时；详细方法、匿名统计和复现命令见[SynthSR 验证记录](validation/synthsr/README.md)。
 
 ## 公开样例与原版对照图
 
@@ -179,6 +205,10 @@ WMH-SynthSeg 的 `--i`、`--o`、可选 `.lesion_probs` 概率图和 `--csv_vols
 WMH-SynthSeg 的公开 FLAIR 从仓库根目录运行 `python examples/check_wmh_data.py` 校验；[专属示例步骤](examples/WMH.md)给出单例和双 GPU 批量命令。下图的 `sub-04` 是同一份发布的脑外清零 FLAIR，左列为输入，中、右列分别为原版 FreeSurfer 与本包的标签 77（红色）叠加结果。两者都在 CUDA 上使用官方权重及 `--crop`；完整三维标签、概率图、软体积和仿射矩阵一致。图示与复现命令见[图示记录](docs/figures/README.md)。
 
 ![同一 FLAIR 上 FreeSurfer 与本包 WMH-SynthSeg 的病灶标签对照](docs/figures/wmh_synthseg_comparison.png)
+
+SynthSR 也可直接使用这三例公开 FLAIR。下图在相同 RAS 切面显示 `sub-04` 输入、FreeSurfer 原版合成 T1w 与本包 PyTorch 合成 T1w；后两列使用相同灰度范围。完整三维比较和图像生成命令见[SynthSR 专属说明](docs/synthsr/README.md#对照验证)。
+
+![公开 FLAIR 与 FreeSurfer、PyTorch SynthSR 合成 T1w 对照](docs/synthsr/figures/synthsr_flair_comparison.png)
 
 ## 多病例批量并行
 
@@ -292,11 +322,41 @@ if __name__ == "__main__":
 
 可直接运行的三例 FLAIR 清单是 [examples/wmh_jobs.json](examples/wmh_jobs.json)：`fs-torch batch examples/wmh_jobs.json --devices cuda:0 cuda:1 --workers-per-device 1 --threads-per-worker 4 --report examples/results/wmh_batch/report.json`。在 gpucw1 上验证时，两张 H100 各执行至少一例，三例共六个输出影像均与相同输入的原版 CUDA 结果逐体素一致；清单字段、运行前检查和结果核验详见 [FLAIR 示例说明](examples/WMH.md)。
 
+SynthSR 使用相同的调度器，任务名为 `synthsr`。以下脚本把已公开的三例 FLAIR 分别合成 T1w；每例的 `kwargs.image` 对应 `mri_synthsr --i`，`outputs.image` 对应 `--o`。两张 GPU 各启动一个进程，空闲进程领取下一例；每个进程只加载一次通用 v2 权重。
+
+```python
+from pathlib import Path
+from freesurfer_torch import BatchRunner
+
+
+def main():
+    jobs = []
+    for image in sorted(Path("examples/wmh_data").glob("*_FLAIR.nii.gz")):
+        name = image.name.removesuffix(".nii.gz")
+        jobs.append({
+            "task": "synthsr",
+            "kwargs": {"image": str(image)},
+            "outputs": {"image": f"examples/results/synthsr/{name}_synthsr.nii.gz"},
+        })
+    with BatchRunner(devices=("cuda:0", "cuda:1"),
+                     workers_per_device=1, threads_per_worker=4) as runner:
+        reports = runner.run(jobs)
+    if any(not report.ok for report in reports):
+        raise RuntimeError([report.error for report in reports if not report.ok])
+
+
+if __name__ == "__main__":
+    main()
+```
+
+也可将相同任务保存为 JSON，使用 `fs-torch batch jobs.json --devices cuda:0 cuda:1 --workers-per-device 1 --threads-per-worker 4 --report results/report.json`。低场任务在该例的 `model` 中写 `{"lowfield": true}`；显卡由 `--devices` 分配，不写在单例任务里。任务字段及原版目录和 `.txt` 输入方式见 [SynthSR 专属说明](docs/synthsr/README.md#命令行与多病例)。
+
 ## 验证与维护
 
 - [详细功能和数值对照](docs/COMPARISON.md)：0.1.0 参考实验包含 12 例真实 T1w、96 次单例运行及 24 个批量任务。该临床数据只发布匿名统计，不包含原始影像；仓库另附三例公开 OpenNeuro 衍生样例。
 - [0.2.0 结构重整回归](validation/refactor/report.public.json)：新布局与 0.1.0 的对照记录；历史计时不能当作 0.2.0 的重新计时。
 - [WMH-SynthSeg 0.3.0 对照](validation/wmh/README.md)：12 例公开 FLAIR 的原版 CPU/官方源码 CUDA 与本包 CPU/CUDA 逐例输出、时间和三例双 GPU 示例。
+- [SynthSR 0.4.0 说明](docs/synthsr/README.md)与[验证记录](validation/synthsr/README.md)：原版指令、模型变体、输出格式、多 GPU 调用及 12 例四组计时和数值对照。
 - [架构、公共 API 与批量任务格式](docs/ARCHITECTURE.md)。
 - [新增功能指南](docs/ADDING_FUNCTIONS.md)：每个功能的实现、文档和测试均有独立目录。
 - [来源与模型哈希](docs/provenance.json)、[第三方许可与引用](THIRD_PARTY_NOTICES.md)。

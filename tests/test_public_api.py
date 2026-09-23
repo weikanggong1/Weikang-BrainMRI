@@ -10,6 +10,7 @@ import pytest
     ("synthstrip", ("SynthStrip", "StripResult")),
     ("synthmorph", ("SynthMorph", "RegistrationResult", "apply_transform")),
     ("wmh_synthseg", ("WMHSynthSeg", "WMHResult")),
+    ("synthsr", ("SynthSR", "SynthSRResult", "SynthSRImage")),
     ("batch", ("BatchRunner", "BatchResult", "run_batch")),
 ])
 def test_top_level_exports_are_feature_objects(module, names):

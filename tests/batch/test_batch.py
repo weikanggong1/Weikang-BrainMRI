@@ -49,6 +49,16 @@ class BatchValidationTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "duplicate output"):
                 batch._prepare_jobs([job, job], overwrite=True)
 
+    def test_synthsr_has_one_saved_output(self):
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder) / "case_synthsr.nii.gz"
+            job = {"task": "synthsr", "kwargs": {"image": "case_FLAIR.nii.gz"},
+                   "outputs": {"image": output}}
+            prepared = batch._prepare_jobs([job], overwrite=False)
+            self.assertEqual(prepared[0]["outputs"], {"image": str(output)})
+            with self.assertRaises(ValueError):
+                batch._prepare_jobs([{"task": "synthsr", "outputs": {"mask": output}}], False)
+
     def test_synthmorph_debug_outputs_participate_in_collision_checks(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)

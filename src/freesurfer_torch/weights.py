@@ -29,6 +29,15 @@ WEIGHT_FILES = {
     "WMH-SynthSeg_v10_231110.pth": (
         "https://ftp.nmr.mgh.harvard.edu/pub/dist/lcnpublic/dist/WMH-SynthSeg/WMH-SynthSeg_v10_231110.pth",
         790531383, "0ece39dd651357aa95222fc4d45fa32d00f11e763d2583cae3f869989ce35988"),
+    "synthsr_v20_230130.h5": (
+        "https://surfer.nmr.mgh.harvard.edu/pub/dist/freesurfer/repo/annex.git/annex/objects/f08/bc9/SHA256E-s106163752--a472f776e7b33b5ea6e10c801f55fee488f1477a208b3e6998dc1aec1d9c5f8b.h5/SHA256E-s106163752--a472f776e7b33b5ea6e10c801f55fee488f1477a208b3e6998dc1aec1d9c5f8b.h5",
+        106163752, "a472f776e7b33b5ea6e10c801f55fee488f1477a208b3e6998dc1aec1d9c5f8b"),
+    "synthsr_lowfield_v20_230130.h5": (
+        "https://surfer.nmr.mgh.harvard.edu/pub/dist/freesurfer/repo/annex.git/annex/objects/de0/799/SHA256E-s106163752--a7c5ea91c94fe31f3c716252caae0d181629201bd884dc59af88ddfd75ed4b84.h5/SHA256E-s106163752--a7c5ea91c94fe31f3c716252caae0d181629201bd884dc59af88ddfd75ed4b84.h5",
+        106163752, "a7c5ea91c94fe31f3c716252caae0d181629201bd884dc59af88ddfd75ed4b84"),
+    "synthsr_v10_210712.h5": (
+        "https://raw.githubusercontent.com/freesurfer/freesurfer/dev/mri_synthsr/synthsr_v10_210712.h5",
+        53075984, "2fd59e96196388360eba95254fb6dfc9eb9eb8638018b590575e47e0a387f255"),
 }
 
 MODEL_FILES = {
@@ -39,6 +48,9 @@ MODEL_FILES = {
     "synthmorph-deform": ("synthmorph.deform.3.h5",),
     "synthmorph-joint": ("synthmorph.affine.2.h5", "synthmorph.deform.3.h5"),
     "wmh-synthseg": ("WMH-SynthSeg_v10_231110.pth",),
+    "synthsr": ("synthsr_v20_230130.h5",),
+    "synthsr-lowfield": ("synthsr_lowfield_v20_230130.h5",),
+    "synthsr-v1": ("synthsr_v10_210712.h5",),
 }
 
 

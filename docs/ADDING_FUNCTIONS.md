@@ -42,7 +42,7 @@ tests/new_function/
 
 通过共享解析器定位本地权重。在 [WEIGHTS.md](WEIGHTS.md) 记录文件名、官方来源、大小、SHA-256、适用架构、许可证和引用要求；额外的许可或来源说明写入 [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md)。权重不提交到 Git。
 
-只有实现确实需要的新依赖才加入 `pyproject.toml`。当前 wheel 的 package-data 显式包含三个功能的 Markdown；新增功能后将其 README 路径加入列表，并检查 wheel 中实际包含该文件。
+只有实现确实需要的新依赖才加入 `pyproject.toml`。当前 wheel 的 package-data 显式包含 SynthStrip、SynthMorph、WMH-SynthSeg 和 SynthSR 的 Markdown；新增功能后将其 README 路径加入列表，并检查 wheel 中实际包含该文件。
 
 ## 5. 写专属文档
 
