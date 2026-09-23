@@ -120,3 +120,26 @@ def test_env_and_explicit_paths_override_saved_config(tmp_path, monkeypatch, tin
     monkeypatch.setenv("FREESURFER_TORCH_WEIGHTS", str(environment))
     assert weights.resolve_weights(name) == environment / name
     assert weights.resolve_weights(name, explicit=explicit) == explicit / name
+
+
+def test_wmh_selection_downloads_only_its_official_checkpoint(tmp_path, monkeypatch):
+    name = "WMH-SynthSeg_v10_231110.pth"
+    assert weights.MODEL_FILES["wmh-synthseg"] == (name,)
+    content = b"mock WMH checkpoint"
+    url = weights.WEIGHT_FILES[name][0]
+    monkeypatch.setitem(weights.WEIGHT_FILES, name,
+                        (url, len(content), hashlib.sha256(content).hexdigest()))
+    monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))
+    monkeypatch.delenv("FREESURFER_TORCH_WEIGHTS", raising=False)
+    requested = []
+
+    def fetch(request, timeout):
+        requested.append(request.full_url)
+        return Response(content)
+
+    monkeypatch.setattr(weights, "urlopen", fetch)
+    destination = tmp_path / "models"
+    weights.main(["--model", "wmh-synthseg", "--dest", str(destination)])
+    assert requested == [url]
+    assert (destination / name).read_bytes() == content
+    assert weights.resolve_weights(name) == destination / name

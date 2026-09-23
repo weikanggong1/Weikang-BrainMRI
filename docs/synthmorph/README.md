@@ -2,7 +2,7 @@
 
 [返回首页](../../README.md) · [源码目录](../../src/freesurfer_torch/synthmorph/) · [权重](../WEIGHTS.md) · [批量执行](../ARCHITECTURE.md#批量执行)
 
-本模块将指定 FreeSurfer 8.2.0 构建中的 TensorFlow/Keras SynthMorph 实现移植为 PyTorch，支持刚性、仿射、非线性和联合配准，直接读取官方 HDF5 权重，无需 TensorFlow、VoxelMorph、Neurite 或 FreeSurfer runtime。
+本模块将指定 FreeSurfer 8.2.0 构建中的 TensorFlow/Keras SynthMorph 移植为 PyTorch，支持刚性、仿射、非线性和联合配准，直接读取官方 HDF5 权重。推理不导入 TensorFlow、VoxelMorph、Neurite，也不调用 FreeSurfer。
 
 参考 build 为 `freesurfer-linux-centos7_x86_64-8.2.0-20260314-d932c45`，并非随时变化的开发分支。准确源文件和权重哈希见 [provenance.json](../provenance.json)。
 
@@ -138,8 +138,6 @@ fs-torch apply results/moving_to_fixed.mgz moving_labels.nii.gz \
 | [spatial.py](../../src/freesurfer_torch/synthmorph/spatial.py) | pull 采样、仿射/位移组合和积分 |
 | [__init__.py](../../src/freesurfer_torch/synthmorph/__init__.py) | 功能公开导出 |
 
-以下保留逐项源码与数学对应分析。
-
 ## Source map
 
 Source paths below are relative to the reference `$FREESURFER_HOME`; Python dependency paths refer to `python/lib/python3.8/site-packages/`. Line numbers refer to the recorded 8.2.0 build.
@@ -206,7 +204,7 @@ Saved-transform application accepts multi-frame (4D) input images; neural regist
 
 ## 验证、差异与限制
 
-数值检查分为网络层、空间运算层和完整影像流程；低分辨率随机网络输入的通过不能代替真实影像验证。以下结果均来自 **0.1.0 参考实验**；0.2.0 仅调整结构，其独立回归记录见 [refactor/report.public.json](../../validation/refactor/report.public.json)。
+数值检查覆盖网络层、空间运算层和完整影像流程。以下结果来自 **0.1.0 参考实验**；0.2.0 的结构回归另见 [refactor/report.public.json](../../validation/refactor/report.public.json)。
 
 - 130 项空间/插值差分检查通过，涵盖边界、半整数取整、积分和变换组合，见 [spatial_validation.json](../../validation/spatial/spatial_validation.json)。
 - 192³ 模板对涵盖 affine、rigid、deform、joint 四模式和双向输出，见 [full192/report.json](../../validation/full192/report.json)。
@@ -215,7 +213,7 @@ Saved-transform application accepts multi-frame (4D) input images; neural regist
 
 模板反向图像存在少量采样有效域边界跳变：deform 为 1 个、joint 为 2 个体素，其强度误差超过输入最大强度的 0.1%。微小坐标误差使域外填零变为域内采样，因此接近的位移并不保证全部输出逐元素一致。完整误差、几何和定位见 [COMPARISON.md](../COMPARISON.md) 及[异常体素报告](../../validation/full192/reverse_output_diagnosis/report.json)。本包保留原边界规则，没有通过放宽规则掩盖这些差异。
 
-参考版本的 `-i` / `-i -M` 原命令因 float64/float32 混合而失败；记录保留原失败，并用只改两行类型转换的副本独立比较，不将其描述为未修改原版通过。调试输出文件布局、日志和线程默认值也与原 CLI 不同。
+参考版本的 `-i` / `-i -M` 原命令因 float64/float32 混合而失败。记录同时保留原失败和两行类型转换副本的比较结果；调试输出布局、日志及线程默认值也与原 CLI 不同。
 
 测试入口：
 

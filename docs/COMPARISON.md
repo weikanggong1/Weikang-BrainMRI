@@ -1,8 +1,8 @@
 # FreeSurfer SynthStrip / SynthMorph 的独立 PyTorch 实现与对照
 
-本项目针对已验证的 FreeSurfer 8.2.0 安装版本移植，提供可独立安装的 `freesurfer-torch` 包、可复用 Python 模型、命令行和 GPU 多进程批量接口。推理依赖 PyTorch、NumPy、SciPy、Surfa 和 h5py；不调用 FreeSurfer 命令，也不导入 TensorFlow、VoxelMorph 或 Neurite。官方命令只用于验证。
+本报告对照 FreeSurfer 8.2.0 与独立安装的 `freesurfer-torch`。后者提供可复用的 Python 模型、命令行和 GPU 多进程批量调用。推理依赖 PyTorch、NumPy、SciPy、Surfa 和 h5py；FreeSurfer 命令、TensorFlow、VoxelMorph 和 Neurite 仅出现在参考验证流程中。
 
-本报告的数值和计时来自 **0.1.0** 基准；0.2.0 重组功能目录并保留算法。结构变更后的回归结果见 [0.2.0 回归报告](../validation/refactor/report.public.json)。公开报告中的绝对路径用占位符替换，数值与原始记录保持一致。
+以下数值和计时来自 **0.1.0** 基准。0.2.0 重组功能目录后的回归见 [独立报告](../validation/refactor/report.public.json)。公开记录用占位符替换绝对路径，原始数值未改。
 
 基准构建：`freesurfer-linux-centos7_x86_64-8.2.0-20260314-d932c45`。实际脚本、依赖源码和五个模型文件的 SHA-256 见 [provenance.json](provenance.json)。使用原始预训练权重，没有重新训练。
 
@@ -20,7 +20,7 @@
 | GPU 部分 | U-Net 推理 | 图像到网络空间采样、网络、积分、位移场组合 |
 | CPU 部分 | Surfa 预处理、连通域及最终重采样、文件 I/O | HDF5 读取和超网络权重特化、矩阵平方根初始化、Surfa 最终图像重采样、文件 I/O |
 
-“支持 GPU”指上述计算在 CUDA 设备执行。保留 Surfa 的图像几何和最终插值，可以同时复用官方 I/O 语义并保持包独立。
+表中列出的 GPU 计算在 CUDA 设备执行；最终图像重采样沿用 Surfa 的几何和插值规则。
 
 ## 2. SynthStrip 源码流程
 
@@ -30,7 +30,7 @@
 
 距离场必要时向脑外延伸，再回到原始图像网格。`distance < border` 得到候选掩膜，随后保留最大连通域并填洞。默认背景填充值为 `min(image.min(), 0)`；可显式指定。`no_csf=True` 加载另一份官方 checkpoint。
 
-精确网络和参数对照见 [SYNTHSTRIP.md](SYNTHSTRIP.md)。
+网络和参数对照见 [SynthStrip 专属文档](synthstrip/README.md#网络)。
 
 ## 3. SynthMorph 源码流程
 
@@ -56,7 +56,7 @@ Keras 卷积权重轴为 `(i,j,k,in,out)`，PyTorch 为 `(out,in,i,j,k)`。转�
 
 最终图像则按原命令调用 Surfa。Surfa linear 的有效域为 `[0,n)`，网络采样为 `[0,n−1]`；其 nearest 半整数规则也不同。因此包内保留这两个不同步骤，不能用一个通用采样器替代全部处理。
 
-导出的仿射是带源/目标几何的 world-space LTA；非线性变换是 FreeSurfer RAS 位移场。网络场是 fixed 输出坐标到 moving 采样坐标的 pull map，不能直接当作同名方向的点变换使用。完整公式和源码位置见 [SYNTHMORPH.md](SYNTHMORPH.md)。
+导出的仿射是带源/目标几何的 world-space LTA；非线性变换是 FreeSurfer RAS 位移场。网络场是 fixed 输出坐标到 moving 采样坐标的 pull map，不能直接当作同名方向的点变换使用。公式和源码位置见 [SynthMorph 专属文档](synthmorph/README.md#symmetry-and-coordinate-transforms)。
 
 ## 4. 功能对应关系
 

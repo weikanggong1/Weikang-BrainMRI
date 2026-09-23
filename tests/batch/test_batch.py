@@ -37,6 +37,18 @@ class BatchValidationTests(unittest.TestCase):
             self.assertEqual(batch._prepare_jobs([job], overwrite=True)[0]["outputs"]["mask"], str(path))
             self.assertEqual(path.read_text(), "old")
 
+    def test_wmh_outputs_are_validated_before_dispatch(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            seg = root / "case_seg.nii.gz"
+            prob = root / "case_seg.lesion_probs.nii.gz"
+            job = {"task": "wmh_synthseg", "kwargs": {"image": "case.nii.gz", "crop": True},
+                   "outputs": {"segmentation": seg, "lesion_probability": prob}}
+            prepared = batch._prepare_jobs([job], overwrite=False)
+            self.assertEqual(set(prepared[0]["outputs"]), {"segmentation", "lesion_probability"})
+            with self.assertRaisesRegex(ValueError, "duplicate output"):
+                batch._prepare_jobs([job, job], overwrite=True)
+
     def test_synthmorph_debug_outputs_participate_in_collision_checks(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)

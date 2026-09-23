@@ -9,6 +9,7 @@ import pytest
 @pytest.mark.parametrize("module,names", [
     ("synthstrip", ("SynthStrip", "StripResult")),
     ("synthmorph", ("SynthMorph", "RegistrationResult", "apply_transform")),
+    ("wmh_synthseg", ("WMHSynthSeg", "WMHResult")),
     ("batch", ("BatchRunner", "BatchResult", "run_batch")),
 ])
 def test_top_level_exports_are_feature_objects(module, names):
@@ -35,6 +36,6 @@ def test_legacy_module_exports_are_same_objects(old_module, new_module, names):
 
 
 def test_top_level_import_stays_lightweight():
-    code = "import sys; import freesurfer_torch; assert not {'torch', 'surfa', 'h5py', 'tensorflow'} & sys.modules.keys()"
+    code = "import sys; import freesurfer_torch; assert not {'torch', 'surfa', 'h5py', 'nibabel', 'tensorflow'} & sys.modules.keys()"
     result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
     assert result.returncode == 0, result.stderr

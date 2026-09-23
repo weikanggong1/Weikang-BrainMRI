@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "freesurfer-torch"
-version = "0.2.0"
-description = "Standalone PyTorch SynthStrip and SynthMorph inference with GPU batch workers"
+version = "0.3.0"
+description = "Standalone PyTorch brain extraction, registration, and WMH segmentation with GPU batch workers"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -13,6 +13,7 @@ dependencies = [
   "numpy>=1.23,<2",
   "scipy>=1.9",
   "surfa==0.6.3",
+  "nibabel>=5",
   "h5py>=3.8",
 ]
 
@@ -27,4 +28,4 @@ where = ["src"]
 license-files = ["licenses/*.txt", "THIRD_PARTY_NOTICES.md"]
 
 [tool.setuptools.package-data]
-freesurfer_torch = ["synthstrip/*.md", "synthmorph/*.md"]
+freesurfer_torch = ["synthstrip/*.md", "synthmorph/*.md", "wmh_synthseg/*.md"]

@@ -9,8 +9,7 @@ from pathlib import Path
 from urllib.request import Request, urlopen
 
 
-# Keep the upstream filename, pinned URL, size, and SHA together. Future model
-# families can be added here and to MODEL_FILES without changing the downloader.
+# Keep each upstream filename, URL, size, and SHA-256 together.
 WEIGHT_FILES = {
     "synthstrip.1.pt": (
         "https://surfer.nmr.mgh.harvard.edu/docs/synthstrip/requirements/synthstrip.1.pt",
@@ -27,6 +26,9 @@ WEIGHT_FILES = {
     "synthmorph.rigid.1.h5": (
         "https://surfer.nmr.mgh.harvard.edu/docs/synthmorph/synthmorph.rigid.1.h5",
         51656152, "284c145fce47e98ecf3fdeda2163f646ac3ebb0240e87dd50d71d879f4d5b3af"),
+    "WMH-SynthSeg_v10_231110.pth": (
+        "https://ftp.nmr.mgh.harvard.edu/pub/dist/lcnpublic/dist/WMH-SynthSeg/WMH-SynthSeg_v10_231110.pth",
+        790531383, "0ece39dd651357aa95222fc4d45fa32d00f11e763d2583cae3f869989ce35988"),
 }
 
 MODEL_FILES = {
@@ -36,6 +38,7 @@ MODEL_FILES = {
     "synthmorph-affine": ("synthmorph.affine.2.h5",),
     "synthmorph-deform": ("synthmorph.deform.3.h5",),
     "synthmorph-joint": ("synthmorph.affine.2.h5", "synthmorph.deform.3.h5"),
+    "wmh-synthseg": ("WMH-SynthSeg_v10_231110.pth",),
 }
 
 
@@ -138,8 +141,8 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description="Download verified FreeSurfer weights and configure their location")
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--model", choices=MODEL_FILES, action="append", metavar="MODEL",
-                       help="Model to set up; repeat to select multiple (default: all five weights)")
-    group.add_argument("--all", action="store_true", help="Set up all five weights (default)")
+                       help="Model to set up; repeat to select multiple (default: all official weights)")
+    group.add_argument("--all", action="store_true", help="Set up all official weights (default)")
     parser.add_argument("--dest", type=Path, help="Weight directory; saved for future API/CLI calls")
     parser.add_argument("--verify-only", action="store_true", help="Check files without downloading or changing config")
     args = parser.parse_args(argv)

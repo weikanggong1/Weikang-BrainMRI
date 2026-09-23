@@ -8,13 +8,18 @@
     "python/lib/python3.8/site-packages/voxelmorph/tf/networks.py": "54fd354880811ff979e6b745355959a8b6906e19582d757528caad0590bc5df1",
     "python/lib/python3.8/site-packages/voxelmorph/tf/utils/utils.py": "a9246d0a801f450b1e13e7bd655fcde0132f3a502fae1e6c03824387e285ba96",
     "python/lib/python3.8/site-packages/neurite/tf/layers.py": "e474711116550aaa02f949a0c5f2bccc29698c95601765a2649091c045fa605b",
-    "python/lib/python3.8/site-packages/neurite/tf/utils/utils.py": "872618d7418f529e2115fb30c4c3c889a312212550c0162e00cb4176d0c10bc8"
+    "python/lib/python3.8/site-packages/neurite/tf/utils/utils.py": "872618d7418f529e2115fb30c4c3c889a312212550c0162e00cb4176d0c10bc8",
+    "python/packages/WMHSynthSeg/inference.py": "519093d8d24c33e2e233ded94fe8c3eb4e6b38160d2c9c2de6505f07da9eb326",
+    "python/packages/WMHSynthSeg/utils.py": "a33eb48b466703a954441803e5a1a6aff716ff9755345f548c28ebeee34f6d42",
+    "python/packages/WMHSynthSeg/unet3d/model.py": "bff1285de993212dc1382cf2d6e863083c54611e6413863f7c56182b2df3485a",
+    "python/packages/WMHSynthSeg/unet3d/buildingblocks.py": "43246ac1f68884df05cf36c19469981b2374d809ad2629636ed76187b2ac5bc7"
   },
   "weights_sha256": {
     "synthmorph.affine.2.h5": "1ac5304b683036e5177f5b4ad38fa09fcbbe7883e742d6fa5bdaedd0e619ced6",
     "synthmorph.deform.3.h5": "95b367cd30788cc647e4704b650642fc1d70d7e419c20c04f1ba1b2902bc6536",
     "synthmorph.rigid.1.h5": "284c145fce47e98ecf3fdeda2163f646ac3ebb0240e87dd50d71d879f4d5b3af",
     "synthstrip.1.pt": "37417f802196186441aae3e7f385d94f8a98c64a88acaeaa2723af995c653e33",
-    "synthstrip.nocsf.1.pt": "62bf01137c45b5f0cc04d59dbaed5b9ac138b3f25b766c062a7c1a0d696ecb28"
+    "synthstrip.nocsf.1.pt": "62bf01137c45b5f0cc04d59dbaed5b9ac138b3f25b766c062a7c1a0d696ecb28",
+    "WMH-SynthSeg_v10_231110.pth": "0ece39dd651357aa95222fc4d45fa32d00f11e763d2583cae3f869989ce35988"
   }
 }

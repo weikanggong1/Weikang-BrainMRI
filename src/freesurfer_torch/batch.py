@@ -20,6 +20,7 @@ import traceback
 _OUTPUTS = {
     "synthstrip": {"image", "mask", "distance"},
     "synthmorph": {"moved", "fixed_moved", "transform", "inverse"},
+    "wmh_synthseg": {"segmentation", "lesion_probability"},
 }
 _models = {}
 _device = None
@@ -63,8 +64,13 @@ def _model_class(task):
     if task == "synthstrip":
         from .synthstrip import SynthStrip
         return SynthStrip
-    from .synthmorph import SynthMorph
-    return SynthMorph
+    if task == "synthmorph":
+        from .synthmorph import SynthMorph
+        return SynthMorph
+    if task == "wmh_synthseg":
+        from .wmh_synthseg import WMHSynthSeg
+        return WMHSynthSeg
+    raise ValueError(f"Unknown task: {task}")
 
 
 def _run_job(index, job):
@@ -80,7 +86,10 @@ def _run_job(index, job):
         key = (job["task"], json.dumps(options, sort_keys=True, default=os.fspath))
         if key not in _models:
             _models[key] = _model_class(job["task"])(device=_device, **options)
-        result = _models[key](**job["kwargs"])
+        kwargs = dict(job["kwargs"])
+        if job["task"] == "wmh_synthseg" and "lesion_probability" in job["outputs"]:
+            kwargs["save_lesion_probabilities"] = True
+        result = _models[key](**kwargs)
         for name, path in job["outputs"].items():
             getattr(result, name).save(path)
             outcome.outputs[name] = path
@@ -103,7 +112,7 @@ def _prepare_jobs(jobs, overwrite):
             raise ValueError(f"{prefix}: unknown job keys: {sorted(unknown)}")
         task = job.get("task")
         if task not in _OUTPUTS:
-            raise ValueError(f"{prefix}: task must be synthstrip or synthmorph")
+            raise ValueError(f"{prefix}: task must be one of {sorted(_OUTPUTS)}")
         options, kwargs, outputs = (job.get(k, {}) for k in ("model", "kwargs", "outputs"))
         if not all(isinstance(v, dict) for v in (options, kwargs, outputs)):
             raise TypeError(f"{prefix}: model, kwargs and outputs must be dictionaries")

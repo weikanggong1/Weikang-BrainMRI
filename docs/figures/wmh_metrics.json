@@ -1,0 +1,12 @@
+{
+  "source": "OpenNeuro ds003592 CC0, brain-limited examples/wmh_data/sub-04_FLAIR.nii.gz",
+  "reference": "Unmodified FreeSurfer 8.2.0-1 WMH-SynthSeg inference.py, CUDA, crop enabled",
+  "candidate": "freesurfer-torch 0.3.0 WMHSynthSeg, CUDA, crop enabled",
+  "figure": "wmh_synthseg_comparison.png",
+  "output_shape": [192, 216, 126],
+  "segmentation_disagreeing_voxels": 0,
+  "wmh_hard_dice": 1.0,
+  "lesion_probability_max_abs": 0.0,
+  "output_affine_max_abs": 0.0,
+  "wmh_soft_volume_mm3": 24159.46
+}

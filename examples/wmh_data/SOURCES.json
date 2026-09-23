@@ -1,0 +1,62 @@
+{
+  "dataset": "OpenNeuro ds003592",
+  "source_dataset_url": "https://openneuro.org/datasets/ds003592",
+  "source_doi": "10.18112/openneuro.ds003592.v1.0.13",
+  "source_license": "CC0",
+  "source_license_metadata": "https://raw.githubusercontent.com/OpenNeuroDatasets/ds003592/master/dataset_description.json",
+  "derivative_note": "FLAIR examples, retaining image intensities no farther than 6 mm from the brain mask predicted by original FreeSurfer mri_synthstrip using synthstrip.1.pt. Other voxels are zeroed; geometry is preserved, NIfTI header identifiers removed. These are derived test inputs, not clinical ground truth.",
+  "preparation_script": "tools/prepare_wmh_examples.py",
+  "cases": [
+    {
+      "file": "sub-02_FLAIR.nii.gz",
+      "source_url": "https://s3.amazonaws.com/openneuro.org/ds003592/sub-02/ses-1/anat/sub-02_ses-1_FLAIR.nii.gz",
+      "source_sha256": "6784c9822415f701dd25a6009e68bee2dfd11427a04d99617c8fc0859473e7d9",
+      "published_sha256": "5d89375e39443cea96b42176b0fc07491a9a2d2c545ea397a8d460c25c0e929e",
+      "published_bytes": 1561299,
+      "shape": [
+        256,
+        256,
+        42
+      ],
+      "voxel_size_mm": [
+        0.8438000082969666,
+        0.8438000082969666,
+        3.0
+      ]
+    },
+    {
+      "file": "sub-03_FLAIR.nii.gz",
+      "source_url": "https://s3.amazonaws.com/openneuro.org/ds003592/sub-03/ses-1/anat/sub-03_ses-1_FLAIR.nii.gz",
+      "source_sha256": "cf4f77d52f5b39f6631cb002b684f8c0571ca123f139a48efc4ee6e139d4bb6d",
+      "published_sha256": "be462c4f889487db7ade74a1c501fb9937f53830c16d1b8a75d8a183afb84f47",
+      "published_bytes": 1861415,
+      "shape": [
+        256,
+        256,
+        42
+      ],
+      "voxel_size_mm": [
+        0.8438000082969666,
+        0.8438000082969666,
+        3.0
+      ]
+    },
+    {
+      "file": "sub-04_FLAIR.nii.gz",
+      "source_url": "https://s3.amazonaws.com/openneuro.org/ds003592/sub-04/ses-1/anat/sub-04_ses-1_FLAIR.nii.gz",
+      "source_sha256": "49de51a875ade818485c239d37632dce4aafc042f7bf241188460ff9d989c622",
+      "published_sha256": "fb3e36b57a408718534952f09a84e9c7b9729ed1687123c6aafd8c8790962699",
+      "published_bytes": 1961425,
+      "shape": [
+        256,
+        256,
+        42
+      ],
+      "voxel_size_mm": [
+        0.8438000082969666,
+        0.8438000082969666,
+        3.0
+      ]
+    }
+  ]
+}

@@ -17,6 +17,9 @@ weights/
 !examples/data/sub-01_T1w.nii.gz
 !examples/data/sub-02_T1w.nii.gz
 !examples/data/sub-03_T1w.nii.gz
+!examples/wmh_data/sub-02_FLAIR.nii.gz
+!examples/wmh_data/sub-03_FLAIR.nii.gz
+!examples/wmh_data/sub-04_FLAIR.nii.gz
 *.mgz
 *.mgh
 *.lta

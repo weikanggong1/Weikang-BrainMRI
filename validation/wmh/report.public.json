@@ -1,0 +1,577 @@
+{
+  "n": 12,
+  "case_order": [
+    "case01",
+    "case02",
+    "case03",
+    "case04",
+    "case05",
+    "case06",
+    "case07",
+    "case08",
+    "case09",
+    "case10",
+    "case11",
+    "case12"
+  ],
+  "case_ids_anonymized": true,
+  "arm_seconds": {
+    "official-cpu": {
+      "median": 97.38422088208608,
+      "mean": 98.33241952067085,
+      "range": [
+        67.38646902097389,
+        124.30483487783931
+      ]
+    },
+    "official-cuda": {
+      "median": 8.252821628469974,
+      "mean": 8.408246534585487,
+      "range": [
+        7.921222314005718,
+        9.66022250498645
+      ]
+    },
+    "torch-cpu": {
+      "median": 70.68619873840362,
+      "mean": 71.05111255399727,
+      "range": [
+        69.91620977385901,
+        74.6698445121292
+      ]
+    },
+    "torch-cuda": {
+      "median": 8.4148108944064,
+      "mean": 8.973380430407511,
+      "range": [
+        8.055973400129005,
+        13.393944500945508
+      ]
+    }
+  },
+  "comparison": {
+    "cpu": {
+      "segmentation_voxel_agreement": {
+        "median": 1.0,
+        "mean": 1.0,
+        "range": [
+          1.0,
+          1.0
+        ]
+      },
+      "wmh_hard_dice": {
+        "median": 1.0,
+        "mean": 1.0,
+        "range": [
+          1.0,
+          1.0
+        ]
+      },
+      "lesion_probability_mae": {
+        "median": 0.0,
+        "mean": 0.0,
+        "range": [
+          0.0,
+          0.0
+        ]
+      },
+      "lesion_probability_nrmse": {
+        "median": 0.0,
+        "mean": 0.0,
+        "range": [
+          0.0,
+          0.0
+        ]
+      },
+      "lesion_probability_max_abs": {
+        "median": 0.0,
+        "mean": 0.0,
+        "range": [
+          0.0,
+          0.0
+        ]
+      },
+      "segmentation_affine_max_abs": {
+        "median": 0.0,
+        "mean": 0.0,
+        "range": [
+          0.0,
+          0.0
+        ]
+      },
+      "probability_affine_max_abs": {
+        "median": 0.0,
+        "mean": 0.0,
+        "range": [
+          0.0,
+          0.0
+        ]
+      },
+      "max_csv_volume_abs_error_mm3": {
+        "median": 0.0,
+        "mean": 0.0,
+        "range": [
+          0.0,
+          0.0
+        ]
+      },
+      "output_affine_max_abs": {
+        "median": 0.0,
+        "mean": 0.0,
+        "range": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "cuda": {
+      "segmentation_voxel_agreement": {
+        "median": 1.0,
+        "mean": 1.0,
+        "range": [
+          1.0,
+          1.0
+        ]
+      },
+      "wmh_hard_dice": {
+        "median": 1.0,
+        "mean": 1.0,
+        "range": [
+          1.0,
+          1.0
+        ]
+      },
+      "lesion_probability_mae": {
+        "median": 0.0,
+        "mean": 0.0,
+        "range": [
+          0.0,
+          0.0
+        ]
+      },
+      "lesion_probability_nrmse": {
+        "median": 0.0,
+        "mean": 0.0,
+        "range": [
+          0.0,
+          0.0
+        ]
+      },
+      "lesion_probability_max_abs": {
+        "median": 0.0,
+        "mean": 0.0,
+        "range": [
+          0.0,
+          0.0
+        ]
+      },
+      "segmentation_affine_max_abs": {
+        "median": 0.0,
+        "mean": 0.0,
+        "range": [
+          0.0,
+          0.0
+        ]
+      },
+      "probability_affine_max_abs": {
+        "median": 0.0,
+        "mean": 0.0,
+        "range": [
+          0.0,
+          0.0
+        ]
+      },
+      "max_csv_volume_abs_error_mm3": {
+        "median": 0.0,
+        "mean": 0.0,
+        "range": [
+          0.0,
+          0.0
+        ]
+      },
+      "output_affine_max_abs": {
+        "median": 0.0,
+        "mean": 0.0,
+        "range": [
+          0.0,
+          0.0
+        ]
+      }
+    }
+  },
+  "case_records": [
+    {
+      "case": "case01",
+      "seconds": {
+        "official-cpu": 88.11398129398003,
+        "official-cuda": 8.772765857866034,
+        "torch-cpu": 74.6698445121292,
+        "torch-cuda": 13.393944500945508
+      },
+      "comparison": {
+        "cpu": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        },
+        "cuda": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        }
+      }
+    },
+    {
+      "case": "case02",
+      "seconds": {
+        "official-cpu": 96.26775300200097,
+        "official-cuda": 8.25902719493024,
+        "torch-cpu": 70.82157128211111,
+        "torch-cuda": 8.389062933856621
+      },
+      "comparison": {
+        "cpu": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        },
+        "cuda": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        }
+      }
+    },
+    {
+      "case": "case03",
+      "seconds": {
+        "official-cpu": 90.5438877120614,
+        "official-cuda": 8.246616062009707,
+        "torch-cpu": 70.44550208095461,
+        "torch-cuda": 8.370594392996281
+      },
+      "comparison": {
+        "cpu": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        },
+        "cuda": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        }
+      }
+    },
+    {
+      "case": "case04",
+      "seconds": {
+        "official-cpu": 67.38646902097389,
+        "official-cuda": 8.173965889029205,
+        "torch-cpu": 70.32909932499751,
+        "torch-cuda": 8.444344405084848
+      },
+      "comparison": {
+        "cpu": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        },
+        "cuda": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        }
+      }
+    },
+    {
+      "case": "case05",
+      "seconds": {
+        "official-cpu": 89.4518903370481,
+        "official-cuda": 9.66022250498645,
+        "torch-cpu": 70.61378982989118,
+        "torch-cuda": 8.967982050031424
+      },
+      "comparison": {
+        "cpu": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        },
+        "cuda": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        }
+      }
+    },
+    {
+      "case": "case06",
+      "seconds": {
+        "official-cpu": 103.25467903306708,
+        "official-cuda": 8.207641394110397,
+        "torch-cpu": 71.93843752006069,
+        "torch-cuda": 8.44055885495618
+      },
+      "comparison": {
+        "cpu": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        },
+        "cuda": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        }
+      }
+    },
+    {
+      "case": "case07",
+      "seconds": {
+        "official-cpu": 113.74544539209455,
+        "official-cuda": 8.338753096060827,
+        "torch-cpu": 70.11882251803763,
+        "torch-cuda": 9.654580161906779
+      },
+      "comparison": {
+        "cpu": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        },
+        "cuda": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        }
+      }
+    },
+    {
+      "case": "case08",
+      "seconds": {
+        "official-cpu": 124.30483487783931,
+        "official-cuda": 8.92163077602163,
+        "torch-cpu": 71.00402120989747,
+        "torch-cuda": 9.534454170847312
+      },
+      "comparison": {
+        "cpu": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        },
+        "cuda": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        }
+      }
+    },
+    {
+      "case": "case09",
+      "seconds": {
+        "official-cpu": 110.30711915995926,
+        "official-cuda": 8.295017479918897,
+        "torch-cpu": 69.91620977385901,
+        "torch-cuda": 8.13321488420479
+      },
+      "comparison": {
+        "cpu": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        },
+        "cuda": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        }
+      }
+    },
+    {
+      "case": "case10",
+      "seconds": {
+        "official-cpu": 95.76606068294495,
+        "official-cuda": 8.114621636923403,
+        "torch-cpu": 70.75860764691606,
+        "torch-cuda": 8.055973400129005
+      },
+      "comparison": {
+        "cpu": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        },
+        "cuda": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        }
+      }
+    },
+    {
+      "case": "case11",
+      "seconds": {
+        "official-cpu": 102.34622497390956,
+        "official-cuda": 7.987474209163338,
+        "torch-cpu": 72.07304130704142,
+        "torch-cuda": 8.15360848302953
+      },
+      "comparison": {
+        "cpu": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        },
+        "cuda": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        }
+      }
+    },
+    {
+      "case": "case12",
+      "seconds": {
+        "official-cpu": 98.5006887621712,
+        "official-cuda": 7.921222314005718,
+        "torch-cpu": 69.92440364207141,
+        "torch-cuda": 8.142246926901862
+      },
+      "comparison": {
+        "cpu": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        },
+        "cuda": {
+          "segmentation_voxel_agreement": 1.0,
+          "wmh_hard_dice": 1.0,
+          "lesion_probability_mae": 0.0,
+          "lesion_probability_nrmse": 0.0,
+          "lesion_probability_max_abs": 0.0,
+          "segmentation_affine_max_abs": 0.0,
+          "probability_affine_max_abs": 0.0,
+          "max_csv_volume_abs_error_mm3": 0.0
+        }
+      }
+    }
+  ],
+  "all_success": true
+}

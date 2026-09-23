@@ -2,7 +2,7 @@
 
 [返回首页](../../README.md) · [源码目录](../../src/freesurfer_torch/synthstrip/) · [权重](../WEIGHTS.md) · [批量执行](../ARCHITECTURE.md#批量执行)
 
-SynthStrip 从脑影像预测有符号距离场，再生成脑掩膜和去除背景的影像。官方模型本来就是 PyTorch；本模块保留原网络、权重名称和影像处理流程，提供独立、可重复调用的 API，没有重新训练模型。
+SynthStrip 从脑影像预测有符号距离场，生成脑掩膜和去除背景的影像。官方模型已使用 PyTorch。本模块沿用其网络、权重和影像处理流程，提供可重复调用的 Python API；模型未重新训练。
 
 参考版本为 **FreeSurfer 8.2.0**，build `freesurfer-linux-centos7_x86_64-8.2.0-20260314-d932c45`。分析对象是 `$FREESURFER_HOME/python/scripts/mri_synthstrip`，不是 `bin/` 下的包装脚本。脚本 SHA-256 为 `bbc2ff8f8779862039401b05d5cd6039fb4f3583e0032a793ac9adb3f4521590`，全部来源信息见 [provenance.json](../provenance.json)。
 
@@ -82,7 +82,7 @@ fs-torch synthstrip -i subject_T1w.nii.gz \
 | `synthstrip.1.pt` | 默认脑提取 |
 | `synthstrip.nocsf.1.pt` | `no_csf=True` |
 
-通过 `checkpoint["model_state_dict"]` 严格加载，无权重转换或精度压缩。下载、许可和 SHA-256 见 [WEIGHTS.md](../WEIGHTS.md)。推理不会自动下载，也不调用 FreeSurfer 命令。
+通过 `checkpoint["model_state_dict"]` 严格加载，无权重转换或精度压缩。下载、许可和 SHA-256 见 [WEIGHTS.md](../WEIGHTS.md)。推理使用本地权重，不调用 FreeSurfer 命令。
 
 U-Net 在所选设备执行。影像读写、Surfa conform/crop、归一化、SDT 扩展、连通域和最终重采样在 CPU 执行。4D 逐帧处理；病例并发由共享 [BatchRunner](../ARCHITECTURE.md#批量执行) 完成。GPU 可加快网络部分，完整进程耗时还取决于预后处理和 I/O。
 
@@ -107,8 +107,7 @@ U-Net 在所选设备执行。影像读写、Surfa conform/crop、归一化、SD
 - 默认网络共 **2,566,561 个可训练参数**、27 个卷积层；预测的是有符号距离，
   不直接输出 softmax 分割。保留原网络可选 `return_mask=True` 架构入口，官方 SDT
   权重和高级 API 使用默认 `False`。
-- `encoder.*`、`decoder.*`、`remaining.*` 权重名称保持一致；直接严格加载官方
-  `checkpoint['model_state_dict']`，没有权重转换或精度压缩。
+- `encoder.*`、`decoder.*`、`remaining.*` 参数名称与官方权重一致。
 
 ## 每帧处理
 
@@ -151,6 +150,6 @@ python tools/validate_synthstrip.py --image /path/to/test_T1w.nii.gz \
 
 该工具从指定原脚本 AST 提取网络类，用相同权重比较参数名、参数量和随机 `64³` 输入的预测，再执行完整影像流程；正式流程仍使用官方最小 `192³` 网格。参考安装自带的 Torch 是 CPU build，因此历史 GPU 原版参考使用未修改官方脚本与 CUDA Python 环境，报告明确标为 `official_source_cuda`。
 
-这些检查验证软件复现。真实病例没有人工脑掩膜真值，未据此评估独立的临床提取准确率。大视野裁切和无强度变化输入的边界条件见前述处理流程。
+这些检查衡量与原版的数值一致性。真实病例没有人工脑掩膜真值，无法从中得出临床提取准确率。大视野裁切和常数输入的处理见上文。
 
 原方法：Hoopes et al., *SynthStrip: Skull-Stripping for Any Brain Image*, NeuroImage (2022), [doi:10.1016/j.neuroimage.2022.119474](https://doi.org/10.1016/j.neuroimage.2022.119474)。

@@ -1,19 +1,25 @@
 # 预训练权重：下载、校验与公开发布
 
-本仓库和 Python wheel 不包含权重。五个所需模型均已由原作者公开，无需安装完整 FreeSurfer 即可从官网获取。克隆仓库后运行专属脚本，它从 FreeSurfer 官网下载、核对大小与 SHA-256，并保存权重目录，供所有 Python API 和 `fs-torch` 命令自动使用。
+Git 仓库和 wheel 均不包含权重。三个功能使用 FreeSurfer 官方发布的模型文件，可通过配置脚本下载并核对大小、SHA-256。脚本保存权重目录后，Python API 和 `fs-torch` 命令会自动查找它；下载过程无需安装 FreeSurfer。
 
 ## 一次配置，后续自动使用
 
-在仓库根目录运行。默认下载五个权重到 `~/.cache/freesurfer_torch/`；SynthMorph 最大的文件约 3.51 GB，可通过 HTTP Range 续传。脚本先写 `.part`，完整校验后才更名为正式权重文件。
+在仓库根目录运行。默认下载下表全部权重到 `~/.cache/freesurfer_torch/`；SynthMorph 最大的文件约 3.51 GB，可通过 HTTP Range 续传。脚本先写 `.part`，完整校验后才更名为正式权重文件。
 
 ```bash
 python tools/setup_weights.py --all
 ```
 
-按任务只下载需要的模型；`joint` 同时下载 affine 和 deform 权重。下面下载默认脑提取和 joint 非线性配准需要的三个文件：
+也可只下载所需模型。`joint` 需要 affine 和 deform 两份权重；下例再加默认 SynthStrip 权重，共三个文件：
 
 ```bash
 python tools/setup_weights.py --model synthstrip --model synthmorph-joint
+```
+
+只运行 WMH-SynthSeg 时下载其单个 checkpoint：
+
+```bash
+python tools/setup_weights.py --model wmh-synthseg
 ```
 
 有独立模型目录时，用 `--dest` 指定一次即可。脚本成功后把绝对路径保存在用户缓存目录的 `weights.json`，之后 API 和 CLI 可以省略 `weights=` / `--weights`：
@@ -25,9 +31,9 @@ python tools/setup_weights.py --all --verify-only
 
 `--verify-only` 只检查当前权重目录，不下载或修改配置。已从联网机器复制了权重时，运行 `python tools/setup_weights.py --all --dest /path/to/copied/models`：现有文件校验成功后直接保存目录，无需重新下载。安装 wheel 后也可使用相同选项的 `fs-torch-setup-weights` 命令。
 
-可选模型名：`synthstrip`、`synthstrip-nocsf`、`synthmorph-rigid`、`synthmorph-affine`、`synthmorph-deform`、`synthmorph-joint`。`--model` 可重复；不写 `--model` 时等同 `--all`。显式 API/CLI 权重路径优先，其次是 `FREESURFER_TORCH_WEIGHTS` 环境变量，再次是脚本保存的目录，然后是默认缓存和现有 FreeSurfer 模型目录。`XDG_CACHE_HOME` 可改变缓存根目录。模型推理不会联网，只有运行配置脚本才会下载。
+可选模型名：`synthstrip`、`synthstrip-nocsf`、`synthmorph-rigid`、`synthmorph-affine`、`synthmorph-deform`、`synthmorph-joint`、`wmh-synthseg`。`--model` 可重复；不写 `--model` 时等同 `--all`。显式 API/CLI 权重路径优先，其次是 `FREESURFER_TORCH_WEIGHTS` 环境变量，再次是脚本保存的目录，然后是默认缓存和现有 FreeSurfer 模型目录。`XDG_CACHE_HOME` 可改变缓存根目录。模型推理不会联网，只有运行配置脚本才会下载。
 
-以下链接、HTTP 状态和文件大小于 **2026-09-23** 核验；五个端点均返回 HTTP 200。SHA-256 来自本包已完成数值验证的权重，并与 FreeSurfer 官方仓库的 git-annex 指针一致。此处的版本号固定，不会自动跟随上游替换为新模型。
+以下链接、HTTP 状态和文件大小于 **2026-09-23** 核验；六个端点均返回 HTTP 200。SynthStrip/SynthMorph 的 SHA-256 来自本包已完成数值验证的权重，并与 FreeSurfer 官方仓库的 git-annex 指针一致；WMH-SynthSeg 的 SHA-256 来自下表官方文件的完整下载校验。此处的版本号固定，不会自动跟随上游替换为新模型。
 
 ## 官方文件
 
@@ -38,8 +44,9 @@ python tools/setup_weights.py --all --verify-only
 | SynthMorph | [synthmorph.affine.2.h5](https://surfer.nmr.mgh.harvard.edu/docs/synthmorph/synthmorph.affine.2.h5) | 51,455,312 | affine；joint 的仿射阶段 |
 | SynthMorph | [synthmorph.deform.3.h5](https://surfer.nmr.mgh.harvard.edu/docs/synthmorph/synthmorph.deform.3.h5) | 3,508,630,424 | deform；joint 的非线性阶段 |
 | SynthMorph | [synthmorph.rigid.1.h5](https://surfer.nmr.mgh.harvard.edu/docs/synthmorph/synthmorph.rigid.1.h5) | 51,656,152 | rigid |
+| WMH-SynthSeg | [WMH-SynthSeg_v10_231110.pth](https://ftp.nmr.mgh.harvard.edu/pub/dist/lcnpublic/dist/WMH-SynthSeg/WMH-SynthSeg_v10_231110.pth) | 790,531,383 | `wmh-synthseg`；解剖结构与 WMH 的联合分割 |
 
-合计 **3,673,445,306 字节**，约 3.67 GB（3.42 GiB）。只使用默认 SynthStrip 时需要第一个文件；默认 joint 配准需要 affine 和 deform 两个文件。
+合计 **4,463,976,689 字节**，约 4.46 GB（4.16 GiB）。只使用默认 SynthStrip 时需要第一个文件；默认 joint 配准需要 affine 和 deform 两个文件；WMH-SynthSeg 只需其单独的 `.pth` 文件。[官方 FreeSurfer 下载说明](https://github.com/freesurfer/freesurfer/tree/dev/mri_WMHsynthseg)
 
 SHA-256：
 
@@ -49,9 +56,10 @@ SHA-256：
 1ac5304b683036e5177f5b4ad38fa09fcbbe7883e742d6fa5bdaedd0e619ced6  synthmorph.affine.2.h5
 95b367cd30788cc647e4704b650642fc1d70d7e419c20c04f1ba1b2902bc6536  synthmorph.deform.3.h5
 284c145fce47e98ecf3fdeda2163f646ac3ebb0240e87dd50d71d879f4d5b3af  synthmorph.rigid.1.h5
+0ece39dd651357aa95222fc4d45fa32d00f11e763d2583cae3f869989ce35988  WMH-SynthSeg_v10_231110.pth
 ```
 
-也可在 [provenance.json](provenance.json) 查看权重与参考实现的完整来源记录。不要直接下载 GitHub `raw` 页上的同名文件：FreeSurfer 用 git-annex 管理大文件，其 `raw` 内容可能只是几十到几百字节的链接文本。[官方 SynthMorph 仓库说明](https://github.com/freesurfer/freesurfer/tree/dev/mri_synthmorph)
+也可在 [provenance.json](provenance.json) 查看 SynthStrip/SynthMorph 权重与参考实现的来源记录。不要直接下载 GitHub `raw` 页上的 SynthMorph 同名文件：FreeSurfer 用 git-annex 管理大文件，其 `raw` 内容可能只是几十到几百字节的链接文本。[官方 SynthMorph 仓库说明](https://github.com/freesurfer/freesurfer/tree/dev/mri_synthmorph)
 
 ## 手动下载示例
 
@@ -69,23 +77,25 @@ printf '%s  %s\n' \
 export FREESURFER_TORCH_WEIGHTS="$PWD/weights"
 ```
 
-下载是显式操作；`pip install`、导入模块和推理都不隐式下载权重。离线计算节点可从联网机器下载、校验后复制整个权重目录。
+`pip install`、导入模块和推理不下载权重。离线计算节点可从联网机器复制已校验的权重目录。
 
 ## 权重许可与归属
 
-**五个权重均可选择 MIT 或 CC BY 4.0 许可。** SynthStrip 官网的 “Code and Weights” 和 SynthMorph 官网的 “Code and weights” 均明确提供这一选择；上表链接来自这两个官方页面。[SynthStrip](https://surfer.nmr.mgh.harvard.edu/docs/synthstrip/)，[SynthMorph](https://synthmorph.io/#code)
+**六个文件中，SynthStrip 与 SynthMorph 的五个权重可选择 MIT 或 CC BY 4.0 许可。** 两个功能的官网 “Code and Weights” 均明确提供这一选择。[SynthStrip](https://surfer.nmr.mgh.harvard.edu/docs/synthstrip/)，[SynthMorph](https://synthmorph.io/#code)
 
-公开镜像可以按所选许可发布，保留原作者、原始模型名称、官方来源和相应许可文本；如果转换或修改文件，注明具体变更。权重归原作者所有，本项目提供独立的 PyTorch 实现及验证，不将这些模型声称为本项目训练所得。模型卡应链接原论文，并记录文件 SHA-256。[MIT 条款](https://choosealicense.com/licenses/mit/)，[CC BY 4.0 条款](https://creativecommons.org/licenses/by/4.0/)
+这五个权重的公开镜像可按所选许可发布，保留原作者、原始模型名称、官方来源和相应许可文本；如果转换或修改文件，注明具体变更。权重归原作者所有，本项目提供独立的 PyTorch 实现及验证，不将这些模型声称为本项目训练所得。模型卡应链接原论文，并记录文件 SHA-256。[MIT 条款](https://choosealicense.com/licenses/mit/)，[CC BY 4.0 条款](https://creativecommons.org/licenses/by/4.0/)
+
+**WMH-SynthSeg 权重单独遵循 [FreeSurfer Software License](https://surfer.nmr.mgh.harvard.edu/fswiki/FreeSurferSoftwareLicense)。** 官方并未为该 checkpoint 宣布 SynthStrip/SynthMorph 的 MIT 或 CC BY 4.0 双许可。该许可对下载、使用和再分发提出附带许可条款及归属信息等要求；其原文说明软件为研究用途设计，临床应用未获审查或批准。下载或再分发该文件前应直接查看原文。[WMH-SynthSeg 官方说明](https://surfer.nmr.mgh.harvard.edu/fswiki/WMH-SynthSeg)
 
 上述许可针对权重。改编代码及依赖继续遵守 [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md) 中的 FreeSurfer、Apache 等条款。
 
 ## 如果需要自行提供公开镜像
 
-当前直接使用官方 URL 最简单。本次只发布代码和文档，没有另行上传权重或创建模型托管仓库。将来希望在自己账号下提供下载，可选择：
+目前使用上述官方 URL。本项目没有上传权重或建立模型镜像。如需自行托管，下表列出可选平台；WMH-SynthSeg 镜像还须遵守其 FreeSurfer 许可。
 
 | 方式 | 当前官方限制 | 对本项目的适用性 |
 |---|---|---|
-| Hugging Face 模型仓库 | 免费公开存储为 best-effort；单文件硬上限 500 GB | 五个文件均可原样保存；适合持续维护模型与版本。附模型卡、许可和 SHA-256 清单。 |
+| Hugging Face 模型仓库 | 免费公开存储为 best-effort；单文件硬上限 500 GB | 文件大小允许原样保存；适合持续维护模型与版本。附模型卡、各自许可和 SHA-256 清单。 |
 | Zenodo | 免费服务；默认每条记录总计 50 GB、最多 100 个文件，适用公平使用政策 | 可原样保存全套，适合带 DOI 的固定研究版本。 |
 | GitHub Release | 专属 Release 文档规定每个附件小于 2 GiB；最多 1,000 个附件，无总大小或下载带宽上限 | deform 权重需拆成小于 2 GiB 的分卷；下载后拼接并核对完整 SHA-256。 |
 | GitHub LFS | Free/Pro 单文件 2 GB；Team 4 GB；Enterprise Cloud 5 GB | Free/Pro 无法原样上传 deform 权重；LFS 下载消耗仓库所有者的流量额度。 |

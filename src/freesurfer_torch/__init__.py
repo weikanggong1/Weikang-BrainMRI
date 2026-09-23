@@ -1,5 +1,5 @@
-"""Standalone PyTorch SynthStrip and SynthMorph inference."""
-__version__ = '0.2.0'
+"""Standalone PyTorch brain MRI inference tools."""
+__version__ = '0.3.0'
 
 
 def __getattr__(name):
@@ -9,6 +9,9 @@ def __getattr__(name):
     if name in ('SynthMorph', 'RegistrationResult', 'apply_transform'):
         from . import synthmorph
         return getattr(synthmorph, name)
+    if name in ('WMHSynthSeg', 'WMHResult'):
+        from . import wmh_synthseg
+        return getattr(wmh_synthseg, name)
     if name in ('BatchRunner', 'BatchResult', 'run_batch'):
         from . import batch
         return getattr(batch, name)

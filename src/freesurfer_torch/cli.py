@@ -1,13 +1,77 @@
 """Command-line entry points for single images and JSON batch manifests."""
 import argparse
 from dataclasses import asdict
+import csv
 import json
 from pathlib import Path
 
 
+def _wmh_suffix(path):
+    name = Path(path).name
+    for suffix in ('.nii.gz', '.nii', '.mgz'):
+        if name.endswith(suffix):
+            return name[:-len(suffix)], suffix
+    raise ValueError('WMH-SynthSeg supports .nii, .nii.gz and .mgz images')
+
+
+def _run_wmh(args):
+    from .wmh_synthseg import LABEL_IDS, LABEL_NAMES, WMHSynthSeg
+
+    source, target = Path(args.i), Path(args.o)
+    if source.is_file():
+        _wmh_suffix(source)
+        _wmh_suffix(target)
+        cases = [(source, target)]
+    elif source.is_dir():
+        if target.suffix in ('.nii', '.gz', '.mgz'):
+            raise ValueError('Directory input requires an output directory')
+        files = sorted(path for path in source.iterdir() if path.is_file()
+                       and path.name.endswith(('.nii', '.nii.gz', '.mgz')))
+        if not files:
+            raise ValueError(f'No supported MRI images in {source}')
+        cases = []
+        for path in files:
+            stem, suffix = _wmh_suffix(path)
+            cases.append((path, target / f'{stem}_seg{suffix}'))
+    else:
+        raise FileNotFoundError(source)
+
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if source.is_dir():
+        target.mkdir(parents=True, exist_ok=True)
+    if args.csv_vols:
+        Path(args.csv_vols).parent.mkdir(parents=True, exist_ok=True)
+    model = WMHSynthSeg(weights=args.weights, device=args.device, threads=args.threads)
+    rows = []
+    for image, output in cases:
+        result = model(image, crop=args.crop,
+                       save_lesion_probabilities=args.save_lesion_probabilities)
+        result.segmentation.save(output)
+        print(output)
+        if args.save_lesion_probabilities:
+            stem, suffix = _wmh_suffix(output)
+            probability = output.with_name(f'{stem}.lesion_probs{suffix}')
+            result.lesion_probability.save(probability)
+            print(probability)
+        if args.csv_vols:
+            import numpy as np
+            volumes = result.volumes_mm3
+            ordered = np.asarray([volumes[label] for label in LABEL_IDS], dtype=np.float32)
+            rows.append([str(output), str(np.sum(ordered[1:])),
+                         *(str(value) for value in ordered[1:])])
+    if args.csv_vols:
+        with Path(args.csv_vols).open('w', newline='') as stream:
+            writer = csv.writer(stream)
+            writer.writerow(['Input-file', 'Intracranial-volume',
+                             *(f'{name}({label})' for label, name in zip(LABEL_IDS, LABEL_NAMES)
+                               if label != 0)])
+            writer.writerows(rows)
+        print(args.csv_vols)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(prog='fs-torch')
-    parser.add_argument('--version', action='version', version='freesurfer-torch 0.2.0')
+    parser.add_argument('--version', action='version', version='freesurfer-torch 0.3.0')
     commands = parser.add_subparsers(dest='command', required=True)
     strip = commands.add_parser('synthstrip', help='brain extraction')
     strip.add_argument('-i', '--image', required=True)
@@ -47,6 +111,15 @@ def main(argv=None):
     apply.add_argument('-f', '--fill', type=float, default=0)
     apply.add_argument('-t', '--dtype', choices=('uint8', 'uint16', 'int16', 'int32', 'float32'), default='float32')
     apply.add_argument('-H', '--header-only', action='store_true')
+    wmh = commands.add_parser('wmh-synthseg', help='WMH and anatomy segmentation')
+    wmh.add_argument('--i', '-i', required=True, help='3D input image or directory')
+    wmh.add_argument('--o', '-o', required=True, help='segmentation image or directory')
+    wmh.add_argument('--csv_vols', '--csv-vols')
+    wmh.add_argument('--device', default='cpu')
+    wmh.add_argument('--threads', type=int, default=1)
+    wmh.add_argument('--crop', action='store_true')
+    wmh.add_argument('--save_lesion_probabilities', '--save-lesion-probabilities', action='store_true')
+    wmh.add_argument('--weights', help='official checkpoint file or containing directory')
     batch = commands.add_parser('batch', help='run a JSON list of jobs with persistent GPU workers')
     batch.add_argument('manifest')
     batch.add_argument('--devices', nargs='+', default=['cuda:0'])
@@ -64,6 +137,9 @@ def main(argv=None):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps([asdict(result) for result in results], indent=2))
         raise SystemExit(int(any(result.error for result in results)))
+    if args.command == 'wmh-synthseg':
+        _run_wmh(args)
+        return
     if args.command == 'synthstrip':
         from .synthstrip import SynthStrip
         if not any((args.out, args.mask, args.sdt)):
