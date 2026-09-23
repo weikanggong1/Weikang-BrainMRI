@@ -18,6 +18,7 @@ dependencies = [
 
 [project.scripts]
 fs-torch = "freesurfer_torch.cli:main"
+fs-torch-setup-weights = "freesurfer_torch.weights:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

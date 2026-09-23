@@ -1,19 +1,160 @@
-"""Explicit local weights; inference never downloads or imports FreeSurfer."""
+"""Resolve local checkpoints and explicitly download verified official files."""
+
+import argparse
+import hashlib
+import json
 import os
+import re
 from pathlib import Path
+from urllib.request import Request, urlopen
+
+
+# Keep the upstream filename, pinned URL, size, and SHA together. Future model
+# families can be added here and to MODEL_FILES without changing the downloader.
+WEIGHT_FILES = {
+    "synthstrip.1.pt": (
+        "https://surfer.nmr.mgh.harvard.edu/docs/synthstrip/requirements/synthstrip.1.pt",
+        30851709, "37417f802196186441aae3e7f385d94f8a98c64a88acaeaa2723af995c653e33"),
+    "synthstrip.nocsf.1.pt": (
+        "https://surfer.nmr.mgh.harvard.edu/docs/synthstrip/requirements/synthstrip.nocsf.1.pt",
+        30851709, "62bf01137c45b5f0cc04d59dbaed5b9ac138b3f25b766c062a7c1a0d696ecb28"),
+    "synthmorph.affine.2.h5": (
+        "https://surfer.nmr.mgh.harvard.edu/docs/synthmorph/synthmorph.affine.2.h5",
+        51455312, "1ac5304b683036e5177f5b4ad38fa09fcbbe7883e742d6fa5bdaedd0e619ced6"),
+    "synthmorph.deform.3.h5": (
+        "https://surfer.nmr.mgh.harvard.edu/docs/synthmorph/synthmorph.deform.3.h5",
+        3508630424, "95b367cd30788cc647e4704b650642fc1d70d7e419c20c04f1ba1b2902bc6536"),
+    "synthmorph.rigid.1.h5": (
+        "https://surfer.nmr.mgh.harvard.edu/docs/synthmorph/synthmorph.rigid.1.h5",
+        51656152, "284c145fce47e98ecf3fdeda2163f646ac3ebb0240e87dd50d71d879f4d5b3af"),
+}
+
+MODEL_FILES = {
+    "synthstrip": ("synthstrip.1.pt",),
+    "synthstrip-nocsf": ("synthstrip.nocsf.1.pt",),
+    "synthmorph-rigid": ("synthmorph.rigid.1.h5",),
+    "synthmorph-affine": ("synthmorph.affine.2.h5",),
+    "synthmorph-deform": ("synthmorph.deform.3.h5",),
+    "synthmorph-joint": ("synthmorph.affine.2.h5", "synthmorph.deform.3.h5"),
+}
+
+
+def cache_dir():
+    base = os.environ.get("XDG_CACHE_HOME")
+    return (Path(base) if base else Path.home() / ".cache") / "freesurfer_torch"
+
+
+def configured_dir():
+    config = cache_dir() / "weights.json"
+    if not config.is_file():
+        return None
+    value = json.loads(config.read_text(encoding="utf-8"))["directory"]
+    if not isinstance(value, str) or not Path(value).is_absolute():
+        raise ValueError(f"Invalid weights directory in {config}")
+    return Path(value)
+
+
+def save_config(directory):
+    config = cache_dir() / "weights.json"
+    config.parent.mkdir(parents=True, exist_ok=True)
+    part = config.with_name(config.name + ".tmp")
+    part.write_text(json.dumps({"directory": str(directory)}, indent=2) + "\n", encoding="utf-8")
+    part.replace(config)
 
 
 def resolve_weights(filename, explicit=None):
+    """Find weights without network access; explicit path and env take priority."""
     if explicit is not None:
         path = Path(explicit).expanduser()
         path = path / filename if path.is_dir() else path
         if not path.is_file():
             raise FileNotFoundError(path)
         return path
-    roots = [os.environ.get('FREESURFER_TORCH_WEIGHTS'), Path.home() / '.cache' / 'freesurfer_torch']
-    if os.environ.get('FREESURFER_HOME'):
-        roots.append(Path(os.environ['FREESURFER_HOME']) / 'models')
+    environment = os.environ.get("FREESURFER_TORCH_WEIGHTS")
+    if environment and (Path(environment) / filename).is_file():
+        return Path(environment) / filename
+    roots = [configured_dir(), cache_dir()]
+    if os.environ.get("FREESURFER_HOME"):
+        roots.append(Path(os.environ["FREESURFER_HOME"]) / "models")
     for root in roots:
         if root and (Path(root) / filename).is_file():
             return Path(root) / filename
-    raise FileNotFoundError(f'{filename}: provide weights= or set FREESURFER_TORCH_WEIGHTS to the weights directory')
+    raise FileNotFoundError(
+        f"{filename}: run tools/setup_weights.py, provide weights=, or set "
+        "FREESURFER_TORCH_WEIGHTS to the weights directory")
+
+
+def verify_file(path, size, sha256):
+    if not path.is_file() or path.stat().st_size != size:
+        return False
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for block in iter(lambda: stream.read(8 * 1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest() == sha256
+
+
+def download_file(filename, directory, verify_only=False):
+    """Download into .part, resume by HTTP Range, verify, then atomically publish."""
+    url, size, sha256 = WEIGHT_FILES[filename]
+    final = directory / filename
+    if verify_file(final, size, sha256):
+        return final
+    if verify_only:
+        raise ValueError(f"Missing or invalid checkpoint: {final}")
+    directory.mkdir(parents=True, exist_ok=True)
+    part = directory / (filename + ".part")
+    if part.exists() and part.stat().st_size > size:
+        part.unlink()
+
+    for attempt in range(2):
+        offset = part.stat().st_size if part.exists() else 0
+        if offset < size:
+            headers = {"Range": f"bytes={offset}-"} if offset else {}
+            with urlopen(Request(url, headers=headers), timeout=60) as response:
+                if offset and response.status == 206:
+                    match = re.fullmatch(r"bytes (\d+)-(\d+)/(\d+)",
+                                         response.headers.get("Content-Range", ""))
+                    if not match or int(match[1]) != offset or int(match[3]) != size:
+                        raise ValueError(f"Unexpected HTTP Content-Range for {filename}")
+                    mode = "ab"
+                elif response.status == 200:
+                    mode = "wb"  # A server that ignores Range sends the whole file.
+                else:
+                    raise ValueError(f"Unexpected HTTP status {response.status} for {filename}")
+                with part.open(mode) as stream:
+                    for block in iter(lambda: response.read(8 * 1024 * 1024), b""):
+                        stream.write(block)
+        if verify_file(part, size, sha256):
+            part.replace(final)
+            return final
+        part.unlink(missing_ok=True)
+        if attempt:
+            raise ValueError(f"Downloaded checkpoint failed size or SHA-256 verification: {filename}")
+    raise AssertionError("unreachable")
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="Download verified FreeSurfer weights and configure their location")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("--model", choices=MODEL_FILES, action="append", metavar="MODEL",
+                       help="Model to set up; repeat to select multiple (default: all five weights)")
+    group.add_argument("--all", action="store_true", help="Set up all five weights (default)")
+    parser.add_argument("--dest", type=Path, help="Weight directory; saved for future API/CLI calls")
+    parser.add_argument("--verify-only", action="store_true", help="Check files without downloading or changing config")
+    args = parser.parse_args(argv)
+    destination = (args.dest or os.environ.get("FREESURFER_TORCH_WEIGHTS")
+                   or configured_dir() or cache_dir())
+    destination = Path(destination).expanduser().resolve()
+    models = args.model or MODEL_FILES.keys()
+    names = dict.fromkeys(name for model in models for name in MODEL_FILES[model])
+    for name in names:
+        path = download_file(name, destination, verify_only=args.verify_only)
+        print(f"Verified {path}")
+    if not args.verify_only:
+        save_config(destination)
+        print(f"Configured weight directory: {destination}")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,21 @@
+{
+  "source": "OpenNeuro ds000114 CC0, processed examples/data/sub-02_T1w.nii.gz to sub-01",
+  "reference": "FreeSurfer 8.2.0 native CPU commands",
+  "candidate": "freesurfer-torch 0.2.0, two-GPU BatchRunner",
+  "synthstrip": {
+    "mask_dice": 1.0,
+    "mask_disagreeing_voxels": 0,
+    "brain_max_abs_error": 0.0,
+    "output_geometry_equal": true
+  },
+  "synthmorph": {
+    "moved_nrmse": 1.7879974960073086e-05,
+    "warp_vector_max_error_mm": 0.0006218775595799204,
+    "output_geometry_equal": true
+  },
+  "figure_note": "Registered images are displayed through the fixed brain mask only for visualization; metrics use the complete saved outputs.",
+  "figures": [
+    "synthstrip_comparison.png",
+    "synthmorph_comparison.png"
+  ]
+}

@@ -1,6 +1,31 @@
 # 预训练权重：下载、校验与公开发布
 
-本仓库和 Python wheel 不包含权重。五个所需模型均已由原作者公开，无需安装完整 FreeSurfer 即可从官网获取；下载后放入同一目录，并用 `FREESURFER_TORCH_WEIGHTS` 或 API/CLI 的权重路径指定该目录。
+本仓库和 Python wheel 不包含权重。五个所需模型均已由原作者公开，无需安装完整 FreeSurfer 即可从官网获取。克隆仓库后运行专属脚本，它从 FreeSurfer 官网下载、核对大小与 SHA-256，并保存权重目录，供所有 Python API 和 `fs-torch` 命令自动使用。
+
+## 一次配置，后续自动使用
+
+在仓库根目录运行。默认下载五个权重到 `~/.cache/freesurfer_torch/`；SynthMorph 最大的文件约 3.51 GB，可通过 HTTP Range 续传。脚本先写 `.part`，完整校验后才更名为正式权重文件。
+
+```bash
+python tools/setup_weights.py --all
+```
+
+按任务只下载需要的模型；`joint` 同时下载 affine 和 deform 权重。下面下载默认脑提取和 joint 非线性配准需要的三个文件：
+
+```bash
+python tools/setup_weights.py --model synthstrip --model synthmorph-joint
+```
+
+有独立模型目录时，用 `--dest` 指定一次即可。脚本成功后把绝对路径保存在用户缓存目录的 `weights.json`，之后 API 和 CLI 可以省略 `weights=` / `--weights`：
+
+```bash
+python tools/setup_weights.py --all --dest /path/to/models
+python tools/setup_weights.py --all --verify-only
+```
+
+`--verify-only` 只检查当前权重目录，不下载或修改配置。已从联网机器复制了权重时，运行 `python tools/setup_weights.py --all --dest /path/to/copied/models`：现有文件校验成功后直接保存目录，无需重新下载。安装 wheel 后也可使用相同选项的 `fs-torch-setup-weights` 命令。
+
+可选模型名：`synthstrip`、`synthstrip-nocsf`、`synthmorph-rigid`、`synthmorph-affine`、`synthmorph-deform`、`synthmorph-joint`。`--model` 可重复；不写 `--model` 时等同 `--all`。显式 API/CLI 权重路径优先，其次是 `FREESURFER_TORCH_WEIGHTS` 环境变量，再次是脚本保存的目录，然后是默认缓存和现有 FreeSurfer 模型目录。`XDG_CACHE_HOME` 可改变缓存根目录。模型推理不会联网，只有运行配置脚本才会下载。
 
 以下链接、HTTP 状态和文件大小于 **2026-09-23** 核验；五个端点均返回 HTTP 200。SHA-256 来自本包已完成数值验证的权重，并与 FreeSurfer 官方仓库的 git-annex 指针一致。此处的版本号固定，不会自动跟随上游替换为新模型。
 

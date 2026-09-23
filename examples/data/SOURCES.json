@@ -1,0 +1,63 @@
+{
+  "dataset": "OpenNeuro ds000114",
+  "source_dataset_url": "https://openneuro.org/datasets/ds000114",
+  "source_doi": "10.18112/openneuro.ds000114.v1.0.2",
+  "source_license": "CC0",
+  "source_license_metadata": "https://raw.githubusercontent.com/OpenNeuroDatasets/ds000114/master/dataset_description.json",
+  "source_acknowledgement": "Gorgolewski et al., NeuroImage 2013, doi:10.1186/2047-217X-2-6",
+  "derivative_note": "Three T1w testing examples. Each published file is derived from the linked OpenNeuro file by keeping intensities within 12 mm Euclidean distance of the brain mask predicted by the original FreeSurfer 8.2.0 mri_synthstrip with synthstrip.1.pt; values elsewhere set to zero. Image affine and grid preserved; header identifier text removed. The images are intentionally defaced examples, not raw OpenNeuro files or clinical ground truth.",
+  "preparation_script": "tools/prepare_openneuro_examples.py",
+  "cases": [
+    {
+      "file": "sub-01_T1w.nii.gz",
+      "source_url": "https://s3.amazonaws.com/openneuro.org/ds000114/sub-01/ses-test/anat/sub-01_ses-test_T1w.nii.gz",
+      "source_sha256": "2bbe4430223d9b9ce47d4dab3ff398a69fefbb481cbf3bd136e07f363a73919c",
+      "published_sha256": "f20410a4efd8e6a05cd04d55730a4a5492ecf9ad1b234fe0fd4661e448270c6a",
+      "published_bytes": 3847853,
+      "shape": [
+        256,
+        156,
+        256
+      ],
+      "voxel_size_mm": [
+        1.0,
+        1.2993758916854858,
+        1.0
+      ]
+    },
+    {
+      "file": "sub-02_T1w.nii.gz",
+      "source_url": "https://s3.amazonaws.com/openneuro.org/ds000114/sub-02/ses-test/anat/sub-02_ses-test_T1w.nii.gz",
+      "source_sha256": "eb2bc2ff1f30441b0aff54685cfdd7f196bd02dccad4698100a8bad40421de22",
+      "published_sha256": "326d1e0a948b76344150c28bbcf0299b58040092c2f037f09c754103d32f747d",
+      "published_bytes": 4238223,
+      "shape": [
+        156,
+        256,
+        256
+      ],
+      "voxel_size_mm": [
+        1.2992960214614868,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "file": "sub-03_T1w.nii.gz",
+      "source_url": "https://s3.amazonaws.com/openneuro.org/ds000114/sub-03/ses-test/anat/sub-03_ses-test_T1w.nii.gz",
+      "source_sha256": "33fe8023c977e31e3890e0d1816115e384cb173f843c86bc3a22ccae7c58cd8e",
+      "published_sha256": "831866e036766201a5f4c67ca65864d8f4f1042e7b19ce82d5c90632005de5fd",
+      "published_bytes": 4046548,
+      "shape": [
+        256,
+        156,
+        256
+      ],
+      "voxel_size_mm": [
+        1.0,
+        1.2995941638946533,
+        1.0
+      ]
+    }
+  ]
+}

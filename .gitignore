@@ -10,8 +10,13 @@ weights/
 *.pth
 *.h5
 *.hdf5
+*.pt.part
+*.h5.part
 *.nii
 *.nii.gz
+!examples/data/sub-01_T1w.nii.gz
+!examples/data/sub-02_T1w.nii.gz
+!examples/data/sub-03_T1w.nii.gz
 *.mgz
 *.mgh
 *.lta
@@ -19,6 +24,7 @@ weights/
 *.npy
 *.private.json
 benchmark/runs/
+examples/results/
 work/
 .env
 .env.*
