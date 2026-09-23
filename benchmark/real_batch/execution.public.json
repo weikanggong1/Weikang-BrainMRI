@@ -1,0 +1,594 @@
+{
+  "phase": "complete",
+  "expected_jobs": 24,
+  "recorded_jobs": 24,
+  "workers_per_device": 2,
+  "threads_per_worker": 4,
+  "devices": [
+    "cuda:0"
+  ],
+  "cuda_visible_devices": "1",
+  "cpu_affinity": [
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39
+  ],
+  "timing_note": "GPU 1 is shared with other work in the intended deployment. Device cuda:0 is relative to CUDA_VISIBLE_DEVICES. Durations are descriptive and are not an exclusive-hardware timing comparison with the baseline. Job intervals include model loading, inference and saving; overlap establishes concurrent independent processes, not simultaneous GPU kernel execution.",
+  "task_wall_seconds": {
+    "strip": 72.67852611211129,
+    "morph": 247.58617553696968
+  },
+  "wall_seconds": 320.9667830320541,
+  "jobs": [
+    {
+      "case_id": "case01",
+      "task": "strip",
+      "pid": 115896,
+      "device": "cuda:0",
+      "started_at": 1790136230.871561,
+      "finished_at": 1790136257.4235256,
+      "elapsed_seconds": 26.55196452140808,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case02",
+      "task": "strip",
+      "pid": 115899,
+      "device": "cuda:0",
+      "started_at": 1790136230.8808374,
+      "finished_at": 1790136257.3807592,
+      "elapsed_seconds": 26.499921798706055,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case03",
+      "task": "strip",
+      "pid": 115899,
+      "device": "cuda:0",
+      "started_at": 1790136257.4024098,
+      "finished_at": 1790136265.9981759,
+      "elapsed_seconds": 8.595766067504883,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case04",
+      "task": "strip",
+      "pid": 115896,
+      "device": "cuda:0",
+      "started_at": 1790136257.445118,
+      "finished_at": 1790136265.700292,
+      "elapsed_seconds": 8.255174160003662,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case05",
+      "task": "strip",
+      "pid": 115896,
+      "device": "cuda:0",
+      "started_at": 1790136265.7235868,
+      "finished_at": 1790136273.5883057,
+      "elapsed_seconds": 7.864718914031982,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case06",
+      "task": "strip",
+      "pid": 115899,
+      "device": "cuda:0",
+      "started_at": 1790136266.014789,
+      "finished_at": 1790136274.3691766,
+      "elapsed_seconds": 8.354387521743774,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case07",
+      "task": "strip",
+      "pid": 115896,
+      "device": "cuda:0",
+      "started_at": 1790136273.6118693,
+      "finished_at": 1790136282.791773,
+      "elapsed_seconds": 9.179903745651245,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case08",
+      "task": "strip",
+      "pid": 115899,
+      "device": "cuda:0",
+      "started_at": 1790136274.3940136,
+      "finished_at": 1790136282.4282603,
+      "elapsed_seconds": 8.034246683120728,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case09",
+      "task": "strip",
+      "pid": 115899,
+      "device": "cuda:0",
+      "started_at": 1790136282.4460325,
+      "finished_at": 1790136290.7350104,
+      "elapsed_seconds": 8.288977861404419,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case10",
+      "task": "strip",
+      "pid": 115896,
+      "device": "cuda:0",
+      "started_at": 1790136282.8153098,
+      "finished_at": 1790136291.4941602,
+      "elapsed_seconds": 8.678850412368774,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case11",
+      "task": "strip",
+      "pid": 115899,
+      "device": "cuda:0",
+      "started_at": 1790136290.759551,
+      "finished_at": 1790136298.902044,
+      "elapsed_seconds": 8.14249300956726,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case12",
+      "task": "strip",
+      "pid": 115896,
+      "device": "cuda:0",
+      "started_at": 1790136291.5183375,
+      "finished_at": 1790136300.1018355,
+      "elapsed_seconds": 8.583498001098633,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case01",
+      "task": "morph",
+      "pid": 115899,
+      "device": "cuda:0",
+      "started_at": 1790136300.18887,
+      "finished_at": 1790136493.0393727,
+      "elapsed_seconds": 192.8505027294159,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case02",
+      "task": "morph",
+      "pid": 115896,
+      "device": "cuda:0",
+      "started_at": 1790136300.1889195,
+      "finished_at": 1790136493.200149,
+      "elapsed_seconds": 193.01122951507568,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case03",
+      "task": "morph",
+      "pid": 115899,
+      "device": "cuda:0",
+      "started_at": 1790136493.0888937,
+      "finished_at": 1790136504.1393757,
+      "elapsed_seconds": 11.050482034683228,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case04",
+      "task": "morph",
+      "pid": 115896,
+      "device": "cuda:0",
+      "started_at": 1790136493.2488687,
+      "finished_at": 1790136504.5968685,
+      "elapsed_seconds": 11.347999811172485,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case05",
+      "task": "morph",
+      "pid": 115899,
+      "device": "cuda:0",
+      "started_at": 1790136504.1749089,
+      "finished_at": 1790136514.7766702,
+      "elapsed_seconds": 10.60176134109497,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case06",
+      "task": "morph",
+      "pid": 115896,
+      "device": "cuda:0",
+      "started_at": 1790136504.6455657,
+      "finished_at": 1790136515.9120958,
+      "elapsed_seconds": 11.26653003692627,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case07",
+      "task": "morph",
+      "pid": 115899,
+      "device": "cuda:0",
+      "started_at": 1790136514.8257082,
+      "finished_at": 1790136525.213535,
+      "elapsed_seconds": 10.387826919555664,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case08",
+      "task": "morph",
+      "pid": 115896,
+      "device": "cuda:0",
+      "started_at": 1790136515.9631636,
+      "finished_at": 1790136526.8012567,
+      "elapsed_seconds": 10.838093042373657,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case09",
+      "task": "morph",
+      "pid": 115899,
+      "device": "cuda:0",
+      "started_at": 1790136525.2676535,
+      "finished_at": 1790136535.4090865,
+      "elapsed_seconds": 10.141433000564575,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case10",
+      "task": "morph",
+      "pid": 115896,
+      "device": "cuda:0",
+      "started_at": 1790136526.8510637,
+      "finished_at": 1790136537.3788214,
+      "elapsed_seconds": 10.52775764465332,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case11",
+      "task": "morph",
+      "pid": 115899,
+      "device": "cuda:0",
+      "started_at": 1790136535.4607873,
+      "finished_at": 1790136545.3052523,
+      "elapsed_seconds": 9.844465017318726,
+      "status": "success",
+      "error_type": null
+    },
+    {
+      "case_id": "case12",
+      "task": "morph",
+      "pid": 115896,
+      "device": "cuda:0",
+      "started_at": 1790136537.4167173,
+      "finished_at": 1790136547.6916802,
+      "elapsed_seconds": 10.274962902069092,
+      "status": "success",
+      "error_type": null
+    }
+  ],
+  "worker_pids_by_task": {
+    "strip": [
+      115896,
+      115899
+    ],
+    "morph": [
+      115896,
+      115899
+    ]
+  },
+  "same_worker_processes_across_calls": true,
+  "independent_process_overlaps": [
+    {
+      "first": {
+        "case_id": "case01",
+        "task": "strip",
+        "pid": 115896
+      },
+      "second": {
+        "case_id": "case02",
+        "task": "strip",
+        "pid": 115899
+      },
+      "overlap_seconds": 26.499921798706055
+    },
+    {
+      "first": {
+        "case_id": "case01",
+        "task": "strip",
+        "pid": 115896
+      },
+      "second": {
+        "case_id": "case03",
+        "task": "strip",
+        "pid": 115899
+      },
+      "overlap_seconds": 0.021115779876708984
+    },
+    {
+      "first": {
+        "case_id": "case03",
+        "task": "strip",
+        "pid": 115899
+      },
+      "second": {
+        "case_id": "case04",
+        "task": "strip",
+        "pid": 115896
+      },
+      "overlap_seconds": 8.255174160003662
+    },
+    {
+      "first": {
+        "case_id": "case03",
+        "task": "strip",
+        "pid": 115899
+      },
+      "second": {
+        "case_id": "case05",
+        "task": "strip",
+        "pid": 115896
+      },
+      "overlap_seconds": 0.27458906173706055
+    },
+    {
+      "first": {
+        "case_id": "case05",
+        "task": "strip",
+        "pid": 115896
+      },
+      "second": {
+        "case_id": "case06",
+        "task": "strip",
+        "pid": 115899
+      },
+      "overlap_seconds": 7.573516607284546
+    },
+    {
+      "first": {
+        "case_id": "case06",
+        "task": "strip",
+        "pid": 115899
+      },
+      "second": {
+        "case_id": "case07",
+        "task": "strip",
+        "pid": 115896
+      },
+      "overlap_seconds": 0.7573072910308838
+    },
+    {
+      "first": {
+        "case_id": "case07",
+        "task": "strip",
+        "pid": 115896
+      },
+      "second": {
+        "case_id": "case08",
+        "task": "strip",
+        "pid": 115899
+      },
+      "overlap_seconds": 8.034246683120728
+    },
+    {
+      "first": {
+        "case_id": "case07",
+        "task": "strip",
+        "pid": 115896
+      },
+      "second": {
+        "case_id": "case09",
+        "task": "strip",
+        "pid": 115899
+      },
+      "overlap_seconds": 0.34574055671691895
+    },
+    {
+      "first": {
+        "case_id": "case09",
+        "task": "strip",
+        "pid": 115899
+      },
+      "second": {
+        "case_id": "case10",
+        "task": "strip",
+        "pid": 115896
+      },
+      "overlap_seconds": 7.919700622558594
+    },
+    {
+      "first": {
+        "case_id": "case10",
+        "task": "strip",
+        "pid": 115896
+      },
+      "second": {
+        "case_id": "case11",
+        "task": "strip",
+        "pid": 115899
+      },
+      "overlap_seconds": 0.7346091270446777
+    },
+    {
+      "first": {
+        "case_id": "case11",
+        "task": "strip",
+        "pid": 115899
+      },
+      "second": {
+        "case_id": "case12",
+        "task": "strip",
+        "pid": 115896
+      },
+      "overlap_seconds": 7.383706569671631
+    },
+    {
+      "first": {
+        "case_id": "case01",
+        "task": "morph",
+        "pid": 115899
+      },
+      "second": {
+        "case_id": "case02",
+        "task": "morph",
+        "pid": 115896
+      },
+      "overlap_seconds": 192.85045313835144
+    },
+    {
+      "first": {
+        "case_id": "case02",
+        "task": "morph",
+        "pid": 115896
+      },
+      "second": {
+        "case_id": "case03",
+        "task": "morph",
+        "pid": 115899
+      },
+      "overlap_seconds": 0.11125540733337402
+    },
+    {
+      "first": {
+        "case_id": "case03",
+        "task": "morph",
+        "pid": 115899
+      },
+      "second": {
+        "case_id": "case04",
+        "task": "morph",
+        "pid": 115896
+      },
+      "overlap_seconds": 10.890506982803345
+    },
+    {
+      "first": {
+        "case_id": "case04",
+        "task": "morph",
+        "pid": 115896
+      },
+      "second": {
+        "case_id": "case05",
+        "task": "morph",
+        "pid": 115899
+      },
+      "overlap_seconds": 0.42195963859558105
+    },
+    {
+      "first": {
+        "case_id": "case05",
+        "task": "morph",
+        "pid": 115899
+      },
+      "second": {
+        "case_id": "case06",
+        "task": "morph",
+        "pid": 115896
+      },
+      "overlap_seconds": 10.131104469299316
+    },
+    {
+      "first": {
+        "case_id": "case06",
+        "task": "morph",
+        "pid": 115896
+      },
+      "second": {
+        "case_id": "case07",
+        "task": "morph",
+        "pid": 115899
+      },
+      "overlap_seconds": 1.0863876342773438
+    },
+    {
+      "first": {
+        "case_id": "case07",
+        "task": "morph",
+        "pid": 115899
+      },
+      "second": {
+        "case_id": "case08",
+        "task": "morph",
+        "pid": 115896
+      },
+      "overlap_seconds": 9.25037145614624
+    },
+    {
+      "first": {
+        "case_id": "case08",
+        "task": "morph",
+        "pid": 115896
+      },
+      "second": {
+        "case_id": "case09",
+        "task": "morph",
+        "pid": 115899
+      },
+      "overlap_seconds": 1.5336031913757324
+    },
+    {
+      "first": {
+        "case_id": "case09",
+        "task": "morph",
+        "pid": 115899
+      },
+      "second": {
+        "case_id": "case10",
+        "task": "morph",
+        "pid": 115896
+      },
+      "overlap_seconds": 8.558022737503052
+    },
+    {
+      "first": {
+        "case_id": "case10",
+        "task": "morph",
+        "pid": 115896
+      },
+      "second": {
+        "case_id": "case11",
+        "task": "morph",
+        "pid": 115899
+      },
+      "overlap_seconds": 1.9180340766906738
+    },
+    {
+      "first": {
+        "case_id": "case11",
+        "task": "morph",
+        "pid": 115899
+      },
+      "second": {
+        "case_id": "case12",
+        "task": "morph",
+        "pid": 115896
+      },
+      "overlap_seconds": 7.888535022735596
+    }
+  ],
+  "errors": [],
+  "execution_passed": true
+}

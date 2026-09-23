@@ -1,0 +1,46 @@
+{
+  "version": "0.2.0",
+  "installation": "wheel installed with pip --target outside source tree",
+  "package_origin_verified": true,
+  "wheel_source_bytes_match": true,
+  "feature_readmes_in_wheel": true,
+  "no_weights_or_images_in_wheel": true,
+  "freesurfer_home_unset": true,
+  "no_tensorflow_voxelmorph_neurite_imports": true,
+  "case_id": "case01",
+  "inference_device": "cuda:0",
+  "cuda_visible_devices": "1",
+  "outputs": [
+    {
+      "task": "strip",
+      "output": "image",
+      "exactly_equal": true,
+      "geometry_passed": true
+    },
+    {
+      "task": "strip",
+      "output": "mask",
+      "exactly_equal": true,
+      "geometry_passed": true
+    },
+    {
+      "task": "strip",
+      "output": "distance",
+      "exactly_equal": true,
+      "geometry_passed": true
+    },
+    {
+      "task": "morph",
+      "output": "moved",
+      "exactly_equal": true,
+      "geometry_passed": true
+    },
+    {
+      "task": "morph",
+      "output": "transform",
+      "exactly_equal": true,
+      "geometry_passed": true
+    }
+  ],
+  "passed": true
+}

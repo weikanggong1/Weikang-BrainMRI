@@ -1,0 +1,73 @@
+{
+  "method": "Compare top-level class/function ASTs, excluding import nodes and source locations; no numerical changes",
+  "passed": true,
+  "definition_count": 29,
+  "files": [
+    {
+      "original": "synthstrip.py",
+      "refactored": [
+        "synthstrip/model.py",
+        "synthstrip/pipeline.py"
+      ],
+      "identical_definitions": [
+        "ConvBlock",
+        "StripModel",
+        "StripResult",
+        "SynthStrip",
+        "extend_sdt",
+        "main"
+      ],
+      "count": 6
+    },
+    {
+      "original": "synthmorph.py",
+      "refactored": [
+        "synthmorph/pipeline.py"
+      ],
+      "identical_definitions": [
+        "RegistrationResult",
+        "SynthMorph",
+        "_load",
+        "_numpy",
+        "_tensor",
+        "apply_transform",
+        "network_space"
+      ],
+      "count": 7
+    },
+    {
+      "original": "synthmorph_models.py",
+      "refactored": [
+        "synthmorph/models.py"
+      ],
+      "identical_definitions": [
+        "AffineNetwork",
+        "DeformNetwork",
+        "FeatureDetector",
+        "SynthMorphNetwork",
+        "_conv",
+        "_dataset_groups",
+        "_rigid",
+        "barycenter",
+        "fit_affine",
+        "matrix_sqrt"
+      ],
+      "count": 10
+    },
+    {
+      "original": "spatial.py",
+      "refactored": [
+        "synthmorph/spatial.py"
+      ],
+      "identical_definitions": [
+        "compose",
+        "dense",
+        "grid",
+        "integrate",
+        "square",
+        "transform"
+      ],
+      "count": 6
+    }
+  ]
+}

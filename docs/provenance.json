@@ -1,0 +1,20 @@
+{
+  "build": "freesurfer-linux-centos7_x86_64-8.2.0-20260314-d932c45",
+  "reference_root": "<FREESURFER_HOME>",
+  "source_sha256": {
+    "python/scripts/mri_synthstrip": "bbc2ff8f8779862039401b05d5cd6039fb4f3583e0032a793ac9adb3f4521590",
+    "python/scripts/mri_synthmorph": "4fa7fb879243cbf55addef6cf253e4206fda90a9c82728f72a6050eaa80bf5c6",
+    "python/packages/synthmorph/registration.py": "23ead41ec437f75b591e0347920bdd612e01d56406aa5758c103a8385c49d458",
+    "python/lib/python3.8/site-packages/voxelmorph/tf/networks.py": "54fd354880811ff979e6b745355959a8b6906e19582d757528caad0590bc5df1",
+    "python/lib/python3.8/site-packages/voxelmorph/tf/utils/utils.py": "a9246d0a801f450b1e13e7bd655fcde0132f3a502fae1e6c03824387e285ba96",
+    "python/lib/python3.8/site-packages/neurite/tf/layers.py": "e474711116550aaa02f949a0c5f2bccc29698c95601765a2649091c045fa605b",
+    "python/lib/python3.8/site-packages/neurite/tf/utils/utils.py": "872618d7418f529e2115fb30c4c3c889a312212550c0162e00cb4176d0c10bc8"
+  },
+  "weights_sha256": {
+    "synthmorph.affine.2.h5": "1ac5304b683036e5177f5b4ad38fa09fcbbe7883e742d6fa5bdaedd0e619ced6",
+    "synthmorph.deform.3.h5": "95b367cd30788cc647e4704b650642fc1d70d7e419c20c04f1ba1b2902bc6536",
+    "synthmorph.rigid.1.h5": "284c145fce47e98ecf3fdeda2163f646ac3ebb0240e87dd50d71d879f4d5b3af",
+    "synthstrip.1.pt": "37417f802196186441aae3e7f385d94f8a98c64a88acaeaa2723af995c653e33",
+    "synthstrip.nocsf.1.pt": "62bf01137c45b5f0cc04d59dbaed5b9ac138b3f25b766c062a7c1a0d696ecb28"
+  }
+}

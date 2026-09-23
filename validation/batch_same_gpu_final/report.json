@@ -1,0 +1,683 @@
+{
+  "test": "serial versus spawned GPU batch workers",
+  "torch_version": "2.5.1",
+  "cuda_version": "11.8",
+  "devices": [
+    {
+      "device": "cuda:0",
+      "name": "NVIDIA H100 PCIe"
+    }
+  ],
+  "workers_per_device": 2,
+  "threads_per_worker": 1,
+  "atol": 0.0001,
+  "rtol": 1e-05,
+  "mask_requires_exact_equality": true,
+  "inputs": {
+    "image": {
+      "path": "<TEMPLATE_DIR>/MNI152_T1_2mm.nii.gz",
+      "sha256": "0585cd056bf5ccfb8bf97a5f6a66082d4e7caad525718fc11e40d80a827fcb92"
+    },
+    "moving": {
+      "path": "<TEMPLATE_DIR>/MNI152_T1_2mm.nii.gz",
+      "sha256": "0585cd056bf5ccfb8bf97a5f6a66082d4e7caad525718fc11e40d80a827fcb92"
+    },
+    "fixed": {
+      "path": "<PROJECT>/validation/full192/case/fixed.nii.gz",
+      "sha256": "6096e3142c5d5134b03f993737f8b9556ffc4a0cd462d2c1ebc9c0e227ca0270"
+    }
+  },
+  "weights": {
+    "synthstrip.1.pt": "37417f802196186441aae3e7f385d94f8a98c64a88acaeaa2723af995c653e33",
+    "synthmorph.deform.3.h5": "95b367cd30788cc647e4704b650642fc1d70d7e419c20c04f1ba1b2902bc6536"
+  },
+  "timing_scope": "Job intervals include model loading, inference and file saving. Overlap demonstrates concurrent independent processes, not kernel-level GPU overlap. Wall-clock measurements are descriptive and are not a speedup benchmark.",
+  "phase": "complete",
+  "serial_wall_seconds": 63.15631344518624,
+  "serial": [
+    {
+      "index": 0,
+      "task": "synthstrip",
+      "device": "cuda:0",
+      "outputs": {
+        "image": "<PROJECT>/validation/batch_same_gpu_final/serial/0_synthstrip/image.nii.gz",
+        "mask": "<PROJECT>/validation/batch_same_gpu_final/serial/0_synthstrip/mask.nii.gz",
+        "distance": "<PROJECT>/validation/batch_same_gpu_final/serial/0_synthstrip/distance.nii.gz"
+      },
+      "error": null,
+      "traceback": null,
+      "pid": 100997,
+      "started_at": 1790135199.1514454,
+      "finished_at": 1790135207.959581
+    },
+    {
+      "index": 1,
+      "task": "synthstrip",
+      "device": "cuda:0",
+      "outputs": {
+        "image": "<PROJECT>/validation/batch_same_gpu_final/serial/1_synthstrip/image.nii.gz",
+        "mask": "<PROJECT>/validation/batch_same_gpu_final/serial/1_synthstrip/mask.nii.gz",
+        "distance": "<PROJECT>/validation/batch_same_gpu_final/serial/1_synthstrip/distance.nii.gz"
+      },
+      "error": null,
+      "traceback": null,
+      "pid": 100997,
+      "started_at": 1790135207.9596875,
+      "finished_at": 1790135208.9624627
+    },
+    {
+      "index": 2,
+      "task": "synthmorph",
+      "device": "cuda:0",
+      "outputs": {
+        "moved": "<PROJECT>/validation/batch_same_gpu_final/serial/2_synthmorph/moved.nii.gz",
+        "fixed_moved": "<PROJECT>/validation/batch_same_gpu_final/serial/2_synthmorph/fixed_moved.nii.gz",
+        "transform": "<PROJECT>/validation/batch_same_gpu_final/serial/2_synthmorph/transform.nii.gz",
+        "inverse": "<PROJECT>/validation/batch_same_gpu_final/serial/2_synthmorph/inverse.nii.gz"
+      },
+      "error": null,
+      "traceback": null,
+      "pid": 100997,
+      "started_at": 1790135208.962501,
+      "finished_at": 1790135259.3108082
+    },
+    {
+      "index": 3,
+      "task": "synthmorph",
+      "device": "cuda:0",
+      "outputs": {
+        "moved": "<PROJECT>/validation/batch_same_gpu_final/serial/3_synthmorph/moved.nii.gz",
+        "fixed_moved": "<PROJECT>/validation/batch_same_gpu_final/serial/3_synthmorph/fixed_moved.nii.gz",
+        "transform": "<PROJECT>/validation/batch_same_gpu_final/serial/3_synthmorph/transform.nii.gz",
+        "inverse": "<PROJECT>/validation/batch_same_gpu_final/serial/3_synthmorph/inverse.nii.gz"
+      },
+      "error": null,
+      "traceback": null,
+      "pid": 100997,
+      "started_at": 1790135259.3109117,
+      "finished_at": 1790135262.295573
+    }
+  ],
+  "batch_wall_seconds": 96.54827688797377,
+  "batch": [
+    {
+      "index": 0,
+      "task": "synthstrip",
+      "device": "cuda:0",
+      "outputs": {
+        "image": "<PROJECT>/validation/batch_same_gpu_final/batch/0_synthstrip/image.nii.gz",
+        "mask": "<PROJECT>/validation/batch_same_gpu_final/batch/0_synthstrip/mask.nii.gz",
+        "distance": "<PROJECT>/validation/batch_same_gpu_final/batch/0_synthstrip/distance.nii.gz"
+      },
+      "error": null,
+      "traceback": null,
+      "pid": 102329,
+      "started_at": 1790135266.9086754,
+      "finished_at": 1790135280.807504
+    },
+    {
+      "index": 1,
+      "task": "synthstrip",
+      "device": "cuda:0",
+      "outputs": {
+        "image": "<PROJECT>/validation/batch_same_gpu_final/batch/1_synthstrip/image.nii.gz",
+        "mask": "<PROJECT>/validation/batch_same_gpu_final/batch/1_synthstrip/mask.nii.gz",
+        "distance": "<PROJECT>/validation/batch_same_gpu_final/batch/1_synthstrip/distance.nii.gz"
+      },
+      "error": null,
+      "traceback": null,
+      "pid": 102332,
+      "started_at": 1790135266.9097278,
+      "finished_at": 1790135280.8068726
+    },
+    {
+      "index": 2,
+      "task": "synthmorph",
+      "device": "cuda:0",
+      "outputs": {
+        "moved": "<PROJECT>/validation/batch_same_gpu_final/batch/2_synthmorph/moved.nii.gz",
+        "fixed_moved": "<PROJECT>/validation/batch_same_gpu_final/batch/2_synthmorph/fixed_moved.nii.gz",
+        "transform": "<PROJECT>/validation/batch_same_gpu_final/batch/2_synthmorph/transform.nii.gz",
+        "inverse": "<PROJECT>/validation/batch_same_gpu_final/batch/2_synthmorph/inverse.nii.gz"
+      },
+      "error": null,
+      "traceback": null,
+      "pid": 102332,
+      "started_at": 1790135280.808397,
+      "finished_at": 1790135358.1794274
+    },
+    {
+      "index": 3,
+      "task": "synthmorph",
+      "device": "cuda:0",
+      "outputs": {
+        "moved": "<PROJECT>/validation/batch_same_gpu_final/batch/3_synthmorph/moved.nii.gz",
+        "fixed_moved": "<PROJECT>/validation/batch_same_gpu_final/batch/3_synthmorph/fixed_moved.nii.gz",
+        "transform": "<PROJECT>/validation/batch_same_gpu_final/batch/3_synthmorph/transform.nii.gz",
+        "inverse": "<PROJECT>/validation/batch_same_gpu_final/batch/3_synthmorph/inverse.nii.gz"
+      },
+      "error": null,
+      "traceback": null,
+      "pid": 102329,
+      "started_at": 1790135280.809307,
+      "finished_at": 1790135358.1669824
+    }
+  ],
+  "independent_process_overlaps": [
+    {
+      "indices": [
+        0,
+        1
+      ],
+      "pids": [
+        102329,
+        102332
+      ],
+      "devices": [
+        "cuda:0",
+        "cuda:0"
+      ],
+      "overlap_seconds": 13.897144794464111
+    },
+    {
+      "indices": [
+        2,
+        3
+      ],
+      "pids": [
+        102332,
+        102329
+      ],
+      "devices": [
+        "cuda:0",
+        "cuda:0"
+      ],
+      "overlap_seconds": 77.35767531394958
+    }
+  ],
+  "observed_worker_pids": [
+    102329,
+    102332
+  ],
+  "observed_devices": [
+    "cuda:0"
+  ],
+  "comparisons": [
+    {
+      "index": 0,
+      "task": "synthstrip",
+      "serial_error": null,
+      "batch_error": null,
+      "outputs": {
+        "image": {
+          "reference": "<PROJECT>/validation/batch_same_gpu_final/serial/0_synthstrip/image.nii.gz",
+          "candidate": "<PROJECT>/validation/batch_same_gpu_final/batch/0_synthstrip/image.nii.gz",
+          "reference_shape": [
+            91,
+            109,
+            91
+          ],
+          "candidate_shape": [
+            91,
+            109,
+            91
+          ],
+          "shape_equal": true,
+          "finite": true,
+          "max_abs_error": 0.0,
+          "mean_abs_error": 0.0,
+          "rmse": 0.0,
+          "unequal_voxels": 0,
+          "bitwise_equal": true,
+          "allclose": true,
+          "geometry": {
+            "image": {
+              "shape_equal": true,
+              "affine_max_abs_error": 0.0
+            }
+          },
+          "passed": true
+        },
+        "mask": {
+          "reference": "<PROJECT>/validation/batch_same_gpu_final/serial/0_synthstrip/mask.nii.gz",
+          "candidate": "<PROJECT>/validation/batch_same_gpu_final/batch/0_synthstrip/mask.nii.gz",
+          "reference_shape": [
+            91,
+            109,
+            91
+          ],
+          "candidate_shape": [
+            91,
+            109,
+            91
+          ],
+          "shape_equal": true,
+          "finite": true,
+          "max_abs_error": 0.0,
+          "mean_abs_error": 0.0,
+          "rmse": 0.0,
+          "unequal_voxels": 0,
+          "bitwise_equal": true,
+          "allclose": true,
+          "geometry": {
+            "image": {
+              "shape_equal": true,
+              "affine_max_abs_error": 0.0
+            }
+          },
+          "dice": 1.0,
+          "passed": true
+        },
+        "distance": {
+          "reference": "<PROJECT>/validation/batch_same_gpu_final/serial/0_synthstrip/distance.nii.gz",
+          "candidate": "<PROJECT>/validation/batch_same_gpu_final/batch/0_synthstrip/distance.nii.gz",
+          "reference_shape": [
+            91,
+            109,
+            91
+          ],
+          "candidate_shape": [
+            91,
+            109,
+            91
+          ],
+          "shape_equal": true,
+          "finite": true,
+          "max_abs_error": 0.0,
+          "mean_abs_error": 0.0,
+          "rmse": 0.0,
+          "unequal_voxels": 0,
+          "bitwise_equal": true,
+          "allclose": true,
+          "geometry": {
+            "image": {
+              "shape_equal": true,
+              "affine_max_abs_error": 0.0
+            }
+          },
+          "passed": true
+        }
+      },
+      "passed": true
+    },
+    {
+      "index": 1,
+      "task": "synthstrip",
+      "serial_error": null,
+      "batch_error": null,
+      "outputs": {
+        "image": {
+          "reference": "<PROJECT>/validation/batch_same_gpu_final/serial/1_synthstrip/image.nii.gz",
+          "candidate": "<PROJECT>/validation/batch_same_gpu_final/batch/1_synthstrip/image.nii.gz",
+          "reference_shape": [
+            91,
+            109,
+            91
+          ],
+          "candidate_shape": [
+            91,
+            109,
+            91
+          ],
+          "shape_equal": true,
+          "finite": true,
+          "max_abs_error": 0.0,
+          "mean_abs_error": 0.0,
+          "rmse": 0.0,
+          "unequal_voxels": 0,
+          "bitwise_equal": true,
+          "allclose": true,
+          "geometry": {
+            "image": {
+              "shape_equal": true,
+              "affine_max_abs_error": 0.0
+            }
+          },
+          "passed": true
+        },
+        "mask": {
+          "reference": "<PROJECT>/validation/batch_same_gpu_final/serial/1_synthstrip/mask.nii.gz",
+          "candidate": "<PROJECT>/validation/batch_same_gpu_final/batch/1_synthstrip/mask.nii.gz",
+          "reference_shape": [
+            91,
+            109,
+            91
+          ],
+          "candidate_shape": [
+            91,
+            109,
+            91
+          ],
+          "shape_equal": true,
+          "finite": true,
+          "max_abs_error": 0.0,
+          "mean_abs_error": 0.0,
+          "rmse": 0.0,
+          "unequal_voxels": 0,
+          "bitwise_equal": true,
+          "allclose": true,
+          "geometry": {
+            "image": {
+              "shape_equal": true,
+              "affine_max_abs_error": 0.0
+            }
+          },
+          "dice": 1.0,
+          "passed": true
+        },
+        "distance": {
+          "reference": "<PROJECT>/validation/batch_same_gpu_final/serial/1_synthstrip/distance.nii.gz",
+          "candidate": "<PROJECT>/validation/batch_same_gpu_final/batch/1_synthstrip/distance.nii.gz",
+          "reference_shape": [
+            91,
+            109,
+            91
+          ],
+          "candidate_shape": [
+            91,
+            109,
+            91
+          ],
+          "shape_equal": true,
+          "finite": true,
+          "max_abs_error": 0.0,
+          "mean_abs_error": 0.0,
+          "rmse": 0.0,
+          "unequal_voxels": 0,
+          "bitwise_equal": true,
+          "allclose": true,
+          "geometry": {
+            "image": {
+              "shape_equal": true,
+              "affine_max_abs_error": 0.0
+            }
+          },
+          "passed": true
+        }
+      },
+      "passed": true
+    },
+    {
+      "index": 2,
+      "task": "synthmorph",
+      "serial_error": null,
+      "batch_error": null,
+      "outputs": {
+        "moved": {
+          "reference": "<PROJECT>/validation/batch_same_gpu_final/serial/2_synthmorph/moved.nii.gz",
+          "candidate": "<PROJECT>/validation/batch_same_gpu_final/batch/2_synthmorph/moved.nii.gz",
+          "reference_shape": [
+            91,
+            109,
+            91
+          ],
+          "candidate_shape": [
+            91,
+            109,
+            91
+          ],
+          "shape_equal": true,
+          "finite": true,
+          "max_abs_error": 0.0,
+          "mean_abs_error": 0.0,
+          "rmse": 0.0,
+          "unequal_voxels": 0,
+          "bitwise_equal": true,
+          "allclose": true,
+          "geometry": {
+            "image": {
+              "shape_equal": true,
+              "affine_max_abs_error": 0.0
+            }
+          },
+          "passed": true
+        },
+        "fixed_moved": {
+          "reference": "<PROJECT>/validation/batch_same_gpu_final/serial/2_synthmorph/fixed_moved.nii.gz",
+          "candidate": "<PROJECT>/validation/batch_same_gpu_final/batch/2_synthmorph/fixed_moved.nii.gz",
+          "reference_shape": [
+            91,
+            109,
+            91
+          ],
+          "candidate_shape": [
+            91,
+            109,
+            91
+          ],
+          "shape_equal": true,
+          "finite": true,
+          "max_abs_error": 0.0,
+          "mean_abs_error": 0.0,
+          "rmse": 0.0,
+          "unequal_voxels": 0,
+          "bitwise_equal": true,
+          "allclose": true,
+          "geometry": {
+            "image": {
+              "shape_equal": true,
+              "affine_max_abs_error": 0.0
+            }
+          },
+          "passed": true
+        },
+        "transform": {
+          "reference": "<PROJECT>/validation/batch_same_gpu_final/serial/2_synthmorph/transform.nii.gz",
+          "candidate": "<PROJECT>/validation/batch_same_gpu_final/batch/2_synthmorph/transform.nii.gz",
+          "reference_shape": [
+            91,
+            109,
+            91,
+            3
+          ],
+          "candidate_shape": [
+            91,
+            109,
+            91,
+            3
+          ],
+          "shape_equal": true,
+          "finite": true,
+          "max_abs_error": 0.0,
+          "mean_abs_error": 0.0,
+          "rmse": 0.0,
+          "unequal_voxels": 0,
+          "bitwise_equal": true,
+          "allclose": true,
+          "warp_format_equal": true,
+          "geometry": {
+            "source": {
+              "shape_equal": true,
+              "affine_max_abs_error": 0.0
+            },
+            "target": {
+              "shape_equal": true,
+              "affine_max_abs_error": 0.0
+            }
+          },
+          "passed": true
+        },
+        "inverse": {
+          "reference": "<PROJECT>/validation/batch_same_gpu_final/serial/2_synthmorph/inverse.nii.gz",
+          "candidate": "<PROJECT>/validation/batch_same_gpu_final/batch/2_synthmorph/inverse.nii.gz",
+          "reference_shape": [
+            91,
+            109,
+            91,
+            3
+          ],
+          "candidate_shape": [
+            91,
+            109,
+            91,
+            3
+          ],
+          "shape_equal": true,
+          "finite": true,
+          "max_abs_error": 0.0,
+          "mean_abs_error": 0.0,
+          "rmse": 0.0,
+          "unequal_voxels": 0,
+          "bitwise_equal": true,
+          "allclose": true,
+          "warp_format_equal": true,
+          "geometry": {
+            "source": {
+              "shape_equal": true,
+              "affine_max_abs_error": 0.0
+            },
+            "target": {
+              "shape_equal": true,
+              "affine_max_abs_error": 0.0
+            }
+          },
+          "passed": true
+        }
+      },
+      "passed": true
+    },
+    {
+      "index": 3,
+      "task": "synthmorph",
+      "serial_error": null,
+      "batch_error": null,
+      "outputs": {
+        "moved": {
+          "reference": "<PROJECT>/validation/batch_same_gpu_final/serial/3_synthmorph/moved.nii.gz",
+          "candidate": "<PROJECT>/validation/batch_same_gpu_final/batch/3_synthmorph/moved.nii.gz",
+          "reference_shape": [
+            91,
+            109,
+            91
+          ],
+          "candidate_shape": [
+            91,
+            109,
+            91
+          ],
+          "shape_equal": true,
+          "finite": true,
+          "max_abs_error": 0.0,
+          "mean_abs_error": 0.0,
+          "rmse": 0.0,
+          "unequal_voxels": 0,
+          "bitwise_equal": true,
+          "allclose": true,
+          "geometry": {
+            "image": {
+              "shape_equal": true,
+              "affine_max_abs_error": 0.0
+            }
+          },
+          "passed": true
+        },
+        "fixed_moved": {
+          "reference": "<PROJECT>/validation/batch_same_gpu_final/serial/3_synthmorph/fixed_moved.nii.gz",
+          "candidate": "<PROJECT>/validation/batch_same_gpu_final/batch/3_synthmorph/fixed_moved.nii.gz",
+          "reference_shape": [
+            91,
+            109,
+            91
+          ],
+          "candidate_shape": [
+            91,
+            109,
+            91
+          ],
+          "shape_equal": true,
+          "finite": true,
+          "max_abs_error": 0.0,
+          "mean_abs_error": 0.0,
+          "rmse": 0.0,
+          "unequal_voxels": 0,
+          "bitwise_equal": true,
+          "allclose": true,
+          "geometry": {
+            "image": {
+              "shape_equal": true,
+              "affine_max_abs_error": 0.0
+            }
+          },
+          "passed": true
+        },
+        "transform": {
+          "reference": "<PROJECT>/validation/batch_same_gpu_final/serial/3_synthmorph/transform.nii.gz",
+          "candidate": "<PROJECT>/validation/batch_same_gpu_final/batch/3_synthmorph/transform.nii.gz",
+          "reference_shape": [
+            91,
+            109,
+            91,
+            3
+          ],
+          "candidate_shape": [
+            91,
+            109,
+            91,
+            3
+          ],
+          "shape_equal": true,
+          "finite": true,
+          "max_abs_error": 0.0,
+          "mean_abs_error": 0.0,
+          "rmse": 0.0,
+          "unequal_voxels": 0,
+          "bitwise_equal": true,
+          "allclose": true,
+          "warp_format_equal": true,
+          "geometry": {
+            "source": {
+              "shape_equal": true,
+              "affine_max_abs_error": 0.0
+            },
+            "target": {
+              "shape_equal": true,
+              "affine_max_abs_error": 0.0
+            }
+          },
+          "passed": true
+        },
+        "inverse": {
+          "reference": "<PROJECT>/validation/batch_same_gpu_final/serial/3_synthmorph/inverse.nii.gz",
+          "candidate": "<PROJECT>/validation/batch_same_gpu_final/batch/3_synthmorph/inverse.nii.gz",
+          "reference_shape": [
+            91,
+            109,
+            91,
+            3
+          ],
+          "candidate_shape": [
+            91,
+            109,
+            91,
+            3
+          ],
+          "shape_equal": true,
+          "finite": true,
+          "max_abs_error": 0.0,
+          "mean_abs_error": 0.0,
+          "rmse": 0.0,
+          "unequal_voxels": 0,
+          "bitwise_equal": true,
+          "allclose": true,
+          "warp_format_equal": true,
+          "geometry": {
+            "source": {
+              "shape_equal": true,
+              "affine_max_abs_error": 0.0
+            },
+            "target": {
+              "shape_equal": true,
+              "affine_max_abs_error": 0.0
+            }
+          },
+          "passed": true
+        }
+      },
+      "passed": true
+    }
+  ],
+  "outputs_passed": true,
+  "parallel_processes_observed": true,
+  "all_requested_devices_observed": true,
+  "passed": true
+}

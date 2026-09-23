@@ -1,0 +1,43 @@
+{
+  "results": {
+    "strip_mask_voxels": 247215,
+    "strip_shape": [
+      91,
+      109,
+      91
+    ],
+    "morph_shape": [
+      91,
+      109,
+      91
+    ],
+    "morph_finite": true,
+    "inverse_finite": true
+  },
+  "package_path": "<PROJECT>/work/wheel_install/freesurfer_torch/__init__.py",
+  "torch_version": "2.5.1",
+  "wheel_sha256": "28cfb80a53bf3dc2c5675cefdf2e8b7e2842b93ec03953cc50cdbb690da6e353",
+  "members": [
+    "freesurfer_torch/__init__.py",
+    "freesurfer_torch/batch.py",
+    "freesurfer_torch/cli.py",
+    "freesurfer_torch/spatial.py",
+    "freesurfer_torch/synthmorph.py",
+    "freesurfer_torch/synthmorph_models.py",
+    "freesurfer_torch/synthstrip.py",
+    "freesurfer_torch/weights.py",
+    "freesurfer_torch-0.1.0.dist-info/Apache-2.0.txt",
+    "freesurfer_torch-0.1.0.dist-info/FreeSurfer.txt",
+    "freesurfer_torch-0.1.0.dist-info/METADATA",
+    "freesurfer_torch-0.1.0.dist-info/THIRD_PARTY_NOTICES.md",
+    "freesurfer_torch-0.1.0.dist-info/WHEEL",
+    "freesurfer_torch-0.1.0.dist-info/entry_points.txt",
+    "freesurfer_torch-0.1.0.dist-info/top_level.txt",
+    "freesurfer_torch-0.1.0.dist-info/RECORD"
+  ],
+  "metadata": "Metadata-Version: 2.1\nName: freesurfer-torch\nVersion: 0.1.0\nSummary: Standalone PyTorch SynthStrip and SynthMorph inference with GPU batch workers\nRequires-Python: >=3.10\nDescription-Content-Type: text/markdown\nLicense-File: licenses/Apache-2.0.txt\nLicense-File: licenses/FreeSurfer.txt\nLicense-File: THIRD_PARTY_NOTICES.md\nRequires-Dist: torch >=2.1\nRequires-Dist: numpy <2,>=1.23\nRequires-Dist: scipy >=1.9\nRequires-Dist: surfa ==0.6.3\nRequires-Dist: h5py >=3.8",
+  "forbidden_runtime_modules_loaded": false,
+  "freesurfer_home": null,
+  "pythonpath": null,
+  "passed": true
+}
