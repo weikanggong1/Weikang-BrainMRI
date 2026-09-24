@@ -1,6 +1,6 @@
 # FreeSurfer SynthStrip / SynthMorph 的独立 PyTorch 实现与对照
 
-本报告对照 FreeSurfer 8.2.0 与独立安装的 `freesurfer-torch`。后者提供可复用的 Python 模型、命令行和 GPU 多进程批量调用。推理依赖 PyTorch、NumPy、SciPy、Surfa 和 h5py；FreeSurfer 命令、TensorFlow、VoxelMorph 和 Neurite 仅出现在参考验证流程中。
+本报告对照 FreeSurfer 8.2.0 与独立安装的 `freesurfer-torch`。这里的 0.1.0 批量实验使用旧的 GPU 多进程接口；当前多被试 Python 用法见[批量执行说明](ARCHITECTURE.md#批量执行)。推理依赖 PyTorch、NumPy、SciPy、Surfa 和 h5py；FreeSurfer 命令、TensorFlow、VoxelMorph 和 Neurite 仅出现在参考验证流程中。
 
 以下数值和计时来自 **0.1.0** 基准。0.2.0 重组功能目录后的回归见 [独立报告](../validation/refactor/report.public.json)。公开记录用占位符替换绝对路径，原始数值未改。
 
@@ -72,10 +72,10 @@ Keras 卷积权重轴为 `(i,j,k,in,out)`，PyTorch 为 `(out,in,i,j,k)`。转�
 | 只更新 header | `header_only`，限 affine / rigid |
 | apply 的 linear / nearest、fill、dtype、4D | `apply_transform`，使用 Surfa CPU |
 | 原版调试目录 | 包提供网络空间两个输入及 `network_transforms.npz`；文件布局与原命令不同 |
-| 多病例调用 | 原命令通常逐进程运行；包可复用实例或使用常驻 `BatchRunner` |
-| 同 GPU 多进程 / 多 GPU | 支持，显式选择设备与每设备 worker 数 |
-| 命令行语法 | 新入口 `fs-torch`；API 与参数对应见 README，并非原命令名称的替换文件 |
-| apply 一条命令处理多个 image/output 对 | 当前 CLI 每次一对；Python 可循环调用，batch 入口面向两个神经网络任务 |
+| 多病例调用 | 原命令通常逐进程运行；0.1.0 实验使用常驻 `BatchRunner` |
+| 同 GPU 多进程 / 多 GPU | 0.1.0 批量实验显式选择设备与每设备 worker 数 |
+| 命令行语法 | 候选入口为 `fs-torch`；各功能的用法见专属文档 |
+| apply 一条命令处理多个 image/output 对 | 候选 CLI 每次一对；Python 可循环调用 |
 | 线程默认值及打印信息 | 新 CLI 默认 4 线程，可显式设置；日志/verbose 输出不复制原版格式，性能比较统一指定 8 线程 |
 
 初始化分支还需区分服务器原版的一处问题：该构建的 `-i` 会在 TensorFlow 的 float64/float32 矩阵组合处报错。验证保留了原生失败日志，另用任务目录中的官方源码副本，仅加入两行 NumPy 类型转换检查算法一致性；没有修改系统安装。该项的 patched-reference 结果单独标记。
@@ -83,6 +83,8 @@ Keras 卷积权重轴为 `(i,j,k,in,out)`，PyTorch 为 `(out,in,i,j,k)`。转�
 [options/report.json](../validation/options/report.json) 的 15 项检查通过，其中 13 项 saved-transform apply 与未修改原版的数据逐元素相同，涵盖 affine/warp、linear/nearest、float32/uint8、`fill=-7`、4D 四帧及 header-only。另两项初始化检查的未修改原命令均以退出码 1 失败；候选与两行修复后的参考相比，双向 world 仿射矩阵元素最大差为 `2.57e-5`，重采样图 NRMSE 分别为 `2.06e-6`（`-i`）和 `1.29e-6`（`-i -M`）。Header-only 的体素数据相同，header 矩阵最大差 `3.05e-5`，满足预设 `1e-3` 阈值，但不宣称 header 逐元素相同。
 
 ## 5. 批量和并行行为
+
+以下记录描述 0.1.0 的历史多进程验证，不作为当前 `predict_batch()` 的性能结论。
 
 `BatchRunner` 用 spawn 建立独立进程，绑定各自 CUDA 设备，按任务类型及模型参数缓存模型。连续调用同一个 runner 会复用这些模型。`run_batch` 是完成一批后关闭 worker 的便利入口。结果按输入顺序返回，包含设备、PID、开始/结束时间、成功保存的输出及错误。
 
@@ -174,7 +176,7 @@ SynthMorph 默认 joint、256³ 的配准结果如下。表中形变误差是每
 
 ## 10. 复现
 
-包的普通使用和批量 JSON 示例见 [README](../README.md)。仅运行原版对照时才需加载 FreeSurfer：
+当前普通用法见[主页](../README.md)，多被试 Python 用法见[批量执行说明](ARCHITECTURE.md#批量执行)及各功能的专属文档。仅运行原版对照时才需加载 FreeSurfer：
 
 ```bash
 cd Weikang-BrainMRI

@@ -49,7 +49,7 @@ labels.save(out / "labels_in_fixed.nii.gz")
 | `hyper` | 非线性正则化参数，`0 < hyper < 1`，默认 0.5；实例构造时固定 |
 | `steps` | scaling-and-squaring 次数，至少 5，默认 7 |
 
-模型使用 FP32，并关闭当前进程的 PyTorch TF32。不同 `hyper` 需构造另一实例；底层 `DeformNetwork.set_hyper()` 是显式重新计算特化权重的入口。改变实例的普通属性不会自动更新这些权重。CPU 线程数可用 `torch.set_num_threads()` 设置，统一 CLI 和批量 runner 提供对应参数。
+模型使用 FP32，并关闭当前进程的 PyTorch TF32。不同 `hyper` 需构造另一实例；底层 `DeformNetwork.set_hyper()` 是显式重新计算特化权重的入口。改变实例的普通属性不会自动更新这些权重。Python 的 CPU 线程数可用 `torch.set_num_threads()` 设置；统一 CLI 提供 `-j` 参数。
 
 ### 配准调用与结果
 
@@ -102,6 +102,21 @@ fs-torch apply results/moving_to_fixed.mgz moving_labels.nii.gz \
   results/labels_in_fixed.nii.gz --method nearest --dtype int16
 ```
 
+对应的 FreeSurfer 原版指令为：
+
+```bash
+mri_synthmorph register -m joint \
+  -o results/moving_in_fixed.nii.gz -O results/fixed_in_moving.nii.gz \
+  -t results/moving_to_fixed.mgz -T results/fixed_to_moving.mgz \
+  moving_T1w.nii.gz fixed_T1w.nii.gz
+
+mri_synthmorph apply -m nearest -t int16 \
+  results/moving_to_fixed.mgz moving_labels.nii.gz \
+  results/labels_in_fixed.nii.gz
+```
+
+两版的第一个输入均为 moving、第二个为 fixed；`-o/-O` 保存两个方向的影像，`-t/-T` 保存对应变换。`apply` 的原版 `-m/-t` 分别对应本包的 `--method/--dtype`。离散标签使用最近邻插值，以免引入新标签值。
+
 | 配准参数 | 含义 |
 |---|---|
 | `moving fixed` | 两个必需位置参数 |
@@ -116,6 +131,45 @@ fs-torch apply results/moving_to_fixed.mgz moving_labels.nii.gz \
 | `-d`, `--output-dir` | 调试目录 |
 
 配准至少请求一个影像、变换或调试输出。统一 CLI 会创建输出父目录。`fs-torch apply` 的位置参数依次是变换、影像、输出；支持 `--method`、`--fill`、`--dtype`、`--header-only`。CLI dtype 选择为 `uint8`、`uint16`、`int16`、`int32`、`float32`，默认 `float32`。`--device` 同样仅保留接口兼容，apply 不在 GPU 执行。当前 apply CLI 每次处理一对 image/output；多个图像可在 Python 中循环调用。
+
+## 多被试 Python
+
+`predict_batch(table, fixed, workers=1, threads_per_worker=1)` 接受恰有 `input`、`output` 两列的 pandas 表。`input` 是每例 moving 图像路径；`output` 是不带扩展名的绝对路径前缀，含被试 base name。`fixed` 可为全表共用的目标图像，或与表中行顺序一一对应、长度相同的目标图像列表。每行保存双向配准图像及变换，返回键为 `moved`、`fixed_moved`、`transform`、`inverse` 的路径字典。
+
+```python
+from pathlib import Path
+import pandas as pd
+from freesurfer_torch import SynthMorph
+
+table = pd.DataFrame({
+    "input": ["/data/sub-01_T1w.nii.gz", "/data/sub-02_T1w.nii.gz"],
+    "output": ["/results/sub-01", "/results/sub-02"],
+})
+if __name__ == "__main__":
+    register = SynthMorph(device="cuda:0", model="joint")
+    saved: list[dict[str, Path]] = register.predict_batch(
+        table,
+        fixed=["/data/template_A.nii.gz", "/data/template_B.nii.gz"],
+        workers=2,
+    )
+    print(saved[0]["moved"], saved[0]["transform"])
+```
+
+示例中两幅 `fixed` 依次对应表中的两行；也可传入一个共享的目标图像路径。`workers=2` 时 `fixed` 须为路径或路径列表，单进程仍可使用 `surfa.Volume`。`output="/results/sub-01"` 生成 `_moved.nii.gz`、`_fixed_moved.nii.gz`、`_transform.mgz` 和 `_inverse.mgz`；`affine`/`rigid` 模式的后两个文件改为 `.lta`。默认 `workers=1` 逐例复用模型；`workers=2` 在同一设备上使用两个 Python 进程、各加载一份模型，输出影像保留各自的输入及目标几何。多进程脚本须保护主入口；共享路径规则见[批量执行说明](../ARCHITECTURE.md#批量执行)。
+
+### 未发布 B2 原型对照
+
+在 gpucw1 的一张共享 H100 上，以相同的 4 例输入运行 joint 配准，每例保存双向图像和变换，共 16 个文件。B1 为单个常驻 Python 程序逐例运行；B2 为未发布原型在单个常驻程序中合批运行，4 例均实际进入 B=2 网络批；P2 为两个独立常驻程序各按 B=1 处理 2 例。正序和逆序各运行一次 cold 与 warm 队列；下表为 warm 队列总耗时。
+
+| 模式 | 正序 | 逆序 | 两轮中位数 |
+|---|---:|---:|---:|
+| B1 | 293.89 s | 217.96 s | 255.93 s |
+| B2 | 261.63 s | 239.26 s | 250.45 s |
+| P2 | 128.13 s | 126.18 s | 127.16 s |
+
+B2 与 B1 的快慢随运行顺序翻转，不能据此认定 B2 稳定提速；P2 在两轮中均约快 2 倍。表中的 P2 由两个独立常驻脚本运行，并非当前 `workers=2` API 的实测；该对照衡量多被试队列吞吐。完整条件与逐轮结果见[批量性能报告](../../benchmark/batch_modes_2026-09-24.md)。
+
+公开 Python 表格接口在 gpucw1 的 4 例 `joint` 配准中，两组 `workers=1/2` 调用耗时中位数为 **231.99/136.10 s**，观察到 **1.70 倍**吞吐差。双向图像逐字节相同，正反 MGZ 变换解码后的位移差为 **0 mm**；另以两例测试了逐行对应的 `fixed` 路径列表。逐轮数据见[Python 接口验证](../../benchmark/batch_modes_2026-09-24.md#python-table-api-with-two-processes)。
 
 ## 权重和执行位置
 
@@ -210,6 +264,10 @@ Saved-transform application accepts multi-frame (4D) input images; neural regist
 - 192³ 模板对涵盖 affine、rigid、deform、joint 四模式和双向输出，见 [full192/report.json](../../validation/full192/report.json)。
 - 默认 joint、256³ 的 12 例真实 T1w，同设备最大形变向量差为 `0.000790 mm`，最大正向 moved NRMSE 为 `4.05e-5`，见 [匿名逐例结果](../../benchmark/summary.public.json)。
 - 15 项选项检查的记录见 [options/report.json](../../validation/options/report.json)；初始化两项使用上文明确区分的 patched reference，其余 saved-transform apply 与未修改原版比较。
+
+下图使用公开 T1w 样例，展示 moving、fixed 以及原版和本包的 joint 配准图像。两列配准结果均在 fixed 网格；图中为展示使用相同的 fixed 脑掩膜。原版在 CPU、本包在 GPU 上推理，因此这张图用于查看结果，不用于比较运行速度。图像制作与完整体数据比较见[图示记录](../figures/README.md)。
+
+![公开 T1w 输入及 FreeSurfer 与本包的 joint 配准结果](../figures/synthmorph_comparison.png)
 
 模板反向图像存在少量采样有效域边界跳变：deform 为 1 个、joint 为 2 个体素，其强度误差超过输入最大强度的 0.1%。微小坐标误差使域外填零变为域内采样，因此接近的位移并不保证全部输出逐元素一致。完整误差、几何和定位见 [COMPARISON.md](../COMPARISON.md) 及[异常体素报告](../../validation/full192/reverse_output_diagnosis/report.json)。本包保留原边界规则，没有通过放宽规则掩盖这些差异。
 

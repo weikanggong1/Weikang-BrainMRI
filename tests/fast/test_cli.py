@@ -115,28 +115,8 @@ def test_atomic_save_failure_preserves_existing_file_and_cleans_temporary(tmp_pa
     assert not observed[0].exists()
 
 
-def test_batch_report_cannot_replace_synthmorph_debug_output(tmp_path, capsys):
-    manifest = tmp_path / "jobs.json"
-    debug = tmp_path / "debug"
-    manifest.write_text(
-        '[{"task":"synthmorph","kwargs":{"output_dir":"%s"},'
-        '"outputs":{"moved":"%s"}}]'
-        % (debug, tmp_path / "moved.nii.gz")
-    )
-
+def test_multi_subject_cli_is_unavailable(capsys):
     with pytest.raises(SystemExit) as error:
-        cli.main([
-            "batch", str(manifest), "--report",
-            str(debug / "network_transforms.npz"),
-        ])
-
+        cli.main(["batch", "jobs.json"])
     assert error.value.code == 2
-    assert "conflicts with job 0 output" in capsys.readouterr().err
-    assert not debug.exists()
-
-    with pytest.raises(SystemExit) as error:
-        cli.main(["batch", str(manifest), "--report", str(debug)])
-
-    assert error.value.code == 2
-    assert "conflicts with job 0 output" in capsys.readouterr().err
-    assert not debug.exists()
+    assert "invalid choice: 'batch'" in capsys.readouterr().err

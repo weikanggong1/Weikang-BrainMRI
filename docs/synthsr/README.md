@@ -47,7 +47,7 @@ print(result.image.data.shape, result.image.affine)
 
 `.npz` 是原版的特例：`save()` 将锐化后的浮点数组写在 `vol_data` 字段，**不执行 NIfTI/MGZ 的末端乘 2 和 `uint8` 转换**。因此 `result.image.data` 对应 NIfTI/MGZ 的量化数值；读 `.npz` 应使用 `numpy.load(path)["vol_data"]`，两者的数值尺度不同。原版及本包均通过 `nibabel.save(Nifti1Image(...))` 写 `.mgz`；用 nibabel 重新读入时，该格式报告的存储 dtype 为 `float32`，体素数值仍为量化后的 0–255。原版对常规输入使用单幅 3D 数据；当文件带多个通道时只取第一个通道。
 
-## 命令行与多病例
+## 单例命令行
 
 ```bash
 fs-torch synthsr --i case_FLAIR.nii.gz --o case_synthsr.nii.gz \
@@ -56,49 +56,38 @@ fs-torch synthsr --i case_FLAIR.nii.gz --o case_synthsr.nii.gz \
 
 这条命令读取 `case_FLAIR.nii.gz`，在 `cuda:0` 上用通用 v2 模型合成图像，并把 1 mm `uint8` T1w 写到 `case_synthsr.nii.gz`。本包的 `--device` 可选具体 GPU，原版没有对应的 GPU 编号参数；原版自动选择可用的 TensorFlow GPU。`--cpu` 可覆盖 `--device` 强制 CPU；`--weights` 或同义的 `--model` 指定本地权重。其余模型和处理开关与上表同名。单幅输入的 `--o` 也可指定目录，输出文件名自动加 `_synthsr`。
 
-原版和本包 CLI 均可把 `--i`、`--o` 设为两个目录：程序读取输入目录第一层的 `.nii`、`.nii.gz`、`.mgz`、`.npz`，逐例写入输出目录。也可以事先创建一对 `.txt` 文件，逐行列出输入、输出路径，两份列表的行数和顺序必须对应。这两种调用在一个进程内顺序处理病例并复用模型；如需让多例同时使用多张 GPU，使用下面的批量接口。
+## 多被试 Python
 
-保存以下内容为 `synthsr_jobs.json`，并从仓库根目录运行。这里使用仓库中已公开的两例 FLAIR；`kwargs.image` 对应原版 `--i`，`outputs.image` 对应 `--o`。
-
-```json
-[
-  {
-    "task": "synthsr",
-    "kwargs": {"image": "examples/wmh_data/sub-02_FLAIR.nii.gz"},
-    "outputs": {"image": "examples/results/synthsr/sub-02_synthsr.nii.gz"}
-  },
-  {
-    "task": "synthsr",
-    "kwargs": {"image": "examples/wmh_data/sub-03_FLAIR.nii.gz"},
-    "outputs": {"image": "examples/results/synthsr/sub-03_synthsr.nii.gz"}
-  }
-]
-```
-
-```bash
-fs-torch batch synthsr_jobs.json --devices cuda:0 cuda:1 \
-  --workers-per-device 1 --threads-per-worker 4 \
-  --report examples/results/synthsr/batch_report.json
-```
-
-`--devices` 列出两张 GPU；每张 GPU 启动一个独立进程，两个病例可以同时推理。更多病例由空闲进程领取。每个进程按模型选项缓存权重，后续病例无需再次加载；病例不必具有相同形状。`--threads-per-worker` 设置各进程的 CPU 线程，`--report` 保存每例使用的设备、时间、输出路径和错误。若某例需低场模型，在该任务中加入 `"model": {"lowfield": true}`；`model` 中不写 `device`，由批量调度器分配。已有输出默认会阻止启动，明确允许覆盖时加 `--overwrite`。
-
-Python 脚本可用同样的任务列表：
+`predict_batch(table, ct=False, disable_flipping=False, disable_sharpening=False, workers=1, threads_per_worker=1)` 接受恰有 `input`、`output` 两列的 pandas 表。`input` 填入影像路径；`output` 是不带扩展名的绝对路径前缀，含被试 base name。每行生成 `<output>_synthsr.nii.gz`，按行顺序返回键为 `image` 的路径字典列表。
 
 ```python
-import json
 from pathlib import Path
-from freesurfer_torch import BatchRunner
+import pandas as pd
+from freesurfer_torch import SynthSR
 
+table = pd.DataFrame({
+    "input": ["/data/sub-02_FLAIR.nii.gz", "/data/sub-03_FLAIR.nii.gz"],
+    "output": ["/results/sub-02", "/results/sub-03"],
+})
 if __name__ == "__main__":
-    jobs = json.loads(Path("synthsr_jobs.json").read_text(encoding="utf-8"))
-    with BatchRunner(devices=("cuda:0", "cuda:1"), threads_per_worker=4) as runner:
-        reports = runner.run(jobs)
-    for report in reports:
-        print(report.index, report.device, report.outputs, report.error)
+    sr = SynthSR(device="cuda:0")
+    saved: list[dict[str, Path]] = sr.predict_batch(table, workers=2)
+    print(saved[0]["image"])
 ```
 
-多进程使用 `spawn`，所以 Python 脚本需要 `if __name__ == "__main__":`。完整的输出冲突规则见[批量架构](../ARCHITECTURE.md#批量执行)。
+低场或 v1 模型在构造 `SynthSR` 时选择；`ct` 和两个后处理开关适用于整张表。默认 `workers=1` 逐例复用模型；`workers=2` 在同一设备使用两个 Python 进程、各加载一份模型，每个进程仍逐例推理。多进程脚本须保护主入口；表格和输出路径的共同规则见[批量执行说明](../ARCHITECTURE.md#批量执行)。
+
+### 实验性 B2 对照
+
+在 gpucw1 的一张共享 H100 上，用相同的 12 例输入保存全部 SynthSR 输出。B1 是单个常驻 Python 程序逐例运行，B2 使用未发布的实验代码在单个常驻程序中合批运行（12 例均实际进入 B=2 网络批），P2 是两个独立常驻 Python 程序各按 B=1 运行。正序和逆序各做一次 cold 与 warm 队列；下表是两轮 warm 队列总耗时的中位数。
+
+| B1 | B2 | P2 |
+|---:|---:|---:|
+| 57.95 s | 53.72 s | 30.79 s |
+
+本次 B2 相对 B1 的热队列吞吐提速为 1.08 倍，但仍慢于 P2。表中的 P2 由两个独立常驻脚本运行，并非当前 `workers=2` API 的实测；该对照不代表单被试加速。完整条件与逐轮结果见[批量性能报告](../../benchmark/batch_modes_2026-09-24.md)。
+
+公开 Python 表格接口在 gpucw1 的 12 例队列中，四组 `workers=1/2` 调用耗时中位数为 **53.45/36.84 s**，观察到 **1.45 倍**吞吐差；48 个输出文件对逐字节相同。两例时则为 **9.15/18.22 s**，第二个进程的启动和模型加载反而增加总耗时。逐轮数据见[Python 接口验证](../../benchmark/batch_modes_2026-09-24.md#python-table-api-with-two-processes)。
 
 ## 对照验证
 

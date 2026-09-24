@@ -2,231 +2,90 @@
 
 [返回首页](../README.md) · [新增功能](ADDING_FUNCTIONS.md)
 
-源码、说明文档和测试按功能组织。0.3.0 加入 WMH-SynthSeg，0.4.0 加入 SynthSR，
-0.5.0 加入 TorchFAST，0.6.0 加入 GPU FAST VBM。命令行、权重定位和批量调度放在
-共享层，模型及其空间运算放在各功能目录。
+SynthStrip、SynthMorph、WMH-SynthSeg、SynthSR、TorchFAST 和 FastVBM 分别位于 `src/freesurfer_torch/` 的功能目录；每个目录包含实现及简短说明。共享的 `cli.py` 提供单例命令行，`weights.py` 定位官方权重，`_batch_table.py` 检查前四项功能的多被试输入表，`batch.py` 调度 Python 多进程任务。各功能的参数、原版对应和验证见专属页面。
 
-```text
-src/freesurfer_torch/
-├── __init__.py                 # 按需导出公开 API
-├── cli.py                      # fs-torch 命令行
-├── weights.py                  # 统一权重定位
-├── batch.py                    # 常驻 worker、结果与输出检查
-├── synthstrip/
-│   ├── __init__.py              # 功能公开接口
-│   ├── __main__.py              # python -m ... 的兼容入口
-│   ├── model.py                # 官方 U-Net 结构
-│   ├── pipeline.py             # 影像流程和结果对象
-│   └── README.md               # 代码目录入口
-├── synthmorph/
-│   ├── __init__.py              # 功能公开接口
-│   ├── models.py               # 网络与 HDF5 权重加载
-│   ├── pipeline.py             # 配准、变换应用和影像几何
-│   ├── spatial.py              # 网络采样、积分和变换组合
-│   └── README.md               # 代码目录入口
-├── wmh_synthseg/               # 结构与白质高信号分割
-│   ├── __init__.py              # 功能公开接口
-│   ├── model.py                 # 官方权重对应的 3D U-Net
-│   ├── pipeline.py              # 预处理、推理和结果对象
-│   ├── spatial.py               # 方向调整与重采样
-│   └── README.md               # 代码目录入口
-├── synthsr/                    # 单幅影像合成 1 mm T1w
-│   ├── __init__.py              # 功能公开接口
-│   ├── model.py                 # 3D U-Net 与 HDF5 权重读取
-│   ├── pipeline.py              # 预处理、推理和结果保存
-│   ├── spatial.py               # 重采样、方向调整与填充
-│   └── README.md               # 代码目录入口
-├── fast/                       # 单通道 T1 三组织分割与偏置场校正
-│   ├── __init__.py              # 功能公开接口
-│   ├── algorithm.py             # HMRF-EM、bias field 与 PVE 张量算法
-│   ├── pipeline.py              # 影像几何、TorchFAST 与 FASTResult
-│   ├── upstream_fast4/          # 原样保留的 FAST4 2111.3 源码；不参与构建
-│   └── README.md               # 代码目录入口
-├── fast_vbm/                   # raw T1 到模板空间 modulated GM
-│   ├── __init__.py              # 功能公开接口
-│   ├── pipeline.py              # SynthStrip、TorchFAST 与结果保存
-│   └── registration.py          # GM 配准、Jacobian 与 modulation
-├── spatial.py                  # 旧导入路径的转导出
-└── synthmorph_models.py         # 旧导入路径的转导出
-docs/
-├── synthstrip/README.md         # 参数、用法、源码分析和验证
-├── synthmorph/README.md
-├── wmh_synthseg/README.md
-├── synthsr/README.md
-├── fast/README.md
-├── fast_vbm/README.md
-├── WEIGHTS.md                  # 官方权重获取与许可
-├── COMPARISON.md               # 0.1.0 对照实验
-├── ARCHITECTURE.md
-└── ADDING_FUNCTIONS.md
-tests/
-├── synthstrip/
-├── synthmorph/
-├── wmh_synthseg/
-├── synthsr/
-├── fast/
-├── fast_vbm/
-├── batch/
-└── test_public_api.py
-```
-
-`tools/` 包含验证和报告脚本；`validation/` 与 `benchmark/` 保存可分享的实验记录。权重单独存放，不加入 Git 或安装包。
+| 功能 | 详细说明 | 多被试入口 |
+|---|---|---|
+| SynthStrip | [脑提取](synthstrip/README.md) | 两列表 `predict_batch()` |
+| SynthMorph | [配准](synthmorph/README.md) | 两列表 `predict_batch()` |
+| WMH-SynthSeg | [结构及 WMH 分割](wmh_synthseg/README.md) | 两列表 `predict_batch()` |
+| SynthSR | [合成 T1w](synthsr/README.md) | 两列表 `predict_batch()` |
+| TorchFAST | [三组织分割及偏置校正](fast/README.md) | Python `BatchRunner` |
+| FastVBM | [原始 T1w 到 modulated GM](fast_vbm/README.md) | Python `BatchRunner` |
 
 ## 公开 API 与兼容性
 
-0.6.0 的顶层公开导入如下；此前版本已有的导入保持兼容：
-
 ```python
 from freesurfer_torch import (
-    SynthStrip, StripResult,
-    SynthMorph, RegistrationResult, apply_transform,
-    WMHSynthSeg, WMHResult,
-    SynthSR, SynthSRResult, SynthSRImage,
-    TorchFAST, FASTResult, FASTConfig, FASTTensorResult, segment_t1,
-    FastVBM, FastVBMResult, VBMRegistrationResult, register_gm,
-    BatchRunner, BatchResult, run_batch,
+    SynthStrip, SynthMorph, WMHSynthSeg, SynthSR,
+    TorchFAST, FastVBM, BatchRunner, BatchResult, run_batch,
+    apply_transform,
 )
 ```
 
-功能也可从其专属模块导入：
-
-```python
-from freesurfer_torch.synthstrip import SynthStrip
-from freesurfer_torch.synthmorph import SynthMorph, apply_transform
-from freesurfer_torch.wmh_synthseg import WMHSynthSeg
-from freesurfer_torch.synthsr import SynthSR
-from freesurfer_torch.fast import (
-    TorchFAST, FASTResult, FASTConfig, FASTTensorResult, segment_t1,
-)
-from freesurfer_torch.fast_vbm import (
-    FastVBM, FastVBMResult, VBMRegistrationResult, register_gm,
-)
-```
-
-顶层按需导入：`import freesurfer_torch` 本身不加载 Torch、Surfa 或权重。旧路径 `freesurfer_torch.spatial` 和 `freesurfer_torch.synthmorph_models` 转导出新目录中的对象；新增代码直接从 `freesurfer_torch.synthmorph.spatial` 和 `freesurfer_torch.synthmorph.models` 导入。`TorchFAST` 是数值算法，不读取 checkpoint；`FASTConfig`、`FASTTensorResult` 和 `segment_t1` 是无文件 I/O 的张量层接口。`FastVBM` 组合 SynthStrip、TorchFAST 与 GPU GM registration；已有同网格脑 mask 时可跳过 SynthStrip checkpoint。
-
-学习模型的构造函数加载权重并选择设备；TorchFAST 构造函数只保存算法参数和设备。
-调用实例处理输入，返回带影像几何的结果对象，由调用者决定保存哪些输出。学习模型
-的权重查找顺序为显式路径、`FREESURFER_TORCH_WEIGHTS`、配置脚本保存的目录、用户
-缓存目录、已设置的 `FREESURFER_HOME/models/`。最后一项兼容已有安装，运行时不要求
-安装 FreeSurfer。WMH-SynthSeg 和 SynthSR 输出的空间网格通常与输入不同；分别见
-[WMH-SynthSeg](wmh_synthseg/README.md) 和 [SynthSR](synthsr/README.md) 的说明。
+前四个学习模型构造时加载权重并选择 `device="cpu"` 或 `device="cuda:0"`；TorchFAST 不加载权重。单例调用返回带几何信息的结果对象，由调用者选择保存字段。FastVBM 将 SynthStrip、TorchFAST 与 GPU 配准组合成完整流程，其 SynthStrip 权重在首次需要脑提取时加载。旧导入路径 `freesurfer_torch.spatial` 和 `freesurfer_torch.synthmorph_models` 继续转导出对应实现。权重查找顺序为显式路径、`FREESURFER_TORCH_WEIGHTS`、配置脚本保存的目录、用户缓存目录、已设置的 `FREESURFER_HOME/models/`；见[权重说明](WEIGHTS.md)。
 
 ## 批量执行
 
-每例影像是一个任务，由独立进程处理；不同形状的影像无需拼成同一个 tensor。每个 worker 绑定一个设备，按任务名称和模型参数缓存模型。同一 `BatchRunner` 可以连续提交多批，复用进程和模型。
-
-`jobs.json` 是单功能批量 CLI 使用的任务字典列表：
-
-```json
-[
-  {
-    "task": "synthstrip",
-    "model": {"weights": "/path/to/weights", "no_csf": false},
-    "kwargs": {"image": "/data/sub01_T1w.nii.gz", "border": 1},
-    "outputs": {
-      "image": "/results/sub01_brain.nii.gz",
-      "mask": "/results/sub01_mask.nii.gz"
-    }
-  },
-  {
-    "task": "synthmorph",
-    "model": {
-      "weights": "/path/to/weights", "model": "joint",
-      "extent": 256, "hyper": 0.5, "steps": 7
-    },
-    "kwargs": {
-      "moving": "/data/sub02_T1w.nii.gz",
-      "fixed": "/data/template_T1w.nii.gz"
-    },
-    "outputs": {
-      "moved": "/results/sub02_in_template.nii.gz",
-      "transform": "/results/sub02_to_template.mgz"
-    }
-  },
-  {
-    "task": "wmh_synthseg",
-    "model": {"weights": "/path/to/weights"},
-    "kwargs": {"image": "/data/sub03_FLAIR.nii.gz", "crop": true},
-    "outputs": {"segmentation": "/results/sub03_wmh_seg.nii.gz"}
-  },
-  {
-    "task": "synthsr",
-    "model": {"lowfield": false},
-    "kwargs": {"image": "/data/sub04_FLAIR.nii.gz"},
-    "outputs": {"image": "/results/sub04_synthsr.nii.gz"}
-  },
-  {
-    "task": "fast",
-    "kwargs": {"image": "/data/sub05_T1_brain.nii.gz"},
-    "outputs": {
-      "pve_gm": "/results/sub05_pve_1.nii.gz",
-      "bias_field": "/results/sub05_bias.nii.gz",
-      "restored": "/results/sub05_restore.nii.gz"
-    }
-  }
-]
-```
-
-| 字段 | 规则 |
-|---|---|
-| `task` | `synthstrip`、`synthmorph`、`wmh_synthseg`、`synthsr` 或 `fast` |
-| `model` | 可省略；功能构造参数，不包含 `device`；SynthMorph 内层 `model` 指配准模式，SynthSR 可在此选 `lowfield` 或 `v1`，FAST 可设置 `bias_fwhm_mm`、`pve_chunk_size` 等算法参数 |
-| `kwargs` | 实例调用参数；SynthStrip、WMH-SynthSeg、SynthSR、FAST 至少有 `image`，SynthMorph 至少有 `moving` 和 `fixed`；FAST 还可传同网格 `mask` |
-| `outputs` | 至少一个输出，键为结果属性，值为文件路径 |
-
-SynthStrip 输出键为 `image`、`mask`、`distance`；SynthMorph 为 `moved`、`fixed_moved`、`transform`、`inverse`；WMH-SynthSeg 为 `segmentation`、`lesion_probability`；SynthSR 为 `image`；FAST 为 `pve_csf`、`pve_gm`、`pve_wm`、`hard_segmentation`、`pve_segmentation`、`mixel_type`、`bias_field`、`restored`。若请求 WMH 病灶概率输出，worker 会启用相应推理选项。`volumes_mm3`、FAST 的 `tissue_means` 和 `tissue_variances` 是 Python 返回的数值，不是可调用 `.save()` 的批量输出。变换应用 `apply_transform` 是 CPU 后处理，不是当前 batch 的任务类型；可按需循环应用。
-
-FastVBM 多被试只通过 Python `BatchRunner` 提交，任务名为 `fast_vbm`。其
-`kwargs` 至少包含 `image` 和 `template`，可加同网格 `brain_mask`；输出键包括
-`brain`、`brain_mask`、三张 PVE、两张分类、`mixel_type`、`bias_field`、`restored`、
-`warped_gm`、`jacobian` 和 `modulated_gm`。`fs-torch batch` 会明确拒绝含
-`fast_vbm` 的 JSON manifest。完整 Python 示例见
-[FastVBM 多病例与多 GPU](fast_vbm/README.md#多病例与多-gpu)。
-
-```bash
-fs-torch batch jobs.json --devices cuda:0 cuda:1 \
-  --workers-per-device 1 --threads-per-worker 4 \
-  --report results/batch_report.json
-```
-
-Python 批处理应放在可导入的脚本中，并保留 `__main__` guard：
+多被试仅通过 Python 调用。前四项功能的 `predict_batch()` 接受 pandas `DataFrame`，列名必须恰好为 `input`、`output`，一行对应一例。`input` 填入输入影像路径；`output` 必须是不带扩展名的绝对路径前缀，含被试的 base name，例如 `/results/sub-01`。它不是输出目录或完整文件名。模型按下表追加后缀并创建父目录；方法按表的行顺序返回 `list[dict[str, pathlib.Path]]`。同一表中不能重复使用输出前缀。
 
 ```python
-import json
 from pathlib import Path
+import pandas as pd
+from freesurfer_torch import SynthStrip
+
+inputs = Path("/data/t1w")
+outputs = Path("/results/brain")
+table = pd.DataFrame({
+    "input": [str(inputs / "sub-01_T1w.nii.gz"), str(inputs / "sub-02_T1w.nii.gz")],
+    "output": [str(outputs / "sub-01"), str(outputs / "sub-02")],
+})
+if __name__ == "__main__":
+    model = SynthStrip(device="cuda:0")
+    saved = model.predict_batch(table, workers=2)
+    print(saved[0]["image"], saved[0]["mask"], saved[0]["distance"])
+```
+
+| 模型方法 | 输出前缀为 `/results/sub-01` 时生成的文件 | 路径字典键 |
+|---|---|---|
+| `SynthStrip.predict_batch(table, border=1, fill=None, workers=1, threads_per_worker=1)` | `_brain.nii.gz`、`_mask.nii.gz`、`_sdt.nii.gz` | `image`、`mask`、`distance` |
+| `SynthMorph.predict_batch(table, fixed, workers=1, threads_per_worker=1)` | `_moved.nii.gz`、`_fixed_moved.nii.gz`、`_transform.mgz`/`.lta`、`_inverse.mgz`/`.lta` | `moved`、`fixed_moved`、`transform`、`inverse` |
+| `WMHSynthSeg.predict_batch(table, crop=False, workers=1, threads_per_worker=1)` | `_seg.nii.gz`、`_lesion_probs.nii.gz`、`_volumes.csv` | `segmentation`、`lesion_probability`、`volumes_csv` |
+| `SynthSR.predict_batch(table, ct=False, disable_flipping=False, disable_sharpening=False, workers=1, threads_per_worker=1)` | `_synthsr.nii.gz` | `image` |
+
+SynthMorph 的 `fixed` 可以是全表共用的一幅目标图像，也可以是与表行顺序一一对应、长度相同的目标图像列表；`workers=2` 时目标图像须为文件路径或路径列表。`joint`/`deform` 保存 `.mgz` 位移变换，`affine`/`rigid` 保存 `.lta` 仿射变换。
+
+默认 `workers=1` 在当前程序中逐例复用模型。表中至少有两行时，`workers=2` 用当前程序和一个 spawn 子进程在同一指定设备上各加载一份模型，按表行顺序返回结果。每次调用都会新建并关闭子进程，下次调用需重新加载子进程模型。多进程时 `threads_per_worker` 控制每个进程的 Torch CPU 线程数；脚本须以 `if __name__ == "__main__":` 保护调用。两种模式的每次网络推理均为 B=1；只有一行时实际只运行一个进程。各功能子页的 B2 对照使用未发布的合批实验路径，不代表单被试加速。
+
+FastVBM 多病例使用 Python `BatchRunner`，每例一个 `fast_vbm` job。`kwargs` 至少包含 `image` 和 `template`，可加与输入同网格的 `brain_mask`；`outputs` 将 `pve_gm`、`warped_gm`、`jacobian`、`modulated_gm` 等结果属性映射到完整文件路径。下面在两张 GPU 上处理两例，完整输出字段见[FastVBM 多病例说明](fast_vbm/README.md#多病例与多-gpu)：
+
+```python
 from freesurfer_torch import BatchRunner
 
 def main():
-    jobs = json.loads(Path("jobs.json").read_text())
-    with BatchRunner(
-        devices=("cuda:0", "cuda:1"),
-        workers_per_device=1,
-        threads_per_worker=4,
-    ) as runner:
-        for result in runner.run(jobs):
-            print(result.index, result.device, result.ok, result.outputs, result.error)
-        # 后续可 runner.run(next_jobs)，复用 worker 与模型。
+    jobs = []
+    for subject in ("sub-01", "sub-02"):
+        jobs.append({
+            "task": "fast_vbm",
+            "kwargs": {
+                "image": f"/data/{subject}_T1w.nii.gz",
+                "template": "/data/template_GM.nii.gz",
+            },
+            "outputs": {
+                "modulated_gm": f"/results/{subject}/T1_GM_to_template_GM_mod.nii.gz",
+            },
+        })
+    with BatchRunner(devices=("cuda:0", "cuda:1"), workers_per_device=1) as runner:
+        reports = runner.run(jobs)
+    if any(not report.ok for report in reports):
+        raise RuntimeError([report.error for report in reports if not report.ok])
 
 if __name__ == "__main__":
     main()
 ```
 
-进程以 `spawn` 启动。普通单功能任务可在 Notebook 中使用 CLI；FastVBM 多被试应
-运行带 `__main__` guard 的可导入 Python 脚本。`run_batch(jobs, devices=("cuda:0",))`
-是 Python 单批便利接口，执行后关闭 worker；跨批复用使用 `BatchRunner`。CPU 批处理
-可指定 `devices=("cpu",)`。
-
-## 设备、输出与错误
-
-`cuda:N` 遵循 `CUDA_VISIBLE_DEVICES` 的编号映射。默认每设备一个 worker；同 GPU 可设 `workers_per_device=2`，每个进程独立保留模型、激活和卷积工作区。多个模型参数组合会增加缓存量，增加 worker 数不保证吞吐提升。
-
-`BatchRunner` 默认每 worker 1 个 Torch 线程，批量 CLI 默认每 worker 4 个线程，可显式设定。功能构造函数也可能设置当前进程的 Torch 线程数；批量任务通常只在 runner 指定线程数，避免模型参数覆盖它。SynthStrip、SynthMorph 和 SynthSR 在 CUDA 构造时关闭当前进程的 PyTorch TF32；SynthStrip 还设置其官方卷积后端选项。
-
-批次先整体检查输出路径，再创建目录和分发。默认拒绝覆盖已有文件，`overwrite=True` / `--overwrite` 可允许覆盖。即使允许覆盖，同批任务之间也不能共享输出路径。SynthMorph 的调试目录三个输出同样参与冲突检查。
-
-每个 `BatchResult` 保存输入索引、任务类型、设备、PID、起止时间、成功写出的路径、错误和 traceback；FastVBM 还在 `metadata` 中保存无输入路径的参数、计时和 QC。返回顺序保持输入顺序。单任务错误保留在结果中，其他任务仍可完成。普通任务的 CLI 写 JSON 报告，任一任务失败时返回非零退出码。`BatchResult.outputs` 与 traceback 可能暴露本地路径，应作为私有运行记录。每个输出文件采用临时文件加原子替换；如果一个任务后续写出失败，已经保存的文件仍保留，这不是整例多文件事务。worker 崩溃后应关闭并重建 runner，再重试受影响任务。
+`BatchRunner` 每个 worker 绑定一张设备并缓存模型，可连续提交多批；默认拒绝覆盖已有输出。返回的 `BatchResult` 按任务顺序记录成功路径或错误，失败信息可能含本地路径，应作为私有运行记录。TorchFAST 也可通过 Python `BatchRunner` 调用，见[功能说明](fast/README.md#多病例并行)。单例 CLI 保留；命令行不接受多被试表或任务清单。
 
 ## 验证记录
 
-0.1.0 的[真实病例批量记录](../benchmark/real_batch/execution.public.json)和[输出比较](../benchmark/real_batch/comparison.public.json)覆盖 24 个任务、60 个输出：worker 跨批复用，任务执行时间重叠，批量与单例结果逐元素一致。共享 GPU 条件和计时口径见 [COMPARISON.md](COMPARISON.md)；0.2.0 的结构回归见 [refactor/report.public.json](../validation/refactor/report.public.json)。
+历史 [0.1.0 批量记录](../benchmark/real_batch/execution.public.json)与[输出比较](../benchmark/real_batch/comparison.public.json)使用旧的多进程 `BatchRunner`，覆盖 24 个任务、60 个输出；它们不代表当前 `predict_batch()` 的提速结果。[B1/B2/P2 对照](../benchmark/batch_modes_2026-09-24.md)中的 P2 是跨 cold/warm 两轮保持常驻的两个独立程序，不能直接作为新 `workers=2` API 的计时。数值复现、运行环境和单例计时见[对照报告](COMPARISON.md)。

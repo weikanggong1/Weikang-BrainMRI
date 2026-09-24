@@ -81,17 +81,9 @@ def test_fast_vbm_cli_rejects_existing_output_before_model_load(
     assert existing.read_text() == "old"
 
 
-def test_generic_batch_cli_rejects_fast_vbm_jobs(tmp_path, capsys):
-    manifest = tmp_path / "jobs.json"
-    manifest.write_text(
-        '[{"task":"fast_vbm","kwargs":{"image":"T1.nii.gz",'
-        '"template":"template.nii.gz"},"outputs":{"modulated_gm":"out.nii.gz"}}]'
-    )
-
+def test_multi_subject_cli_is_not_registered(capsys):
     with pytest.raises(SystemExit) as error:
-        cli.main([
-            "batch", str(manifest), "--report", str(tmp_path / "report.json")
-        ])
+        cli.main(["batch"])
 
     assert error.value.code == 2
-    assert "Python BatchRunner API only" in capsys.readouterr().err
+    assert "invalid choice: 'batch'" in capsys.readouterr().err

@@ -2,7 +2,7 @@
 
 [返回首页](../../README.md) · [官方说明](https://surfer.nmr.mgh.harvard.edu/fswiki/WMH-SynthSeg) · [官方源码](https://github.com/freesurfer/freesurfer/tree/dev/mri_WMHsynthseg/WMHSynthSeg)
 
-WMH-SynthSeg 同时分割脑结构和白质高信号（WMH，FreeSurfer 标签 **77**），支持 T1w、FLAIR 等对比度。**FreeSurfer 原版已使用 PyTorch**。本包基于已验证的源码与官方 `WMH-SynthSeg_v10_231110.pth`，提供独立安装、模型复用和多 GPU 批量调用；推理不调用 FreeSurfer 程序。
+WMH-SynthSeg 同时分割脑结构和白质高信号（WMH，FreeSurfer 标签 **77**），支持 T1w、FLAIR 等对比度。**FreeSurfer 原版已使用 PyTorch**。本包基于已验证的源码与官方 `WMH-SynthSeg_v10_231110.pth`，提供独立安装、模型复用和单设备多被试 Python 调用；推理不调用 FreeSurfer 程序。
 
 ## 原版源码流程与输出几何
 
@@ -20,7 +20,7 @@ mri_WMHsynthseg --i case_FLAIR.nii.gz --o case_seg.nii.gz \
 
 `--i` 是唯一输入影像；`--o` 是硬分割图；`--crop` 启用上述两遍定位/裁剪；`--save_lesion_probabilities` 另写 `case_seg.lesion_probs.nii.gz`；`--csv_vols` 汇总各结构体积；`--device` 与 `--threads` 控制 PyTorch。输入、输出也可以分别是目录；原版遍历输入目录第一层的支持格式，为每个文件在输出目录写 `_seg` 后缀。原版 CSV 的第一列表头为 `Input-file`，实际写入的是**输出分割路径**。原版 3D 流程经过验证；安装源码中的 4D 均值分支存在参数错误，不在本包支持范围内。
 
-## 本包 Python、命令行和批量接口
+## 本包单例 Python 与命令行
 
 官方权重无需随 GitHub 仓库下载；用专属脚本从 FreeSurfer 官方地址获取并自动记录位置：
 
@@ -58,42 +58,40 @@ fs-torch wmh-synthseg --i case_FLAIR.nii.gz --o case_seg.nii.gz \
   --save_lesion_probabilities --csv_vols case_volumes.csv
 ```
 
-这条命令的 `--i` 读取单幅 FLAIR，`--o` 写标签图；`--crop` 将正式预测限制在脑周围的区域；`--save_lesion_probabilities` 额外写 `case_seg.lesion_probs.nii.gz`；`--csv_vols` 写软体积 CSV；`--device` 指定 GPU，`--threads` 指定 Torch 的 CPU 线程。与原版一样，`--i` 和 `--o` 也可同时指定为目录，此时逐个处理输入目录第一层的 `.nii`、`.nii.gz`、`.mgz` 文件，输出名增加 `_seg` 后缀。CLI 会创建输出父目录，并在遇到错误时以非零码结束；原版逐图捕获异常，可能返回零码但未产生某例输出，因此批量核对时应检查文件是否存在。
+这条命令的 `--i` 读取单幅 FLAIR，`--o` 写标签图；`--crop` 将正式预测限制在脑周围的区域；`--save_lesion_probabilities` 额外写 `case_seg.lesion_probs.nii.gz`；`--csv_vols` 写软体积 CSV；`--device` 指定 GPU，`--threads` 指定 Torch 的 CPU 线程。本包 CLI 每次处理单幅影像并创建输出父目录。多被试调用见下方 Python 接口。
 
-## 多病例、多 GPU
+## 多被试 Python
 
-批量清单中每例一个独立任务，`task` 必须为 `wmh_synthseg`；`kwargs` 传给上表的模型调用，`outputs` 中的 `segmentation` 对应 `--o`，`lesion_probability` 对应额外的概率图。请求后者时 worker 会自动设置 `save_lesion_probabilities=True`。下面两例展示清单格式；仓库已提供包含三例的可运行 [examples/wmh_jobs.json](../../examples/wmh_jobs.json)：
+`predict_batch(table, crop=False, workers=1, threads_per_worker=1)` 接受恰有 `input`、`output` 两列的 pandas 表。一行对应一幅 3D 影像；`input` 填入影像路径，`output` 是不带扩展名的绝对路径前缀，含被试 base name。每行生成 `<output>_seg.nii.gz`、`<output>_lesion_probs.nii.gz` 和 `<output>_volumes.csv`；按行顺序返回路径字典列表，键为 `segmentation`、`lesion_probability`、`volumes_csv`。
 
-```json
-[
-  {
-    "task": "wmh_synthseg",
-    "kwargs": {"image": "examples/wmh_data/sub-02_FLAIR.nii.gz", "crop": true},
-    "outputs": {
-      "segmentation": "examples/results/wmh/sub-02_seg.nii.gz",
-      "lesion_probability": "examples/results/wmh/sub-02_seg.lesion_probs.nii.gz"
-    }
-  },
-  {
-    "task": "wmh_synthseg",
-    "kwargs": {"image": "examples/wmh_data/sub-03_FLAIR.nii.gz", "crop": true},
-    "outputs": {
-      "segmentation": "examples/results/wmh/sub-03_seg.nii.gz",
-      "lesion_probability": "examples/results/wmh/sub-03_seg.lesion_probs.nii.gz"
-    }
-  }
-]
+```python
+from pathlib import Path
+import pandas as pd
+from freesurfer_torch import WMHSynthSeg
+
+table = pd.DataFrame({
+    "input": ["/data/sub-02_FLAIR.nii.gz", "/data/sub-03_FLAIR.nii.gz"],
+    "output": ["/results/sub-02", "/results/sub-03"],
+})
+if __name__ == "__main__":
+    model = WMHSynthSeg(device="cuda:0")
+    saved: list[dict[str, Path]] = model.predict_batch(table, crop=True, workers=2)
+    print(saved[0]["segmentation"], saved[0]["lesion_probability"], saved[0]["volumes_csv"])
 ```
 
-```bash
-fs-torch batch examples/wmh_jobs.json --devices cuda:0 cuda:1 \
-  --workers-per-device 1 --threads-per-worker 4 \
-  --report examples/results/wmh/batch_report.json
-```
+默认 `workers=1` 逐例复用模型；`workers=2` 在同一设备启用两个 Python 进程，各加载一份模型，每个进程仍逐例推理。多进程脚本须保护主入口。CSV 记录各结构及 WMH 的软体积；输出路径规则和其他功能的表格接口见[批量执行说明](../ARCHITECTURE.md#批量执行)。
 
-`--devices` 指定两张可见 GPU；`--workers-per-device 1` 在每张 GPU 上建立一个进程。两例可以同时运行，更多病例由空闲 worker 领取。worker 首次处理 WMH 任务时加载 checkpoint，随后复用模型；每例仍独立推理。`--report` 按清单顺序记录设备、进程、时间、输出文件和异常。运行前会检查输出路径冲突；每张 GPU 的 worker 数决定同时加载的模型份数，应结合显存设置。批量接口保存影像；若需原版格式的 CSV，可使用单例/目录 CLI，或从 Python 的 `volumes_mm3` 自行生成。
+### 实验性 B2 对照
 
-Python 批量调用同一清单时，使用 `from freesurfer_torch import BatchRunner`，然后在 `if __name__ == "__main__":` 保护下执行 `with BatchRunner(devices=("cuda:0", "cuda:1"), workers_per_device=1, threads_per_worker=4) as runner: reports = runner.run(jobs)`；`jobs` 即上面的列表。完整多模型示例和输出冲突规则见[批量架构](../ARCHITECTURE.md#批量执行)。
+在 gpucw1 的一张共享 H100 上，用相同的 12 例输入保存分割图、病灶概率图和软体积 CSV。B1 是单个常驻 Python 程序逐例运行，B2 使用未发布的实验代码在单个常驻程序中合批运行（12 例均实际进入 B=2 网络批），P2 是两个独立常驻 Python 程序各按 B=1 运行。正序和逆序各做一次 cold 与 warm 队列；下表是两轮 warm 队列总耗时的中位数。
+
+| B1 | B2 | P2 |
+|---:|---:|---:|
+| 34.37 s | 28.17 s | 19.20 s |
+
+本次 B2 相对 B1 的热队列吞吐提速为 1.22 倍，但仍慢于 P2。表中的 P2 由两个独立常驻脚本运行，并非当前 `workers=2` API 的实测；该对照不代表单被试加速。完整条件与逐轮结果见[批量性能报告](../../benchmark/batch_modes_2026-09-24.md)。
+
+公开 Python 表格接口在 gpucw1 的 12 例队列中，四组 `workers=1/2` 调用耗时中位数为 **28.51/27.04 s**，差距约 **5%**，不足以认定稳定的实际提速；双进程会占用更多显存，测试中的设备总占用峰值为 **61,205/81,559 MiB**（含其他进程）。两种模式的分割图和病灶概率图逐字节相同，CSV 数值列相同。默认 `workers=1` 更省显存；逐轮数据见[Python 接口验证](../../benchmark/batch_modes_2026-09-24.md#python-table-api-with-two-processes)。
 
 ## 验证边界
 

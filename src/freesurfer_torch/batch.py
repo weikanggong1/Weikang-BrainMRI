@@ -21,7 +21,7 @@ import uuid
 _OUTPUTS = {
     "synthstrip": {"image", "mask", "distance"},
     "synthmorph": {"moved", "fixed_moved", "transform", "inverse"},
-    "wmh_synthseg": {"segmentation", "lesion_probability"},
+    "wmh_synthseg": {"segmentation", "lesion_probability", "volumes_csv"},
     "synthsr": {"image"},
     "fast": {
         "pve_csf", "pve_gm", "pve_wm", "hard_segmentation",
@@ -130,8 +130,19 @@ def _run_job(index, job):
         if job["task"] == "fast_vbm":
             outcome.metadata = result.report()
         for name, path in job["outputs"].items():
-            volume = volumes[name] if volumes is not None else getattr(result, name)
-            _atomic_save(volume, path)
+            if name == 'volumes_csv':
+                from .wmh_synthseg.pipeline import _write_volumes_csv
+                temporary = Path(path).with_name(
+                    f'.{Path(path).name}.tmp-{os.getpid()}-{uuid.uuid4().hex}.csv')
+                try:
+                    _write_volumes_csv(result.volumes_mm3,
+                                       job['outputs']['segmentation'], temporary)
+                    os.replace(temporary, path)
+                finally:
+                    temporary.unlink(missing_ok=True)
+            else:
+                volume = volumes[name] if volumes is not None else getattr(result, name)
+                _atomic_save(volume, path)
             outcome.outputs[name] = path
     except Exception as exc:
         outcome.error = f"{type(exc).__name__}: {exc}"
@@ -161,6 +172,8 @@ def _prepare_jobs(jobs, overwrite):
         json.dumps(options, sort_keys=True, default=os.fspath)
         if not outputs or set(outputs) - _OUTPUTS[task]:
             raise ValueError(f"{prefix}: outputs must use {sorted(_OUTPUTS[task])}")
+        if task == 'wmh_synthseg' and 'volumes_csv' in outputs and 'segmentation' not in outputs:
+            raise ValueError(f'{prefix}: volumes_csv requires segmentation output')
         normalized = {}
         kwargs = dict(kwargs)
         destinations = list(outputs.items())
@@ -196,9 +209,8 @@ class BatchRunner:
     manager or call close() when finished. Calls to run() should be sequential.
 
     All processes are spawned, never forked. In a Python script construct the
-    runner under ``if __name__ == "__main__":``. Notebook users can use the CLI
-    for tasks accepted by the batch command; FastVBM batch jobs must run from an
-    importable Python script. Each job must save at least one output.
+    runner under ``if __name__ == "__main__":``. In notebooks, use an importable
+    script if the kernel cannot spawn workers. Each job must save at least one output.
     """
 
     def __init__(self, devices=("cuda:0",), workers_per_device=1, threads_per_worker=1):
