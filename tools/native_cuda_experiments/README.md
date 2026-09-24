@@ -43,6 +43,23 @@ original vertex IDs; uint32 CSR offsets; uint32 CSR neighbors; then float32
 vectors. Its `.bin.json` sidecar records source and case hashes. No source
 surface or subject data is added to Git.
 
+To test the actual `fs_cuda_average_gradients` C ABI with a FSGRAD1 case:
+
+```sh
+nvcc -O2 -std=c++11 -arch=sm_90 --fmad=false --prec-div=true \
+  -Xcompiler=-ffp-contract=off \
+  -o bridge_fixture tools/native_cuda_experiments/bridge_fixture.cpp \
+  tools/native_cuda_experiments/fs_cuda_average_gradients.cu
+./bridge_fixture /tmp/lh_smooth_1024.bin
+```
+
+`bridge_fixture` prints one JSON object with float32 bitwise mismatch count,
+maximum and mean absolute error, one-thread ordered CPU time, and total CUDA
+call time including allocation and both transfers. This checks the bridge
+against a CPU reference using the same supplied vectors and neighbor order;
+it does not measure a FreeSurfer stage. Supply `-ccbin /path/to/g++` to `nvcc`
+when its default host compiler is incompatible with the CUDA Toolkit.
+
 This checks one mathematical kernel. Replacing it in `mris_sphere` or
 `mris_register` requires rebuilding those executables with a modified FreeSurfer
 `utils` library; FreeSurfer links `utils` statically, so `LD_PRELOAD` cannot
