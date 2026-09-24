@@ -1,0 +1,78 @@
+--- a/utils/mrisurf_metricProperties.cpp
++++ b/utils/mrisurf_metricProperties.cpp
+@@ -9348,6 +9348,14 @@
+   int firstNeighbor;
+ } MRISaverageGradients_Control;
+ 
++#if defined(__linux__) && defined(__GNUC__)
++// Optional C ABI implementation linked only into an opt-in mris_sphere binary.
++extern "C" int fs_cuda_average_gradients(int count, int neighbor_count,
++                                          int iterations, const void *controls,
++                                          const int *neighbors, const void *input,
++                                          void *output) __attribute__((weak));
++#endif
++
+ static int                              MRISaverageGradients_neighbors_size;
+ static int*	                        MRISaverageGradients_neighbors;
+ static int  	                        MRISaverageGradients_controls_and_data_size;
+@@ -9727,8 +9735,37 @@
+       }
+ #undef chunksCapacity
+ 
++      // Keep the original CPU loop as the default and as the CUDA failure path.
++      bool gpu_done = false;
++#if defined(__linux__) && defined(__GNUC__)
++      const char *gpu_requested = getenv("FS_SPHERE_CUDA_GRADIENTS");
++      if (index_to_vno_size > 0 && gpu_requested && !strcmp(gpu_requested, "1")) {
++        static_assert(sizeof(Control) == 2 * sizeof(int), "CUDA control layout");
++        static_assert(sizeof(Data) == 3 * sizeof(float), "CUDA gradient layout");
++        const int gpu_status = fs_cuda_average_gradients
++          ? fs_cuda_average_gradients(index_to_vno_size, neighbors_size, num_avgs,
++                                      controls, neighbors, datas_inp, datas_out)
++          : -2;
++        if (gpu_status == 0) {
++          Data *tmp = datas_inp; datas_inp = datas_out; datas_out = tmp;
++          gpu_done = true;
++          static bool logged = false;
++          if (!logged) {
++            fprintf(stdout, "MRISaverageGradients: CUDA active\n");
++            logged = true;
++          }
++        } else {
++          static bool warned = false;
++          if (!warned) {
++            fprintf(stderr, "MRISaverageGradients: CUDA unavailable (%d); using CPU\n", gpu_status);
++            warned = true;
++          }
++        }
++      }
++#endif
++
+       // Do all the iterations
+-      for (i = 0 ; i < num_avgs ; i++) {
++      for (i = 0 ; !gpu_done && i < num_avgs ; i++) {
+         
+         unsigned int chunksIndex;
+         ROMP_PF_begin
+--- a/mris_sphere/CMakeLists.txt
++++ b/mris_sphere/CMakeLists.txt
+@@ -5,6 +5,19 @@
+ add_executable(mris_sphere mris_sphere.cpp)
+ add_help(mris_sphere mris_sphere.help.xml)
+ target_link_libraries(mris_sphere utils)
++option(FS_SPHERE_CUDA_GRADIENTS "Enable opt-in CUDA gradient smoothing in mris_sphere" OFF)
++if(FS_SPHERE_CUDA_GRADIENTS)
++  if(CMAKE_VERSION VERSION_LESS 3.18)
++    message(FATAL_ERROR "CUDA gradient smoothing requires CMake 3.18 or newer")
++  endif()
++  enable_language(CUDA)
++  find_package(CUDAToolkit REQUIRED)
++  add_library(fs_sphere_cuda_gradients OBJECT fs_cuda_average_gradients.cu)
++  target_compile_options(fs_sphere_cuda_gradients PRIVATE --fmad=false --prec-div=true)
++  set_target_properties(fs_sphere_cuda_gradients PROPERTIES CUDA_STANDARD 11)
++  target_sources(mris_sphere PRIVATE $<TARGET_OBJECTS:fs_sphere_cuda_gradients>)
++  target_link_libraries(mris_sphere CUDA::cudart_static)
++endif()
+ install(TARGETS mris_sphere DESTINATION bin)
+ 
+ add_test_script(NAME mris_sphere_test SCRIPT test.sh)

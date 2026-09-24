@@ -48,3 +48,41 @@ This checks one mathematical kernel. Replacing it in `mris_sphere` or
 `utils` library; FreeSurfer links `utils` statically, so `LD_PRELOAD` cannot
 reliably replace this internal call. Stage and full recon-all numerical parity
 must be checked after integration.
+
+## Opt-in `mris_sphere` bridge
+
+`apply_mris_sphere_cuda.py` applies `mris_sphere_cuda.patch` to a checkout at
+the exact FreeSurfer source commit above and copies
+`fs_cuda_average_gradients.cu` into `mris_sphere/`. It never edits an installed
+FreeSurfer tree unless that tree is explicitly supplied as its source argument.
+
+```sh
+python3 tools/native_cuda_experiments/apply_mris_sphere_cuda.py \
+  /path/to/freesurfer-source --check
+python3 tools/native_cuda_experiments/apply_mris_sphere_cuda.py \
+  /path/to/freesurfer-source
+# Configure the patched FreeSurfer source with its normal build dependencies,
+# CMake >= 3.18, CUDA Toolkit, and a CUDA-compatible host compiler:
+cmake -S /path/to/freesurfer-source -B /path/to/fs-build \
+  -DFS_SPHERE_CUDA_GRADIENTS=ON -DCMAKE_CUDA_ARCHITECTURES=90 \
+  -DCMAKE_CUDA_HOST_COMPILER=/path/to/cuda-compatible-g++
+cmake --build /path/to/fs-build --target mris_sphere -j4
+```
+
+The CMake option builds the CUDA object into `mris_sphere` only; the other
+FreeSurfer executables keep their CPU implementations. At runtime, the rebuilt
+`mris_sphere` uses CUDA only with `FS_SPHERE_CUDA_GRADIENTS=1`. With that variable
+unset, or after a CUDA call fails, it uses the original CPU loop. The CUDA
+runtime is linked statically so missing `libcudart.so` does not prevent CPU
+fallback. A successful CUDA call writes `MRISaverageGradients: CUDA active` to
+the process log. This has not yet been integrated into the recon-all bundle or
+validated against the official executable.
+
+The bridge consumes FreeSurfer's in-process active-vertex order, neighbor
+order, and actual float32 gradients, including its `num_avgs > 150` storage
+reordering. It copies those arrays to GPU on each call; topology caching is
+deliberately deferred until in-process parity is verified. Compile with the
+same OpenMP setting as the reference: without OpenMP, the original code enters
+`MRISaverageGradientsFast` before this bridge. Compare an unmodified rebuilt
+binary to the official binary first, then compare CUDA to that rebuilt CPU
+binary for every `mris_sphere` output and downstream per-vertex and ROI metrics.
