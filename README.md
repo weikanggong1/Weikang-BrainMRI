@@ -1,8 +1,8 @@
 # Weikang-BrainMRI
 
-这个独立 Python 包提供 **SynthStrip 脑提取**、**SynthMorph 配准**、**WMH-SynthSeg 脑结构及白质高信号分割**和 **SynthSR 1 mm T1w 合成**。单例可在 CPU 或 CUDA 上运行；批量任务可分配到多张 GPU。推理无需安装 FreeSurfer、TensorFlow、VoxelMorph 或 Neurite。
+这个独立 Python 包提供 **SynthStrip 脑提取**、**SynthMorph 配准**、**WMH-SynthSeg 脑结构及白质高信号分割**、**SynthSR 1 mm T1w 合成**和 **TorchFAST 三组织分割及偏置场校正**。单例可在 CPU 或 CUDA 上运行；批量任务可分配到多张 GPU。推理无需安装 FreeSurfer、FSL、TensorFlow、VoxelMorph 或 Neurite。
 
-仓库名为 `Weikang-BrainMRI`。安装包名 `freesurfer-torch`、Python 导入名 `freesurfer_torch` 和命令 `fs-torch` 保持已有接口不变。0.4.0 增加了 SynthSR；各功能分别存放源码、测试和说明。
+仓库名为 `Weikang-BrainMRI`。安装包名 `freesurfer-torch`、Python 导入名 `freesurfer_torch` 和命令 `fs-torch` 保持已有接口不变。0.5.0 增加了 TorchFAST；各功能分别存放源码、测试和说明。
 
 | 功能 | 专属文档 | 实现目录 |
 |---|---|---|
@@ -10,6 +10,7 @@
 | 刚性、仿射、非线性、联合配准及应用变换 | [SynthMorph](docs/synthmorph/README.md) | [synthmorph/](src/freesurfer_torch/synthmorph/) |
 | 脑结构及白质高信号分割 | [WMH-SynthSeg](docs/wmh_synthseg/README.md) | [wmh_synthseg/](src/freesurfer_torch/wmh_synthseg/) |
 | 单幅 MRI/CT 合成 1 mm T1w | [SynthSR](docs/synthsr/README.md) | [synthsr/](src/freesurfer_torch/synthsr/) |
+| T1 CSF/GM/WM 分割、PVE 和 bias correction | [TorchFAST](docs/fast/README.md) | [fast/](src/freesurfer_torch/fast/) |
 | 多 GPU / 同 GPU 多进程批量调度 | [批量使用与架构](docs/ARCHITECTURE.md#批量执行) | [batch.py](src/freesurfer_torch/batch.py) |
 
 仓库附有 [3 例 T1w](examples/README.md) 和 [3 例 FLAIR](examples/WMH.md) 供直接试运行。它们来自 [OpenNeuro ds000114](https://openneuro.org/datasets/ds000114) 和 [ds003592](https://openneuro.org/datasets/ds003592) 的 CC0 影像；发布前清除了远离脑组织的影像强度。原图地址、处理过程及校验值见 [T1w 清单](examples/data/SOURCES.json) 和 [FLAIR 清单](examples/wmh_data/SOURCES.json)。
@@ -35,6 +36,9 @@ python tools/setup_weights.py --model synthstrip --model synthmorph-joint \
 ```
 
 `python tools/setup_weights.py --all` 会配置全部官方权重。安装后也可运行 `fs-torch-setup-weights`。文件默认存入用户缓存目录；`--dest /path/to/weights` 可改下载位置，`--verify-only` 可检查已有文件。调用时可通过 Python 的 `weights=`、CLI 的 `--weights` 或环境变量 `FREESURFER_TORCH_WEIGHTS` 指定另一目录。推理过程不会联网下载。各权重的地址、版本、SHA-256 和许可见[权重说明](docs/WEIGHTS.md)。
+
+TorchFAST 是数值算法，不使用模型权重。它可直接在只安装本包的环境中运行；从原始
+T1 开始时，前置 SynthStrip 仍需要官方 `synthstrip.1.pt`。
 
 ## 单例 Python 调用：输入、输出和每步作用
 
@@ -103,6 +107,30 @@ print(synthetic.image.data.shape, synthetic.image.affine)
 
 `synthetic.image.data` 是 3D `uint8` 数组，`synthetic.image.affine` 是输出的 RAS 仿射矩阵；1 mm 输出通常与原图不同形状。`SynthSR(weights=None, device="cpu", lowfield=False, v1=False, threads=None)` 可选择权重、低场或 v1 模型、设备和 CPU 线程；`sr(image, ct=False, disable_flipping=False, disable_sharpening=False)` 对应原版的 CT 截断、翻转推理和锐化开关。输入支持 `.nii`、`.nii.gz`、`.mgz`、`.npz` 路径或 `surfa.Volume`；`.npz` 的原版输出规则与 NIfTI/MGZ 不同，见 [SynthSR 说明](docs/synthsr/README.md#python-输入与输出)。
 
+TorchFAST 接受已经提取的单帧 T1w，联合估计 CSF、GM、WM PVE 和平滑乘性
+偏置场。它没有需要加载的模型权重：
+
+```python
+from freesurfer_torch import TorchFAST
+
+fast = TorchFAST(device="cuda:0", threads=1)
+tissue = fast("results/subject_brain.nii.gz")
+tissue.pve_csf.save("results/subject_brain_pve_0.nii.gz")
+tissue.pve_gm.save("results/subject_brain_pve_1.nii.gz")
+tissue.pve_wm.save("results/subject_brain_pve_2.nii.gz")
+tissue.bias_field.save("results/subject_brain_bias.nii.gz")
+tissue.restored.save("results/subject_brain_restore.nii.gz")
+```
+
+`pve_csf/pve_gm/pve_wm` 对应原生 FAST 的 `_pve_0/_pve_1/_pve_2`；脑内三者之和
+为 1，脑外为 0。`bias_field` 是原图中的乘性场，`restored = input / bias_field`；
+两者对应 `fast -b/-B`。`hard_segmentation`、`pve_segmentation` 和 `mixel_type`
+分别对应 `_seg`、`_pveseg` 和 `_mixeltype`。所有影像保留输入 shape 和 affine。
+`tissue_means` 和 `tissue_variances` 是校正后线性强度中按 CSF、GM、WM 排列的数值
+元组，不是影像文件。
+输入不是 brain-only 时，可传 `mask="brain_mask.nii.gz"`；mask 必须与 T1 使用同一
+网格，不会自动重采样。
+
 | Python 输入与类型 | 返回字段与类型 | 原版文件指令 |
 |---|---|---|
 | `strip(image, border=1, fill=None)`：3D/4D NIfTI 等文件路径或 `surfa.Volume` | `image`、`mask`、`distance`：原输入网格的 `surfa.Volume`，距离单位 mm | `mri_synthstrip -i ... -o ... -m ... -d ...` |
@@ -110,6 +138,7 @@ print(synthetic.image.data.shape, synthetic.image.affine)
 | `apply_transform(image, transformation, method="linear", fill=0, dtype="float32")`：3D/4D 影像及已有变换 | 重采样后的 `surfa.Volume` | `mri_synthmorph apply transform image output` |
 | `wmh(image, crop=False, save_lesion_probabilities=False)`：3D T1w/FLAIR 路径或 `surfa.Volume` | `segmentation`：33 类标签图；按需返回 `lesion_probability`；`volumes_mm3`：各类软体积 | `mri_WMHsynthseg --i ... --o ... [--crop] [--save_lesion_probabilities] [--csv_vols ...]` |
 | `sr(image, ct=False, disable_flipping=False, disable_sharpening=False)`：单幅 3D MRI/CT 路径或 `surfa.Volume` | `image`：含 `uint8` 体素、1 mm 网格仿射矩阵和 `.save(path)` 的 `SynthSRImage` | `mri_synthsr --i ... --o ... [--ct] [--disable_flipping] [--disable_sharpening]` |
+| `fast(image, mask=None)`：brain-only 单帧 T1 路径或 `surfa.Volume`，可加同网格 mask | 三张 PVE、两张分类、mixel、bias 和 restore，均为输入网格 `surfa.Volume` | `fast -n 3 -t 1 -b -B -o basename T1_brain.nii.gz` 的单通道 T1、3 类、无 prior 路径 |
 
 `morph` 的正向变换把 moving 的影像或标签送到 fixed 空间，反向变换用于相反方向。各功能的其余参数与几何约定见上表链接的专属文档。
 
@@ -137,15 +166,19 @@ fs-torch wmh-synthseg --i subject_FLAIR.nii.gz \
 
 fs-torch synthsr --i subject_FLAIR.nii.gz \
   --o results/subject_synthsr.nii.gz --device cuda:0 --threads 4
+
+fs-torch fast -i results/subject_brain.nii.gz \
+  -o results/subject_brain --device cuda:0 --threads 1 -b -B
 ```
 
-这五条命令依次完成：
+这六条命令依次完成：
 
 1. `synthstrip` 读取 `-i` 指定的 T1w，分别用 `-o`、`-m`、`-d` 保存脑图、掩膜和距离场；至少指定一个输出。`--device cuda:0` 选择 GPU 0。
 2. `synthmorph` 把第一个位置参数 moving 配准到第二个位置参数 fixed。`-m joint` 选择仿射加非线性模型，`-o/-O` 保存两个方向的重采样图，`-t/-T` 保存正反变换；`--device` 选择网络运行设备。
 3. `apply` 用正向变换把 moving 空间的标签映射到 fixed 空间。`--method nearest` 保持标签值，`--dtype int16` 指定输出类型；已有变换的重采样在 CPU 上执行。
 4. `wmh-synthseg` 从 `--i` 读取 3D FLAIR，向 `--o` 写解剖与 WMH 标签。`--crop` 先定位脑再裁出推理区域，`--save_lesion_probabilities` 另写 `subject_wmh_seg.lesion_probs.nii.gz`，`--csv_vols` 写软体积表；`--device` 与 `--threads` 选择设备和 PyTorch CPU 线程。
 5. `synthsr` 从 `--i` 读取单幅 3D FLAIR，用通用 v2 模型生成 1 mm T1w，并由 `--o` 写出 `uint8` 图像；`--device` 选择 GPU，`--threads` 设置 PyTorch CPU 线程。`--lowfield`、`--v1`、`--ct`、`--disable_flipping`、`--disable_sharpening` 和 `--model` 对应原版同名选项。
+6. `fast` 从 `-i` 读取 brain-only 单帧 T1；若另给 `--mask`，mask 必须与输入同网格。`-o` 是输出 basename：固定写 `_pve_0/1/2.nii.gz`、`_seg.nii.gz`、`_pveseg.nii.gz` 和 `_mixeltype.nii.gz`，分别对应 `FASTResult.pve_csf/pve_gm/pve_wm`、`hard_segmentation`、`pve_segmentation` 和 `mixel_type`。`-b` 加写 `_bias.nii.gz`，`-B` 加写 `_restore.nii.gz`；`--device` 选择 Torch 设备，`--threads` 设置 CPU 线程。默认拒绝覆盖，重跑时加 `--overwrite`。
 
 CLI 会创建输出父目录；更多参数见 `fs-torch --help`。
 
@@ -171,9 +204,18 @@ mri_WMHsynthseg --i subject_FLAIR.nii.gz \
 
 mri_synthsr --i subject_FLAIR.nii.gz \
   --o results/subject_synthsr.nii.gz --threads 4
+
+fast -n 3 -t 1 -b -B -o results/subject_brain \
+  results/subject_brain.nii.gz
 ```
 
 原版 `mri_synthstrip` 的 `-i/-o/-m/-d` 分别对应新 CLI 的同名参数和 Python 的 `StripResult.image/mask/distance`。原版 `mri_synthmorph register` 的 `-o/-O/-t/-T` 对应 `RegistrationResult.moved/fixed_moved/transform/inverse`；`register` 一词在原版中可省略。原版 `apply -m nearest -t int16` 对应新 CLI 的 `apply --method nearest --dtype int16`。原版一条 `apply` 指令可处理多组影像，新 CLI 每次处理一组，Python 可循环。WMH 两版的 `--i/--o/--crop/--save_lesion_probabilities/--csv_vols` 对应相同文件。gpucw1 上安装的原生 `fspython` 只有 CPU 版 PyTorch；CUDA 对照使用相同权重和**未改动的官方 `inference.py`**，在 CUDA PyTorch 环境中运行。SynthSR 两版的 `--i/--o` 也相同；原版 TensorFlow 自动选择可用 GPU，本包用 `--device cuda:N` 指定设备，`--cpu` 可强制使用 CPU。
+
+FSL `fast -n 3 -t 1 -b -B -o` 与本包 `fs-torch fast -b -B -o` 使用相同
+basename 后缀；本包固定实现 `-n 3 -t 1`，因此不另设这两个选项。两者的
+`-W/-I/-O/-l/-f/-H/-R/-N` 默认值对应。实现范围限定为单通道 T1、三组织、无
+atlas prior；FSL 的 T2/PD、多通道、任意类别数和 prior 分支未实现。FSL FAST
+没有 CUDA 入口，本包的 `--device cuda:N` 是新增的执行路径。
 
 | 其余原版选项 | 本包对应 | 说明 |
 |---|---|---|
@@ -189,6 +231,14 @@ mri_synthsr --i subject_FLAIR.nii.gz \
 WMH-SynthSeg 的 `--i`、`--o`、可选 `.lesion_probs` 概率图和 `--csv_vols` 软体积表与原版对应，输出位于处理后的 RAS/1 mm 网格。12 例公开 FLAIR 中，**CPU 对 CPU**、**CUDA 对 CUDA** 的标签、概率体素、数值仿射及 CSV 软体积均与原版相同。完整命令的时间中位数为：原版 CPU **97.38 s**、本包 CPU **70.69 s**；原版源码 CUDA **8.25 s**、本包 CUDA **8.41 s**。原生 CPU 与本包使用不同 PyTorch 版本，不能只凭时间差判断算法加速。两版 NIfTI 的 qform/sform code 可能不同，因此文件字节不一定相同。病例选择、环境、逐例结果和复现命令见[WMH 验证记录](validation/wmh/README.md)。
 
 SynthSR 在 gpucw1 上以同一官方通用 v2 权重验证了 12 例真实 T1w。原版 CPU/GPU 与本包 CPU/GPU 四组输出的形状、仿射和 `uint8` 类型均一致；本包 GPU 对原版 CPU 的逐例体素完全一致比例不低于 **99.992%**，最大差值 1 灰度级。完整单例命令的时间中位数依次为原版 CPU **103.60 s**、原版 GPU **53.27 s**、本包 CPU **42.32 s**、本包 GPU **13.80 s**。不同框架的启动、模型加载及共享节点负载都进入该计时；详细方法、匿名统计和复现命令见[SynthSR 验证记录](validation/synthsr/README.md)。
+
+TorchFAST 在 10 例相同 brain-only T1 输入上与 FSL FAST 比较。GM PVE 的 Pearson、
+0.5 Dice 和体积比中位数为 **0.98488、0.99232、0.99059**；log-bias Pearson 为
+**0.99999999945**。完整 `-b` 命令的观察时间中位数为 FSL CPU **305.80 s**、
+TorchFAST H100 **12.43 s**。关闭 bias 更新后 GM Pearson 降至 **0.93647**，因此
+pipeline 默认保留偏置场校正。同步 GPU HMRF/ICM 与 FSL 的逐体素原地更新不同，
+这些结果表示功能级高一致性，不是逐位复现。环境、CPU/CUDA 检查和原始 T1 VBM
+结果见 [TorchFAST 验证记录](validation/fast/README.md)。
 
 ## 公开样例与原版对照图
 
@@ -209,6 +259,12 @@ WMH-SynthSeg 的公开 FLAIR 从仓库根目录运行 `python examples/check_wmh
 SynthSR 也可直接使用这三例公开 FLAIR。下图在相同 RAS 切面显示 `sub-04` 输入、FreeSurfer 原版合成 T1w 与本包 PyTorch 合成 T1w；后两列使用相同灰度范围。完整三维比较和图像生成命令见[SynthSR 专属说明](docs/synthsr/README.md#对照验证)。
 
 ![公开 FLAIR 与 FreeSurfer、PyTorch SynthSR 合成 T1w 对照](docs/synthsr/figures/synthsr_flair_comparison.png)
+
+下图使用公开 `sub-02` 的同一 brain-only T1 输入。中间两列分别叠加 FSL 和
+TorchFAST GM PVE，右侧显示两种偏置校正结果；本例 GM Pearson 为 0.97817，
+Dice 为 0.98742。
+
+![相同公开 T1w 的 FSL FAST 与 TorchFAST GM 和偏置校正对照](validation/fast/figures/fast_comparison.png)
 
 ## 多病例批量并行
 
@@ -351,9 +407,84 @@ if __name__ == "__main__":
 
 也可将相同任务保存为 JSON，使用 `fs-torch batch jobs.json --devices cuda:0 cuda:1 --workers-per-device 1 --threads-per-worker 4 --report results/report.json`。低场任务在该例的 `model` 中写 `{"lowfield": true}`；显卡由 `--devices` 分配，不写在单例任务里。任务字段及原版目录和 `.txt` 输入方式见 [SynthSR 专属说明](docs/synthsr/README.md#命令行与多病例)。
 
+### TorchFAST 多病例与多 GPU
+
+TorchFAST 使用同一套 batch job 格式，但任务名是 `fast`，输出键直接取自
+`FASTResult`。例如将下面内容保存为 `fast_jobs.json`：
+
+```json
+[
+  {
+    "task": "fast",
+    "kwargs": {"image": "inputs/sub-01_T1_brain.nii.gz"},
+    "outputs": {
+      "pve_gm": "results/sub-01_pve_1.nii.gz",
+      "bias_field": "results/sub-01_bias.nii.gz",
+      "restored": "results/sub-01_restore.nii.gz"
+    }
+  },
+  {
+    "task": "fast",
+    "kwargs": {
+      "image": "inputs/sub-02_T1w.nii.gz",
+      "mask": "inputs/sub-02_brain_mask.nii.gz"
+    },
+    "outputs": {
+      "pve_gm": "results/sub-02_pve_1.nii.gz",
+      "bias_field": "results/sub-02_bias.nii.gz",
+      "restored": "results/sub-02_restore.nii.gz"
+    }
+  }
+]
+```
+
+命令行把两个病例动态分给两张 GPU，并把每例状态写入单独的 batch 报告：
+
+```bash
+fs-torch batch fast_jobs.json --devices cuda:0 cuda:1 \
+  --workers-per-device 1 --threads-per-worker 1 \
+  --report results/fast_batch.json
+```
+
+同一份 JSON 也可由 Python 提交：
+
+```python
+import json
+from pathlib import Path
+from freesurfer_torch import BatchRunner
+
+
+def main():
+    jobs = json.loads(Path("fast_jobs.json").read_text())
+    with BatchRunner(
+        devices=("cuda:0", "cuda:1"),
+        workers_per_device=1,
+        threads_per_worker=1,
+    ) as runner:
+        results = runner.run(jobs)
+    if any(not result.ok for result in results):
+        raise RuntimeError([result.error for result in results if not result.ok])
+
+
+if __name__ == "__main__":
+    main()
+```
+
+调度器以 `spawn` 启动 `设备数 × workers_per_device` 个独立进程。每个 worker 固定
+绑定一个设备，空闲时领取下一例；返回结果仍按 manifest 顺序排列。TorchFAST 没有
+模型权重，worker 复用的是进程和 CUDA 上下文。设
+`--workers-per-device 2` 会在每张 GPU 上运行两个独立进程；每个进程都有自己的
+中间张量和显存占用，因此应先使用每卡一个 worker。完整输出键、显存记录和
+`pve_chunk_size` 设置见 [TorchFAST 说明](docs/fast/README.md#多病例并行)。
+
 ## 实验性 UKB v1.5 VBM GPU 路径
 
-仓库另提供从原始 T1 到 modulated GM 的[实验脚本](tools/experimental/ukb_vbm/README.md)。它用 WMH-SynthSeg 后验估计 GM，并用 PyTorch 多尺度配准替换 FAST 和 FNIRT；输出仍采用 `bb_vbm` 的三个文件名和 UKB GM 模板网格。该路径目前没有加入 `fs-torch` 稳定 API，因为实测输出尚不能视为 FNIRT 等价结果。
+仓库另提供从原始 T1 到 modulated GM 的[实验脚本](tools/experimental/ukb_vbm/README.md)。
+GM 可由 `synthseg` 或 `torch-fast` 两种方法得到；随后都以 PyTorch 配准替换 FNIRT。
+配准在 4、2、1 三个尺度依次优化，但每个尺度的图像项都是整幅图像的全局归一化
+相关加 `0.2 × MSE`，不使用局部窗口相关。输出沿用 `bb_vbm` 的三个文件名和 UKB GM
+模板网格。该路径目前没有加入 `fs-torch` 稳定 API，因为实测输出尚不能视为 FNIRT
+等价结果。
 
 ```bash
 python tools/setup_weights.py --model wmh-synthseg
@@ -363,7 +494,29 @@ python tools/experimental/ukb_vbm/run_gpu_vbm.py \
   --output-dir work/ukb_vbm/sub-02 --device cuda:0
 ```
 
-这条命令生成输入网格上的 `GM_prob.nii.gz` 和 `brain_mask.nii.gz`，以及模板网格上的 `T1_GM_to_template_GM.nii.gz`、`T1_GM_JAC_nl.nii.gz` 和 `T1_GM_to_template_GM_mod.nii.gz`。`report.json` 记录模型加载、GM 推理、注册和冷启动总时间，并保留约束前后的 deformation 检查。UKB 模板的官方下载、原 v1.5 指令逐项对应、双 GPU 分组方法和每个输出的定义见[专属说明](docs/ukb_vbm/README.md)；10 例真实 T1w 的固定 mask 模板比较、FSL/GPU 一致性和时间见[验证记录](validation/ukb_vbm/README.md)。
+上例使用默认 `--gm-method synthseg`，需要 WMH-SynthSeg 权重。若改用 TorchFAST：
+
+```bash
+python tools/setup_weights.py --model synthstrip
+python tools/experimental/ukb_vbm/run_gpu_vbm.py \
+  --input examples/data/sub-02_T1w.nii.gz \
+  --template /path/to/ukb/template_GM.nii.gz \
+  --output-dir work/ukb_vbm/sub-02-fast --device cuda:0 \
+  --gm-method torch-fast
+```
+
+`torch-fast` 先用 SynthStrip 得到脑图和 mask，再以 TorchFAST GM PVE 进入配准；若
+已有同网格 mask，可用 `--brain-mask` 跳过 SynthStrip。TorchFAST 本身无需权重，且
+默认启用 bias correction；只有显式添加 `--fast-no-bias` 才关闭。该分支还保存
+`T1_brain.nii.gz`、三张 `_pve_*.nii.gz`、两张分类图、mixel、bias 和 restore。
+
+两种 GM 方法都生成输入网格上的 `GM_prob.nii.gz` 和 `brain_mask.nii.gz`，以及模板
+网格上的 `T1_GM_to_template_GM.nii.gz`、`T1_GM_JAC_nl.nii.gz` 和
+`T1_GM_to_template_GM_mod.nii.gz`。真实运行报告名为 `report.private.json`，其中记录
+GM 方法、模型加载、脑提取、GM 估计、配准和冷启动时间，以及约束前后的 deformation
+检查。UKB 模板下载、原 v1.5 指令对应、双 GPU 分组方法和全部输出定义见
+[专属说明](docs/ukb_vbm/README.md)；10 例真实 T1w 的固定 mask 模板比较、FSL/GPU
+一致性和时间见[验证记录](validation/ukb_vbm/README.md)。
 
 ## 验证与维护
 
@@ -371,6 +524,7 @@ python tools/experimental/ukb_vbm/run_gpu_vbm.py \
 - [0.2.0 结构重整回归](validation/refactor/report.public.json)：新布局与 0.1.0 的对照记录；历史计时不能当作 0.2.0 的重新计时。
 - [WMH-SynthSeg 0.3.0 对照](validation/wmh/README.md)：12 例公开 FLAIR 的原版 CPU/官方源码 CUDA 与本包 CPU/CUDA 逐例输出、时间和三例双 GPU 示例。
 - [SynthSR 0.4.0 说明](docs/synthsr/README.md)与[验证记录](validation/synthsr/README.md)：原版指令、模型变体、输出格式、多 GPU 调用及 12 例四组计时和数值对照。
+- [TorchFAST 0.5.0 说明](docs/fast/README.md)与[验证记录](validation/fast/README.md)：Python/CLI/batch 接口、FSL FAST 参数对应、10 例 PVE 与 bias 对照及 VBM 实验臂。
 - [UKB v1.5 VBM 实验记录](validation/ukb_vbm/README.md)：10 例真实 T1w 的 FSL 双模板参考、PyTorch GPU 替代、固定 mask 配对评估和受控时间。
 - [架构、公共 API 与批量任务格式](docs/ARCHITECTURE.md)。
 - [新增功能指南](docs/ADDING_FUNCTIONS.md)：每个功能的实现、文档和测试均有独立目录。

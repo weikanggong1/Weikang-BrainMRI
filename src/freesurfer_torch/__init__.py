@@ -1,5 +1,5 @@
 """Standalone PyTorch brain MRI inference tools."""
-__version__ = '0.4.0'
+__version__ = '0.5.0'
 
 
 def __getattr__(name):
@@ -15,6 +15,10 @@ def __getattr__(name):
     if name in ('SynthSR', 'SynthSRResult', 'SynthSRImage'):
         from . import synthsr
         return getattr(synthsr, name)
+    if name in ('TorchFAST', 'FASTResult', 'FASTConfig', 'FASTTensorResult',
+                'segment_t1'):
+        from . import fast
+        return getattr(fast, name)
     if name in ('BatchRunner', 'BatchResult', 'run_batch'):
         from . import batch
         return getattr(batch, name)

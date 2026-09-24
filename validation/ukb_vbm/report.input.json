@@ -18,7 +18,7 @@
     },
     "gpu_alternative": {
       "label": "PyTorch GPU raw-T1 VBM alternative",
-      "description": "WMH-SynthSeg posteriors estimate GM, followed by multiscale NCC affine and displacement optimization and Jacobian modulation.",
+      "description": "WMH-SynthSeg posteriors estimate GM, followed by multiscale optimization with global normalized correlation + 0.2 MSE, affine and displacement parameters, and Jacobian modulation.",
       "status": "experimental",
       "equivalence": "not_fnirt_equivalent"
     },

@@ -1,6 +1,9 @@
 # 预训练权重：下载、校验与公开发布
 
-Git 仓库和 wheel 均不包含权重。四个功能使用 FreeSurfer 官方发布的模型文件；配置脚本下载文件、核对大小与 SHA-256，并保存权重目录。此后 Python API 和 `fs-torch` 命令会自动查找它，下载过程无需安装 FreeSurfer。
+Git 仓库和 wheel 均不包含权重。SynthStrip、SynthMorph、WMH-SynthSeg 和 SynthSR
+使用 FreeSurfer 官方发布的模型文件；配置脚本下载文件、核对大小与 SHA-256，并
+保存权重目录。此后 Python API 和 `fs-torch` 命令会自动查找它，下载过程无需安装
+FreeSurfer。0.5.0 新增的 TorchFAST 是数值算法，不使用模型权重。
 
 ## 一次配置，后续自动使用
 
@@ -91,6 +94,14 @@ export FREESURFER_TORCH_WEIGHTS="$PWD/weights"
 ```
 
 `pip install`、导入模块和推理不下载权重。离线计算节点可从联网机器复制已校验的权重目录。
+
+## TorchFAST 不需要权重
+
+`TorchFAST`、`fs-torch fast` 和 batch 中的 `"task": "fast"` 直接运行 HMRF-EM、
+bias field 和 PVE 数值计算，不读取 checkpoint，也不需要执行
+`tools/setup_weights.py`。只有从原始、未去颅骨 T1 开始并先调用 SynthStrip 时，
+才需要配置 `synthstrip.1.pt`。`setup_weights.py --all` 的九个文件均属于上表四个
+学习模型，不含 TorchFAST 文件。
 
 ## 权重许可与归属
 

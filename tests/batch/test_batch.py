@@ -8,7 +8,9 @@ import subprocess
 import sys
 import tempfile
 import textwrap
+from types import SimpleNamespace
 import unittest
+from unittest import mock
 
 
 SOURCE = Path(__file__).resolve().parents[2] / "src" / "freesurfer_torch" / "batch.py"
@@ -58,6 +60,82 @@ class BatchValidationTests(unittest.TestCase):
             self.assertEqual(prepared[0]["outputs"], {"image": str(output)})
             with self.assertRaises(ValueError):
                 batch._prepare_jobs([{"task": "synthsr", "outputs": {"mask": output}}], False)
+
+    def test_fast_accepts_tissue_and_bias_outputs(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            job = {
+                "task": "fast",
+                "kwargs": {"image": "T1_brain.nii.gz"},
+                "outputs": {
+                    "pve_gm": root / "T1_brain_pve_1.nii.gz",
+                    "bias_field": root / "T1_brain_bias.nii.gz",
+                    "restored": root / "T1_brain_restore.nii.gz",
+                },
+            }
+            prepared = batch._prepare_jobs([job], overwrite=False)
+            self.assertEqual(set(prepared[0]["outputs"]),
+                             {"pve_gm", "bias_field", "restored"})
+            with self.assertRaises(ValueError):
+                batch._prepare_jobs([
+                    {"task": "fast", "outputs": {"lesion_probability": root / "bad.nii.gz"}}
+                ], False)
+
+    def test_fast_dispatch_reuses_model_and_saves_atomically(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            first_output = root / "first_pve_1.nii.gz"
+            second_output = root / "second_pve_1.nii.gz"
+            first_output.write_text("old")
+            initialized, calls, saved = [], [], []
+
+            class Volume:
+                def __init__(self, value):
+                    self.value = value
+
+                def save(self, path):
+                    path = Path(path)
+                    saved.append(path)
+                    path.write_text(self.value)
+
+            class FakeFast:
+                def __init__(self, device, bias_fwhm_mm):
+                    initialized.append((device, bias_fwhm_mm))
+
+                def __call__(self, image, mask=None):
+                    calls.append((image, mask))
+                    return SimpleNamespace(pve_gm=Volume(image))
+
+            jobs = batch._prepare_jobs([
+                {
+                    "task": "fast", "model": {"bias_fwhm_mm": 0.0},
+                    "kwargs": {"image": "first.nii.gz", "mask": "mask.nii.gz"},
+                    "outputs": {"pve_gm": first_output},
+                },
+                {
+                    "task": "fast", "model": {"bias_fwhm_mm": 0.0},
+                    "kwargs": {"image": "second.nii.gz"},
+                    "outputs": {"pve_gm": second_output},
+                },
+            ], overwrite=True)
+            with mock.patch.object(batch, "_device", "cpu"), \
+                    mock.patch.object(batch, "_models", {}), \
+                    mock.patch.object(batch, "_initialization_error", None), \
+                    mock.patch.object(batch, "_model_class", return_value=FakeFast):
+                outcomes = [batch._run_job(index, job) for index, job in enumerate(jobs)]
+
+            self.assertTrue(all(outcome.ok for outcome in outcomes))
+            self.assertEqual(initialized, [("cpu", 0.0)])
+            self.assertEqual(calls, [("first.nii.gz", "mask.nii.gz"),
+                                     ("second.nii.gz", None)])
+            self.assertEqual(first_output.read_text(), "first.nii.gz")
+            self.assertEqual(second_output.read_text(), "second.nii.gz")
+            self.assertEqual(outcomes[0].outputs, {"pve_gm": str(first_output.resolve())})
+            self.assertEqual(outcomes[1].outputs, {"pve_gm": str(second_output.resolve())})
+            self.assertTrue(all(path.parent == root and path.name.endswith(".nii.gz")
+                                for path in saved))
+            self.assertTrue(all(path not in (first_output, second_output) for path in saved))
+            self.assertFalse(any(path.exists() for path in saved))
 
     def test_synthmorph_debug_outputs_participate_in_collision_checks(self):
         with tempfile.TemporaryDirectory() as folder:

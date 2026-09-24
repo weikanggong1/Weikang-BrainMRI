@@ -15,6 +15,7 @@ from pathlib import Path
 import re
 import time
 import traceback
+import uuid
 
 
 _OUTPUTS = {
@@ -22,10 +23,28 @@ _OUTPUTS = {
     "synthmorph": {"moved", "fixed_moved", "transform", "inverse"},
     "wmh_synthseg": {"segmentation", "lesion_probability"},
     "synthsr": {"image"},
+    "fast": {
+        "pve_csf", "pve_gm", "pve_wm", "hard_segmentation",
+        "pve_segmentation", "mixel_type", "bias_field", "restored",
+    },
 }
 _models = {}
 _device = None
 _initialization_error = None
+
+
+def _atomic_save(volume, path):
+    """Save beside the destination, then publish one complete file."""
+    path = Path(path)
+    suffix = next((value for value in (".nii.gz", ".nii", ".mgz", ".npz")
+                   if path.name.endswith(value)), path.suffix)
+    temporary = path.with_name(
+        f".{path.name}.tmp-{os.getpid()}-{uuid.uuid4().hex}{suffix}")
+    try:
+        volume.save(temporary)
+        os.replace(temporary, path)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 @dataclass
@@ -74,6 +93,9 @@ def _model_class(task):
     if task == "synthsr":
         from .synthsr import SynthSR
         return SynthSR
+    if task == "fast":
+        from .fast import TorchFAST
+        return TorchFAST
     raise ValueError(f"Unknown task: {task}")
 
 
@@ -95,7 +117,7 @@ def _run_job(index, job):
             kwargs["save_lesion_probabilities"] = True
         result = _models[key](**kwargs)
         for name, path in job["outputs"].items():
-            getattr(result, name).save(path)
+            _atomic_save(getattr(result, name), path)
             outcome.outputs[name] = path
     except Exception as exc:
         outcome.error = f"{type(exc).__name__}: {exc}"

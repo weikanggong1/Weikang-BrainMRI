@@ -2,7 +2,9 @@
 
 [返回首页](../README.md) · [新增功能](ADDING_FUNCTIONS.md)
 
-源码、说明文档和测试按功能组织。0.3.0 加入 WMH-SynthSeg，0.4.0 加入 SynthSR。命令行、权重定位和批量调度放在共享层，模型及其空间运算放在各功能目录。
+源码、说明文档和测试按功能组织。0.3.0 加入 WMH-SynthSeg，0.4.0 加入 SynthSR，
+0.5.0 加入 TorchFAST。命令行、权重定位和批量调度放在共享层，模型及其空间运算
+放在各功能目录。
 
 ```text
 src/freesurfer_torch/
@@ -34,6 +36,12 @@ src/freesurfer_torch/
 │   ├── pipeline.py              # 预处理、推理和结果保存
 │   ├── spatial.py               # 重采样、方向调整与填充
 │   └── README.md               # 代码目录入口
+├── fast/                       # 单通道 T1 三组织分割与偏置场校正
+│   ├── __init__.py              # 功能公开接口
+│   ├── algorithm.py             # HMRF-EM、bias field 与 PVE 张量算法
+│   ├── pipeline.py              # 影像几何、TorchFAST 与 FASTResult
+│   ├── upstream_fast4/          # 原样保留的 FAST4 2111.3 源码；不参与构建
+│   └── README.md               # 代码目录入口
 ├── spatial.py                  # 旧导入路径的转导出
 └── synthmorph_models.py         # 旧导入路径的转导出
 docs/
@@ -41,6 +49,7 @@ docs/
 ├── synthmorph/README.md
 ├── wmh_synthseg/README.md
 ├── synthsr/README.md
+├── fast/README.md
 ├── WEIGHTS.md                  # 官方权重获取与许可
 ├── COMPARISON.md               # 0.1.0 对照实验
 ├── ARCHITECTURE.md
@@ -50,6 +59,7 @@ tests/
 ├── synthmorph/
 ├── wmh_synthseg/
 ├── synthsr/
+├── fast/
 ├── batch/
 └── test_public_api.py
 ```
@@ -58,7 +68,7 @@ tests/
 
 ## 公开 API 与兼容性
 
-以下导入在重整前后保持一致：
+0.5.0 的顶层公开导入如下；此前版本已有的导入保持兼容：
 
 ```python
 from freesurfer_torch import (
@@ -66,6 +76,7 @@ from freesurfer_torch import (
     SynthMorph, RegistrationResult, apply_transform,
     WMHSynthSeg, WMHResult,
     SynthSR, SynthSRResult, SynthSRImage,
+    TorchFAST, FASTResult, FASTConfig, FASTTensorResult, segment_t1,
     BatchRunner, BatchResult, run_batch,
 )
 ```
@@ -77,11 +88,19 @@ from freesurfer_torch.synthstrip import SynthStrip
 from freesurfer_torch.synthmorph import SynthMorph, apply_transform
 from freesurfer_torch.wmh_synthseg import WMHSynthSeg
 from freesurfer_torch.synthsr import SynthSR
+from freesurfer_torch.fast import (
+    TorchFAST, FASTResult, FASTConfig, FASTTensorResult, segment_t1,
+)
 ```
 
-顶层按需导入：`import freesurfer_torch` 本身不加载 Torch、Surfa 或权重。旧路径 `freesurfer_torch.spatial` 和 `freesurfer_torch.synthmorph_models` 转导出新目录中的对象；新增代码直接从 `freesurfer_torch.synthmorph.spatial` 和 `freesurfer_torch.synthmorph.models` 导入。
+顶层按需导入：`import freesurfer_torch` 本身不加载 Torch、Surfa 或权重。旧路径 `freesurfer_torch.spatial` 和 `freesurfer_torch.synthmorph_models` 转导出新目录中的对象；新增代码直接从 `freesurfer_torch.synthmorph.spatial` 和 `freesurfer_torch.synthmorph.models` 导入。`TorchFAST` 是数值算法，不读取 checkpoint；`FASTConfig`、`FASTTensorResult` 和 `segment_t1` 是无文件 I/O 的张量层接口。
 
-构造函数加载模型并选择设备；调用实例处理输入，返回带影像几何的结果对象。调用者决定保存哪些输出。权重查找顺序为显式路径、`FREESURFER_TORCH_WEIGHTS`、配置脚本保存的目录、用户缓存目录、已设置的 `FREESURFER_HOME/models/`。最后一项兼容已有安装，运行时不要求安装 FreeSurfer。WMH-SynthSeg 和 SynthSR 输出的空间网格通常与输入不同；分别见 [WMH-SynthSeg](wmh_synthseg/README.md) 和 [SynthSR](synthsr/README.md) 的说明。
+学习模型的构造函数加载权重并选择设备；TorchFAST 构造函数只保存算法参数和设备。
+调用实例处理输入，返回带影像几何的结果对象，由调用者决定保存哪些输出。学习模型
+的权重查找顺序为显式路径、`FREESURFER_TORCH_WEIGHTS`、配置脚本保存的目录、用户
+缓存目录、已设置的 `FREESURFER_HOME/models/`。最后一项兼容已有安装，运行时不要求
+安装 FreeSurfer。WMH-SynthSeg 和 SynthSR 输出的空间网格通常与输入不同；分别见
+[WMH-SynthSeg](wmh_synthseg/README.md) 和 [SynthSR](synthsr/README.md) 的说明。
 
 ## 批量执行
 
@@ -126,18 +145,27 @@ from freesurfer_torch.synthsr import SynthSR
     "model": {"lowfield": false},
     "kwargs": {"image": "/data/sub04_FLAIR.nii.gz"},
     "outputs": {"image": "/results/sub04_synthsr.nii.gz"}
+  },
+  {
+    "task": "fast",
+    "kwargs": {"image": "/data/sub05_T1_brain.nii.gz"},
+    "outputs": {
+      "pve_gm": "/results/sub05_pve_1.nii.gz",
+      "bias_field": "/results/sub05_bias.nii.gz",
+      "restored": "/results/sub05_restore.nii.gz"
+    }
   }
 ]
 ```
 
 | 字段 | 规则 |
 |---|---|
-| `task` | `synthstrip`、`synthmorph`、`wmh_synthseg` 或 `synthsr` |
-| `model` | 可省略；模型构造参数，不包含 `device`；SynthMorph 内层 `model` 指配准模式，SynthSR 可在此选 `lowfield` 或 `v1` |
-| `kwargs` | 实例调用参数；SynthStrip、WMH-SynthSeg、SynthSR 至少有 `image`，SynthMorph 至少有 `moving` 和 `fixed` |
+| `task` | `synthstrip`、`synthmorph`、`wmh_synthseg`、`synthsr` 或 `fast` |
+| `model` | 可省略；功能构造参数，不包含 `device`；SynthMorph 内层 `model` 指配准模式，SynthSR 可在此选 `lowfield` 或 `v1`，FAST 可设置 `bias_fwhm_mm`、`pve_chunk_size` 等算法参数 |
+| `kwargs` | 实例调用参数；SynthStrip、WMH-SynthSeg、SynthSR、FAST 至少有 `image`，SynthMorph 至少有 `moving` 和 `fixed`；FAST 还可传同网格 `mask` |
 | `outputs` | 至少一个输出，键为结果属性，值为文件路径 |
 
-SynthStrip 输出键为 `image`、`mask`、`distance`；SynthMorph 为 `moved`、`fixed_moved`、`transform`、`inverse`；WMH-SynthSeg 为 `segmentation`、`lesion_probability`；SynthSR 为 `image`。若请求 WMH 病灶概率输出，worker 会启用相应推理选项。`volumes_mm3` 是 Python 返回的软体积字典，不是可调用 `.save()` 的批量输出。变换应用 `apply_transform` 是 CPU 后处理，不是当前 batch 的任务类型；可按需循环应用。
+SynthStrip 输出键为 `image`、`mask`、`distance`；SynthMorph 为 `moved`、`fixed_moved`、`transform`、`inverse`；WMH-SynthSeg 为 `segmentation`、`lesion_probability`；SynthSR 为 `image`；FAST 为 `pve_csf`、`pve_gm`、`pve_wm`、`hard_segmentation`、`pve_segmentation`、`mixel_type`、`bias_field`、`restored`。若请求 WMH 病灶概率输出，worker 会启用相应推理选项。`volumes_mm3`、FAST 的 `tissue_means` 和 `tissue_variances` 是 Python 返回的数值，不是可调用 `.save()` 的批量输出。变换应用 `apply_transform` 是 CPU 后处理，不是当前 batch 的任务类型；可按需循环应用。
 
 ```bash
 fs-torch batch jobs.json --devices cuda:0 cuda:1 \

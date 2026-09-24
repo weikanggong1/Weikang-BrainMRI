@@ -34,9 +34,12 @@ flowchart LR
   C1 --> D1[FLIRT + FNIRT to UKB GM template]
   D1 --> E1[FNIRT Jacobian modulation]
 
-  A --> B2[PyTorch: WMH-SynthSeg inference]
-  B2 --> C2[SynthSeg-derived GM probability]
-  C2 --> D2[Multiscale NCC affine + displacement]
+  A --> B2a[PyTorch: WMH-SynthSeg]
+  B2a --> C2a[SynthSeg-derived GM probability]
+  A --> B2b[SynthStrip or input-grid brain mask]
+  B2b --> C2b[TorchFAST GM PVE; bias correction on]
+  C2a --> D2[Global normalized correlation + 0.2 MSE; scales 4, 2, 1]
+  C2b --> D2
   D2 --> E2[PyTorch Jacobian modulation]
 ```
 
@@ -44,9 +47,10 @@ flowchart LR
 
 | 阶段 | UKB v1.5 参考 | PyTorch 实验路径 |
 |---|---|---|
-| 脑与组织估计 | BET、逆变换 MNI mask、FAST | WMH-SynthSeg 后验概率汇总为 GM |
+| 脑与组织估计 | BET、逆变换 MNI mask、FAST | `synthseg`：WMH-SynthSeg 后验汇总为 GM；`torch-fast`：SynthStrip 或现有 mask 后运行 TorchFAST，取 GM PVE |
 | 仿射初始化 | `fsl_reg`/FLIRT | GM 重心加可优化仿射 |
-| 非线性模型 | FNIRT cubic B-spline | 低分辨率位移控制网格、三尺度 NCC |
+| 图像目标 | FNIRT 强度模型 | 每个尺度对整幅展平图像计算 `1 - global normalized correlation + 0.2 × MSE` |
+| 非线性模型 | FNIRT cubic B-spline | 低分辨率位移控制网格；按 4、2、1 三个尺度优化 |
 | 正则化 | `GM_2_MNI152GM_2mm.cnf` | 位移平滑项；验证设置为 10 |
 | Jacobian 处理 | FNIRT 配置设为 0.2–5；受控单例最终输出全为正，但范围为 0.271–5.816 | 整体缩放位移场直到落入 0.2–5；不逐体素裁剪 |
 | 调制 | warped GM × nonlinear Jacobian | 同一公式 |
@@ -64,20 +68,45 @@ python tools/experimental/ukb_vbm/run_gpu_vbm.py \
   --output-dir results/sub-01 --device cuda:0
 ```
 
-`--input` 是单帧 3D T1 NIfTI；`--template` 是 3D GM 模板，其 shape 和 affine 决定最终输出网格。`--device` 选择 PyTorch 设备。默认 `--affine-steps 50 --deform-steps 40 --smoothness 10` 对应本次实测；其中 smoothness 由一例调参病例选定。`--weights` 可显式指定 WMH-SynthSeg checkpoint；运行过 `python tools/setup_weights.py --model wmh-synthseg` 后可以省略。
+`--input` 是单帧 3D T1 NIfTI；`--template` 是 3D GM 模板，其 shape 和 affine 决定最终输出网格。`--device` 选择 PyTorch 设备。默认 `--affine-steps 50 --deform-steps 40 --smoothness 10` 对应本次实测；其中 smoothness 由一例调参病例选定。
+
+默认 `--gm-method synthseg` 使用 WMH-SynthSeg 后验得到 GM，需要 checkpoint；可用
+`--weights` 显式指定，或先运行 `python tools/setup_weights.py --model wmh-synthseg`。
+另一入口是：
+
+```bash
+python tools/experimental/ukb_vbm/run_gpu_vbm.py \
+  --input subject_T1w.nii.gz \
+  --template assets/template_GM.nii.gz \
+  --output-dir results/sub-01-fast --device cuda:0 \
+  --gm-method torch-fast
+```
+
+`torch-fast` 默认先用 SynthStrip 脑提取，再运行三组织 TorchFAST，并以 GM PVE
+进入配准；`--brain-mask` 可提供与 T1 同网格的现有 mask，跳过 SynthStrip。
+TorchFAST bias correction 默认启用，`--fast-no-bias` 才关闭；该开关用于消融，不是
+默认流程。TorchFAST 本身不需要权重；自动脑提取需要 SynthStrip 权重，可先运行
+`python tools/setup_weights.py --model synthstrip`，或用 `--synthstrip-weights` 指定。
 
 | 文件 | 网格和数值含义 | 原 `bb_vbm` 对应物 |
 |---|---|---|
-| `GM_prob.nii.gz` | 输入 T1 网格；SynthSeg-derived GM 概率 | `T1_fast/T1_brain_pve_1.nii.gz`，算法不同 |
+| `GM_prob.nii.gz` | 输入 T1 网格；SynthSeg-derived GM 概率或 TorchFAST GM PVE | `T1_fast/T1_brain_pve_1.nii.gz`；`torch-fast` 仍是独立实现 |
 | `brain_mask.nii.gz` | 输入 T1 网格；硬脑掩膜 | `T1_brain_mask.nii.gz`，算法不同 |
 | `T1_GM_to_template_GM.nii.gz` | 模板网格；warped GM | 同名文件 |
 | `T1_GM_JAC_nl.nii.gz` | 模板网格；非线性 pull-map determinant | 同名文件 |
 | `T1_GM_to_template_GM_mod.nii.gz` | 模板网格；warped GM × Jacobian | 同名文件 |
-| `report.json` | 运行参数、原始/约束后 Jacobian、拟合分数和墙钟时间 | 原脚本没有统一 JSON 报告 |
+| `report.private.json` | 本地输入/模板路径、GM 方法、运行参数、原始/约束后 Jacobian、拟合分数和墙钟时间 | 原脚本没有统一 JSON 报告 |
+
+`torch-fast` 还写出 `T1_brain.nii.gz`、`T1_brain_pve_0/1/2.nii.gz`、
+`T1_brain_seg.nii.gz`、`T1_brain_pveseg.nii.gz`、
+`T1_brain_mixeltype.nii.gz`、`T1_brain_bias.nii.gz` 和
+`T1_brain_restore.nii.gz`。报告包含本地路径，不能直接作为公开聚合报告发布。
 
 ## 官方模板和权重
 
-模型权重不进入 Git。WMH-SynthSeg checkpoint 由现有权重配置脚本从 FreeSurfer 官方地址下载，并校验 SHA-256；见[权重说明](../WEIGHTS.md)。
+模型权重不进入 Git。`synthseg` 使用的 WMH-SynthSeg checkpoint 和 `torch-fast`
+自动脑提取所用的 SynthStrip checkpoint 均由现有权重配置脚本从 FreeSurfer 官方
+地址下载并校验 SHA-256；见[权重说明](../WEIGHTS.md)。TorchFAST 分割不读取权重。
 
 UKB v1.5 把模板作为外部 ancillary data 使用。官方公开压缩包为：
 
@@ -119,7 +148,7 @@ tar -xzf DATA_public.tar.gz -C assets --strip-components=2 \
 
 ## 批量执行
 
-批量脚本和双 GPU 分组示例见[实验脚本说明](../../tools/experimental/ukb_vbm/README.md)。每个进程保留一份分割模型，并依次处理分配给它的病例；多 GPU 时给各进程互不重叠的病例列表。验证报告中的 GPU 吞吐时间来自一张 H100 上的顺序批量，不把示例的双 GPU 调度写成实测加速。
+批量脚本和双 GPU 分组示例见[实验脚本说明](../../tools/experimental/ukb_vbm/README.md)。`run_gpu_raw.py --gm-method synthseg` 在每个进程保留一份 SynthSeg estimator；`--gm-method torch-fast` 则保留 SynthStrip 和 TorchFAST，并使用默认 bias correction。每个进程依次处理分配给它的病例；多 GPU 时给各进程互不重叠的病例列表。验证报告中的 GPU 吞吐时间来自一张 H100 上的顺序批量，不把示例的双 GPU 调度写成实测加速。
 
 ## 来源
 

@@ -16,7 +16,7 @@ Template comparisons use the fixed union of template values above 0.01 (214,263 
 
 The FSL arm is UKB v1.5 structural and VBM commands on FSL 6.0.7.4. The reference follows the published crop, BET, standard-mask, FAST, affine, FNIRT, Jacobian and modulation sequence. The original production environment used an older FSL release, so this is a method-level reproduction rather than a bytewise replay.
 
-The GPU arm is PyTorch GPU raw-T1 VBM alternative. WMH-SynthSeg posteriors estimate GM, followed by multiscale NCC affine and displacement optimization and Jacobian modulation.
+The GPU arm is PyTorch GPU raw-T1 VBM alternative. WMH-SynthSeg posteriors estimate GM, followed by multiscale optimization with global normalized correlation + 0.2 MSE, affine and displacement parameters, and Jacobian modulation.
 
 Gradient distortion correction was omitted because the non-UKB scans had no scanner gradient-coefficient file; the corresponding v1.5 branch uses no gradient correction.
 

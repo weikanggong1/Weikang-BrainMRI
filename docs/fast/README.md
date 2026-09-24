@@ -1,0 +1,224 @@
+# PyTorch single-channel T1 tissue segmentation
+
+[返回首页](../../README.md) · [代码目录](../../src/freesurfer_torch/fast/)
+
+该功能在 PyTorch 中实现三组织 HMRF-EM 分割、平滑乘性 bias field 估计和
+partial-volume estimation。它不调用 FSL，也不需要模型权重。输入应为已经完成脑
+提取的单帧 T1w；未提供 mask 时，以输入中严格大于零的体素作为脑区。
+
+## Python 调用
+
+```python
+from freesurfer_torch.fast import TorchFAST
+
+fast = TorchFAST(device="cuda:0", threads=1)
+result = fast("T1_brain.nii.gz")
+
+result.pve_csf.save("T1_brain_pve_0.nii.gz")
+result.pve_gm.save("T1_brain_pve_1.nii.gz")
+result.pve_wm.save("T1_brain_pve_2.nii.gz")
+result.pve_segmentation.save("T1_brain_pveseg.nii.gz")
+result.bias_field.save("T1_brain_bias.nii.gz")
+result.restored.save("T1_brain_restore.nii.gz")
+```
+
+输入支持路径或 `surfa.Volume`。也可传入同网格 mask：
+
+```python
+result = fast("T1w.nii.gz", mask="brain_mask.nii.gz")
+```
+
+显式 mask 会与 `T1w > 0` 取交集。shape 或 voxel-to-world affine 不一致时会
+报错，不做隐式重采样。
+
+## 返回值
+
+`TorchFAST(...)` 返回 `FASTResult`：
+
+| 字段 | 数据含义 |
+|---|---|
+| `pve_csf` | CSF partial-volume fraction，范围 0–1 |
+| `pve_gm` | GM partial-volume fraction，范围 0–1 |
+| `pve_wm` | WM partial-volume fraction，范围 0–1 |
+| `hard_segmentation` | PVE 前的 HMRF 分类；脑内 1=CSF、2=GM、3=WM |
+| `pve_segmentation` | PVE 最大分量；脑内 1=CSF、2=GM、3=WM |
+| `mixel_type` | 0–2 为纯 CSF/GM/WM，3–5 为 CSF-GM、CSF-WM、GM-WM |
+| `bias_field` | 原始图像中的乘性 bias；脑外为 1 |
+| `restored` | 脑内 `input / bias_field`；脑外为 0 |
+| `tissue_means` | 校正后线性强度中的 CSF、GM、WM 均值 |
+| `tissue_variances` | 校正后线性强度中的 CSF、GM、WM 方差 |
+
+所有影像输出保留输入的 shape、voxel size、方向和世界坐标。脑内三个 PVE 之和为
+1，脑外为 0。
+
+## 命令行与 FSL 对应
+
+```bash
+fs-torch fast -i T1_brain.nii.gz -o results/T1_brain \
+  --device cuda:0 --threads 1 -b -B
+```
+
+这条命令在 `cuda:0` 上分割已经提取的脑图，`-o` 是输出 basename。默认写出：
+
+```text
+T1_brain_pve_0.nii.gz       CSF PVE
+T1_brain_pve_1.nii.gz       GM PVE
+T1_brain_pve_2.nii.gz       WM PVE
+T1_brain_seg.nii.gz         PVE 前硬分类
+T1_brain_pveseg.nii.gz      最大 PVE 分类
+T1_brain_mixeltype.nii.gz   pure/mixed tissue 类型
+```
+
+`-b` 另写乘性偏置场 `T1_brain_bias.nii.gz`；`-B` 另写校正图
+`T1_brain_restore.nii.gz`。已有文件默认不覆盖，重跑时显式加 `--overwrite`。每个文件
+先在目标目录写入临时文件，成功后再替换最终路径。
+
+对应的原生 FSL 命令是：
+
+```bash
+fast -n 3 -t 1 -b -B -o results/T1_brain T1_brain.nii.gz
+```
+
+本包固定实现 FSL 的 `-n 3 -t 1`，即三组织、T1、单通道路径，因此 CLI 不另设
+`-n/-t`。两条命令的 `-W/-I/-O/-l/-f/-H/-R/-N/-b/-B/-o` 含义和默认值对应；
+本包用 `-i` 明确输入，用 `--device` 选择 Torch 设备。`-N` 只关闭 bias 更新，仍
+执行默认 4 次 HMRF 外循环。FSL 的其他类别数、T2/PD、多通道、priors、手工均值
+和 `--nopve` 路径未实现。
+
+## 多病例并行
+
+FAST 没有权重，worker 只复用进程和 CUDA 上下文。下面的 JSON 把两例分配给批量
+调度器，并分别保存 GM、bias 和校正图：
+
+```json
+[
+  {
+    "task": "fast",
+    "kwargs": {"image": "inputs/sub-01_T1_brain.nii.gz"},
+    "outputs": {
+      "pve_gm": "results/sub-01_pve_1.nii.gz",
+      "bias_field": "results/sub-01_bias.nii.gz",
+      "restored": "results/sub-01_restore.nii.gz"
+    }
+  },
+  {
+    "task": "fast",
+    "kwargs": {"image": "inputs/sub-02_T1_brain.nii.gz"},
+    "outputs": {
+      "pve_gm": "results/sub-02_pve_1.nii.gz",
+      "bias_field": "results/sub-02_bias.nii.gz",
+      "restored": "results/sub-02_restore.nii.gz"
+    }
+  }
+]
+```
+
+```bash
+fs-torch batch fast_jobs.json --devices cuda:0 cuda:1 \
+  --workers-per-device 1 --threads-per-worker 1 \
+  --report results/fast_batch.json
+```
+
+`task` 选择 TorchFAST；`kwargs.image` 是单例 Python 调用的输入；`outputs` 的键是
+`FASTResult` 字段，值是保存路径。两个 worker 分别绑定 GPU 0 和 GPU 1，空闲 worker
+领取下一例，结果顺序仍与 JSON 一致。Python 中可用同一组 job 调用
+`BatchRunner(devices=("cuda:0", "cuda:1"))`：
+
+```python
+import json
+from pathlib import Path
+from freesurfer_torch import BatchRunner
+
+
+def main():
+    jobs = json.loads(Path("fast_jobs.json").read_text())
+    with BatchRunner(
+        devices=("cuda:0", "cuda:1"),
+        workers_per_device=1,
+        threads_per_worker=1,
+    ) as runner:
+        results = runner.run(jobs)
+    if any(not result.ok for result in results):
+        raise RuntimeError([result.error for result in results if not result.ok])
+
+
+if __name__ == "__main__":
+    main()
+```
+
+支持的输出键为 `pve_csf`、
+`pve_gm`、`pve_wm`、`hard_segmentation`、`pve_segmentation`、`mixel_type`、
+`bias_field` 和 `restored`。
+
+默认 PVE 阶段以 8 个混合比例为一块计算；208×253×226 的实测峰值约 1.75 GiB。
+同 GPU 的多个 worker 各自占用显存。显存不足时先保持每张 GPU 一个 worker；确需
+同卡并行时减少 `pve_chunk_size`，代价是更多循环。4 个真实任务在一张 H100、两个
+worker 下全部完成，batch 输出与单例输出逐元素相同。
+
+## 默认计算过程
+
+默认参数对应 FAST4 2111.3 的单通道 T1 设置：
+
+| `TorchFAST` 参数 | 默认值 | 作用 |
+|---|---:|---|
+| `init_iterations` | 15 | 初始 Gaussian-mixture 更新次数 |
+| `bias_iterations` | 4 | 联合分割与 bias 更新次数 |
+| `fixed_iterations` | 4 | bias 固定后的分割更新次数 |
+| `bias_fwhm_mm` | 20 | bias field 平滑尺度，单位 mm |
+| `init_mrf` | 0.02 | bias 估计阶段的组织空间权重 |
+| `mrf` | 0.1 | 最终组织空间权重 |
+| `mixel_mrf` | 0.3 | pure/mixed tissue 类型空间权重 |
+| `pve_steps` | 100 | 最终 PVE 比例的离散间隔数；mixel evidence 固定按 FAST 的 0.01 网格积分 |
+| `mean_field_iterations` | 5 | 每轮 HMRF 的同步更新次数 |
+
+计算首先按 FAST 的输入规则处理负值：若第 2 百分位仍小于零，则整体减去最小值；
+否则把零以下体素置零。随后在 `log(T1 + 1)` 域以排序数组的 25%、50%、75%
+位置初始化 CSF、GM 和 WM。默认初始软 GMM 总更新数为
+`init_iterations + fixed_iterations = 19`。EM 更新组织均值、
+方差和后验概率。bias 更新对精度加权残差及精度分别做物理尺度 Gaussian 平滑，
+随后相除并把脑内 log-bias 均值归零。最终在校正后的线性强度中比较三种纯组织
+和三种双组织 mixel，并在选中的 mixel 内估计 PVE。
+
+## 与 FSL FAST 的边界
+
+实现参照 [FAST 官方说明](https://fsl.fmrib.ox.ac.uk/fsl/docs/structural/fast.html)
+和 FAST4 2111.3 源码结构。它覆盖本项目 VBM 所需的单通道、T1、三分类、无先验
+路径。以下功能尚未实现：
+
+- T2、PD 和多通道分割；
+- 标准空间 tissue priors 或手工初始均值；
+- 任意组织类别数；
+- FSL 命令行文件命名与所有诊断输出。
+
+FSL 每次 HMRF 外循环先用固定种子随机数初始化 posterior，再按体素顺序原地更新；
+本实现从 Gaussian likelihood 初始化并使用同步卷积更新，才能在 GPU 上并行。
+Gaussian 卷积边界、分位数计算和浮点归约顺序也不同。因此方法阶段和默认参数相
+对应，但不能据此把输出称为逐体素或逐位等价。与原生 FAST 的实际一致性需要在
+完全相同的 brain-only 输入上分别比较三张 PVE、bias field 和校正图。
+
+FAST4 2111.3 标签的完整、未改动源码随包保存在
+[`upstream_fast4/`](../../src/freesurfer_torch/fast/upstream_fast4/)，只用于许可和溯源，
+不会被编译或导入。该部分及本改写受 [FSL 6.0 许可](../../licenses/FSL-6.0.txt)
+约束，只允许非商业使用；来源提交和逐文件 SHA-256 见
+[`provenance.json`](../provenance.json)。
+
+10 例相同输入中，GM Pearson、0.5 Dice 和体积比中位数分别为 **0.98488**、
+**0.99232** 和 **0.99059**；log-bias Pearson 为 **0.99999999945**。完整 GPU 命令
+中位数为 **12.43 s**，现有 FSL CPU `fast -b` 记录为 **305.80 s**。具体计时边界、
+bias 消融、CPU/CUDA 检查、原始 T1 VBM 结果和公开图示见
+[验证记录](../../validation/fast/README.md)。
+
+## 直接张量接口
+
+低层接口不读取影像文件：
+
+```python
+from freesurfer_torch.fast import FASTConfig, segment_t1
+
+result = segment_t1(t1_tensor, mask_tensor, voxel_size=(1.0, 1.0, 1.0),
+                    config=FASTConfig())
+gm = result.pve[1]
+```
+
+`t1_tensor` 和返回张量均为 `(X, Y, Z)` 顺序。该接口适合算法测试；常规影像调用
+应使用 `TorchFAST`，由它检查坐标并构造 `surfa.Volume` 输出。

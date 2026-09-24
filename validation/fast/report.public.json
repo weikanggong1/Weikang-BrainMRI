@@ -1,0 +1,311 @@
+{
+  "schema": "torch_fast_release_validation/v1",
+  "release_status": "functional_reproduction_not_bitwise_fast",
+  "contains_case_level_records": false,
+  "contains_subject_paths": false,
+  "contains_subject_images": false,
+  "run_date": "2026-09-24",
+  "cohort": {
+    "n": 10,
+    "description": "Ten real T1-weighted scans from one non-UKB clinical cohort; aggregate metrics only."
+  },
+  "environment": {
+    "host": "gpucw1",
+    "cpu": "Intel Xeon Gold 6430",
+    "gpu": "NVIDIA H100 PCIe 80 GB",
+    "python": "3.11.7",
+    "pytorch": "2.5.1+cu118",
+    "cuda_runtime": "11.8",
+    "fsl": "6.0.7.4",
+    "fsl_fast4": "2111.3 h2bc3f7f_1",
+    "numpy": "1.26.4",
+    "nibabel": "5.4.0",
+    "surfa": "0.6.3"
+  },
+  "same_brain_input": {
+    "method": "TorchFAST and FSL fast -b received the identical T1_brain image. Metrics use positive input voxels.",
+    "summary": {
+      "timing": {
+        "torch_fast_sec": {
+          "count": 10,
+          "median": 1.6422463374910876,
+          "min": 1.2614785928744823,
+          "max": 2.9400921198539436
+        },
+        "fsl_fast_cpu_sec": {
+          "count": 10,
+          "median": 305.80027609155513,
+          "min": 254.22468487196602,
+          "max": 347.2025516908616
+        },
+        "fsl_over_torch_ratio": {
+          "count": 10,
+          "median": 185.17965390176514,
+          "min": 118.09240579445168,
+          "max": 235.7713663020528
+        }
+      },
+      "pve_median": {
+        "csf": {
+          "pearson": 0.9877686096133522,
+          "mae": 0.00820052014761083,
+          "rmse": 0.053691915936816645,
+          "dice_at_0_5": 0.9868701046992753,
+          "volume_ratio": 1.0143906463167909
+        },
+        "gm": {
+          "pearson": 0.984879656750453,
+          "mae": 0.014991886263239856,
+          "rmse": 0.07347476078394821,
+          "dice_at_0_5": 0.9923174370618132,
+          "volume_ratio": 0.9905883436825683
+        },
+        "wm": {
+          "pearson": 0.993445254648063,
+          "mae": 0.007179296323593441,
+          "rmse": 0.050059344829217735,
+          "dice_at_0_5": 0.9971309248709839,
+          "volume_ratio": 1.004588444600817
+        }
+      },
+      "bias_log_domain_median": {
+        "pearson": 0.9999999994490927,
+        "mae": 1.8985731499307861e-06,
+        "rmse": 2.6742656977805624e-06
+      },
+      "restore_median": {
+        "pearson": 0.9999999999752803,
+        "mae": 0.00016335035632868063,
+        "rmse": 0.0002381305571856806,
+        "relative_mae": 1.917131391324404e-06
+      },
+      "numeric_constraints_passed": 10,
+      "numeric_constraints_total": 10
+    }
+  },
+  "bias_ablation": {
+    "method": "TorchFAST on the same ten brain-only inputs with FAST -N semantics: four HMRF loops retained and bias updates disabled.",
+    "without_bias_median": {
+      "sec": 1.388400920899585,
+      "pearson": 0.9364728422712867,
+      "mae": 0.07204559535420083,
+      "dice": 0.9370253049842582,
+      "volume_ratio": 1.0036729854673956,
+      "all_bias_fields_one": true
+    },
+    "with_bias_median": {
+      "pearson": 0.984879656750453,
+      "mae": 0.014991886263239856,
+      "dice_at_0_5": 0.9923174370618132,
+      "volume_ratio": 0.9905883436825683
+    }
+  },
+  "complete_command_timing": {
+    "scope": "Complete fresh Python CLI process, input loading, GPU computation, CPU transfer, and seven compressed NIfTI outputs; FSL timing is the existing complete fast -b subprocess with its outputs.",
+    "summary": {
+      "n": 10,
+      "torch_fast_cli_sec_median": 12.429774081450887,
+      "fsl_fast_cpu_sec_median": 305.80027609155513,
+      "fsl_over_torch_ratio_median": 22.970524605710185
+    },
+    "caveat": "FSL and TorchFAST ran in different windows on a shared node; this is observed wall time, not an isolated hardware speed claim."
+  },
+  "cpu_gpu_check": {
+    "case_count": 1,
+    "cpu_threads": 16,
+    "cpu_sec_input_and_inference": 80.65468302811496,
+    "gpu_sec_input_and_inference": 1.6182432980276644,
+    "observed_cpu_over_gpu_ratio": 49.84088803359663,
+    "gm_pearson": 0.9999999948561953,
+    "gm_mae": 8.40829059711723e-08,
+    "gm_max_abs": 0.010000050067901611,
+    "bias_mae": 3.377251545089166e-08,
+    "bias_max_abs": 6.556510925292969e-07,
+    "caveat": "One real case; shared-node CPU and GPU windows were not simultaneous."
+  },
+  "public_example": {
+    "source": "Repository example sub-02, brain image produced by the published reference SynthStrip run.",
+    "fsl_fast_cpu_complete_sec": 235.12,
+    "torch_fast_gpu_complete_sec": 13.74,
+    "mask_voxels": 1144672,
+    "gm_pearson": 0.9781719107994316,
+    "gm_mae": 0.01755292036884293,
+    "gm_dice_at_0_5": 0.9874186084793504,
+    "gm_volume_ratio_torch_over_fsl": 0.9935013213079218
+  },
+  "raw_t1_vbm": {
+    "n": 10,
+    "all_jacobians_positive": true,
+    "raw_gm_vs_fsl": {
+      "pearson": {
+        "count": 10,
+        "median": 0.7906339929087344,
+        "min": 0.6557772263815543,
+        "max": 0.8434986741519434
+      },
+      "mae": {
+        "count": 10,
+        "median": 0.07804162910230823,
+        "min": 0.06371655783320107,
+        "max": 0.13843960323142931
+      },
+      "dice_0_5": {
+        "count": 10,
+        "median": 0.9540738985911953,
+        "min": 0.9065428245126115,
+        "max": 0.9619594016731516
+      },
+      "volume_ratio": {
+        "count": 10,
+        "median": 1.0462886400821196,
+        "min": 1.0068627121571834,
+        "max": 1.1448811575529445
+      }
+    },
+    "fsl_warped": {
+      "pearson": {
+        "count": 10,
+        "median": 0.5892486781792228,
+        "min": 0.41210554919675446,
+        "max": 0.6789638509069531
+      },
+      "mae": {
+        "count": 10,
+        "median": 0.2389031232897061,
+        "min": 0.20290748778924453,
+        "max": 0.3009969371315968
+      },
+      "dice_0_5": {
+        "count": 10,
+        "median": 0.7320884003819585,
+        "min": 0.6602849786719783,
+        "max": 0.760809599855822
+      },
+      "volume_ratio": {
+        "count": 10,
+        "median": 1.0442715955774429,
+        "min": 0.9880851787305773,
+        "max": 1.1034973393145402
+      }
+    },
+    "fsl_modulated": {
+      "pearson": {
+        "count": 10,
+        "median": 0.5087656345355369,
+        "min": 0.33735188434926155,
+        "max": 0.6020718917576598
+      },
+      "mae": {
+        "count": 10,
+        "median": 0.2909140698457693,
+        "min": 0.2447088781342255,
+        "max": 0.35331013361431035
+      },
+      "dice_0_5": {
+        "count": 10,
+        "median": 0.7095236643445157,
+        "min": 0.6138839612079322,
+        "max": 0.7389648080085364
+      },
+      "volume_ratio": {
+        "count": 10,
+        "median": 0.9869803120463565,
+        "min": 0.8936577684180582,
+        "max": 1.0092181952957044
+      }
+    },
+    "same_registration_warped": {
+      "pearson": {
+        "count": 10,
+        "median": 0.7923139095848704,
+        "min": 0.5659941682685636,
+        "max": 0.9020265953762434
+      },
+      "mae": {
+        "count": 10,
+        "median": 0.15187363483710747,
+        "min": 0.09872095094224563,
+        "max": 0.24313327358973563
+      },
+      "dice_0_5": {
+        "count": 10,
+        "median": 0.8428489603395236,
+        "min": 0.7322469181920059,
+        "max": 0.8922683879208985
+      },
+      "volume_ratio": {
+        "count": 10,
+        "median": 0.9896777755939379,
+        "min": 0.9493132553274135,
+        "max": 1.026932456129318
+      }
+    },
+    "same_registration_modulated": {
+      "pearson": {
+        "count": 10,
+        "median": 0.7682045902038397,
+        "min": 0.5419798850527456,
+        "max": 0.8800046690387118
+      },
+      "mae": {
+        "count": 10,
+        "median": 0.1706078487630346,
+        "min": 0.11520953047440864,
+        "max": 0.25129383374549463
+      },
+      "dice_0_5": {
+        "count": 10,
+        "median": 0.82654902116871,
+        "min": 0.7020729099269518,
+        "max": 0.8772115236020479
+      },
+      "volume_ratio": {
+        "count": 10,
+        "median": 0.9989883916593487,
+        "min": 0.9356291180540206,
+        "max": 1.0322670120430233
+      }
+    },
+    "timing_sec": {
+      "synthstrip_fast_outputs": {
+        "count": 10,
+        "median": 23.045011381502263,
+        "min": 18.68760459078476,
+        "max": 30.1511358669959
+      },
+      "gpu_registration_modulation": {
+        "count": 10,
+        "median": 10.993846511468291,
+        "min": 9.2094582519494,
+        "max": 19.110928999027237
+      },
+      "gpu_raw_to_vbm": {
+        "count": 10,
+        "median": 36.47381450096145,
+        "min": 30.489082659129053,
+        "max": 39.80056573799811
+      },
+      "fsl_raw_to_vbm": {
+        "count": 9,
+        "median": 3637.203101981897,
+        "min": 3084.7863368084654,
+        "max": 4052.619174204534
+      }
+    }
+  },
+  "raw_t1_vbm_methods": {
+    "gpu": "raw T1 -> SynthStrip -> TorchFAST with bias correction -> PyTorch registration, Jacobian and modulation",
+    "fsl_reference": "existing UKB v1.5-method FSL FAST and FNIRT arm",
+    "registered_mask": "official UKB GM template > 0.01",
+    "native_mask": "union of FSL and resampled TorchFAST GM > 0.01 on the FSL FAST grid",
+    "timing": "GPU values are persistent-model warm per-case saved-stage wall times and exclude the one-time model load; FSL values sum all available raw-to-VBM stages. Methods ran in different windows on a shared node."
+  },
+  "batch_check": {
+    "jobs": 4,
+    "device": "cuda:0",
+    "workers": 2,
+    "outputs_per_job": 3,
+    "wall_sec": 14.6,
+    "status": "4/4 succeeded; repeated case01 GM and bias outputs were elementwise identical to the single-image CLI output."
+  }
+}

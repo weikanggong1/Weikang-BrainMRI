@@ -1,3 +1,5 @@
 *.csv text eol=lf
 # Preserve upstream license text verbatim.
 licenses/*.txt -whitespace
+# Preserve the vendored FAST4 tag byte for byte.
+src/freesurfer_torch/fast/upstream_fast4/* -whitespace

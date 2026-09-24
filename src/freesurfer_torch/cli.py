@@ -3,7 +3,22 @@ import argparse
 from dataclasses import asdict
 import csv
 import json
+import os
 from pathlib import Path
+import uuid
+
+
+def _atomic_save(volume, path):
+    path = Path(path)
+    suffix = next((value for value in ('.nii.gz', '.nii', '.mgz', '.npz')
+                   if path.name.endswith(value)), path.suffix)
+    temporary = path.with_name(
+        f'.{path.name}.tmp-{os.getpid()}-{uuid.uuid4().hex}{suffix}')
+    try:
+        volume.save(temporary)
+        os.replace(temporary, path)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def _wmh_suffix(path):
@@ -115,9 +130,48 @@ def _run_synthsr(args):
         print(output)
 
 
+def _run_fast(args):
+    from .fast import TorchFAST
+
+    model = TorchFAST(
+        device=args.device,
+        threads=args.threads,
+        init_iterations=args.init_iterations,
+        bias_iterations=args.bias_iterations,
+        fixed_iterations=args.fixed_iterations,
+        bias_fwhm_mm=0.0 if args.no_bias else args.bias_fwhm_mm,
+        init_mrf=args.init_mrf,
+        mrf=args.mrf,
+        mixel_mrf=args.mixel_mrf,
+        pve_steps=args.pve_steps,
+    )
+    prefix = Path(args.output_prefix)
+    prefix.parent.mkdir(parents=True, exist_ok=True)
+    fields = {
+        "_pve_0.nii.gz": "pve_csf",
+        "_pve_1.nii.gz": "pve_gm",
+        "_pve_2.nii.gz": "pve_wm",
+        "_seg.nii.gz": "hard_segmentation",
+        "_pveseg.nii.gz": "pve_segmentation",
+        "_mixeltype.nii.gz": "mixel_type",
+    }
+    if args.save_bias:
+        fields["_bias.nii.gz"] = "bias_field"
+    if args.save_restored:
+        fields["_restore.nii.gz"] = "restored"
+    outputs = {suffix: Path(f"{prefix}{suffix}") for suffix in fields}
+    existing = [path for path in outputs.values() if path.exists()]
+    if existing and not args.overwrite:
+        raise FileExistsError(f"output exists: {existing[0]}; use --overwrite")
+    result = model(args.image, mask=args.mask)
+    for suffix, path in outputs.items():
+        _atomic_save(getattr(result, fields[suffix]), path)
+        print(path)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(prog='fs-torch')
-    parser.add_argument('--version', action='version', version='freesurfer-torch 0.4.0')
+    parser.add_argument('--version', action='version', version='freesurfer-torch 0.5.0')
     commands = parser.add_subparsers(dest='command', required=True)
     strip = commands.add_parser('synthstrip', help='brain extraction')
     strip.add_argument('-i', '--image', required=True)
@@ -178,6 +232,27 @@ def main(argv=None):
     sr.add_argument('--disable_sharpening', action='store_true')
     sr.add_argument('--disable_flipping', action='store_true')
     sr.add_argument('--weights', '--model', help='official checkpoint file or containing directory')
+    fast = commands.add_parser(
+        'fast', help='three-tissue T1 segmentation and bias correction')
+    fast.add_argument('-i', '--image', required=True,
+                      help='brain-extracted, single-channel T1 image')
+    fast.add_argument('-o', '--output-prefix', required=True,
+                      help='output basename, matching FSL FAST -o')
+    fast.add_argument('--mask', help='optional mask on the input grid')
+    fast.add_argument('--device', default='cpu')
+    fast.add_argument('--threads', type=int, default=1)
+    fast.add_argument('-W', '--init-iterations', type=int, default=15)
+    fast.add_argument('-I', '--bias-iterations', type=int, default=4)
+    fast.add_argument('-O', '--fixed-iterations', type=int, default=4)
+    fast.add_argument('-l', '--bias-fwhm-mm', type=float, default=20.0)
+    fast.add_argument('-f', '--init-mrf', type=float, default=0.02)
+    fast.add_argument('-H', '--mrf', type=float, default=0.1)
+    fast.add_argument('-R', '--mixel-mrf', type=float, default=0.3)
+    fast.add_argument('--pve-steps', type=int, default=100)
+    fast.add_argument('-N', '--no-bias', action='store_true')
+    fast.add_argument('-b', '--save-bias', action='store_true')
+    fast.add_argument('-B', '--save-restored', action='store_true')
+    fast.add_argument('--overwrite', action='store_true')
     batch = commands.add_parser('batch', help='run a JSON list of jobs with persistent GPU workers')
     batch.add_argument('manifest')
     batch.add_argument('--devices', nargs='+', default=['cuda:0'])
@@ -189,17 +264,42 @@ def main(argv=None):
     if args.command == 'batch':
         from .batch import run_batch
         jobs = json.loads(Path(args.manifest).read_text())
+        path = Path(args.report).expanduser().resolve()
+        manifest_path = Path(args.manifest).expanduser().resolve()
+        if path == manifest_path:
+            parser.error('--report must differ from the manifest')
+        for index, job in enumerate(jobs):
+            outputs = list(job.get('outputs', {}).values())
+            if job.get('task') == 'synthmorph' and job.get('kwargs', {}).get('output_dir'):
+                debug = Path(job['kwargs']['output_dir'])
+                outputs.append(debug)
+                outputs.extend(
+                    debug / name for name in
+                    ('inp_1.nii.gz', 'inp_2.nii.gz', 'network_transforms.npz')
+                )
+            for output in outputs:
+                if Path(output).expanduser().resolve() == path:
+                    parser.error(f'--report conflicts with job {index} output: {path}')
+        if path.exists() and not args.overwrite:
+            parser.error(f'report exists: {path}; use --overwrite to replace it')
         results = run_batch(jobs, devices=args.devices, workers_per_device=args.workers_per_device,
                             threads_per_worker=args.threads_per_worker, overwrite=args.overwrite)
-        path = Path(args.report)
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps([asdict(result) for result in results], indent=2))
+        temporary = path.with_name(f'.{path.name}.tmp-{os.getpid()}-{uuid.uuid4().hex}.json')
+        try:
+            temporary.write_text(json.dumps([asdict(result) for result in results], indent=2))
+            os.replace(temporary, path)
+        finally:
+            temporary.unlink(missing_ok=True)
         raise SystemExit(int(any(result.error for result in results)))
     if args.command == 'wmh-synthseg':
         _run_wmh(args)
         return
     if args.command == 'synthsr':
         _run_synthsr(args)
+        return
+    if args.command == 'fast':
+        _run_fast(args)
         return
     if args.command == 'synthstrip':
         from .synthstrip import SynthStrip

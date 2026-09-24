@@ -385,7 +385,8 @@ def main():
     for name, volume in (("warped_gm", warped), ("jacobian", jac),
                          ("modulated_gm", warped * jac)):
         _save(volume, fixed_image, paths[name])
-    report = {"method": "PyTorch multiscale NCC, sparse displacement control grid; not FNIRT",
+    report = {"method": ("PyTorch multiscale global normalized correlation + 0.2 MSE, "
+                         "sparse displacement control grid; not FNIRT"),
               "device": str(device), "seconds_including_io": time.perf_counter() - started,
               "moving": str(Path(args.moving).resolve()),
               "fixed": str(Path(args.fixed).resolve()),
