@@ -3,7 +3,7 @@ recursive-include licenses *.txt
 recursive-include docs *.md *.json *.png
 recursive-include tools *.py *.md
 recursive-include tests *.py *.json
-recursive-include validation/recon_all *.py *.md *.json
+recursive-include validation/recon_all *.py *.md *.json *.cu
 
 # Runtime checkpoints, MRI templates, and generated images are external data.
 global-exclude *.pt *.pth *.h5 *.hdf5 *.ckpt

@@ -1,5 +1,11 @@
 # Provisional FreeSurfer 8.2 numerical comparison
 
+Completed single-subject and two-GPU batch integration results are in the
+[gpucw1 integration report](gpucw1_batch_integration_2026-09-24.md). An
+isolated [CUDA native-kernel pilot](native_cuda_pilot/REPORT.md) and its
+[CPU subfunction profile](native_cuda_pilot/CPU_PROFILE.md) record measured
+replacement candidates that were not integrated.
+
 ## SynthSeg numerical boundary on the development T1
 
 With cuDNN FP32 and TF32 disabled, the PyTorch 33-class SynthSeg output for
