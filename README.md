@@ -13,6 +13,8 @@
 
 前四项功能的多被试处理使用 Python `predict_batch()`：pandas 表含 `input` 影像和 `output` 绝对路径前缀两列；`workers=2` 可在同一设备启用两个 Python 进程。FastVBM 的多病例 Python 调用见其子页。输出命名和调度规则见[批量执行说明](docs/ARCHITECTURE.md#批量执行)；仓库提供 [T1w 样例](examples/README.md)和 [FLAIR 样例](examples/WMH.md)。
 
+FastVBM 0.7 的线性阶段是独立 PyTorch 12-DOF 实现，非线性阶段直接调用本包 PyTorch SynthMorph `deform`。它不在运行时调用 FSL FLIRT/FNIRT 或 FreeSurfer 可执行文件。
+
 ## 安装
 
 需要 Python ≥ 3.10。使用 GPU 时，请安装与本机驱动兼容的 CUDA 版 PyTorch。
@@ -35,9 +37,9 @@ python tools/setup_weights.py --model synthstrip --model synthmorph-joint \
   --model wmh-synthseg --model synthsr
 ```
 
-FastVBM 从原始 T1w 开始时需要默认 SynthStrip 权重；仅部署该流程可运行 `python tools/setup_weights.py --model fast-vbm`。GM 模板由用户提供，不由配置脚本下载。TorchFAST 不需要权重。
+FastVBM 从原始 T1w 开始时需要 `synthstrip.1.pt` 和 `synthmorph.deform.3.h5`；仅部署该流程可运行 `python tools/setup_weights.py --model fast-vbm`。GM 模板由用户提供，不由配置脚本下载。TorchFAST 不需要权重。
 
-`--all` 下载全部模型变体；`--dest /path/to/weights` 指定本地目录；`--verify-only` 检查已有文件。安装后也可使用 `fs-torch-setup-weights`。前四项功能可通过 Python 的 `weights=`、CLI 的 `--weights` 或 `FREESURFER_TORCH_WEIGHTS` 指定权重；FastVBM 对应参数为 `synthstrip_weights=` / `--synthstrip-weights`。官方地址、文件大小、SHA-256、许可和离线部署方法见[权重说明](docs/WEIGHTS.md)。
+`--all` 下载全部模型变体；`--dest /path/to/weights` 指定本地目录；`--verify-only` 检查已有文件。安装后也可使用 `fs-torch-setup-weights`。前四项功能可通过 Python 的 `weights=`、CLI 的 `--weights` 或 `FREESURFER_TORCH_WEIGHTS` 指定权重；FastVBM 分别使用 `synthstrip_weights=` / `--synthstrip-weights` 和 `synthmorph_weights=` / `--synthmorph-weights`。官方地址、文件大小、SHA-256、许可和离线部署方法见[权重说明](docs/WEIGHTS.md)。
 
 ## 项目资料
 

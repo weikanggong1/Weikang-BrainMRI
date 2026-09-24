@@ -13,6 +13,7 @@ import torch
 
 from ..fast import FASTResult, TorchFAST
 from .registration import VBMRegistrationResult, register_gm
+from .synthmorph_backend import SynthMorphDeformRegistration
 
 
 OUTPUT_FILENAMES = {
@@ -119,10 +120,11 @@ class FastVBMResult:
         return {
             "status": "experimental",
             "method": (
-                "TorchFAST GM; PyTorch multiscale global normalized correlation "
-                "+ 0.2 MSE registration"
+                "TorchFAST GM; independent PyTorch FLIRT-compatible 12-DOF "
+                "affine; PyTorch SynthMorph deform"
             ),
             "fnirt_equivalent": False,
+            "fsl_flirt_equivalent": False,
             "settings": self.settings,
             "timing_sec": self.timing_sec,
             "timing_definition": {
@@ -137,8 +139,9 @@ class FastVBMResult:
                 ),
                 "fast": "TorchFAST inference and GPU-to-CPU output materialization",
                 "registration_jacobian_modulation": (
-                    "GM transfer, registration, Jacobian, modulation, and CPU "
-                    "output materialization"
+                    "linear registration, SynthMorph deform inference, "
+                    "Jacobian, modulation, and CPU output materialization; "
+                    "the first call includes lazy SynthMorph weight loading"
                 ),
             },
             "fast": {
@@ -150,7 +153,7 @@ class FastVBMResult:
                 ],
             },
             "registration": {
-                "fit_score_1_minus_loss": self.registration.fit_score,
+                "fit_score_normalized_correlation": self.registration.fit_score,
                 "pull_world_affine": self.registration.pull_world_affine.tolist(),
                 "maximum_displacement_mm": (
                     self.registration.maximum_displacement_mm
@@ -202,8 +205,9 @@ class FastVBM:
     """Reusable raw-T1 to VBM pipeline using SynthStrip and TorchFAST.
 
     SynthStrip is loaded lazily and is not required when ``brain_mask`` is
-    supplied. Registration uses global normalized correlation plus 0.2 MSE;
-    it is an experimental PyTorch method and is not an FNIRT implementation.
+    supplied. Linear registration is a PyTorch FLIRT-compatible 12-DOF fit.
+    Nonlinear registration uses this package's PyTorch SynthMorph implementation
+    with the official deform checkpoint.
     """
 
     def __init__(
@@ -212,11 +216,14 @@ class FastVBM:
         device="cpu",
         threads=None,
         synthstrip_weights=None,
+        synthmorph_weights=None,
         bias_correction=True,
-        affine_steps=50,
-        deform_steps=40,
-        smoothness=10.0,
-        scales=(4, 2, 1),
+        linear_strides=(4, 2, 1),
+        linear_steps=(80, 60, 50),
+        linear_learning_rates=(0.05, 0.025, 0.0125),
+        synthmorph_extent=256,
+        synthmorph_hyper=0.5,
+        synthmorph_steps=7,
     ):
         self.device = torch.device(device)
         if self.device.type == "cuda" and not torch.cuda.is_available():
@@ -225,21 +232,23 @@ class FastVBM:
             if not isinstance(threads, int) or threads < 1:
                 raise ValueError("threads must be a positive integer")
             torch.set_num_threads(threads)
-        if affine_steps < 0 or deform_steps < 0 or smoothness < 0:
-            raise ValueError("steps and smoothness must be non-negative")
         self.synthstrip_weights = synthstrip_weights
+        self.synthmorph_weights = synthmorph_weights
         self.threads = threads
         self.extractor = None
+        self.deform_model = None
         self.fast = TorchFAST(
             device=self.device,
             threads=threads,
             bias_fwhm_mm=20.0 if bias_correction else 0.0,
         )
         self.bias_correction = bias_correction
-        self.affine_steps = affine_steps
-        self.deform_steps = deform_steps
-        self.smoothness = smoothness
-        self.scales = tuple(scales)
+        self.linear_strides = tuple(linear_strides)
+        self.linear_steps = tuple(linear_steps)
+        self.linear_learning_rates = tuple(linear_learning_rates)
+        self.synthmorph_extent = synthmorph_extent
+        self.synthmorph_hyper = synthmorph_hyper
+        self.synthmorph_steps = synthmorph_steps
 
     def _extract(self, image):
         if self.extractor is None:
@@ -253,7 +262,26 @@ class FastVBM:
         result = self.extractor(image)
         return result.image, result.mask
 
-    def __call__(self, image, template, *, brain_mask=None, initial_pull=None):
+    def _deform_model(self):
+        if self.deform_model is None:
+            self.deform_model = SynthMorphDeformRegistration(
+                weights=self.synthmorph_weights,
+                device=self.device,
+                extent=self.synthmorph_extent,
+                hyper=self.synthmorph_hyper,
+                steps=self.synthmorph_steps,
+            )
+        return self.deform_model
+
+    def __call__(
+        self,
+        image,
+        template,
+        *,
+        brain_mask=None,
+        initial_pull=None,
+        initial_pull_convention=None,
+    ):
         """Run one T1 image; all returned template maps use ``template``'s grid."""
         total_started = time.perf_counter()
         image, image_data = _load_volume(image, "image")
@@ -297,10 +325,15 @@ class FastVBM:
             template,
             device=self.device,
             initial_pull=initial_pull,
-            scales=self.scales,
-            affine_steps=self.affine_steps,
-            deform_steps=self.deform_steps,
-            smoothness=self.smoothness,
+            initial_pull_convention=initial_pull_convention,
+            linear_strides=self.linear_strides,
+            linear_steps=self.linear_steps,
+            linear_learning_rates=self.linear_learning_rates,
+            synthmorph_weights=self.synthmorph_weights,
+            synthmorph_extent=self.synthmorph_extent,
+            synthmorph_hyper=self.synthmorph_hyper,
+            synthmorph_steps=self.synthmorph_steps,
+            deform_model=self._deform_model(),
         )
         registration_sec = time.perf_counter() - registration_started
         timing = {
@@ -313,10 +346,23 @@ class FastVBM:
             "device": str(self.device),
             "mask_source": mask_source,
             "bias_correction": self.bias_correction,
-            "affine_steps_per_scale": self.affine_steps,
-            "deform_steps_per_scale": self.deform_steps,
-            "smoothness": self.smoothness,
-            "scales": list(self.scales),
+            "linear_backend": "independent-pytorch-flirt-compatible",
+            "linear_cost": "normalized correlation",
+            "linear_optimizer": "Adam",
+            "linear_forward_convention": "moving-to-fixed-world-ras",
+            "linear_pull_convention": "fixed-to-moving-world-ras",
+            "linear_strides": list(self.linear_strides),
+            "linear_steps": list(self.linear_steps),
+            "linear_learning_rates": list(self.linear_learning_rates),
+            "nonlinear_backend": "pytorch-synthmorph-deform",
+            "synthmorph_implementation": (
+                "freesurfer_torch.synthmorph.SynthMorph"
+            ),
+            "synthmorph_extent": self.synthmorph_extent,
+            "synthmorph_hyper": self.synthmorph_hyper,
+            "synthmorph_integration_steps": self.synthmorph_steps,
+            "synthmorph_mid_space": False,
+            "synthmorph_warp_convention": "fixed-grid-target-to-source-disp-ras",
             "torch_threads": torch.get_num_threads(),
             "fast": asdict(self.fast.config),
         }
@@ -337,11 +383,16 @@ class FastVBM:
         *,
         brain_mask=None,
         initial_pull=None,
+        initial_pull_convention=None,
         overwrite=False,
     ):
         """Run one T1 and save all outputs under ``output_dir``."""
         result = self(
-            image, template, brain_mask=brain_mask, initial_pull=initial_pull
+            image,
+            template,
+            brain_mask=brain_mask,
+            initial_pull=initial_pull,
+            initial_pull_convention=initial_pull_convention,
         )
         result.save(output_dir, overwrite=overwrite)
         return result

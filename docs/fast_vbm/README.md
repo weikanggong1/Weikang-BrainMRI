@@ -1,80 +1,117 @@
-# GPU FAST VBM：从原始 T1w 到 modulated GM
+# FastVBM：原始 T1w 到 modulated GM
 
-[返回首页](../../README.md) · [源码目录](../../src/freesurfer_torch/fast_vbm/) · [TorchFAST](../fast/README.md) · [UKB/FSL 对照实验](../ukb_vbm/README.md) · [包级验证](../../validation/fast_vbm/README.md) · [科学对照](../../validation/fast/README.md#原始-t1-到-vbm)
+[返回首页](../../README.md) · [源码目录](../../src/freesurfer_torch/fast_vbm/) · [TorchFAST](../fast/README.md) · [权重](../WEIGHTS.md) · [当前版本验证](../../validation/fast_vbm/README.md)
 
-GPU FAST VBM 把原始 T1w 的脑提取、三组织分割、偏置场校正、GM 配准、Jacobian
-计算和 modulation 组成一个可重复调用的 PyTorch 流程。它接受一幅原始 3D T1w
-和一幅目标 GM 模板，返回原始 T1 网格上的脑与组织图，以及模板网格上的 warped
-GM、Jacobian 和 modulated GM。
+`FastVBM` 把一幅原始 3D T1w 和一幅 GM 模板处理为组织分割及模板空间 VBM
+结果。整条流程在 Python 内运行，不调用 FreeSurfer 或 FSL 可执行文件：
 
-该流程不调用 FSL 或 FreeSurfer 程序。SynthStrip 使用 FreeSurfer 官方权重；
-TorchFAST 和 GPU 配准是数值算法，不读取 checkpoint。GPU 配准用于缩短 VBM
-预处理时间，其算法不同于 FLIRT/FNIRT，因此输出不能称为 FNIRT 等价结果。
-
-## 流程
+```text
+raw T1w
+  → SynthStrip 脑提取
+  → TorchFAST 三组织 PVE + bias-field correction
+  → 独立 PyTorch FLIRT-compatible 12-DOF 仿射（NCC + Adam）
+  → 本包 PyTorch SynthMorph deform（官方权重，init=上述仿射）
+  → nonlinear-only pull Jacobian
+  → warped GM × Jacobian
+  → modulated GM
+```
 
 ```mermaid
 flowchart LR
-  A[原始 T1w] --> B[SynthStrip]
-  B --> C[T1 brain + mask]
-  C --> D[TorchFAST<br/>HMRF-EM + bias correction + PVE]
-  D --> E[GM PVE]
-  E --> F[多尺度 GPU 配准<br/>4 → 2 → 1]
+  A[raw T1w] --> B[SynthStrip]
+  B --> C[TorchFAST<br/>CSF / GM / WM PVE + bias]
+  C --> D[GM PVE]
+  D --> E[PyTorch 12-DOF affine<br/>NCC + Adam]
+  E --> F[SynthMorph deform<br/>init affine; mid_space=False]
   F --> G[warped GM]
-  F --> H[nonlinear Jacobian]
-  G --> I[warped GM × Jacobian]
+  F --> H[full pull determinant<br/>÷ affine pull determinant]
+  G --> I[warped GM × nonlinear Jacobian]
   H --> I
   I --> J[modulated GM]
 ```
 
-1. **SynthStrip** 在输入 T1 网格上生成脑图和二值 mask。已有同网格 mask 时可直接
-   提供，跳过 SynthStrip。
-2. **TorchFAST** 在脑区联合估计 CSF、GM、WM partial-volume fraction 和平滑乘性
-   bias field。偏置场校正默认启用；GM PVE 是后续配准的 moving 图像。
-3. **GPU 配准**先估计 GM 重心初始化和可优化仿射，再在 4、2、1 三个尺度优化低
-   分辨率位移控制网格。每个尺度的图像项为整幅图像的
-   `1 - global normalized correlation + 0.2 × MSE`，并加入位移平滑项。
-4. 位移场若产生非法 Jacobian，流程整体缩放 deformation，直到 determinant 落入
-   允许范围；这是一项输出约束，不是配准正确性的独立证据。
-5. 最终在 GM 模板网格计算 warped GM 与 nonlinear Jacobian，并保存
-   `modulated GM = warped GM × Jacobian`。
+线性阶段使用 FLIRT 的 12 参数类别：三轴旋转、三轴平移、三轴缩放和三项剪切，
+围绕 moving GM 的加权重心构造 world-space 仿射。这里的“FLIRT-compatible”只指
+参数含义和 moving-to-fixed 仿射用途相容。它使用 normalized correlation 和 Adam；
+FSL FLIRT 默认使用 correlation ratio 和 Brent/direction-set 优化，并有自己的搜索与
+多分辨率 schedule。因此本实现**不是 FSL FLIRT 的数值等价重写**，不能把两者的矩阵
+或结果称为相同。
 
-下图使用仓库中的 OpenNeuro `sub-02` 公开 T1w、官方 UKB GM template 和本页验证
-参数，依次展示 raw T1、脑提取、bias-corrected brain、GM PVE 及三项模板空间输出。
-它用于说明完整 pipeline 的输入、空间转换和输出，不是同一病例的 FSL 逐项对照。
+非线性阶段调用本包
+`freesurfer_torch.synthmorph.SynthMorph(model="deform")`，读取官方
+`synthmorph.deform.3.h5`，将上一步的 moving-to-fixed 仿射作为 `init`
+传入，并固定
+`mid_space=False`，使该仿射只应用一次。最终 warp 是定义在 fixed/template 网格上的
+target-to-source pull map。流程先计算完整 pull determinant，再除以仿射 pull
+determinant，得到只含非线性部分的 Jacobian。Jacobian 按计算值输出，非正
+determinant 数量原样写入 QC。
 
-![OpenNeuro 公开样例的 FastVBM 原始空间组织估计与模板空间 modulation](figures/fast_vbm_pipeline.png)
+### 坐标与 warp 约定
 
-图由 [`tools/plot_fast_vbm.py`](../../tools/plot_fast_vbm.py) 从实际 NIfTI 输出生成；
-定量结论使用完整三维影像。
+FSL、world-RAS 和 Surfa/SynthMorph 使用的表示不能直接互换：
 
-## Python API
+- FSL FLIRT 的 `.mat` 把 **input FSL scaled-mm** 坐标映射到 **reference FSL
+  scaled-mm** 坐标。它不是 NIfTI world-RAS 仿射，也不能直接传给
+  `initial_pull`。
+- 本包线性优化返回 `moving_to_fixed_world`，即 moving-world → fixed-world 的
+  world-RAS 仿射；`result.registration.pull_world_affine` 是它的逆矩阵，即
+  fixed-world → moving-world pull affine。
+- SynthMorph/Surfa 的 warp 带有 `source=moving` 和 `target=fixed` 几何。warp 数据定义
+  在 fixed 网格上；转为 `disp_ras` 后，每个 fixed 体素保存
+  `source_world(target) - target_world`，也就是 fixed → moving 的
+  target-to-source pull displacement。Jacobian 从这一 `disp_ras` pull field 计算。
 
-构造一次 `FastVBM` 后可连续处理多例，SynthStrip 模型保持在指定设备上：
+若必须把 FLIRT 矩阵转换为本包使用的 moving → fixed world-RAS 仿射，应先分别构造
+moving 和 fixed 的 voxel-index → FSL scaled-mm 矩阵 `V2FSL`，再计算：
+
+```text
+A_world = fixed_vox2world
+          @ inv(V2FSL_fixed)
+          @ M_flirt
+          @ V2FSL_moving
+          @ inv(moving_vox2world)
+```
+
+`initial_pull` 接收的是 `inv(A_world)`。本包提供
+`flirt_to_world_affine()` 和 `flirt_to_world_pull()` 执行该转换；两者要求同时传入
+moving/fixed 的 voxel-to-world affine 和 shape，不能只传 `.mat`。`V2FSL` 必须按
+FSL 的 voxel size 和 handedness 规则构造，不能用 NIfTI affine 直接代替。FSL 对照
+优先比较同一 reference 网格上的重采样输出；需要比较矩阵时再执行上述严格转换。
+FNIRT coefficient、absolute warp、relative warp 与本包的 world-RAS `disp_ras` 也不是
+同一表示，不能互相当作输入。
+
+## 0.7 公开流程图
+
+下图由仓库的公开去面容 T1w 使用当前 0.7 pipeline 生成。第一行为原始
+T1w、SynthStrip brain、bias-corrected brain 和 TorchFAST GM PVE；第二行为
+UKB GM template、本包 PyTorch SynthMorph warped GM、nonlinear-only Jacobian 和
+modulated GM。这次运行不调用 FreeSurfer 或 FSL 可执行文件。
+
+![FastVBM 0.7 从原始 T1w 到 modulated GM](figures/fast_vbm_pipeline.png)
+
+FreeSurfer 原版与本包结果的直接图像对照分别见
+[SynthStrip 脑提取](../synthstrip/README.md)和
+[SynthMorph 配准](../synthmorph/README.md)。当前 FastVBM 数值验证见
+[验证记录](../../validation/fast_vbm/README.md)。
+
+## 单被试：Python
+
+先配置两个官方权重：
+
+```bash
+python tools/setup_weights.py --model fast-vbm
+```
+
+然后运行一例：
 
 ```python
-from freesurfer_torch import FastVBM, FastVBMResult
+from freesurfer_torch import FastVBM
 
 pipeline = FastVBM(
     device="cuda:0",
     threads=4,
-    bias_correction=True,
-    affine_steps=50,
-    deform_steps=40,
-    smoothness=10.0,
-    scales=(4, 2, 1),
 )
 
-result: FastVBMResult = pipeline(
-    "subject_T1w.nii.gz",
-    "template_GM.nii.gz",
-)
-result.save("results/sub-01")
-```
-
-也可由 pipeline 直接运行并写出全部结果：
-
-```python
 result = pipeline.run(
     "subject_T1w.nii.gz",
     "template_GM.nii.gz",
@@ -83,150 +120,260 @@ result = pipeline.run(
 )
 ```
 
+逐行含义如下：
+
+1. `from freesurfer_torch import FastVBM` 导入完整 pipeline。
+2. `FastVBM(...)` 构造可复用实例。`device="cuda:0"` 让 SynthStrip、TorchFAST、
+   线性优化、SynthMorph 和 Jacobian 计算使用第一张可见 GPU；`threads=4` 设置该进程
+   的 PyTorch CPU 线程数。
+3. `pipeline.run(...)` 的第一个参数是单帧 3D raw T1w；第二个参数是 GM 模板；第三个
+   参数是输出目录。模板的 shape 和 voxel-to-world affine 决定三幅 VBM 结果的网格。
+4. `overwrite=False` 在任一同名结果已存在时停止，避免静默覆盖。
+5. 返回的 `result` 是 `FastVBMResult`；`.run()` 已写出 13 幅影像和
+   `fast_vbm_report.json`。
+
+权重已放在非默认目录时，可在构造时分别传入文件或目录：
+
+```python
+pipeline = FastVBM(
+    device="cuda:0",
+    synthstrip_weights="/models/synthstrip.1.pt",
+    synthmorph_weights="/models/synthmorph.deform.3.h5",
+)
+```
+
+只需内存结果时调用实例本身，随后按需保存：
+
+```python
+result = pipeline("subject_T1w.nii.gz", "template_GM.nii.gz")
+result.warped_gm.save("warped_gm.nii.gz")
+result.jacobian.save("jacobian_nonlinear.nii.gz")
+result.modulated_gm.save("modulated_gm.nii.gz")
+```
+
 已有脑掩膜时，它必须与 T1w 的 shape 和 voxel-to-world affine 一致：
 
 ```python
-result = pipeline(
+result = pipeline.run(
     "subject_T1w.nii.gz",
     "template_GM.nii.gz",
+    "results/sub-01",
     brain_mask="subject_brain_mask.nii.gz",
 )
 ```
 
-### 构造参数
+这会跳过 SynthStrip，但不跳过 TorchFAST。`image`、`template` 和 `brain_mask` 也可传
+`surfa.Volume`。`image` 与 `template` 必须是有限值单帧 3D 影像，模板必须包含正的
+GM 值。
 
-`FastVBM(*, device="cpu", threads=None, synthstrip_weights=None,
-bias_correction=True, affine_steps=50, deform_steps=40, smoothness=10.0,
-scales=(4, 2, 1))`：
+### Python 构造参数
 
-| 参数 | 含义 |
+```text
+FastVBM(
+    device="cpu", threads=None,
+    synthstrip_weights=None, synthmorph_weights=None,
+    bias_correction=True,
+    linear_strides=(4, 2, 1),
+    linear_steps=(80, 60, 50),
+    linear_learning_rates=(0.05, 0.025, 0.0125),
+    synthmorph_extent=256,
+    synthmorph_hyper=0.5,
+    synthmorph_steps=7,
+)
+```
+
+| 参数 | 作用 |
 |---|---|
-| `device` | `cpu` 或 `cuda:N`；SynthStrip、TorchFAST 和配准在该设备执行 |
-| `threads` | 当前进程的 PyTorch CPU 线程数 |
-| `synthstrip_weights` | SynthStrip checkpoint 或权重目录；省略时使用统一权重查找顺序 |
-| `bias_correction` | 默认 `True`；联合更新 TorchFAST bias field |
-| `affine_steps` | GPU 仿射优化步数，默认 50 |
-| `deform_steps` | 每个尺度的位移优化步数，默认 40 |
-| `smoothness` | 位移场平滑项权重，默认 10 |
-| `scales` | 从粗到细的优化尺度，默认 `(4, 2, 1)` |
+| `device` | `cpu` 或 `cuda:N`；选择整条计算流程的设备 |
+| `threads` | 当前 worker 的 PyTorch CPU 线程数；`None` 保留现有设置 |
+| `synthstrip_weights` | `synthstrip.1.pt` 文件或权重目录；省略时按统一顺序查找 |
+| `synthmorph_weights` | `synthmorph.deform.3.h5` 文件或权重目录；省略时按统一顺序查找 |
+| `bias_correction` | 默认 `True`；TorchFAST 同时估计平滑乘性 bias field |
+| `linear_strides` | 仿射优化的 fixed-grid 粗到细采样步长 |
+| `linear_steps` | 每个仿射尺度的 Adam 更新次数 |
+| `linear_learning_rates` | 每个仿射尺度的 Adam 学习率 |
+| `synthmorph_extent` | SynthMorph 网络空间边长，支持 192 或 256 |
+| `synthmorph_hyper` | SynthMorph deform 正则化参数 |
+| `synthmorph_steps` | stationary velocity field 的 scaling-and-squaring 次数 |
 
-调用参数 `image` 和 `template` 接受 3D NIfTI 路径或 `surfa.Volume`；
-`brain_mask` 可选。高级参数 `initial_pull` 是从 fixed/template world 坐标到
-moving world 坐标的 4×4 pull transform，常规运行应省略。
+已有 4×4 fixed/template-world → moving-world RAS pull 时，可显式声明约定并跳过
+线性估计：
 
-### 返回值
+```python
+result = pipeline(
+    image,
+    template,
+    initial_pull=matrix,
+    initial_pull_convention="fixed-to-moving-world-ras",
+)
+```
 
-`FastVBMResult` 将中间结果分组保存：
+裸矩阵若没有 `initial_pull_convention` 会被拒绝，避免把 FLIRT scaled-mm `.mat` 误当
+RAS。也可传 `source=fixed`、`target=moving` 且带坐标空间的 `surfa.Affine`；此时几何
+本身标明方向，无需约定字符串。流程将 pull 求逆后作为 moving-to-fixed `init` 交给
+SynthMorph。常规调用应省略这两个参数。
+
+### Python 返回值
 
 | 字段 | 内容 |
 |---|---|
-| `brain`、`brain_mask` | 输入 T1 网格上的脑图与二值 mask |
-| `fast` | 完整 `FASTResult`，含三张 PVE、分类、mixel、bias 和 restore |
-| `registration` | GPU 配准、Jacobian 与 modulation 的结果对象 |
+| `brain`、`brain_mask` | 输入 T1 网格上的脑图和二值 mask |
+| `fast` | `FASTResult`，包含三类 PVE、分类、mixel、bias 和 restored T1 |
+| `registration` | `VBMRegistrationResult`，包含模板空间结果及配准 QC |
 | `pve_gm` | `fast.pve_gm` 的便利属性 |
-| `warped_gm`、`jacobian`、`modulated_gm` | 模板网格上的三项 VBM 结果 |
-| `settings` | 该次运行实际使用的设备与算法参数 |
-| `timing_sec` | 分阶段墙钟时间；定义见下文 |
+| `warped_gm` | moving GM 经仿射和 SynthMorph deform 后的模板网格影像 |
+| `jacobian` | nonlinear-only pull Jacobian |
+| `modulated_gm` | `warped_gm × jacobian` |
+| `settings` | 实际使用的设备、线性和 SynthMorph 参数 |
+| `timing_sec` | 脑提取、FAST、配准/Jacobian/modulation 和总墙钟时间 |
 
-`timing_sec` 包含 `brain_extraction`、`fast`、
-`registration_jacobian_modulation` 和 `total`。它在 `__call__` 内测量读图和计算，
-不包含随后执行的 `result.save()`。`TorchFAST` 在构造 pipeline 时创建，因此其构造
-时间不在字典内；SynthStrip 延迟到首次需要脑提取时创建，所以第一次无显式 mask 的
-`brain_extraction` 会包含模型加载，后续调用会复用模型。下文验证表使用单独的保存
-阶段墙钟记录，不能与这个字典直接混用。
+`result.registration.pull_world_affine` 是 fixed-world → moving-world 的 4×4 pull
+affine；报告中的 `registration.linear` 记录每层 NCC、重叠比例及优化参数。
+`timing_sec` 包含输入读取和输出回到 CPU 的时间，不包含 `result.save()` 的 NIfTI
+写入。第一次无显式 mask 的调用包含 SynthStrip 延迟加载；第一次配准还包含
+SynthMorph 延迟加载，后续调用会复用模型。
 
-## 命令行
+## 单被试：命令行
 
 ```bash
 fs-torch fast-vbm \
   -i subject_T1w.nii.gz \
   --template template_GM.nii.gz \
   -o results/sub-01 \
-  --device cuda:0 --threads 4
+  --device cuda:0 \
+  --threads 4
 ```
 
-这条命令读取 raw T1w 和 GM 模板，默认执行 SynthStrip、带 bias correction 的
-TorchFAST 及多尺度 GPU 配准，并在 `results/sub-01/` 写出所有结果。已有输出时
-默认终止；确认重算后显式添加 `--overwrite`。已有 mask 时用
-`--brain-mask subject_brain_mask.nii.gz`；它与输入 T1 必须同网格。
+逐行含义如下：
+
+1. `fs-torch fast-vbm` 选择 raw-T1-to-VBM 单被试入口。
+2. `-i subject_T1w.nii.gz` 指定一幅单帧 3D raw T1w。
+3. `--template template_GM.nii.gz` 指定 fixed GM 模板，同时定义三幅模板空间输出的
+   shape、方向和体素尺寸。
+4. `-o results/sub-01` 指定输出目录；命令写出下表 13 幅影像和一份 JSON 报告。
+5. `--device cuda:0` 选择第一张可见 GPU。改为 `cpu` 可运行 CPU 路径。
+6. `--threads 4` 设置该进程的 PyTorch CPU 线程数。
+
+常用附加参数：
 
 | 参数 | 作用 |
 |---|---|
-| `-i`, `--image` | 单帧 3D raw T1w |
-| `--template` | GM 模板；决定 warped、Jacobian 和 modulated 输出网格 |
-| `-o`, `--output-dir` | 保存本页列出的 13 幅影像和一份 JSON 报告 |
-| `--brain-mask` | 同 T1 网格的现有 mask；提供后跳过 SynthStrip |
-| `--synthstrip-weights` | 官方 SynthStrip checkpoint 或所在目录 |
-| `--device`, `--threads` | Torch 设备与 CPU 线程数；设备默认 `cpu` |
-| `--affine-steps` | 仿射优化步数，默认 50 |
-| `--deform-steps` | 每个尺度的 deformation 优化步数，默认 40 |
-| `--smoothness` | 位移平滑权重，默认 10 |
-| `--no-bias` | 关闭 TorchFAST bias 更新；仅用于消融 |
-| `--overwrite` | 允许替换该输出目录内已有的同名结果 |
+| `--brain-mask MASK` | 使用同 T1 网格的现有 mask，并跳过 SynthStrip |
+| `--synthstrip-weights PATH` | 显式指定 `synthstrip.1.pt` 或其目录 |
+| `--synthmorph-weights PATH` | 显式指定 `synthmorph.deform.3.h5` 或其目录 |
+| `--linear-strides 4 2 1` | 三层仿射优化的 fixed-grid 步长 |
+| `--linear-steps 80 60 50` | 三层仿射优化的 Adam 步数 |
+| `--linear-learning-rates 0.05 0.025 0.0125` | 三层仿射优化的学习率 |
+| `--synthmorph-extent 256` | SynthMorph 网络空间边长，可选 192 或 256 |
+| `--synthmorph-hyper 0.5` | SynthMorph deform 正则化参数 |
+| `--synthmorph-steps 7` | scaling-and-squaring 次数 |
+| `--no-bias` | 关闭 TorchFAST bias correction；用于消融 |
+| `--overwrite` | 允许覆盖已有同名输出 |
 
-偏置场校正是正式默认路径。完整参数以 `fs-torch fast-vbm --help` 为准。
+完整参数以 `fs-torch fast-vbm --help` 为准。多被试调用只提供下文的 Python
+`BatchRunner` 形式。
 
-## 输出文件与网格
+## 13 幅影像输出
 
-`result.save(output_dir)` 和 `fs-torch fast-vbm -o output_dir` 使用相同文件名：
+`FastVBMResult.save()`、`FastVBM.run()` 和单被试 CLI 使用同一组稳定文件名：
 
-| 文件 | 网格 | 含义 |
-|---|---|---|
-| `T1_brain.nii.gz` | 输入 T1 | 去除脑外背景的 T1 |
-| `brain_mask.nii.gz` | 输入 T1 | 二值脑掩膜 |
-| `T1_brain_pve_0.nii.gz` | 输入 T1 | CSF PVE |
-| `T1_brain_pve_1.nii.gz` | 输入 T1 | GM PVE；配准 moving 图像 |
-| `T1_brain_pve_2.nii.gz` | 输入 T1 | WM PVE |
-| `T1_brain_seg.nii.gz` | 输入 T1 | PVE 前硬分类 |
-| `T1_brain_pveseg.nii.gz` | 输入 T1 | 最大 PVE 分类 |
-| `T1_brain_mixeltype.nii.gz` | 输入 T1 | pure/mixed tissue 类型 |
-| `T1_brain_bias.nii.gz` | 输入 T1 | 乘性 bias field；脑外为 1 |
-| `T1_brain_restore.nii.gz` | 输入 T1 | `T1_brain / bias`；脑外为 0 |
-| `T1_GM_to_template_GM.nii.gz` | GM 模板 | warped GM PVE |
-| `T1_GM_JAC_nl.nii.gz` | GM 模板 | nonlinear-only pull-map Jacobian；full determinant 除以 affine determinant |
-| `T1_GM_to_template_GM_mod.nii.gz` | GM 模板 | warped GM × Jacobian |
-| `fast_vbm_report.json` | JSON | 设置、分阶段时间和 deformation 检查；不保存输入路径 |
+| Python 键 | 文件 | 网格 | 含义 |
+|---|---|---|---|
+| `brain` | `T1_brain.nii.gz` | 输入 T1 | 掩膜外已清除的 T1 |
+| `brain_mask` | `brain_mask.nii.gz` | 输入 T1 | 二值脑掩膜 |
+| `pve_csf` | `T1_brain_pve_0.nii.gz` | 输入 T1 | CSF partial-volume estimate |
+| `pve_gm` | `T1_brain_pve_1.nii.gz` | 输入 T1 | GM PVE，也是配准 moving 图像 |
+| `pve_wm` | `T1_brain_pve_2.nii.gz` | 输入 T1 | WM PVE |
+| `hard_segmentation` | `T1_brain_seg.nii.gz` | 输入 T1 | PVE 前的硬分类 |
+| `pve_segmentation` | `T1_brain_pveseg.nii.gz` | 输入 T1 | 最大 PVE 分类 |
+| `mixel_type` | `T1_brain_mixeltype.nii.gz` | 输入 T1 | pure/mixed tissue 类型 |
+| `bias_field` | `T1_brain_bias.nii.gz` | 输入 T1 | 乘性 bias field；脑外为 1 |
+| `restored` | `T1_brain_restore.nii.gz` | 输入 T1 | `T1_brain / bias_field`；脑外为 0 |
+| `warped_gm` | `T1_GM_to_template_GM.nii.gz` | GM 模板 | 仿射 + SynthMorph deform 后的 GM |
+| `jacobian` | `T1_GM_JAC_nl.nii.gz` | GM 模板 | nonlinear-only pull determinant |
+| `modulated_gm` | `T1_GM_to_template_GM_mod.nii.gz` | GM 模板 | `warped_gm × jacobian` |
 
-`fast_vbm_report.json` 不记录输入文件路径。Python 批量运行产生的 `BatchResult` 或
-批量汇总会包含输出路径，失败时还可能含 traceback，应作为私有运行记录。每幅影像
-先写同目录临时文件，成功后原子替换该文件；这是单文件写入保证，不是整例多文件事务。
+另写 `fast_vbm_report.json`，内容包括参数、分阶段时间、FAST 摘要、线性优化 QC、
+SynthMorph/Jacobian QC 和上述文件名。报告不记录输入路径。文件采用同目录临时文件后
+原子替换；这是逐文件写入保证。
 
-## 权重与 UKB GM 模板
+## 与 FreeSurfer、FSL 和 UKB v1.5 的对应关系
 
-GPU FAST VBM 只需默认 SynthStrip 权重：
+UKB v1.5 `bb_vbm` 的核心命令是：
+
+```bash
+fsl_reg T1_brain_pve_1.nii.gz template_GM.nii.gz \
+  T1_GM_to_template_GM -fnirt \
+  "--config=GM_2_MNI152GM_2mm.cnf --jout=T1_GM_JAC_nl"
+fslmaths T1_GM_to_template_GM -mul T1_GM_JAC_nl \
+  T1_GM_to_template_GM_mod -odt float
+```
+
+本包保留这三项 VBM 输出的文件名、模板网格和 modulation 公式，方法并不相同：
+
+| 目的 | FreeSurfer / UKB-FSL 指令 | 本包调用 | 一致范围 |
+|---|---|---|---|
+| 脑提取 | `mri_synthstrip -i T1w -o brain -m mask`；UKB 原流程使用 BET 与标准 mask | `FastVBM` 内部 `SynthStrip` | 对应本包独立 `SynthStrip` 的官方 PyTorch 模型流程；与 UKB BET 不同 |
+| GM 与 bias | UKB 前序结构流程中的 FSL `fast`，其 GM 为 `T1_brain_pve_1` | `TorchFAST`，bias 默认开启 | 文件角色与组织定义对应；算法是独立 PyTorch 实现 |
+| 12-DOF 线性对齐 | `fsl_reg` 内的 FSL FLIRT | 独立 PyTorch FLIRT-compatible affine | 都生成 moving GM → fixed GM 的 12-DOF 用途；cost、优化器和 schedule 不同 |
+| 非线性配准 | `fsl_reg ... -fnirt` | 本包 PyTorch SynthMorph `deform`，读取官方权重，传入线性 `init` 且 `mid_space=False` | 对应 `mri_synthmorph register -m deform -i INIT ...` 且不启用 `-M`；不等于 FNIRT |
+| Jacobian | FNIRT `--jout=T1_GM_JAC_nl` | 完整 pull determinant 除以 affine pull determinant | 输出用途和文件名对应；warp 模型与数值不相同 |
+| modulation | `fslmaths warped -mul jacobian modulated` | `warped_gm * jacobian` | 公式一致 |
+
+`mid_space=False` 很关键：这里的外部 12-DOF 仿射已经完成初始对齐，不能再按 joint
+模式把仿射分到中间空间。FastVBM 使用的是 SynthMorph `deform`，并不调用
+SynthMorph `joint`，也不会再次估计学习式 affine。
+
+该 pipeline 在 modulated GM 结束，不包含 UKB 的 gradient distortion correction、
+群体平滑、统计模型或其他结构 IDP。官方 UKB 模板的获取和参考命令来源见
+[UKB/FSL 说明](../ukb_vbm/README.md)。
+
+## 权重
+
+FastVBM 需要两个官方文件：
+
+| 文件 | 用途 |
+|---|---|
+| `synthstrip.1.pt` | raw T1w 脑提取 |
+| `synthmorph.deform.3.h5` | affine 初始化后的非线性配准 |
 
 ```bash
 python tools/setup_weights.py --model fast-vbm
 ```
 
-`fast-vbm` 只配置 `synthstrip.1.pt`；同样可显式写 `--model synthstrip`。TorchFAST、
-配准、Jacobian 和 modulation 不需要权重。官方 URL、SHA-256 和共享权重目录部署见
-[权重文档](../WEIGHTS.md)。
+这条命令下载并校验两份文件，并保存权重目录供后续 API 和 CLI 自动查找。
+TorchFAST、PyTorch FLIRT-compatible 线性阶段、Jacobian 和 modulation 不读取额外
+checkpoint。GM template 是运行输入，不是模型权重，也不由配置脚本下载。公开 URL、
+SHA-256、查找顺序和离线部署方式见[权重文档](../WEIGHTS.md)。
 
-GM 模板不随仓库分发。10 例验证使用 UK Biobank v1.5 ancillary archive 中的
-`templates/template_GM.nii.gz`。下载、archive SHA-256、模板 SHA-256 和只提取所需
-文件的命令见 [UKB VBM 文档](../ukb_vbm/README.md#官方模板和权重)。
+## 多被试：Python BatchRunner
 
-## 多病例与多 GPU
-
-多被试 FastVBM 只提供 Python 内调用。每例建立一个 `fast_vbm` job，交给
-`BatchRunner` 在两张 GPU 间动态分配：
+多被试只保留 Python 调用。下面的脚本在两张 GPU 上动态处理所有 `*_T1w.nii.gz`，
+每例保存完整 13 幅影像：
 
 ```python
 from pathlib import Path
+
 from freesurfer_torch import BatchRunner
+from freesurfer_torch.fast_vbm import OUTPUT_FILENAMES
 
 
 def main():
     template = "assets/template_GM.nii.gz"
     model = {
         "bias_correction": True,
-        "smoothness": 10.0,
+        "linear_strides": (4, 2, 1),
+        "linear_steps": (80, 60, 50),
+        "linear_learning_rates": (0.05, 0.025, 0.0125),
+        "synthmorph_extent": 256,
+        "synthmorph_hyper": 0.5,
+        "synthmorph_steps": 7,
     }
+
     jobs = []
     for image in sorted(Path("inputs").glob("*_T1w.nii.gz")):
         subject = image.name.removesuffix("_T1w.nii.gz")
-        output = Path("results") / subject
+        output_dir = Path("results") / subject
         jobs.append({
             "task": "fast_vbm",
             "model": model,
@@ -235,10 +382,8 @@ def main():
                 "template": template,
             },
             "outputs": {
-                "pve_gm": str(output / "T1_brain_pve_1.nii.gz"),
-                "warped_gm": str(output / "T1_GM_to_template_GM.nii.gz"),
-                "jacobian": str(output / "T1_GM_JAC_nl.nii.gz"),
-                "modulated_gm": str(output / "T1_GM_to_template_GM_mod.nii.gz"),
+                name: str(output_dir / filename)
+                for name, filename in OUTPUT_FILENAMES.items()
             },
         })
 
@@ -247,7 +392,7 @@ def main():
         workers_per_device=1,
         threads_per_worker=4,
     ) as runner:
-        reports = runner.run(jobs)
+        reports = runner.run(jobs, overwrite=False)
 
     failed = [report for report in reports if not report.ok]
     if failed:
@@ -258,83 +403,30 @@ if __name__ == "__main__":
     main()
 ```
 
-全部病例使用同一份 `model` 配置，使每个 worker 只缓存一套 `FastVBM` pipeline；
-`kwargs` 对应单例调用，`outputs` 把结果属性映射到文件路径。每个 worker 固定到一张 GPU，空闲时领取下一例，
-返回顺序仍与 `jobs` 一致。不同病例无需具有相同 shape。多进程使用 `spawn`，脚本必须
-保留 `if __name__ == "__main__":`。
+这段代码的调度逻辑如下：
 
-整条流程的中间张量多于单独 FAST，建议先使用每卡一个 worker；同卡增加 worker 会
-按进程重复占用权重和显存。通用输出冲突和错误记录规则见
-[批量执行](../ARCHITECTURE.md#批量执行)。FastVBM 多被试运行不提供 JSON/shell batch
-入口，避免把完整 pipeline 的调度参数与单例 CLI 混在一起。
+1. 每个 job 表示一个 subject。`kwargs` 对应 `FastVBM.__call__` 的单例参数；
+   `outputs` 把 13 个结果键映射到各自文件。
+2. `devices=("cuda:0", "cuda:1")` 建立两个 worker；每个 worker 固定使用一张 GPU。
+3. worker 完成一例后从队列领取下一例，因此病例按可用 GPU 动态分配；返回的
+   `reports` 顺序仍与 `jobs` 一致。
+4. 所有 job 复用同一个 `model` 配置。每个 worker 首次遇到该配置时构造自己的
+   `FastVBM`，并缓存 SynthStrip、TorchFAST 和 SynthMorph；该 worker 后续病例不再
+   重复构造模型。不同 worker 不共享 GPU 模型。
+5. `workers_per_device=1` 表示每张 GPU 一个进程。增加它会在同一 GPU 上复制模型和
+   显存占用，只有显存和吞吐实测支持时才应调整。
+6. multiprocessing 使用 `spawn`，所以入口必须放在
+   `if __name__ == "__main__":` 下，并从可导入的 `.py` 脚本运行。
 
-## 与 UKB v1.5/FSL VBM 的差异
+`BatchRunner` 只保存 `outputs` 中列出的影像；也可以只列最终三项以减少 I/O。
+FastVBM job 的 `BatchResult.metadata` 保存该例的 `result.report()`，但 batch 不自动写
+`fast_vbm_report.json`。失败信息和 traceback 可能包含本地路径，应按私有运行记录
+管理。
 
-| 阶段 | UKB v1.5/FSL 参考 | GPU FAST VBM |
-|---|---|---|
-| 原始 T1 处理 | robustfov、递归 BET、标准 mask 逆变换 | SynthStrip，或用户提供同网格 mask |
-| 组织与 bias | FSL FAST | TorchFAST；bias correction 默认启用 |
-| 初始对齐 | FLIRT/`fsl_reg` | GM 重心初始化和可优化仿射 |
-| 非线性配准 | FNIRT cubic B-spline 与其强度模型 | PyTorch 位移控制网格；全局相关 + 0.2 MSE |
-| 正则化 | `GM_2_MNI152GM_2mm.cnf` | 多尺度位移平滑，默认权重 10 |
-| Jacobian | FNIRT `--jout` | PyTorch pull-map determinant，非法时全场回退缩放 |
-| modulation | warped GM × Jacobian | 相同公式 |
-| 终点 | modulated GM | modulated GM；不含群体平滑或统计 |
+## 当前验证
 
-验证数据不是 UK Biobank 扫描，缺少扫描仪 gradient-coefficient 文件，因此 FSL
-参考走 `coeff=none` 分支。流程在 modulated GM 结束，不包含 FIRST、SIENAX、
-BIANCA、去面容、群体平滑、QC 或统计模型。UKB v1.5 复现范围和
-`BWAS_preprocess_VBM.py` 的差异见[研究流程说明](../ukb_vbm/README.md)。
-
-## 偏置场校正
-
-在相同的 10 例 brain-only T1 上，默认 bias correction 的 TorchFAST GM 与 FSL FAST
-GM 的 Pearson、0.5 Dice 中位数分别为 **0.98488、0.99232**；关闭 bias 更新后降至
-**0.93647、0.93703**。因此完整 VBM pipeline 默认保留 bias correction。该消融使用
-相同 HMRF 外循环，只关闭 bias 更新；并非跳过组织分割。
-
-## 10 例真实 T1w 验证
-
-验证集为一个非 UKB 临床队列的 10 例真实 T1w，只公开聚合数字。GPU 路径为
-raw T1 → SynthStrip → TorchFAST（bias 开启）→ GPU 配准 → Jacobian → modulation。
-
-迁入正式 package 后，另以 Python `BatchRunner` 在两张 H100 上重跑同样数量的真实
-T1w：两个 worker 各完成 5 例，13×10 个有限值和网格检查全部通过，最终 Jacobian
-为 0.20016–4.77491 且无非正值。完整包级 QC、CPU/CUDA smoke 和 wheel clean-install
-结果见[FastVBM package release validation](../../validation/fast_vbm/README.md)。该次
-双 GPU 墙钟时间与下表较早的单 GPU、分阶段验证边界不同，不用于替换下表的科学对照。
-
-| 比较或时间边界 | 中位数 |
-|---|---:|
-| TorchFAST raw GM 与 FSL FAST GM Pearson | 0.79063 |
-| TorchFAST raw GM 与 FSL FAST GM Dice 0.5 | 0.95407 |
-| 同一 GPU 配准器：TorchFAST GM 与 FSL FAST GM 的 warped Pearson | 0.79231 |
-| 同一 GPU 配准器：两种 GM 输入的 modulated Pearson | 0.76820 |
-| 完整 GPU pipeline 与 FSL/FNIRT warped GM Pearson | 0.58925 |
-| 完整 GPU pipeline 与 FSL/FNIRT modulated GM Pearson | 0.50877 |
-| SynthStrip + TorchFAST + 原始网格文件写出 | 23.05 s |
-| GPU 配准、Jacobian、modulation 与写出 | 10.99 s |
-| GPU raw T1 → modulated GM | 36.47 s |
-| FSL raw T1 → modulated GM，9 例有完整分阶段时间 | 3637.20 s |
-
-GPU 时间是持久模型已加载后的逐例保存阶段墙钟时间；FSL 时间是可用原始到 VBM
-阶段之和。两种方法在共享节点的不同时段运行，不能把比值解释为隔离负载下的硬件
-加速倍数。10 例 GPU 最终 Jacobian 均为正；这部分来自约束后的场。
-
-完整 pipeline 与 FSL/FNIRT 的相关性明显低于单独 TorchFAST 与 FSL FAST 的一致性，
-说明非线性配准仍是主要差异来源。当前实现适合可审计的 GPU 替代实验，不应在没有
-独立解剖学验证的情况下替换既有 FNIRT 研究结果。
-
-下面两图比较**相同 FSL FAST GM 输入**分别经过 FSL/FNIRT 与 PyTorch GPU 注册后的
-队列平均图，用于隔离注册阶段；它们不是 TorchFAST raw-T1 全流程的逐例展示。
-
-![相同 FAST GM 输入的 FSL 与 GPU warped GM 队列平均图](../../validation/ukb_vbm/figures/fsl_gpu_fast_ukb_warped_means.png)
-
-![相同 FAST GM 输入的 FSL 与 GPU modulated GM 队列平均图](../../validation/ukb_vbm/figures/fsl_gpu_fast_ukb_modulated_means.png)
-
-TorchFAST 组织估计和 bias 校正的公开单例图见
-[TorchFAST 对照图](../../validation/fast/README.md#公开图示)。新 raw-T1 整链结果的
-环境、病例聚合范围、mask 定义和计时边界见
-[原始 T1 到 VBM](../../validation/fast/README.md#原始-t1-到-vbm)。
-[UKB/FSL 注册验证](../../validation/ukb_vbm/README.md)记录的是较早的注册和模板研究，
-用于解释注册器与 FNIRT 的差异，不是新 FastVBM API 的独立验证集。
+本页不复制验证统计数字。0.7 的 12-DOF PyTorch FLIRT-compatible 线性阶段、本包
+PyTorch SynthMorph deform、Jacobian QC、真实 T1w 对照、
+CPU/GPU 计时和图示均以 [`validation/fast_vbm`](../../validation/fast_vbm/README.md)
+中的当前报告为准。比较运行时间时应区分冷启动、模型已加载后的单例时间、影像写出
+和共享节点负载。

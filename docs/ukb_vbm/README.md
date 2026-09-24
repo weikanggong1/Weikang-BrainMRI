@@ -150,7 +150,7 @@ tar -xzf DATA_public.tar.gz -C assets --strip-components=2 \
 ## 批量执行
 
 稳定 GPU FAST VBM 的多被试 Python 调用见
-[FastVBM 多病例与多 GPU](../fast_vbm/README.md#多病例与多-gpu)。研究脚本和验证臂的
+[FastVBM 多病例与多 GPU](../fast_vbm/README.md#多被试python-batchrunner)。研究脚本和验证臂的
 分组方法见[实验脚本说明](../../tools/experimental/ukb_vbm/README.md)。验证报告中的
 GPU 吞吐时间来自一张 H100 上的顺序批量，不把双 GPU 调度写成实测加速。
 

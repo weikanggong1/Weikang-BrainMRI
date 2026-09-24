@@ -1,0 +1,231 @@
+{
+  "schema": 2,
+  "package_version": "0.7.0",
+  "feature": "FastVBM end-to-end package API",
+  "cohort": {
+    "modality": "real T1w",
+    "count": 10,
+    "identifiers_published": false
+  },
+  "method": {
+    "chain": [
+      "SynthStrip",
+      "TorchFAST with bias correction",
+      "independent PyTorch 12-DOF FLIRT-compatible affine",
+      "PyTorch SynthMorph deform with affine init and mid_space=False",
+      "nonlinear-only pull Jacobian modulation"
+    ],
+    "synthmorph_implementation": "freesurfer_torch.synthmorph.SynthMorph",
+    "fsl_flirt_equivalent": false,
+    "fnirt_equivalent": false
+  },
+  "execution": {
+    "devices": [
+      "cuda:1"
+    ],
+    "workers": 2,
+    "workers_per_device": 2,
+    "cases_per_worker_sorted": [
+      5,
+      5
+    ],
+    "cases_per_device": {
+      "cuda:1": 10
+    },
+    "batch_wall_sec": 396.4140180600807,
+    "median_pipeline_call_sec_excluding_batch_output_save": 24.034520122455433,
+    "timing_scope": "Shared, contended research node; descriptive run, not an isolated hardware throughput benchmark. Batch wall time includes worker/model startup and output NIfTI writes. Per-case API timing excludes those writes."
+  },
+  "qc": {
+    "completed": 10,
+    "finite_image_checks_passed": 130,
+    "finite_image_checks_expected": 130,
+    "geometry_checks_passed": 130,
+    "geometry_checks_expected": 130,
+    "pve_inside_mask_min": 0.0,
+    "pve_inside_mask_max": 1.0,
+    "pve_sum_max_abs_error_on_modeled_mask_voxels": 0.0,
+    "pve_unmodeled_synthstrip_mask_voxels": 6943,
+    "pve_unmodeled_synthstrip_mask_fraction": 0.00021815937524282918,
+    "linear_ncc": {
+      "median": 0.7446791529655457,
+      "min": 0.7177068591117859,
+      "max": 0.7629425525665283
+    },
+    "final_ncc": {
+      "median": 0.8248747818490088,
+      "min": 0.7905974397166209,
+      "max": 0.8359060152887763
+    },
+    "jacobian_min": 0.2317899614572525,
+    "jacobian_max": 3.6705708503723145,
+    "nonpositive_jacobian_cases": 0,
+    "nonpositive_jacobian_voxels_total": 0,
+    "maximum_nonlinear_displacement_mm": {
+      "median": 7.184072405874422,
+      "min": 6.505961010432977,
+      "max": 7.8901255625946005
+    }
+  },
+  "comparisons": {
+    "coordinate_contract": "Compared resampled scalar images on the same template grid. FSL scaled-mm matrices and FNIRT warp fields were not interpreted as FreeSurfer world-RAS pull fields.",
+    "fsl_fnirt_warped_gm": {
+      "pearson": {
+        "median": 0.8154029079317373,
+        "min": 0.7558309435135587,
+        "max": 0.833817314956868
+      },
+      "mae": {
+        "median": 0.05523415302548537,
+        "min": 0.05263361500807111,
+        "max": 0.06389374891497208
+      },
+      "rmse": {
+        "median": 0.16658829290530164,
+        "min": 0.15840342824689452,
+        "max": 0.18609576550240856
+      },
+      "dice_at_0.2": {
+        "median": 0.8255118823980749,
+        "min": 0.7876605377782094,
+        "max": 0.8406001626126917
+      }
+    },
+    "fsl_fnirt_modulated_gm": {
+      "pearson": {
+        "median": 0.746726893298622,
+        "min": 0.6721518524035934,
+        "max": 0.7711799983982132
+      },
+      "mae": {
+        "median": 0.07043256410891977,
+        "min": 0.06520937142665945,
+        "max": 0.0810547843079359
+      },
+      "rmse": {
+        "median": 0.22203123931206398,
+        "min": 0.20469108723463966,
+        "max": 0.24921135597136385
+      },
+      "dice_at_0.2": {
+        "median": 0.8213810729982882,
+        "min": 0.7764348507861236,
+        "max": 0.8363165637800727
+      }
+    },
+    "historical_v0.6_warped_gm": {
+      "pearson": {
+        "median": 0.8386991857820981,
+        "min": 0.7294195663617291,
+        "max": 0.8539591735585186
+      },
+      "mae": {
+        "median": 0.05281856249759696,
+        "min": 0.04803626579743111,
+        "max": 0.07197126577833067
+      },
+      "rmse": {
+        "median": 0.15789507348356518,
+        "min": 0.1454609147246705,
+        "max": 0.2015760195985417
+      },
+      "dice_at_0.2": {
+        "median": 0.8422689111497225,
+        "min": 0.7724001515087748,
+        "max": 0.857340114291964
+      }
+    },
+    "historical_v0.6_modulated_gm": {
+      "pearson": {
+        "median": 0.8109412650596642,
+        "min": 0.6900407099774606,
+        "max": 0.8208174787427381
+      },
+      "mae": {
+        "median": 0.061749070227781325,
+        "min": 0.05694265706699953,
+        "max": 0.0809092917815463
+      },
+      "rmse": {
+        "median": 0.1808504881374921,
+        "min": 0.16868765717249032,
+        "max": 0.2241699299487832
+      },
+      "dice_at_0.2": {
+        "median": 0.8409433885859539,
+        "min": 0.7688208424970394,
+        "max": 0.855246139542543
+      }
+    }
+  },
+  "settings": {
+    "bias_correction": true,
+    "linear_strides": [
+      4,
+      2,
+      1
+    ],
+    "linear_steps": [
+      80,
+      60,
+      50
+    ],
+    "linear_learning_rates": [
+      0.05,
+      0.025,
+      0.0125
+    ],
+    "synthmorph_model": "deform",
+    "synthmorph_mid_space": false,
+    "synthmorph_extent": 256,
+    "synthmorph_hyper": 0.5,
+    "synthmorph_integration_steps": 7
+  },
+  "tests": {
+    "passed": 148,
+    "skipped": 3,
+    "warnings": 4,
+    "command_scope": "pytest -q tests"
+  },
+  "wheel_clean_install": {
+    "version": "0.7.0",
+    "source_directory_hidden_by_working_directory": true,
+    "top_level_import": true,
+    "fast_vbm_imports": true,
+    "flirt_coordinate_converter_imports": true,
+    "synthmorph_backend": "freesurfer_torch.synthmorph.SynthMorph model=deform",
+    "synthmorph_backend_inspected_from_installed_wheel": true,
+    "external_synthmorph_command_in_backend": false,
+    "cli_version": true,
+    "cli_help": true,
+    "fast_vbm_weight_files_verified": [
+      "synthstrip.1.pt",
+      "synthmorph.deform.3.h5"
+    ]
+  },
+  "distribution_audit": {
+    "artifacts": {
+      "wheel": {
+        "filename": "freesurfer_torch-0.7.0-py3-none-any.whl",
+        "size_bytes": 157084,
+        "sha256": "3ac9cf93692ed0f4906271d59684b83423faf8eacc02f48c93f966c4a1f64104",
+        "files": 70,
+        "fast_vbm_files": 7,
+        "license_notice_files": 5
+      },
+      "sdist": {
+        "filename": "freesurfer_torch-0.7.0.tar.gz",
+        "size_bytes": 1538779,
+        "sha256": "2572cd511434014ef1869b2a1d1b0d1884e2dbb4fa3818f2016ce1a3cf05e9e3",
+        "files": 210,
+        "fast_vbm_files": 20,
+        "license_notice_files": 6
+      }
+    },
+    "weights_or_checkpoints": 0,
+    "mri_or_gm_templates": 0,
+    "private_work_files": 0,
+    "status": "passed"
+  },
+  "privacy": "Aggregate-only; source paths, subject identifiers, PIDs, and per-case values are excluded."
+}

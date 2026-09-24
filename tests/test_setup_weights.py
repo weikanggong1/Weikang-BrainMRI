@@ -145,5 +145,7 @@ def test_wmh_selection_downloads_only_its_official_checkpoint(tmp_path, monkeypa
     assert weights.resolve_weights(name) == destination / name
 
 
-def test_fast_vbm_uses_only_the_official_synthstrip_checkpoint():
-    assert weights.MODEL_FILES["fast-vbm"] == ("synthstrip.1.pt",)
+def test_fast_vbm_uses_official_pipeline_checkpoints():
+    assert weights.MODEL_FILES["fast-vbm"] == (
+        "synthstrip.1.pt", "synthmorph.deform.3.h5"
+    )
