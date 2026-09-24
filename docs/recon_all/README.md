@@ -19,8 +19,9 @@ flowchart LR
 ## 运行条件
 
 - Linux、可用的 CUDA 版 PyTorch、一张或多张 GPU。
-- 与固定 `fs820-single-t1-v8-all-v1` 配置匹配、已经完成独立验证的 FreeSurfer 8.2
-  本地原生运行包，以及用户自己的 FreeSurfer license 文件。
+- 与固定 `fs820-single-t1-v8-all-v1` 配置匹配的 FreeSurfer 8.2 本地原生
+  运行包：使用已独立验证的版本，或使用经过 0.6→0.7 源码等价审计的派生副本；
+  还需用户自己的 FreeSurfer license 文件。
 - 每例一幅 T1w、一个安全的被试名称和一个独立的空 `subjects_dir`。
 
 运行时无须安装系统 FreeSurfer、FSL 或 TensorFlow。原生运行包包含此流程实际需要的
@@ -123,8 +124,12 @@ aparc+aseg、ribbon、wmparc 的体素标签一致；两侧白质/软脑膜表�
 容差内，但并非逐位相同。比较方法和逐字段容差见
 [验收说明](../../validation/recon_all/README.md)，本次运行与批量结果见
 [集成验证记录](../../validation/recon_all/gpucw1_batch_integration_2026-09-24.md)。
-合并 main 后的源码树哈希会改变；其运行包必须重新绑定该哈希并完成独立验证。
-上述结果只覆盖所测 T1 和冻结配置，不代表其他被试已完成官方对照。
+合并后的 0.6.0 源码又完成一次独立的完整 sub-01 运行，耗时 4,602.741 秒，
+再次通过 52+2+19 项门槛。0.7.0 的 recon-all 路径通过逐文件源码等价审计，
+沿用这次认证的数值证据；按要求没有重复运行完整重建。
+[0.6→0.7 等价记录](../../validation/recon_all/v06_to_v07_runtime_equivalence.json)
+列出允许的源码差异。上述结果只覆盖所测 T1 和冻结配置，不代表其他被试已完成
+官方对照，也不表示 0.7.0 有一次新的完整数值复测。
 
 批量功能分支的一例完整运行耗时 5,249.754 秒（约 87.50 分钟）。这一数字包含
 原生 CPU 步骤和 PyTorch/CUDA 步骤；此前官方运行的并行参数和节点状态不同，

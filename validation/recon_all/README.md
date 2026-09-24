@@ -5,6 +5,9 @@ Completed single-subject and two-GPU batch integration results are in the
 isolated [CUDA native-kernel pilot](native_cuda_pilot/REPORT.md) and its
 [CPU subfunction profile](native_cuda_pilot/CPU_PROFILE.md) record measured
 replacement candidates that were not integrated.
+The [0.6-to-0.7 source-equivalence record](v06_to_v07_runtime_equivalence.json)
+links the independently certified 0.6 source and bundle to the 0.7 source
+snapshot. It is a source audit; 0.7 did not repeat the full reconstruction.
 
 ## SynthSeg numerical boundary on the development T1
 

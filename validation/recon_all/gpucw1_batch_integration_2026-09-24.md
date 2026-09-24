@@ -70,7 +70,7 @@ The batch demonstrates overlapping full workflows and correct device
 assignment, not a controlled speedup over two sequential runs. Both jobs also
 competed for shared CPU and storage resources.
 
-## Merged main package
+## Merged 0.6.0 package
 
 The merge preserves the repository's FAST/VBM modules and the newer Python
 parallel inference functions. Its whole-package source SHA-256 is
@@ -79,7 +79,56 @@ different from the feature snapshot. The `0.6.0` merged package passed
 **81 tests, with 4 skips** across recon-all, SynthSeg and batch suites on
 headcw. Its built wheel has SHA-256
 `9f912a59d9709c444a3c84a902282d671ec31cf99b5c01fc5737ced4997b31a8`.
-Independent full-run certification against this exact source hash is pending.
+An independent clean-environment sub-01 run using this exact source hash took
+**4,602.741 s** on `cuda:1`, exited zero, produced all mandatory outputs, and
+matched the fixed configuration hash. The same official reference passed
+**52/52** surface, vertex, atlas, volume and statistics checks, **2/2**
+ribbon/wmparc voxel checks, and **19/19** aggregate gates. The 308-file bundle
+preflight and trace audit passed; the bundle was promoted to
+`standalone_verified=true` after the comparison gates. Evidence is in
+`work/reconall_main_20260924/evidence/` on shared project storage:
+
+| Evidence | SHA-256 |
+|---|---|
+| 0.6 source manifest | `7e587a9917c80745ddeb5f0492c2b0ed19ac174ecb102470b07df8a2803a9c9b` |
+| 52-check comparison | `ef09115439f3c773ccd75308b5c8d93c5230f18aa4e80a098699fec5340fb578` |
+| 2-check auxiliary volumes | `9dc16fc6d51780aee52f0db367fbd8bbf17277a15c50d1b31d0f16e90f667312` |
+| 19-check aggregate | `4bfe6350e3aada06dc8c9a52166c27be78dca929ddb4b1ca96475667999bfebc` |
+| Promoted bundle manifest | `c6fa70a5fe326a50f2d4aa182b84853a249b376ba16bf252aec7c56027bb2230` |
+
+## 0.7.0 release equivalence
+
+The newer `main` adds a FastVBM SynthMorph backend and increments the package
+version. Its source-tree hash is
+`d34fc3e7a7c7bb205c710614c4a09d5ea7cbdd6da408f06a1f6320e15db257c1`.
+The 0.7.0 snapshot passed **132 tests, with 4 skips** in the recon-all,
+SynthSeg, batch, FastVBM and public-API suites on headcw. Its built wheel has
+SHA-256 `1f0a80d0d22d4de914be7764d61c79d63b05f178907d07c9cbde389c679c4603`.
+No duplicate full reconstruction was performed for the unchanged pipeline code.
+The [source-equivalence audit](v06_to_v07_runtime_equivalence.json) checked
+24 pinned recon-all runtime/comparison modules, both frozen code manifests,
+the 0.7.0 project version and the 0.6.0 certified bundle link. Of the pinned
+modules, only the root initializer and weight registry changed: the former
+increments the version and adds lazy FastVBM exports; the latter adds a
+FastVBM-only checkpoint. Other changed Python modules are confined to the
+generic CLI and FastVBM. The recon-all entry, neural launchers, segmentation
+code, surface and statistics comparison code are byte-identical. The audit
+script also rejects unexpected runtime or unrelated package changes.
+
+The certified 0.6.0 bundle was copied, and
+[`derive_equivalent_bundle.py`](../../tools/recon_all_native/derive_equivalent_bundle.py)
+linked its original verification record and the source-equivalence audit to
+the 0.7.0 frozen code snapshot. The original certified bundle manifest stayed
+unchanged. On `gpucw1`, the 0.7.0 default `_check_bundle` entry accepted the
+derived copy with CUDA available and all **308** inventoried files intact;
+the check exited zero. This checks release compatibility and bundle integrity,
+without rerunning T1 reconstruction or numerical comparison in 0.7.0.
+
+| Release-equivalence evidence | SHA-256 |
+|---|---|
+| 0.7 source manifest | `3faa8b5c55606971baaf15cd024c959b3b9558a7919a6c29668678a09981cae1` |
+| 0.6→0.7 source-equivalence JSON | `8bd69608112b600c25c49d5faf501f0ebb3570085749914d2d4ee2588816f31f` |
+| 0.7 derived bundle manifest | `089b5f1a3cd61d3fa96d3888239d1916af3354942202a12e74f5d5f21c053c99` |
 
 ## Scope
 

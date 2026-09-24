@@ -306,3 +306,31 @@ Build Python wheels from a clean checkout. A stale `build/lib` directory can
 carry removed Python modules into a wheel; compare every packaged `.py` hash
 with the pre-run code snapshot before distributing it. The production entry
 rejects a wheel whose package code tree differs from that snapshot.
+
+### Exact 0.6.0 to 0.7.0 recon-all release
+
+The independently certified 0.6.0 package and the 0.7.0 package have the same
+recon-all execution code and neural launchers. For this specific release,
+[`attest_v07_runtime_equivalence.py`](attest_v07_runtime_equivalence.py) checks
+both frozen package snapshots, the certified 0.6.0 bundle link and every source
+change. It permits only the known version/lazy FastVBM export and FastVBM
+checkpoint-list edits in the shared modules. The resulting
+[attestation](../../validation/recon_all/v06_to_v07_runtime_equivalence.json)
+does not assert that 0.7.0 completed another reconstruction.
+
+[`derive_equivalent_bundle.py`](derive_equivalent_bundle.py) applies that
+attestation to a **copy** of the already certified bundle. It requires the
+copy's manifest to equal the original byte for byte, checks that the new frozen
+snapshot refers to that manifest, and requires the same Python, CUDA and
+dependency versions. Run `--check-only` first; removing it writes the copied
+manifest. The new manifest retains the entire original verification under
+`verification.source_certification`, labels itself
+`source_equivalent_release`, and records that no 0.7.0 reconstruction or
+numerical comparison was run. Neither tool modifies the certified 0.6.0
+bundle. A later source or environment change needs its own review and evidence.
+
+The [integration record](../../validation/recon_all/gpucw1_batch_integration_2026-09-24.md)
+contains the exact snapshot and manifest hashes. On `gpucw1`, the 0.7.0
+default `_check_bundle` path accepted the derived copy after checking all 308
+inventoried files; this is a compatibility and integrity check, not a new
+scientific comparison.
