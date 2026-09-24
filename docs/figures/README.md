@@ -46,6 +46,7 @@ python examples/render_wmh_comparison.py \
 
 `benchmark_wmh.py` 对三例逐例启动新进程、保存分割图、概率图与软体积 CSV；如只想运行本包，不需要 FreeSurfer，可单独执行第二条推理命令或使用 `fs-torch wmh-synthseg`。重跑前请清空对应 `examples/results/` 目录，脚本不会覆盖已有文件。
 
-FastVBM 0.7 的公开 raw-T1w 整链示例图和生成边界见
-[`docs/fast_vbm`](../fast_vbm/README.md#07-公开流程图)。其非线性阶段使用本包 PyTorch
-SynthMorph `deform`，FreeSurfer 仅用于单独的对照实验。
+FastVBM 的公开 raw-T1w 整链示例图和生成边界见
+[`docs/fast_vbm`](../fast_vbm/README.md#图示与验证)。现有图由 PyTorch SynthMorph
+`deform` 分支生成；当前 pipeline 也可选择 PyTorch FNIRT-style 分支。FSL 与
+FreeSurfer 仅用于独立参考实验，不是生成这幅图时的运行时依赖。

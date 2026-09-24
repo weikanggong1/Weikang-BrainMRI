@@ -7,7 +7,10 @@ from .linear import (
     flirt_to_world_pull,
     register_affine,
     voxel_to_fsl_scaled_mm,
+    world_to_flirt_affine,
 )
+from .flirt import FLIRTResult, TorchFLIRT
+from .fnirt_backend import FNIRTVBMResult, PyTorchFNIRTRegistration
 from .registration import VBMRegistrationResult, register_gm
 
 __all__ = [
@@ -16,10 +19,15 @@ __all__ = [
     "FastVBM",
     "OUTPUT_FILENAMES",
     "LinearRegistrationResult",
+    "FLIRTResult",
+    "TorchFLIRT",
+    "FNIRTVBMResult",
+    "PyTorchFNIRTRegistration",
     "VBMRegistrationResult",
     "flirt_to_world_affine",
     "flirt_to_world_pull",
     "register_affine",
     "register_gm",
     "voxel_to_fsl_scaled_mm",
+    "world_to_flirt_affine",
 ]

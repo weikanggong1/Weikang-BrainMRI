@@ -80,6 +80,8 @@ def test_identity_affine_and_identity_deformation():
     assert fake.calls[0][2]["init"].space == initial.space
     np.testing.assert_allclose(fake.calls[0][2]["init"].matrix, initial.matrix)
     assert fake.calls[0][2]["mid_space"] is False
+    assert result.qc["full_pull_jacobian_convention"].startswith("det(")
+    assert result.qc["output_jacobian_convention"].startswith("full pull")
 
 
 def test_default_backend_builds_the_official_deform_model(monkeypatch):

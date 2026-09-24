@@ -194,8 +194,10 @@ class SynthMorphDeformRegistration:
                 "fixed-grid target-to-source disp-ras: "
                 "source_world(target)-target_world"
             ),
-            "jacobian_convention": "det(d source_world / d target_world)",
-            "modulation_jacobian": (
+            "full_pull_jacobian_convention": (
+                "det(d source_world / d target_world)"
+            ),
+            "output_jacobian_convention": (
                 "full pull determinant divided by affine pull determinant"
             ),
             "affine_pull_jacobian_determinant": float(affine_pull),

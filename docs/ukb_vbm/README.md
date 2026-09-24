@@ -1,6 +1,12 @@
-# UK Biobank v1.5 VBM：FSL 参考与实验性 PyTorch GPU 路径
+# UK Biobank v1.5 VBM：FSL 参考与历史实验路径
 
 [返回主页](../../README.md) · [GPU FAST VBM 稳定接口](../fast_vbm/README.md) · [研究脚本](../../tools/experimental/ukb_vbm/) · [10 例验证](../../validation/ukb_vbm/)
+
+本页记录 `tools/experimental/ukb_vbm/` 的历史研究臂和 FSL 参考生成方法。当前稳定
+`FastVBM` 已提供 `registration_backend="synthmorph"` 与 `"fnirt"` 两个分支；后者是
+独立 PyTorch cubic B-spline FNIRT-style 实现。当前接口、输入输出和新的双后端对照以
+[FastVBM 专页](../fast_vbm/README.md)及其[版本化验证](../../validation/fast_vbm/README.md)
+为准。
 
 ## 这组脚本复现了什么
 
@@ -25,7 +31,7 @@ FSL 参考使用 FSL 6.0.7.4。UKB 早期生产文档记录的是 FSL 5.0.10，�
 
 本实验的 FSL 参考臂复现 UKB v1.5 的 `bb_struct_init` 和 `bb_vbm` 路径，同时把 local HCP-derived template 作为第二个受控比较臂。两者的 VBM 核心都是 GM 非线性配准和 Jacobian modulation；前处理入口、默认模板和终点不同。UKB `bb_vbm` 在 modulated GM 结束，因此这次时间和数值比较不包含 BWAS 脚本后续的 5 mm 平滑和 QC 绘图。
 
-## GPU 路径替换了哪些步骤
+## 历史实验路径替换了哪些步骤
 
 ```mermaid
 flowchart LR
@@ -55,7 +61,11 @@ flowchart LR
 | Jacobian 处理 | FNIRT 配置设为 0.2–5；受控单例最终输出全为正，但范围为 0.271–5.816 | 整体缩放位移场直到落入 0.2–5；不逐体素裁剪 |
 | 调制 | warped GM × nonlinear Jacobian | 同一公式 |
 
-GPU 注册不是 FNIRT 的源码移植，也没有复现它的 B-spline、强度模型或优化器。正式验证中，原始 GPU 位移场需要约束回退；最终 Jacobian 合法是构造条件，不能单独证明配准正确。raw T1 → SynthStrip → TorchFAST → GPU registration 的单例入口现已整理为 [`FastVBM`](../fast_vbm/README.md)；本页的 `tools/experimental/ukb_vbm/` 继续保留 FSL 参考臂、SynthSeg 实验臂、双模板比较和公开报告生成工具。
+本节所述旧注册器不是 FNIRT 的源码移植；它的控制网格、损失和约束回退也不代表当前
+`FastVBM(registration_backend="fnirt")`。当前 FNIRT-style 后端另行实现 cubic B-spline、
+FSL scaled-mm residual、SSD、bending energy 和 nonlinear-only Jacobian，但仍因强度
+模型与优化器不同而不与 FSL FNIRT 数值等价。本页工具继续保留 FSL 参考臂、SynthSeg
+实验臂、双模板比较和历史公开报告生成工具。
 
 ## 研究脚本的输入与输出
 
@@ -156,8 +166,8 @@ GPU 吞吐时间来自一张 H100 上的顺序批量，不把双 GPU 调度写�
 
 ## 来源
 
-- [UK Biobank pipeline v1.5](https://git.fmrib.ox.ac.uk/falmagro/uk_biobank_pipeline_v_1.5)
-- [`bb_vbm` source](https://git.fmrib.ox.ac.uk/falmagro/uk_biobank_pipeline_v_1.5/-/blob/master/bb_structural_pipeline/bb_vbm)
+- [UK Biobank pipeline v1](https://git.fmrib.ox.ac.uk/open-science/analysis/UK_biobank_pipeline_v_1)
 - [FMRIB UK Biobank pipeline and ancillary files](https://www.fmrib.ox.ac.uk/ukbiobank/fbp/)
 - [FNIRT user guide](https://fsl.fmrib.ox.ac.uk/fsl/docs/registration/fnirt/user_guide.html)
+- [FSL FNIRT source](https://git.fmrib.ox.ac.uk/fsl/fnirt)
 - [FSL-VBM guide](https://fsl.fmrib.ox.ac.uk/fsl/docs/structural/fslvbm.html)

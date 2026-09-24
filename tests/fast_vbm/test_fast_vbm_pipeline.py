@@ -170,6 +170,59 @@ def test_template_affine_must_be_invertible(monkeypatch):
         _pipeline(monkeypatch)(image, template, brain_mask=mask)
 
 
+def test_fnirt_backend_is_reported_without_synthmorph_settings(monkeypatch):
+    image = _volume()
+    mask = image.new(np.ones(image.shape[:3], dtype=np.uint8))
+    monkeypatch.setattr(pipeline_module, "TorchFAST", _FakeFAST)
+
+    def fake_registration(moving, fixed, **options):
+        assert options["registration_backend"] == "fnirt"
+        warped = fixed.new(np.asarray(fixed.data, dtype=np.float32).copy())
+        jacobian = fixed.new(np.ones(fixed.shape[:3], dtype=np.float32))
+        return VBMRegistrationResult(
+            warped_gm=warped,
+            jacobian=jacobian,
+            modulated_gm=warped.copy(),
+            pull_world_affine=np.eye(4),
+            fit_score=1.0,
+            maximum_displacement_mm=0.0,
+            qc={"jacobian_min": 1.0, "jacobian_max": 1.0},
+        )
+
+    monkeypatch.setattr(pipeline_module, "register_gm", fake_registration)
+    monkeypatch.setattr(
+        pipeline_module.FastVBM, "_deform_model", lambda self: object()
+    )
+    model = FastVBM(
+        device="cpu",
+        registration_backend="fnirt",
+        linear_strides=(1,),
+        linear_steps=(0,),
+        linear_learning_rates=(0.01,),
+        fnirt_strides=(1,),
+        fnirt_steps=(0,),
+        fnirt_learning_rates=(0.1,),
+        fnirt_input_fwhm_mm=(0,),
+        fnirt_reference_fwhm_mm=(0,),
+        fnirt_regularization=(0,),
+    )
+
+    result = model(image, image.copy(), brain_mask=mask)
+    report = result.report()
+
+    assert result.settings["registration_backend"] == "fnirt"
+    assert result.settings["nonlinear_backend"] == (
+        "pytorch-fnirt-style-cubic-bspline"
+    )
+    assert result.settings["synthmorph_implementation"] is None
+    assert result.settings["synthmorph_mid_space"] is None
+    assert result.settings["fnirt_steps"] == [0]
+    assert "FNIRT-style cubic B-spline" in report["method"]
+    assert report["registration"]["jacobian_convention"].startswith(
+        "FSL FNIRT nonlinear-only"
+    )
+
+
 def test_failed_overwrite_removes_completion_marker(tmp_path, monkeypatch):
     image = _volume()
     mask = image.new(np.ones(image.shape[:3], dtype=np.uint8))

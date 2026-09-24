@@ -12,6 +12,7 @@ import surfa as sf
 import torch
 
 from ..fast import FASTResult, TorchFAST
+from .fnirt_backend import PyTorchFNIRTRegistration
 from .registration import VBMRegistrationResult, register_gm
 from .synthmorph_backend import SynthMorphDeformRegistration
 
@@ -117,11 +118,33 @@ class FastVBMResult:
         """Return JSON-serializable settings, timing, and registration QC."""
         mask = np.asarray(self.brain_mask.data) > 0
         bias = np.asarray(self.fast.bias_field.data)
+        nonlinear_backend = self.settings["registration_backend"]
+        nonlinear_label = (
+            "PyTorch SynthMorph deform"
+            if nonlinear_backend == "synthmorph"
+            else "PyTorch FNIRT-style cubic B-spline"
+        )
+        jacobian_convention = (
+            "FSL FNIRT nonlinear-only: det(I + d residual_fsl / d fixed_fsl)"
+            if nonlinear_backend == "fnirt"
+            else (
+                "nonlinear-only: full pull determinant divided by affine "
+                "determinant"
+            )
+        )
+        registration_timing = (
+            "linear registration, selected nonlinear backend, Jacobian, "
+            "modulation, and CPU output materialization"
+        )
+        if nonlinear_backend == "synthmorph":
+            registration_timing += (
+                "; the first call includes lazy checkpoint loading"
+            )
         return {
             "status": "experimental",
             "method": (
                 "TorchFAST GM; independent PyTorch FLIRT-compatible 12-DOF "
-                "affine; PyTorch SynthMorph deform"
+                f"affine; {nonlinear_label}"
             ),
             "fnirt_equivalent": False,
             "fsl_flirt_equivalent": False,
@@ -138,11 +161,7 @@ class FastVBMResult:
                     "weight loading, later calls reuse the loaded model"
                 ),
                 "fast": "TorchFAST inference and GPU-to-CPU output materialization",
-                "registration_jacobian_modulation": (
-                    "linear registration, SynthMorph deform inference, "
-                    "Jacobian, modulation, and CPU output materialization; "
-                    "the first call includes lazy SynthMorph weight loading"
-                ),
+                "registration_jacobian_modulation": registration_timing,
             },
             "fast": {
                 "tissue_means": list(self.fast.tissue_means),
@@ -158,11 +177,8 @@ class FastVBMResult:
                 "maximum_displacement_mm": (
                     self.registration.maximum_displacement_mm
                 ),
-                "jacobian_convention": (
-                    "nonlinear-only: full pull determinant divided by affine "
-                    "determinant"
-                ),
                 **self.registration.qc,
+                "jacobian_convention": jacobian_convention,
             },
             "outputs": OUTPUT_FILENAMES,
         }
@@ -206,8 +222,8 @@ class FastVBM:
 
     SynthStrip is loaded lazily and is not required when ``brain_mask`` is
     supplied. Linear registration is a PyTorch FLIRT-compatible 12-DOF fit.
-    Nonlinear registration uses this package's PyTorch SynthMorph implementation
-    with the official deform checkpoint.
+    Nonlinear registration uses either this package's PyTorch SynthMorph
+    implementation or its FNIRT-style cubic B-spline optimizer.
     """
 
     def __init__(
@@ -224,6 +240,15 @@ class FastVBM:
         synthmorph_extent=256,
         synthmorph_hyper=0.5,
         synthmorph_steps=7,
+        registration_backend="synthmorph",
+        fnirt_strides=(4, 2, 1, 1),
+        fnirt_steps=(20, 20, 30, 20),
+        fnirt_learning_rates=(0.5, 0.25, 0.1, 0.05),
+        fnirt_input_fwhm_mm=(6.0, 4.0, 2.0, 2.0),
+        fnirt_reference_fwhm_mm=(4.0, 2.0, 0.0, 0.0),
+        fnirt_warp_resolution_mm=10.0,
+        fnirt_regularization=(150.0, 75.0, 50.0, 30.0),
+        fnirt_jacobian_penalty=1.0,
     ):
         self.device = torch.device(device)
         if self.device.type == "cuda" and not torch.cuda.is_available():
@@ -234,6 +259,11 @@ class FastVBM:
             torch.set_num_threads(threads)
         self.synthstrip_weights = synthstrip_weights
         self.synthmorph_weights = synthmorph_weights
+        if registration_backend not in ("synthmorph", "fnirt"):
+            raise ValueError(
+                "registration_backend must be 'synthmorph' or 'fnirt'"
+            )
+        self.registration_backend = registration_backend
         self.threads = threads
         self.extractor = None
         self.deform_model = None
@@ -249,6 +279,14 @@ class FastVBM:
         self.synthmorph_extent = synthmorph_extent
         self.synthmorph_hyper = synthmorph_hyper
         self.synthmorph_steps = synthmorph_steps
+        self.fnirt_strides = tuple(fnirt_strides)
+        self.fnirt_steps = tuple(fnirt_steps)
+        self.fnirt_learning_rates = tuple(fnirt_learning_rates)
+        self.fnirt_input_fwhm_mm = tuple(fnirt_input_fwhm_mm)
+        self.fnirt_reference_fwhm_mm = tuple(fnirt_reference_fwhm_mm)
+        self.fnirt_warp_resolution_mm = fnirt_warp_resolution_mm
+        self.fnirt_regularization = tuple(fnirt_regularization)
+        self.fnirt_jacobian_penalty = fnirt_jacobian_penalty
 
     def _extract(self, image):
         if self.extractor is None:
@@ -264,13 +302,26 @@ class FastVBM:
 
     def _deform_model(self):
         if self.deform_model is None:
-            self.deform_model = SynthMorphDeformRegistration(
-                weights=self.synthmorph_weights,
-                device=self.device,
-                extent=self.synthmorph_extent,
-                hyper=self.synthmorph_hyper,
-                steps=self.synthmorph_steps,
-            )
+            if self.registration_backend == "synthmorph":
+                self.deform_model = SynthMorphDeformRegistration(
+                    weights=self.synthmorph_weights,
+                    device=self.device,
+                    extent=self.synthmorph_extent,
+                    hyper=self.synthmorph_hyper,
+                    steps=self.synthmorph_steps,
+                )
+            else:
+                self.deform_model = PyTorchFNIRTRegistration(
+                    device=self.device,
+                    strides=self.fnirt_strides,
+                    steps=self.fnirt_steps,
+                    learning_rates=self.fnirt_learning_rates,
+                    input_fwhm_mm=self.fnirt_input_fwhm_mm,
+                    reference_fwhm_mm=self.fnirt_reference_fwhm_mm,
+                    warp_resolution_mm=self.fnirt_warp_resolution_mm,
+                    regularization=self.fnirt_regularization,
+                    jacobian_penalty=self.fnirt_jacobian_penalty,
+                )
         return self.deform_model
 
     def __call__(
@@ -333,6 +384,15 @@ class FastVBM:
             synthmorph_extent=self.synthmorph_extent,
             synthmorph_hyper=self.synthmorph_hyper,
             synthmorph_steps=self.synthmorph_steps,
+            registration_backend=self.registration_backend,
+            fnirt_strides=self.fnirt_strides,
+            fnirt_steps=self.fnirt_steps,
+            fnirt_learning_rates=self.fnirt_learning_rates,
+            fnirt_input_fwhm_mm=self.fnirt_input_fwhm_mm,
+            fnirt_reference_fwhm_mm=self.fnirt_reference_fwhm_mm,
+            fnirt_warp_resolution_mm=self.fnirt_warp_resolution_mm,
+            fnirt_regularization=self.fnirt_regularization,
+            fnirt_jacobian_penalty=self.fnirt_jacobian_penalty,
             deform_model=self._deform_model(),
         )
         registration_sec = time.perf_counter() - registration_started
@@ -354,15 +414,88 @@ class FastVBM:
             "linear_strides": list(self.linear_strides),
             "linear_steps": list(self.linear_steps),
             "linear_learning_rates": list(self.linear_learning_rates),
-            "nonlinear_backend": "pytorch-synthmorph-deform",
+            "registration_backend": self.registration_backend,
+            "nonlinear_backend": (
+                "pytorch-synthmorph-deform"
+                if self.registration_backend == "synthmorph"
+                else "pytorch-fnirt-style-cubic-bspline"
+            ),
+            "nonlinear_implementation": (
+                "freesurfer_torch.synthmorph.SynthMorph"
+                if self.registration_backend == "synthmorph"
+                else "freesurfer_torch.fast_vbm.PyTorchFNIRTRegistration"
+            ),
             "synthmorph_implementation": (
                 "freesurfer_torch.synthmorph.SynthMorph"
+                if self.registration_backend == "synthmorph"
+                else None
             ),
-            "synthmorph_extent": self.synthmorph_extent,
-            "synthmorph_hyper": self.synthmorph_hyper,
-            "synthmorph_integration_steps": self.synthmorph_steps,
-            "synthmorph_mid_space": False,
-            "synthmorph_warp_convention": "fixed-grid-target-to-source-disp-ras",
+            "synthmorph_extent": (
+                self.synthmorph_extent
+                if self.registration_backend == "synthmorph"
+                else None
+            ),
+            "synthmorph_hyper": (
+                self.synthmorph_hyper
+                if self.registration_backend == "synthmorph"
+                else None
+            ),
+            "synthmorph_integration_steps": (
+                self.synthmorph_steps
+                if self.registration_backend == "synthmorph"
+                else None
+            ),
+            "synthmorph_mid_space": (
+                False if self.registration_backend == "synthmorph" else None
+            ),
+            "synthmorph_warp_convention": (
+                "fixed-grid-target-to-source-disp-ras"
+                if self.registration_backend == "synthmorph"
+                else None
+            ),
+            "warp_convention": "fixed-grid-target-to-source-world-ras",
+            "fnirt_style": self.registration_backend == "fnirt",
+            "fsl_fnirt_numerically_equivalent": False,
+            "fnirt_strides": (
+                list(self.fnirt_strides)
+                if self.registration_backend == "fnirt"
+                else None
+            ),
+            "fnirt_steps": (
+                list(self.fnirt_steps)
+                if self.registration_backend == "fnirt"
+                else None
+            ),
+            "fnirt_learning_rates": (
+                list(self.fnirt_learning_rates)
+                if self.registration_backend == "fnirt"
+                else None
+            ),
+            "fnirt_input_fwhm_mm": (
+                list(self.fnirt_input_fwhm_mm)
+                if self.registration_backend == "fnirt"
+                else None
+            ),
+            "fnirt_reference_fwhm_mm": (
+                list(self.fnirt_reference_fwhm_mm)
+                if self.registration_backend == "fnirt"
+                else None
+            ),
+            "fnirt_warp_resolution_mm": (
+                self.fnirt_warp_resolution_mm
+                if self.registration_backend == "fnirt"
+                else None
+            ),
+            "fnirt_regularization": (
+                list(self.fnirt_regularization)
+                if self.registration_backend == "fnirt"
+                else None
+            ),
+            "fnirt_jacobian_penalty": (
+                self.fnirt_jacobian_penalty
+                if self.registration_backend == "fnirt"
+                else None
+            ),
             "torch_threads": torch.get_num_threads(),
             "fast": asdict(self.fast.config),
         }

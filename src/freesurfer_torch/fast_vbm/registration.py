@@ -1,4 +1,4 @@
-"""Affine plus SynthMorph deformable registration for FastVBM."""
+"""Affine plus selectable nonlinear registration for FastVBM."""
 
 from dataclasses import dataclass
 
@@ -13,6 +13,7 @@ from .linear import (
     register_affine,
     resample_to_fixed,
 )
+from .fnirt_backend import PyTorchFNIRTRegistration
 from .synthmorph_backend import SynthMorphDeformRegistration
 
 
@@ -172,13 +173,25 @@ def register_gm(
     synthmorph_extent=256,
     synthmorph_hyper=0.5,
     synthmorph_steps=7,
+    registration_backend="synthmorph",
+    fnirt_strides=(4, 2, 1, 1),
+    fnirt_steps=(20, 20, 30, 20),
+    fnirt_learning_rates=(0.5, 0.25, 0.1, 0.05),
+    fnirt_input_fwhm_mm=(6.0, 4.0, 2.0, 2.0),
+    fnirt_reference_fwhm_mm=(4.0, 2.0, 0.0, 0.0),
+    fnirt_warp_resolution_mm=10.0,
+    fnirt_regularization=(150.0, 75.0, 50.0, 30.0),
+    fnirt_jacobian_penalty=1.0,
     deform_model=None,
 ):
     """Register one GM PVE image to a GM template and compute modulation.
 
     The linear stage is an independent PyTorch FLIRT-compatible 12-DOF fit.
-    The nonlinear stage uses the official SynthMorph deform checkpoint with
-    ``mid_space=False`` so the supplied affine is applied exactly once.
+    The nonlinear stage is selected with ``registration_backend``. The default
+    uses the official SynthMorph deform checkpoint with ``mid_space=False``.
+    ``"fnirt"`` uses the package's cubic B-spline SSD optimizer on the selected
+    PyTorch device. It follows FNIRT's transform role but is not numerically
+    equivalent to FSL FNIRT.
 
     ``initial_pull``, when provided, is a fixed-to-moving world-RAS affine. A
     bare matrix requires ``initial_pull_convention='fixed-to-moving-world-ras'``
@@ -188,6 +201,8 @@ def register_gm(
     device = torch.device(device)
     if device.type == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("CUDA was requested but is not available")
+    if registration_backend not in ("synthmorph", "fnirt"):
+        raise ValueError("registration_backend must be 'synthmorph' or 'fnirt'")
     moving_data = _array(moving, "moving")
     fixed_data = _array(fixed, "fixed")
     moving_affine = _affine(moving, "moving")
@@ -247,14 +262,36 @@ def register_gm(
         space="world",
     )
     if deform_model is None:
-        deform_model = SynthMorphDeformRegistration(
-            weights=synthmorph_weights,
-            device=device,
-            extent=synthmorph_extent,
-            hyper=synthmorph_hyper,
-            steps=synthmorph_steps,
-        )
+        if registration_backend == "synthmorph":
+            deform_model = SynthMorphDeformRegistration(
+                weights=synthmorph_weights,
+                device=device,
+                extent=synthmorph_extent,
+                hyper=synthmorph_hyper,
+                steps=synthmorph_steps,
+            )
+        else:
+            deform_model = PyTorchFNIRTRegistration(
+                device=device,
+                strides=fnirt_strides,
+                steps=fnirt_steps,
+                learning_rates=fnirt_learning_rates,
+                input_fwhm_mm=fnirt_input_fwhm_mm,
+                reference_fwhm_mm=fnirt_reference_fwhm_mm,
+                warp_resolution_mm=fnirt_warp_resolution_mm,
+                regularization=fnirt_regularization,
+                jacobian_penalty=fnirt_jacobian_penalty,
+            )
     package_synthmorph = isinstance(deform_model, SynthMorphDeformRegistration)
+    package_fnirt = isinstance(deform_model, PyTorchFNIRTRegistration)
+    if package_synthmorph and registration_backend != "synthmorph":
+        raise ValueError(
+            "a SynthMorph deform model requires registration_backend='synthmorph'"
+        )
+    if package_fnirt and registration_backend != "fnirt":
+        raise ValueError(
+            "a PyTorch FNIRT model requires registration_backend='fnirt'"
+        )
     nonlinear = deform_model(moving, fixed, initial)
     displacement_qc = _displacement_qc(
         nonlinear.pull_transform, fixed, pull_affine
@@ -263,23 +300,40 @@ def register_gm(
     qc = {
         "linear": linear_qc,
         "nonlinear_backend": (
-            "pytorch-synthmorph-deform" if package_synthmorph else "custom-deform-model"
+            "pytorch-synthmorph-deform"
+            if package_synthmorph
+            else (
+                "pytorch-fnirt-style-cubic-bspline"
+                if package_fnirt
+                else "custom-deform-model"
+            )
         ),
         "synthmorph_implementation": (
             _implementation_name(deform_model) if package_synthmorph else None
         ),
         "custom_deform_implementation": (
-            None if package_synthmorph else _implementation_name(deform_model)
+            None
+            if package_synthmorph or package_fnirt
+            else _implementation_name(deform_model)
         ),
         "synthmorph_warp_convention": (
             "fixed-grid target-to-source disp-ras: "
             "source_world(target)-target_world"
+            if package_synthmorph
+            else None
         ),
         "synthmorph_model": "deform" if package_synthmorph else None,
-        "synthmorph_extent": synthmorph_extent,
-        "synthmorph_hyper": synthmorph_hyper,
-        "synthmorph_integration_steps": synthmorph_steps,
+        "synthmorph_extent": synthmorph_extent if package_synthmorph else None,
+        "synthmorph_hyper": synthmorph_hyper if package_synthmorph else None,
+        "synthmorph_integration_steps": (
+            synthmorph_steps if package_synthmorph else None
+        ),
         "synthmorph_mid_space": False if package_synthmorph else None,
+        "fnirt_implementation": (
+            _implementation_name(deform_model) if package_fnirt else None
+        ),
+        "fnirt_style": package_fnirt,
+        "fsl_fnirt_numerically_equivalent": False,
         "affine_jacobian_determinant": float(
             np.linalg.det(pull_affine[:3, :3])
         ),

@@ -13,7 +13,9 @@ import pytest
     ("synthsr", ("SynthSR", "SynthSRResult", "SynthSRImage")),
     ("fast", ("TorchFAST", "FASTResult", "FASTConfig", "FASTTensorResult", "segment_t1")),
     ("fast_vbm", ("FastVBM", "FastVBMResult", "LinearRegistrationResult",
-                  "VBMRegistrationResult", "register_affine", "register_gm")),
+                  "FLIRTResult", "TorchFLIRT", "FNIRTVBMResult",
+                  "PyTorchFNIRTRegistration", "VBMRegistrationResult",
+                  "register_affine", "register_gm", "world_to_flirt_affine")),
     ("batch", ("BatchRunner", "BatchResult", "run_batch")),
 ])
 def test_top_level_exports_are_feature_objects(module, names):

@@ -1,5 +1,5 @@
 """Standalone PyTorch brain MRI inference tools."""
-__version__ = '0.7.0'
+__version__ = '0.8.0'
 
 
 def __getattr__(name):
@@ -20,7 +20,9 @@ def __getattr__(name):
         from . import fast
         return getattr(fast, name)
     if name in ('FastVBM', 'FastVBMResult', 'FASTVBMResult', 'VBMRegistrationResult',
-                'LinearRegistrationResult', 'register_affine', 'register_gm'):
+                'LinearRegistrationResult', 'FLIRTResult', 'TorchFLIRT',
+                'FNIRTVBMResult', 'PyTorchFNIRTRegistration',
+                'register_affine', 'register_gm', 'world_to_flirt_affine'):
         from . import fast_vbm
         return getattr(fast_vbm, name)
     if name in ('BatchRunner', 'BatchResult', 'run_batch'):

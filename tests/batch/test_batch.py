@@ -184,8 +184,8 @@ class BatchValidationTests(unittest.TestCase):
                     return {"case": self.image, "registration": {"jacobian_min": 0.2}}
 
             class FakeFastVBM:
-                def __init__(self, device, smoothness):
-                    initialized.append((device, smoothness))
+                def __init__(self, device, registration_backend):
+                    initialized.append((device, registration_backend))
 
                 def __call__(self, image, template, brain_mask=None):
                     calls.append((image, template, brain_mask))
@@ -193,12 +193,16 @@ class BatchValidationTests(unittest.TestCase):
 
             jobs = batch._prepare_jobs([
                 {
-                    "task": "fast_vbm", "model": {"smoothness": 10.0},
+                    "task": "fast_vbm", "model": {
+                        "registration_backend": "fnirt"
+                    },
                     "kwargs": {"image": "first.nii.gz", "template": "template.nii.gz"},
                     "outputs": {"pve_gm": root / "first_pve.nii.gz"},
                 },
                 {
-                    "task": "fast_vbm", "model": {"smoothness": 10.0},
+                    "task": "fast_vbm", "model": {
+                        "registration_backend": "fnirt"
+                    },
                     "kwargs": {
                         "image": "second.nii.gz", "template": "template.nii.gz",
                         "brain_mask": "second_mask.nii.gz",
@@ -213,7 +217,7 @@ class BatchValidationTests(unittest.TestCase):
                 outcomes = [batch._run_job(index, job) for index, job in enumerate(jobs)]
 
             self.assertTrue(all(outcome.ok for outcome in outcomes))
-            self.assertEqual(initialized, [("cuda:0", 10.0)])
+            self.assertEqual(initialized, [("cuda:0", "fnirt")])
             self.assertEqual(calls, [
                 ("first.nii.gz", "template.nii.gz", None),
                 ("second.nii.gz", "template.nii.gz", "second_mask.nii.gz"),

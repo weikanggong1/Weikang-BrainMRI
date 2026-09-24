@@ -9,14 +9,15 @@
 | WMH-SynthSeg | 脑结构标签、白质高信号及软体积 | [WMH-SynthSeg 文档](docs/wmh_synthseg/README.md) |
 | SynthSR | 从单幅 MRI 或 CT 合成 1 mm T1w | [SynthSR 文档](docs/synthsr/README.md) |
 | TorchFAST | T1 三组织分割、PVE 与偏置场校正 | [TorchFAST 文档](docs/fast/README.md) |
-| GPU FAST VBM | 原始 T1w 到 warped GM、Jacobian 和 modulated GM | [FastVBM 文档](docs/fast_vbm/README.md) |
+| GPU FAST VBM | 原始 T1w 到 warped GM、Jacobian 和 modulated GM；可选 PyTorch SynthMorph 或 FNIRT-style 非线性配准 | [FastVBM 文档](docs/fast_vbm/README.md) |
+| PyTorch FLIRT | CPU/CUDA 12-DOF affine；输出 reference-grid image 和 FSL scaled-mm `.mat` | [FastVBM 中的 FLIRT 接口](docs/fast_vbm/README.md#独立-pytorch-flirt-接口) |
 | GPU recon-all | T1w 到结构分割、皮层表面、顶点指标和脑区统计 | [GPU recon-all 文档](docs/recon_all/README.md) |
 
 前四项功能的多被试处理使用 Python `predict_batch()`：pandas 表含 `input` 影像和 `output` 绝对路径前缀两列；`workers=2` 可在同一设备启用两个 Python 进程。FastVBM 的多病例 Python 调用见其子页。输出命名和调度规则见[批量执行说明](docs/ARCHITECTURE.md#批量执行)；仓库提供 [T1w 样例](examples/README.md)和 [FLAIR 样例](examples/WMH.md)。
 
 GPU recon-all 的 SynthStrip、33 类 SynthSeg、SynthMorph 及三项辅助神经分割使用 PyTorch/CUDA；影像转换、强度校正、皮层拓扑、表面生成和统计运行于打包的原生 CPU 程序。单被试支持 `fs-torch-recon-all` 命令行和 Python 调用，多被试完整流程仅提供 Python 调用。
 
-FastVBM 0.7 的线性阶段是独立 PyTorch 12-DOF 实现，非线性阶段直接调用本包 PyTorch SynthMorph `deform`。它不在运行时调用 FSL FLIRT/FNIRT 或 FreeSurfer 可执行文件。
+FastVBM 的线性阶段是独立 PyTorch 12-DOF 实现；非线性阶段可选本包 PyTorch SynthMorph `deform` 或 PyTorch cubic B-spline FNIRT-style 优化器。独立 `TorchFLIRT` 对齐 FSL 的 input/reference、reference-grid output 和 input-to-reference scaled-mm matrix 契约。这里的接口一致性不表示 FSL FLIRT/FNIRT 的数值算法已逐行移植；运行时不调用 FSL 或 FreeSurfer 可执行文件。
 
 ## 安装
 
@@ -40,7 +41,7 @@ python tools/setup_weights.py --model synthstrip --model synthmorph-joint \
   --model wmh-synthseg --model synthsr
 ```
 
-FastVBM 从原始 T1w 开始时需要 `synthstrip.1.pt` 和 `synthmorph.deform.3.h5`；仅部署该流程可运行 `python tools/setup_weights.py --model fast-vbm`。GM 模板由用户提供，不由配置脚本下载。TorchFAST 不需要权重。
+FastVBM 的 SynthMorph 分支从原始 T1w 开始时需要 `synthstrip.1.pt` 和 `synthmorph.deform.3.h5`；`python tools/setup_weights.py --model fast-vbm` 安装这两个后端的权重超集。FNIRT-style 分支只需 SynthStrip；已有脑 mask 时该分支无需 checkpoint。GM 模板由用户提供，不由配置脚本下载。TorchFAST、PyTorch FLIRT 和 FNIRT-style 优化器不使用权重。
 
 GPU recon-all 还需要与固定 FreeSurfer 8.2 流程匹配的本地原生运行包；上述权重命令不提供它。运行包和个人 license 均不随仓库或 wheel 发布。构建、调用、输出和验收见[GPU recon-all 文档](docs/recon_all/README.md)。
 

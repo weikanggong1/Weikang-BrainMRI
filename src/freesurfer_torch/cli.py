@@ -133,6 +133,50 @@ def _run_fast(args):
         print(path)
 
 
+def _run_flirt(args):
+    import numpy as np
+    import torch
+
+    from .fast_vbm import TorchFLIRT
+
+    if args.output is None and args.omat is None:
+        raise ValueError("provide -out and/or -omat")
+    destinations = [Path(value) for value in (args.output, args.omat) if value]
+    if (
+        len(destinations) == 2
+        and destinations[0].resolve() == destinations[1].resolve()
+    ):
+        raise ValueError("-out and -omat must use different paths")
+    existing = [path for path in destinations if path.exists()]
+    if existing and not args.overwrite:
+        raise FileExistsError(f"output exists: {existing[0]}; use --overwrite")
+    torch.set_num_threads(args.threads)
+    model = TorchFLIRT(
+        device=args.device,
+        strides=tuple(args.strides),
+        steps=tuple(args.steps),
+        learning_rates=tuple(args.learning_rates),
+        cost=args.cost,
+    )
+    result = model(args.input, args.reference)
+    if args.output:
+        Path(args.output).parent.mkdir(parents=True, exist_ok=True)
+        _atomic_save(result.moved, args.output)
+        print(args.output)
+    if args.omat:
+        matrix_path = Path(args.omat)
+        matrix_path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = matrix_path.with_name(
+            f".{matrix_path.name}.tmp-{os.getpid()}-{uuid.uuid4().hex}"
+        )
+        try:
+            np.savetxt(temporary, result.matrix, fmt="%.12g")
+            os.replace(temporary, matrix_path)
+        finally:
+            temporary.unlink(missing_ok=True)
+        print(matrix_path)
+
+
 def _run_fast_vbm(args):
     from .fast_vbm import FastVBM, OUTPUT_FILENAMES
 
@@ -155,6 +199,15 @@ def _run_fast_vbm(args):
         synthmorph_extent=args.synthmorph_extent,
         synthmorph_hyper=args.synthmorph_hyper,
         synthmorph_steps=args.synthmorph_steps,
+        registration_backend=args.registration_backend,
+        fnirt_strides=tuple(args.fnirt_strides),
+        fnirt_steps=tuple(args.fnirt_steps),
+        fnirt_learning_rates=tuple(args.fnirt_learning_rates),
+        fnirt_input_fwhm_mm=tuple(args.fnirt_input_fwhm_mm),
+        fnirt_reference_fwhm_mm=tuple(args.fnirt_reference_fwhm_mm),
+        fnirt_warp_resolution_mm=args.fnirt_warp_resolution_mm,
+        fnirt_regularization=tuple(args.fnirt_regularization),
+        fnirt_jacobian_penalty=args.fnirt_jacobian_penalty,
     )
     result = model(args.image, args.template, brain_mask=args.brain_mask)
     paths = result.save(output_dir, overwrite=args.overwrite)
@@ -165,7 +218,7 @@ def _run_fast_vbm(args):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(prog='fs-torch')
-    parser.add_argument('--version', action='version', version='freesurfer-torch 0.7.0')
+    parser.add_argument('--version', action='version', version='freesurfer-torch 0.8.0')
     commands = parser.add_subparsers(dest='command', required=True)
     strip = commands.add_parser('synthstrip', help='brain extraction')
     strip.add_argument('-i', '--image', required=True)
@@ -247,6 +300,23 @@ def main(argv=None):
     fast.add_argument('-b', '--save-bias', action='store_true')
     fast.add_argument('-B', '--save-restored', action='store_true')
     fast.add_argument('--overwrite', action='store_true')
+    flirt = commands.add_parser(
+        'flirt', help='PyTorch 12-DOF affine with FSL FLIRT file contracts')
+    flirt.add_argument('-in', '--in', dest='input', required=True,
+                       help='moving/input image')
+    flirt.add_argument('-ref', '--ref', dest='reference', required=True,
+                       help='fixed/reference image defining the output grid')
+    flirt.add_argument('-out', '--out', dest='output')
+    flirt.add_argument('-omat', '--omat')
+    flirt.add_argument('-dof', type=int, choices=(12,), default=12)
+    flirt.add_argument('-cost', choices=('normcorr',), default='normcorr')
+    flirt.add_argument('--device', default='cpu')
+    flirt.add_argument('--threads', type=int, default=1)
+    flirt.add_argument('--strides', type=int, nargs=3, default=(4, 2, 1))
+    flirt.add_argument('--steps', type=int, nargs=3, default=(80, 60, 50))
+    flirt.add_argument('--learning-rates', type=float, nargs=3,
+                       default=(0.05, 0.025, 0.0125))
+    flirt.add_argument('--overwrite', action='store_true')
     fast_vbm = commands.add_parser(
         'fast-vbm', help='raw T1 to bias-corrected FAST VBM maps')
     fast_vbm.add_argument('-i', '--image', required=True,
@@ -259,7 +329,10 @@ def main(argv=None):
     fast_vbm.add_argument('--synthstrip-weights',
                           help='official SynthStrip checkpoint or containing directory')
     fast_vbm.add_argument('--synthmorph-weights',
-                          help='official SynthMorph deform checkpoint or containing directory')
+                          help='official SynthMorph deform checkpoint; used by the synthmorph backend')
+    fast_vbm.add_argument('--registration-backend', choices=('synthmorph', 'fnirt'),
+                          default='synthmorph',
+                          help='nonlinear registration backend')
     fast_vbm.add_argument('--device', default='cpu')
     fast_vbm.add_argument('--threads', type=int)
     fast_vbm.add_argument('--linear-strides', type=int, nargs=3,
@@ -273,6 +346,26 @@ def main(argv=None):
                           default=256)
     fast_vbm.add_argument('--synthmorph-hyper', type=float, default=0.5)
     fast_vbm.add_argument('--synthmorph-steps', type=int, default=7)
+    fast_vbm.add_argument('--fnirt-strides', type=int, nargs=4,
+                          default=(4, 2, 1, 1),
+                          metavar=('LEVEL1', 'LEVEL2', 'LEVEL3', 'LEVEL4'))
+    fast_vbm.add_argument('--fnirt-steps', type=int, nargs=4,
+                          default=(20, 20, 30, 20),
+                          metavar=('LEVEL1', 'LEVEL2', 'LEVEL3', 'LEVEL4'))
+    fast_vbm.add_argument('--fnirt-learning-rates', type=float, nargs=4,
+                          default=(0.5, 0.25, 0.1, 0.05),
+                          metavar=('LEVEL1', 'LEVEL2', 'LEVEL3', 'LEVEL4'))
+    fast_vbm.add_argument('--fnirt-input-fwhm-mm', type=float, nargs=4,
+                          default=(6.0, 4.0, 2.0, 2.0),
+                          metavar=('LEVEL1', 'LEVEL2', 'LEVEL3', 'LEVEL4'))
+    fast_vbm.add_argument('--fnirt-reference-fwhm-mm', type=float, nargs=4,
+                          default=(4.0, 2.0, 0.0, 0.0),
+                          metavar=('LEVEL1', 'LEVEL2', 'LEVEL3', 'LEVEL4'))
+    fast_vbm.add_argument('--fnirt-warp-resolution-mm', type=float, default=10.0)
+    fast_vbm.add_argument('--fnirt-regularization', type=float, nargs=4,
+                          default=(150.0, 75.0, 50.0, 30.0),
+                          metavar=('LEVEL1', 'LEVEL2', 'LEVEL3', 'LEVEL4'))
+    fast_vbm.add_argument('--fnirt-jacobian-penalty', type=float, default=1.0)
     fast_vbm.add_argument('--no-bias', action='store_true',
                           help='disable TorchFAST bias-field correction')
     fast_vbm.add_argument('--overwrite', action='store_true')
@@ -285,6 +378,9 @@ def main(argv=None):
         return
     if args.command == 'fast':
         _run_fast(args)
+        return
+    if args.command == 'flirt':
+        _run_flirt(args)
         return
     if args.command == 'fast-vbm':
         _run_fast_vbm(args)

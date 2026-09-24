@@ -27,6 +27,23 @@ def test_fsl_scaled_mm_uses_storage_handedness_not_world_ras():
     )
 
 
+def test_fsl_scaled_mm_can_use_stored_pixdim_for_sheared_sform():
+    sheared = np.array(
+        [[1.0, 0.3, 0.0, 4.0], [0.0, 2.0, 0.2, -3.0],
+         [0.0, 0.0, 3.0, 2.0], [0.0, 0.0, 0.0, 1.0]],
+        dtype=float,
+    )
+
+    scaled = voxel_to_fsl_scaled_mm(
+        sheared, (5, 6, 7), voxel_sizes=(1.0, 2.0, 3.0)
+    )
+
+    np.testing.assert_allclose(
+        scaled,
+        [[-1, 0, 0, 4], [0, 2, 0, 0], [0, 0, 3, 0], [0, 0, 0, 1]],
+    )
+
+
 def test_flirt_scaled_mm_conversion_preserves_coordinate_mapping_and_direction():
     moving_vox2world = np.array(
         [[-2, 0, 0, 30], [0, 3, 0, -12], [0, 0, 4, 8], [0, 0, 0, 1]],
