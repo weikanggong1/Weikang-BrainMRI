@@ -16,6 +16,8 @@ python tools/native_cuda_experiments/make_mesh_case.py \
   work/reconall_reference_gpucw1/fs_sub01/surf/lh.inflated \
   /tmp/lh_smooth_1024.bin --iterations 1024
 ./smooth /tmp/lh_smooth_1024.bin
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover \
+  -s tools/native_cuda_experiments -p 'test_*.py'
 ```
 
 The GPU `cuda_total_ms` includes allocation, host-to-device transfer, 1024 kernel

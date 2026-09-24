@@ -23,7 +23,7 @@ THREADS = {"OMP_NUM_THREADS": "4", "FS_OMP_NUM_THREADS": "4",
            "ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS": "1"}
 REQUIRED = ("mri/aparc+aseg.mgz", "stats/aseg.stats", "stats/lh.aparc.stats",
             "stats/rh.aparc.stats", "surf/lh.white", "surf/rh.white")
-GPU_QUERY = ("nvidia-smi", "-i", "1", "--query-gpu=index,uuid,name,"
+GPU_QUERY = ("--query-gpu=index,uuid,name,"
              "utilization.gpu,memory.used", "--format=csv,noheader,nounits")
 
 
@@ -46,8 +46,9 @@ def checked_file(value: str | Path) -> Path:
     return path
 
 
-def gpu_sample() -> list[str]:
-    result = subprocess.run(GPU_QUERY, capture_output=True, text=True,
+def gpu_sample(physical_index: int) -> list[str]:
+    result = subprocess.run(("nvidia-smi", "-i", str(physical_index), *GPU_QUERY),
+                            capture_output=True, text=True,
                             timeout=10, check=True)
     return next(csv.reader([result.stdout.strip()]))
 
@@ -58,7 +59,7 @@ def cpu_times() -> tuple[int, int]:
 
 
 def run_timed(command: list[str], env: dict[str, str], label: str,
-              root: Path, subject_dir: Path) -> dict:
+              root: Path, subject_dir: Path, gpu_index: int) -> dict:
     stdout = root / f"{label}.stdout.log"
     resource_file = root / f"{label}.resources.csv"
     time_file = root / f"{label}.time.txt"
@@ -81,7 +82,7 @@ def run_timed(command: list[str], env: dict[str, str], label: str,
             usage = "" if total <= 0 else round(100 * (1 - (current[1] - previous[1]) / total), 2)
             previous = current
             try:
-                gpu = gpu_sample()
+                gpu = gpu_sample(gpu_index)
             except (OSError, subprocess.SubprocessError, StopIteration):
                 gpu = [""] * 5
             writer.writerow((utc_now(), usage, *[round(v, 2) for v in load], *gpu))
@@ -111,9 +112,13 @@ def main() -> None:
                         help="new directory; existing paths are refused")
     parser.add_argument("--order", choices=("A-C", "C-A"), default="A-C",
                         help="serial run order (default: A-C)")
+    parser.add_argument("--cuda-visible-devices", type=int, metavar="PHYSICAL_INDEX",
+                        help="show only this physical GPU to both runs; C uses logical cuda:0")
     parser.add_argument("--execute", action="store_true",
                         help="run the chosen order; without this flag only print the plan")
     args = parser.parse_args()
+    if args.cuda_visible_devices is not None and args.cuda_visible_devices < 0:
+        parser.error("--cuda-visible-devices must be a nonnegative physical GPU index")
 
     t1 = checked_file(args.t1)
     official_home = args.official_home.expanduser().resolve(strict=True)
@@ -136,18 +141,29 @@ def main() -> None:
     official = [str(official_recon), "-i", str(t1), "-s", "a_official",
                 "-sd", str(official_subjects), "-all", "-parallel",
                 "-openmp", "4", "-itkthreads", "1"]
+    visible_devices = (str(args.cuda_visible_devices)
+                       if args.cuda_visible_devices is not None
+                       else os.environ.get("CUDA_VISIBLE_DEVICES"))
+    candidate_device = "cuda:0" if args.cuda_visible_devices is not None else "cuda:1"
+    gpu_index = args.cuda_visible_devices if args.cuda_visible_devices is not None else 1
     candidate = [str(candidate_python), "-I", "-m",
                  "freesurfer_torch.recon_all.standalone", "-i", str(t1),
                  "-s", "c_candidate", "-sd", str(candidate_subjects),
                  "--bundle", str(bundle), "--license", str(license_file),
-                 "--device", "cuda:1", "--threads", "4"]
+                 "--device", candidate_device, "--threads", "4"]
     run_order = ("A_official", "C_candidate") if args.order == "A-C" else \
                 ("C_candidate", "A_official")
     plan = {"order": args.order, "run_order": list(run_order), "t1": str(t1),
             "t1_sha256": sha256(t1), "hostname": socket.gethostname(),
             "cpu_affinity": sorted(os.sched_getaffinity(0)),
-            "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
-            "threads": THREADS, "gpu_device": "cuda:1", "gpu_smi_index": 1,
+            "cuda_visible_devices": visible_devices,
+            "cuda_visibility_source": ("--cuda-visible-devices" if args.cuda_visible_devices is not None
+                                       else "inherited environment"),
+            "gpu_mapping": {"official_visible_physical_gpu": args.cuda_visible_devices,
+                            "candidate_visible_physical_gpu": args.cuda_visible_devices,
+                            "candidate_logical_device": candidate_device,
+                            "sampled_physical_gpu": gpu_index},
+            "threads": THREADS, "gpu_device": candidate_device, "gpu_smi_index": gpu_index,
             "official_home": str(official_home),
             "official_build_stamp": build_stamp,
             "official_recon_sha256": sha256(official_recon),
@@ -172,13 +188,17 @@ def main() -> None:
         raise PermissionError("Both reconstruction entry points must be executable")
     if shutil.which("nvidia-smi") is None or not Path("/usr/bin/time").is_file():
         raise FileNotFoundError("nvidia-smi and /usr/bin/time are required for the benchmark")
-    inventory = gpu_sample()
+    inventory = gpu_sample(gpu_index)
+    probe_env = os.environ.copy()
+    if args.cuda_visible_devices is not None:
+        probe_env["CUDA_VISIBLE_DEVICES"] = visible_devices
     count = subprocess.run([str(candidate_python), "-I", "-c",
                             "import torch, freesurfer_torch.recon_all.standalone; "
                             "print(torch.cuda.device_count())"],
-                           capture_output=True, text=True, check=True, timeout=120)
-    if int(count.stdout.strip()) < 2:
-        raise RuntimeError("Logical cuda:1 is unavailable in the candidate Python environment")
+                           env=probe_env, capture_output=True, text=True,
+                           check=True, timeout=120)
+    if int(count.stdout.strip()) < (1 if args.cuda_visible_devices is not None else 2):
+        raise RuntimeError(f"Logical {candidate_device} is unavailable in the candidate Python environment")
 
     root.mkdir(parents=True, exist_ok=False)
     official_subjects.mkdir()
@@ -196,6 +216,9 @@ def main() -> None:
     candidate_env.update(THREADS)
     candidate_env["PATH"] = "/usr/bin:/bin"
     candidate_env["PYTHONNOUSERSITE"] = "1"
+    if args.cuda_visible_devices is not None:
+        official_env["CUDA_VISIBLE_DEVICES"] = visible_devices
+        candidate_env["CUDA_VISIBLE_DEVICES"] = visible_devices
 
     runs = {
         "A_official": (official, official_env, official_subjects / "a_official"),
@@ -206,7 +229,7 @@ def main() -> None:
         command, env, subject = runs[label]
         if sha256(t1) != plan["t1_sha256"]:
             raise RuntimeError("T1 content changed between runs")
-        result = run_timed(command, env, label, root, subject)
+        result = run_timed(command, env, label, root, subject, gpu_index)
         results.append(result)
         (root / "summary.json").write_text(json.dumps({"plan": plan, "results": results},
                                                       indent=2) + "\n")
