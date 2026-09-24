@@ -10,6 +10,11 @@ correlation. Its outputs use the same filenames and template grid as `bb_vbm`,
 but the measurements are not
 FNIRT-equivalent.
 
+The packaged raw-T1 → SynthStrip → TorchFAST → GPU VBM interface is documented
+under [`docs/fast_vbm/`](../../../docs/fast_vbm/README.md). The scripts here remain
+the research harness for the FSL reference, SynthSeg arm, template comparisons,
+and aggregate reports; they are not the stable package entry point.
+
 The method, source correspondence and validation limits are documented in
 [`docs/ukb_vbm/README.md`](../../../docs/ukb_vbm/README.md). Aggregate results
 and cohort figures are in [`validation/ukb_vbm/`](../../../validation/ukb_vbm/).

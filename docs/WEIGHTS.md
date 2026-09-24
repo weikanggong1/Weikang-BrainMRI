@@ -3,7 +3,8 @@
 Git 仓库和 wheel 均不包含权重。SynthStrip、SynthMorph、WMH-SynthSeg 和 SynthSR
 使用 FreeSurfer 官方发布的模型文件；配置脚本下载文件、核对大小与 SHA-256，并
 保存权重目录。此后 Python API 和 `fs-torch` 命令会自动查找它，下载过程无需安装
-FreeSurfer。0.5.0 新增的 TorchFAST 是数值算法，不使用模型权重。
+FreeSurfer。0.5.0 新增的 TorchFAST 是数值算法，不使用模型权重。0.6.0 的 FastVBM
+仅在原始 T1 脑提取阶段复用默认 SynthStrip checkpoint。
 
 ## 一次配置，后续自动使用
 
@@ -41,7 +42,7 @@ python tools/setup_weights.py --all --verify-only
 
 `--verify-only` 只检查当前权重目录，不下载或修改配置。已从联网机器复制了权重时，运行 `python tools/setup_weights.py --all --dest /path/to/copied/models`：现有文件校验成功后直接保存目录，无需重新下载。安装 wheel 后也可使用相同选项的 `fs-torch-setup-weights` 命令。
 
-可选模型名：`synthstrip`、`synthstrip-nocsf`、`synthmorph-rigid`、`synthmorph-affine`、`synthmorph-deform`、`synthmorph-joint`、`wmh-synthseg`、`synthsr`、`synthsr-lowfield`、`synthsr-v1`。`--model` 可重复；不写 `--model` 时等同 `--all`。显式 API/CLI 权重路径优先，其次是 `FREESURFER_TORCH_WEIGHTS` 环境变量，再次是脚本保存的目录，然后是默认缓存和现有 FreeSurfer 模型目录。`XDG_CACHE_HOME` 可改变缓存根目录。模型推理不会联网，只有运行配置脚本才会下载。
+可选模型名：`synthstrip`、`synthstrip-nocsf`、`synthmorph-rigid`、`synthmorph-affine`、`synthmorph-deform`、`synthmorph-joint`、`wmh-synthseg`、`synthsr`、`synthsr-lowfield`、`synthsr-v1` 和 `fast-vbm`。`fast-vbm` 是 SynthStrip 默认 checkpoint 的依赖别名，不增加第十个权重。`--model` 可重复；不写 `--model` 时等同 `--all`。显式 API/CLI 权重路径优先，其次是 `FREESURFER_TORCH_WEIGHTS` 环境变量，再次是脚本保存的目录，然后是默认缓存和现有 FreeSurfer 模型目录。`XDG_CACHE_HOME` 可改变缓存根目录。模型推理不会联网，只有运行配置脚本才会下载。
 
 以下链接、HTTP 状态和文件大小于 **2026-09-23** 核验；九个端点均返回 HTTP 200。SynthStrip/SynthMorph 的 SHA-256 来自本包已完成数值验证的权重，并与 FreeSurfer 官方仓库的 git-annex 指针一致；WMH-SynthSeg 和 SynthSR v1 的 SHA-256 来自官方文件的完整下载校验。SynthSR v2 两份文件的大小和 SHA-256 与 FreeSurfer git-annex 对象名一致；配置脚本下载后还会逐字节校验。此处的版本号固定，不会自动跟随上游替换为新模型。
 
@@ -102,6 +103,13 @@ bias field 和 PVE 数值计算，不读取 checkpoint，也不需要执行
 `tools/setup_weights.py`。只有从原始、未去颅骨 T1 开始并先调用 SynthStrip 时，
 才需要配置 `synthstrip.1.pt`。`setup_weights.py --all` 的九个文件均属于上表四个
 学习模型，不含 TorchFAST 文件。
+
+`FastVBM` / `fs-torch fast-vbm` 从原始 T1w 开始，默认调用 SynthStrip，因此需要
+`synthstrip.1.pt`；其 TorchFAST、GPU registration、Jacobian 和 modulation 阶段不读取
+其他权重。只运行该 pipeline 时执行
+`python tools/setup_weights.py --model fast-vbm` 即可；该名称等同于只配置默认
+SynthStrip checkpoint。GM template 是独立输入，不是
+模型权重，也不由本仓库或配置脚本下载。
 
 ## 权重许可与归属
 

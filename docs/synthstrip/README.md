@@ -138,6 +138,17 @@ U-Net 在所选设备执行。影像读写、Surfa conform/crop、归一化、SD
 | 12 例真实 T1w、四组 CPU/GPU 计时与数值比较 | [匿名数据](../../benchmark/summary.public.json)、[比较报告](../COMPARISON.md) |
 | 批量输出与单例输出一致性 | [真实批量比较](../../benchmark/real_batch/comparison.public.json) |
 
+### 原版与本包示意图
+
+下图使用仓库公开、已去面容的 `sub-02` T1w。左列为输入，中、右列分别为
+FreeSurfer 8.2.0 `mri_synthstrip` 和本包输出；两行使用相同的轴位、冠状位切面及
+灰度范围。图像用于检查空间位置和脑边界，数值结论来自完整三维输出。
+
+![原始 T1w、FreeSurfer SynthStrip 和本包 SynthStrip 脑图](../figures/synthstrip_comparison.png)
+
+该样例的输入来源、原版和本包命令、图像生成方法及完整 mask 比较见
+[图示记录](../figures/README.md)。
+
 测试源码在 [tests/synthstrip/](../../tests/synthstrip/)；原版对照工具在 [tools/validate_synthstrip.py](../../tools/validate_synthstrip.py)：
 
 ```bash

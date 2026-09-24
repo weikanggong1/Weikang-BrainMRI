@@ -81,6 +81,27 @@ class BatchValidationTests(unittest.TestCase):
                     {"task": "fast", "outputs": {"lesion_probability": root / "bad.nii.gz"}}
                 ], False)
 
+    def test_fast_vbm_accepts_input_and_template_grid_outputs(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            job = {
+                "task": "fast_vbm",
+                "kwargs": {"image": "T1w.nii.gz", "template": "GM_template.nii.gz"},
+                "outputs": {
+                    "brain_mask": root / "mask.nii.gz",
+                    "pve_gm": root / "pve_1.nii.gz",
+                    "warped_gm": root / "warped.nii.gz",
+                    "jacobian": root / "jacobian.nii.gz",
+                    "modulated_gm": root / "modulated.nii.gz",
+                },
+            }
+            prepared = batch._prepare_jobs([job], overwrite=False)
+            self.assertEqual(set(prepared[0]["outputs"]), set(job["outputs"]))
+            with self.assertRaises(ValueError):
+                batch._prepare_jobs([
+                    {"task": "fast_vbm", "outputs": {"distance": root / "bad.nii.gz"}}
+                ], False)
+
     def test_fast_dispatch_reuses_model_and_saves_atomically(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
@@ -136,6 +157,70 @@ class BatchValidationTests(unittest.TestCase):
                                 for path in saved))
             self.assertTrue(all(path not in (first_output, second_output) for path in saved))
             self.assertFalse(any(path.exists() for path in saved))
+
+    def test_fast_vbm_dispatch_reuses_pipeline_and_selects_volume_outputs(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            initialized, calls = [], []
+
+            class Volume:
+                def __init__(self, value):
+                    self.value = value
+
+                def save(self, path):
+                    Path(path).write_text(self.value)
+
+            class Result:
+                def __init__(self, image):
+                    self.image = image
+
+                def volumes(self):
+                    return {
+                        "pve_gm": Volume(f"{self.image}:pve"),
+                        "modulated_gm": Volume(f"{self.image}:modulated"),
+                    }
+
+                def report(self):
+                    return {"case": self.image, "registration": {"jacobian_min": 0.2}}
+
+            class FakeFastVBM:
+                def __init__(self, device, smoothness):
+                    initialized.append((device, smoothness))
+
+                def __call__(self, image, template, brain_mask=None):
+                    calls.append((image, template, brain_mask))
+                    return Result(image)
+
+            jobs = batch._prepare_jobs([
+                {
+                    "task": "fast_vbm", "model": {"smoothness": 10.0},
+                    "kwargs": {"image": "first.nii.gz", "template": "template.nii.gz"},
+                    "outputs": {"pve_gm": root / "first_pve.nii.gz"},
+                },
+                {
+                    "task": "fast_vbm", "model": {"smoothness": 10.0},
+                    "kwargs": {
+                        "image": "second.nii.gz", "template": "template.nii.gz",
+                        "brain_mask": "second_mask.nii.gz",
+                    },
+                    "outputs": {"modulated_gm": root / "second_mod.nii.gz"},
+                },
+            ], overwrite=False)
+            with mock.patch.object(batch, "_device", "cuda:0"), \
+                    mock.patch.object(batch, "_models", {}), \
+                    mock.patch.object(batch, "_initialization_error", None), \
+                    mock.patch.object(batch, "_model_class", return_value=FakeFastVBM):
+                outcomes = [batch._run_job(index, job) for index, job in enumerate(jobs)]
+
+            self.assertTrue(all(outcome.ok for outcome in outcomes))
+            self.assertEqual(initialized, [("cuda:0", 10.0)])
+            self.assertEqual(calls, [
+                ("first.nii.gz", "template.nii.gz", None),
+                ("second.nii.gz", "template.nii.gz", "second_mask.nii.gz"),
+            ])
+            self.assertEqual((root / "first_pve.nii.gz").read_text(), "first.nii.gz:pve")
+            self.assertEqual((root / "second_mod.nii.gz").read_text(), "second.nii.gz:modulated")
+            self.assertEqual(outcomes[0].metadata["registration"]["jacobian_min"], 0.2)
 
     def test_synthmorph_debug_outputs_participate_in_collision_checks(self):
         with tempfile.TemporaryDirectory() as folder:

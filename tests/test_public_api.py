@@ -12,6 +12,7 @@ import pytest
     ("wmh_synthseg", ("WMHSynthSeg", "WMHResult")),
     ("synthsr", ("SynthSR", "SynthSRResult", "SynthSRImage")),
     ("fast", ("TorchFAST", "FASTResult", "FASTConfig", "FASTTensorResult", "segment_t1")),
+    ("fast_vbm", ("FastVBM", "FastVBMResult", "VBMRegistrationResult", "register_gm")),
     ("batch", ("BatchRunner", "BatchResult", "run_batch")),
 ])
 def test_top_level_exports_are_feature_objects(module, names):

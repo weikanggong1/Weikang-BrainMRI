@@ -169,9 +169,35 @@ def _run_fast(args):
         print(path)
 
 
+def _run_fast_vbm(args):
+    from .fast_vbm import FastVBM, OUTPUT_FILENAMES
+
+    output_dir = Path(args.output_dir)
+    report_path = output_dir / "fast_vbm_report.json"
+    outputs = [output_dir / filename for filename in OUTPUT_FILENAMES.values()]
+    existing = [path for path in (*outputs, report_path) if path.exists()]
+    if existing and not args.overwrite:
+        raise FileExistsError(f"output exists: {existing[0]}; use --overwrite")
+
+    model = FastVBM(
+        device=args.device,
+        threads=args.threads,
+        synthstrip_weights=args.synthstrip_weights,
+        bias_correction=not args.no_bias,
+        affine_steps=args.affine_steps,
+        deform_steps=args.deform_steps,
+        smoothness=args.smoothness,
+    )
+    result = model(args.image, args.template, brain_mask=args.brain_mask)
+    paths = result.save(output_dir, overwrite=args.overwrite)
+    for name in OUTPUT_FILENAMES:
+        print(paths[name])
+    print(report_path)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(prog='fs-torch')
-    parser.add_argument('--version', action='version', version='freesurfer-torch 0.5.0')
+    parser.add_argument('--version', action='version', version='freesurfer-torch 0.6.0')
     commands = parser.add_subparsers(dest='command', required=True)
     strip = commands.add_parser('synthstrip', help='brain extraction')
     strip.add_argument('-i', '--image', required=True)
@@ -253,6 +279,25 @@ def main(argv=None):
     fast.add_argument('-b', '--save-bias', action='store_true')
     fast.add_argument('-B', '--save-restored', action='store_true')
     fast.add_argument('--overwrite', action='store_true')
+    fast_vbm = commands.add_parser(
+        'fast-vbm', help='raw T1 to bias-corrected FAST VBM maps')
+    fast_vbm.add_argument('-i', '--image', required=True,
+                          help='single-frame raw T1 image')
+    fast_vbm.add_argument('--template', required=True,
+                          help='GM template defining the output grid')
+    fast_vbm.add_argument('-o', '--output-dir', required=True)
+    fast_vbm.add_argument('--brain-mask',
+                          help='optional input-grid mask; skips SynthStrip')
+    fast_vbm.add_argument('--synthstrip-weights',
+                          help='official SynthStrip checkpoint or containing directory')
+    fast_vbm.add_argument('--device', default='cpu')
+    fast_vbm.add_argument('--threads', type=int)
+    fast_vbm.add_argument('--affine-steps', type=int, default=50)
+    fast_vbm.add_argument('--deform-steps', type=int, default=40)
+    fast_vbm.add_argument('--smoothness', type=float, default=10.0)
+    fast_vbm.add_argument('--no-bias', action='store_true',
+                          help='disable TorchFAST bias-field correction')
+    fast_vbm.add_argument('--overwrite', action='store_true')
     batch = commands.add_parser('batch', help='run a JSON list of jobs with persistent GPU workers')
     batch.add_argument('manifest')
     batch.add_argument('--devices', nargs='+', default=['cuda:0'])
@@ -264,6 +309,8 @@ def main(argv=None):
     if args.command == 'batch':
         from .batch import run_batch
         jobs = json.loads(Path(args.manifest).read_text())
+        if any(job.get('task') == 'fast_vbm' for job in jobs):
+            parser.error('fast_vbm multi-subject execution is available through the Python BatchRunner API only')
         path = Path(args.report).expanduser().resolve()
         manifest_path = Path(args.manifest).expanduser().resolve()
         if path == manifest_path:
@@ -300,6 +347,9 @@ def main(argv=None):
         return
     if args.command == 'fast':
         _run_fast(args)
+        return
+    if args.command == 'fast-vbm':
+        _run_fast_vbm(args)
         return
     if args.command == 'synthstrip':
         from .synthstrip import SynthStrip

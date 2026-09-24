@@ -27,6 +27,12 @@ _OUTPUTS = {
         "pve_csf", "pve_gm", "pve_wm", "hard_segmentation",
         "pve_segmentation", "mixel_type", "bias_field", "restored",
     },
+    "fast_vbm": {
+        "brain", "brain_mask", "pve_csf", "pve_gm", "pve_wm",
+        "hard_segmentation", "pve_segmentation", "mixel_type",
+        "bias_field", "restored", "warped_gm", "jacobian",
+        "modulated_gm",
+    },
 }
 _models = {}
 _device = None
@@ -57,6 +63,7 @@ class BatchResult:
     outputs: dict[str, str] = field(default_factory=dict)
     error: str | None = None
     traceback: str | None = None
+    metadata: dict = field(default_factory=dict)
     pid: int | None = None
     started_at: float | None = None
     finished_at: float | None = None
@@ -96,6 +103,9 @@ def _model_class(task):
     if task == "fast":
         from .fast import TorchFAST
         return TorchFAST
+    if task == "fast_vbm":
+        from .fast_vbm import FastVBM
+        return FastVBM
     raise ValueError(f"Unknown task: {task}")
 
 
@@ -116,8 +126,12 @@ def _run_job(index, job):
         if job["task"] == "wmh_synthseg" and "lesion_probability" in job["outputs"]:
             kwargs["save_lesion_probabilities"] = True
         result = _models[key](**kwargs)
+        volumes = result.volumes() if job["task"] == "fast_vbm" else None
+        if job["task"] == "fast_vbm":
+            outcome.metadata = result.report()
         for name, path in job["outputs"].items():
-            _atomic_save(getattr(result, name), path)
+            volume = volumes[name] if volumes is not None else getattr(result, name)
+            _atomic_save(volume, path)
             outcome.outputs[name] = path
     except Exception as exc:
         outcome.error = f"{type(exc).__name__}: {exc}"
@@ -182,8 +196,9 @@ class BatchRunner:
     manager or call close() when finished. Calls to run() should be sequential.
 
     All processes are spawned, never forked. In a Python script construct the
-    runner under ``if __name__ == "__main__":``. In notebooks use the CLI or an
-    importable script. Each job must save at least one output.
+    runner under ``if __name__ == "__main__":``. Notebook users can use the CLI
+    for tasks accepted by the batch command; FastVBM batch jobs must run from an
+    importable Python script. Each job must save at least one output.
     """
 
     def __init__(self, devices=("cuda:0",), workers_per_device=1, threads_per_worker=1):

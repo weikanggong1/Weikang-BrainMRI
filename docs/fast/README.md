@@ -208,6 +208,17 @@ FAST4 2111.3 标签的完整、未改动源码随包保存在
 bias 消融、CPU/CUDA 检查、原始 T1 VBM 结果和公开图示见
 [验证记录](../../validation/fast/README.md)。
 
+### FSL FAST 与 TorchFAST 示意图
+
+下图使用仓库公开 `sub-02` 的同一 brain-only T1。两列 GM overlay 分别来自 FSL
+FAST 与 TorchFAST，差值列在完整三维 GM PVE 上计算；右侧两列显示两种 bias-corrected
+影像。该公开样例的 GM Pearson 为 0.97817，Dice 0.5 为 0.98742。
+
+![相同 T1 输入的 FSL FAST、TorchFAST GM PVE 与偏置场校正](../../validation/fast/figures/fast_comparison.png)
+
+图像用于直观检查组织边界和偏置校正。10 例统计、原始 NIfTI 比较和画图脚本见
+[验证记录](../../validation/fast/README.md)。
+
 ## 直接张量接口
 
 低层接口不读取影像文件：

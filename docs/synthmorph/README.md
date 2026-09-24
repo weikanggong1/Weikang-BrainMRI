@@ -215,6 +215,18 @@ Saved-transform application accepts multi-frame (4D) input images; neural regist
 
 参考版本的 `-i` / `-i -M` 原命令因 float64/float32 混合而失败。记录同时保留原失败和两行类型转换副本的比较结果；调试输出布局、日志及线程默认值也与原 CLI 不同。
 
+### 原版与本包示意图
+
+下图使用仓库公开 T1w：`sub-02` 为 moving，`sub-01` 为 fixed。中间两列分别是
+FreeSurfer 8.2.0 `mri_synthmorph -m joint` 和本包 joint 配准的 moving 图像，均位于
+fixed 网格。显示时使用同一个 fixed 脑掩膜；误差指标则在完整三维图像和形变场上
+计算。
+
+![moving、fixed、FreeSurfer joint 配准和本包 joint 配准](../figures/synthmorph_comparison.png)
+
+图像只展示空间对齐，不从二维切面推断配准精度。原版/本包命令、输入来源和图像
+生成方法见[图示记录](../figures/README.md)。
+
 测试入口：
 
 ```bash

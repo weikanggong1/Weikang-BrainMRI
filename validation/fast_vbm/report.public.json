@@ -1,0 +1,111 @@
+{
+  "schema": 1,
+  "feature": "FastVBM package API",
+  "cohort": {
+    "modality": "real T1w",
+    "count": 10,
+    "identifiers_published": false
+  },
+  "execution": {
+    "devices": [
+      "cuda:0",
+      "cuda:1"
+    ],
+    "workers": 2,
+    "cases_per_worker_sorted": [
+      5,
+      5
+    ],
+    "cases_per_device": {
+      "cuda:0": 5,
+      "cuda:1": 5
+    },
+    "batch_wall_sec": 106.63042142894119,
+    "median_pipeline_call_sec_excluding_batch_output_save": 9.652011442463845
+  },
+  "qc": {
+    "completed": 10,
+    "finite_image_checks_passed": 130,
+    "finite_image_checks_expected": 130,
+    "geometry_checks_passed": 130,
+    "geometry_checks_expected": 130,
+    "pve_inside_mask_min": 0.0,
+    "pve_inside_mask_max": 1.0,
+    "jacobian_min": 0.20015598833560944,
+    "jacobian_max": 4.774907112121582,
+    "nonpositive_jacobian_cases": 0,
+    "deformation_scale_min": 0.6796875,
+    "deformation_scale_max": 0.99609375,
+    "pve_sum_max_abs_error_on_modeled_mask_voxels": 2.9802322387695312e-08,
+    "pve_unmodeled_synthstrip_mask_voxels": 6943,
+    "pve_unmodeled_synthstrip_mask_fraction": 0.00021815937524282918
+  },
+  "settings": {
+    "bias_correction": true,
+    "smoothness": 10.0,
+    "default_steps": true
+  },
+  "privacy": "Aggregate-only; source paths, subject identifiers, PIDs, and per-case values are excluded.",
+  "backend_refactor_regression": {
+    "device": "cpu",
+    "settings": {
+      "scales": [
+        2,
+        1
+      ],
+      "affine_steps_per_scale": 3,
+      "deform_steps_per_scale": 2,
+      "smoothness": 10.0
+    },
+    "comparands": "archived gpu_register source and package registration backend in the same runtime",
+    "max_abs_difference": {
+      "warped_gm": 0.0,
+      "jacobian": 0.0,
+      "displacement": 0.0,
+      "pull_world_affine": 0.0,
+      "fit_score": 0.0
+    },
+    "source_commit_before_promotion": "29449fdd4bdc0dfba1ef96c4c26ef7bd0901f785",
+    "archived_source_sha256": "07d32d5b71b95ce5151fe30e89601f9bd80d593c4b7959a0d1b7b69ce665080d"
+  },
+  "scientific_comparison": "See validation/fast/report.public.json raw_t1_vbm; package promotion does not change the previously validated numerical method.",
+  "tests": {
+    "passed": 120,
+    "skipped": 3,
+    "warnings": 4
+  },
+  "wheel_clean_install": {
+    "version": "0.6.0",
+    "source_directory_hidden_by_working_directory": true,
+    "top_level_import": true,
+    "fast_vbm_imports": true,
+    "cli_version": true,
+    "cli_help": true,
+    "cpu_phantom_outputs": 13,
+    "completion_report": true,
+    "jacobian_range": [
+      1.0,
+      1.0
+    ]
+  },
+  "distribution_audit": {
+    "artifacts": {
+      "wheel": {
+        "filename": "freesurfer_torch-0.6.0-py3-none-any.whl",
+        "size_bytes": 139978,
+        "sha256": "54a0a81b85bda42d30cd348c39e7d460a3f461ff20feba1dd7dc0561817a34fd"
+      },
+      "sdist": {
+        "filename": "freesurfer-torch-0.6.0.tar.gz",
+        "size_bytes": 1500576,
+        "sha256": "2d3cb654e1ce1d14e9e5809a4e59bae4613a35ff4ca70e2369a6a3b794355c5f"
+      }
+    },
+    "weights_or_checkpoints": 0,
+    "mri_or_gm_templates": 0,
+    "wheel_fast_vbm_files": 4,
+    "sdist_fast_vbm_documentation_files": 2,
+    "wheel_license_notice_files": 5,
+    "status": "passed"
+  }
+}

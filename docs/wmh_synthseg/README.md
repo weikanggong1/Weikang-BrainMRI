@@ -93,10 +93,21 @@ fs-torch batch examples/wmh_jobs.json --devices cuda:0 cuda:1 \
 
 `--devices` 指定两张可见 GPU；`--workers-per-device 1` 在每张 GPU 上建立一个进程。两例可以同时运行，更多病例由空闲 worker 领取。worker 首次处理 WMH 任务时加载 checkpoint，随后复用模型；每例仍独立推理。`--report` 按清单顺序记录设备、进程、时间、输出文件和异常。运行前会检查输出路径冲突；每张 GPU 的 worker 数决定同时加载的模型份数，应结合显存设置。批量接口保存影像；若需原版格式的 CSV，可使用单例/目录 CLI，或从 Python 的 `volumes_mm3` 自行生成。
 
-Python 批量调用同一清单时，使用 `from freesurfer_torch import BatchRunner`，然后在 `if __name__ == "__main__":` 保护下执行 `with BatchRunner(devices=("cuda:0", "cuda:1"), workers_per_device=1, threads_per_worker=4) as runner: reports = runner.run(jobs)`；`jobs` 即上面的列表。完整多模型示例和输出冲突规则见[主页](../../README.md#多病例批量并行)与[批量架构](../ARCHITECTURE.md#批量执行)。
+Python 批量调用同一清单时，使用 `from freesurfer_torch import BatchRunner`，然后在 `if __name__ == "__main__":` 保护下执行 `with BatchRunner(devices=("cuda:0", "cuda:1"), workers_per_device=1, threads_per_worker=4) as runner: reports = runner.run(jobs)`；`jobs` 即上面的列表。完整多模型示例和输出冲突规则见[批量架构](../ARCHITECTURE.md#批量执行)。
 
 ## 验证边界
 
 数值对照固定同一官方权重、相同输入、设备、`--crop` 和线程，检查输出网格、所有标签、WMH 标签 77、病灶概率图及软体积；分别记录原版 CPU、官方源码 CUDA、本包 CPU、本包 CUDA 的完整命令运行时间。原版随 FreeSurfer 安装的 `fspython` 在 gpucw1 上为 CPU 版 PyTorch，因此 GPU 参考以未改动的官方 `inference.py` 在 CUDA PyTorch 环境中运行，并单独标记。公开病例没有人工 WMH 标注时，原版/本包的一致性不能解释为病灶检测准确率。完整 12 例结果、运行环境与复现命令见[WMH 验证记录](../../validation/wmh/README.md)。
 
 在 12 例公开 FLAIR 上，CPU 原版/本包和 CUDA 原版/本包两组的**逐例**标签、病灶概率、数值仿射和 CSV 软体积完全一致（WMH Dice=1，概率最大绝对差=0）。完整单例命令的中位时间依次为 **97.38、70.69、8.25、8.41 秒**。前两臂分别使用 FreeSurfer 的 Torch 2.1.2+cpu 与本包的 Torch 2.5.1，后两臂均用 Torch 2.5.1/CUDA 11.8；这不是控制 PyTorch 版本后的纯网络加速试验。原版写盘与 Surfa 写盘的 NIfTI qform/sform *code* 可能不同，体素值和数值仿射在本实验中相同。
+
+### 原版与本包示意图
+
+下图使用仓库公开的 `sub-04` FLAIR。左列为输入，中、右列分别叠加 FreeSurfer
+原版和本包输出的标签 77（红色）；两次运行均使用官方权重、CUDA 和 `--crop`。
+
+![公开 FLAIR、FreeSurfer WMH-SynthSeg 与本包 WMH-SynthSeg](../figures/wmh_synthseg_comparison.png)
+
+该图只显示同一物理位置的二维切面。完整三维标签、病灶概率、软体积及仿射矩阵
+用于数值比较；生成命令和公开数据来源见[图示记录](../figures/README.md)和
+[FLAIR 示例](../../examples/WMH.md)。

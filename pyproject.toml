@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "freesurfer-torch"
-version = "0.5.0"
+version = "0.6.0"
 description = "Standalone PyTorch brain MRI inference with GPU batch workers"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -35,4 +35,5 @@ freesurfer_torch = [
   "synthsr/*.md",
   "fast/*.md",
   "fast/upstream_fast4/*",
+  "fast_vbm/*.md",
 ]

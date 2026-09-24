@@ -1,6 +1,6 @@
 # UK Biobank v1.5 VBM：FSL 参考与实验性 PyTorch GPU 路径
 
-[返回主页](../../README.md) · [实验脚本](../../tools/experimental/ukb_vbm/) · [10 例验证](../../validation/ukb_vbm/)
+[返回主页](../../README.md) · [GPU FAST VBM 稳定接口](../fast_vbm/README.md) · [研究脚本](../../tools/experimental/ukb_vbm/) · [10 例验证](../../validation/ukb_vbm/)
 
 ## 这组脚本复现了什么
 
@@ -55,11 +55,12 @@ flowchart LR
 | Jacobian 处理 | FNIRT 配置设为 0.2–5；受控单例最终输出全为正，但范围为 0.271–5.816 | 整体缩放位移场直到落入 0.2–5；不逐体素裁剪 |
 | 调制 | warped GM × nonlinear Jacobian | 同一公式 |
 
-GPU 注册不是 FNIRT 的源码移植，也没有复现它的 B-spline、强度模型或优化器。正式验证中，原始 GPU 位移场需要约束回退；最终 Jacobian 合法是构造条件，不能单独证明配准正确。当前代码因此放在 `tools/experimental/`，没有加入 `freesurfer_torch` 稳定 API。
+GPU 注册不是 FNIRT 的源码移植，也没有复现它的 B-spline、强度模型或优化器。正式验证中，原始 GPU 位移场需要约束回退；最终 Jacobian 合法是构造条件，不能单独证明配准正确。raw T1 → SynthStrip → TorchFAST → GPU registration 的单例入口现已整理为 [`FastVBM`](../fast_vbm/README.md)；本页的 `tools/experimental/ukb_vbm/` 继续保留 FSL 参考臂、SynthSeg 实验臂、双模板比较和公开报告生成工具。
 
-## 输入与输出
+## 研究脚本的输入与输出
 
-单例入口为 `run_gpu_vbm.py`：
+稳定的 `FastVBM` Python/CLI 输入输出见[专属页面](../fast_vbm/README.md)。下面的
+`run_gpu_vbm.py` 是研究对照入口，可在相同注册器上选择 SynthSeg 或 TorchFAST GM：
 
 ```bash
 python tools/experimental/ukb_vbm/run_gpu_vbm.py \
@@ -148,7 +149,10 @@ tar -xzf DATA_public.tar.gz -C assets --strip-components=2 \
 
 ## 批量执行
 
-批量脚本和双 GPU 分组示例见[实验脚本说明](../../tools/experimental/ukb_vbm/README.md)。`run_gpu_raw.py --gm-method synthseg` 在每个进程保留一份 SynthSeg estimator；`--gm-method torch-fast` 则保留 SynthStrip 和 TorchFAST，并使用默认 bias correction。每个进程依次处理分配给它的病例；多 GPU 时给各进程互不重叠的病例列表。验证报告中的 GPU 吞吐时间来自一张 H100 上的顺序批量，不把示例的双 GPU 调度写成实测加速。
+稳定 GPU FAST VBM 的多被试 Python 调用见
+[FastVBM 多病例与多 GPU](../fast_vbm/README.md#多病例与多-gpu)。研究脚本和验证臂的
+分组方法见[实验脚本说明](../../tools/experimental/ukb_vbm/README.md)。验证报告中的
+GPU 吞吐时间来自一张 H100 上的顺序批量，不把双 GPU 调度写成实测加速。
 
 ## 来源
 
