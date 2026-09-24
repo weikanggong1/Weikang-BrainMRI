@@ -351,12 +351,27 @@ if __name__ == "__main__":
 
 也可将相同任务保存为 JSON，使用 `fs-torch batch jobs.json --devices cuda:0 cuda:1 --workers-per-device 1 --threads-per-worker 4 --report results/report.json`。低场任务在该例的 `model` 中写 `{"lowfield": true}`；显卡由 `--devices` 分配，不写在单例任务里。任务字段及原版目录和 `.txt` 输入方式见 [SynthSR 专属说明](docs/synthsr/README.md#命令行与多病例)。
 
+## 实验性 UKB v1.5 VBM GPU 路径
+
+仓库另提供从原始 T1 到 modulated GM 的[实验脚本](tools/experimental/ukb_vbm/README.md)。它用 WMH-SynthSeg 后验估计 GM，并用 PyTorch 多尺度配准替换 FAST 和 FNIRT；输出仍采用 `bb_vbm` 的三个文件名和 UKB GM 模板网格。该路径目前没有加入 `fs-torch` 稳定 API，因为实测输出尚不能视为 FNIRT 等价结果。
+
+```bash
+python tools/setup_weights.py --model wmh-synthseg
+python tools/experimental/ukb_vbm/run_gpu_vbm.py \
+  --input examples/data/sub-02_T1w.nii.gz \
+  --template /path/to/ukb/template_GM.nii.gz \
+  --output-dir work/ukb_vbm/sub-02 --device cuda:0
+```
+
+这条命令生成输入网格上的 `GM_prob.nii.gz` 和 `brain_mask.nii.gz`，以及模板网格上的 `T1_GM_to_template_GM.nii.gz`、`T1_GM_JAC_nl.nii.gz` 和 `T1_GM_to_template_GM_mod.nii.gz`。`report.json` 记录模型加载、GM 推理、注册和冷启动总时间，并保留约束前后的 deformation 检查。UKB 模板的官方下载、原 v1.5 指令逐项对应、双 GPU 分组方法和每个输出的定义见[专属说明](docs/ukb_vbm/README.md)；10 例真实 T1w 的固定 mask 模板比较、FSL/GPU 一致性和时间见[验证记录](validation/ukb_vbm/README.md)。
+
 ## 验证与维护
 
 - [详细功能和数值对照](docs/COMPARISON.md)：0.1.0 参考实验包含 12 例真实 T1w、96 次单例运行及 24 个批量任务。该临床数据只发布匿名统计，不包含原始影像；仓库另附三例公开 OpenNeuro 衍生样例。
 - [0.2.0 结构重整回归](validation/refactor/report.public.json)：新布局与 0.1.0 的对照记录；历史计时不能当作 0.2.0 的重新计时。
 - [WMH-SynthSeg 0.3.0 对照](validation/wmh/README.md)：12 例公开 FLAIR 的原版 CPU/官方源码 CUDA 与本包 CPU/CUDA 逐例输出、时间和三例双 GPU 示例。
 - [SynthSR 0.4.0 说明](docs/synthsr/README.md)与[验证记录](validation/synthsr/README.md)：原版指令、模型变体、输出格式、多 GPU 调用及 12 例四组计时和数值对照。
+- [UKB v1.5 VBM 实验记录](validation/ukb_vbm/README.md)：10 例真实 T1w 的 FSL 双模板参考、PyTorch GPU 替代、固定 mask 配对评估和受控时间。
 - [架构、公共 API 与批量任务格式](docs/ARCHITECTURE.md)。
 - [新增功能指南](docs/ADDING_FUNCTIONS.md)：每个功能的实现、文档和测试均有独立目录。
 - [来源与模型哈希](docs/provenance.json)、[第三方许可与引用](THIRD_PARTY_NOTICES.md)。

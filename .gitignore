@@ -26,6 +26,7 @@ weights/
 *.npz
 *.npy
 *.private.json
+*.private.csv
 benchmark/runs/
 examples/results/
 work/
