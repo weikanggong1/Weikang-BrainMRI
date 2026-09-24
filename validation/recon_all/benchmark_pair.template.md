@@ -3,8 +3,9 @@
 Run A (official FreeSurfer 8.2) and C (verified GPU bundle) serially on the
 same node and T1. The default order is A→C; pass `--order C-A` with a **new**
 `--output` directory for a second pair to counter run-order and cache effects.
-Both commands use `-all -parallel -openmp 4 -itkthreads 1`;
-C uses logical `cuda:1`. The benchmark script prints a dry-run plan by default.
+Both commands use `-all -parallel -openmp 4 -itkthreads 1`.
+Pass `--cuda-visible-devices` to bind both arms to the same physical GPU UUID;
+C then uses logical `cuda:0`. The benchmark script prints a dry-run plan by default.
 It never removes an existing output directory. Use a new `--output` path for
 each pair.
 
@@ -16,6 +17,7 @@ python tools/benchmark_recon_all_pair.py \
   --candidate-python /absolute/path/to/runtime/bin/python \
   --bundle /absolute/path/to/verified/fs820-bundle \
   --license /absolute/path/to/freesurfer/license.txt \
+  --cuda-visible-devices 1 \
   --output work/reconall_pair_001
 ```
 
@@ -30,8 +32,8 @@ pass `--development-bundle`; its manifest and runtime profile must pass.
 The script records the T1 SHA-256 before A and checks it again before C. It
 also records host name, CPU affinity, CUDA visibility, GPU UUID/index, official
 build stamp and binary hash, bundle manifest hash, effective command lines and
-run exit status. `cuda:1` is a **logical CUDA index**; inspect the recorded
-`CUDA_VISIBLE_DEVICES` and GPU inventory when assigning the physical GPU.
+run exit status. The fixed-GPU mode verifies that C's logical `cuda:0` maps to
+the selected physical GPU UUID before executing either arm.
 
 ## Result to fill after a completed pair
 
