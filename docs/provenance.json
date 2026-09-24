@@ -34,12 +34,19 @@
     "package_feature": {
       "pipeline": "src/freesurfer_torch/fast_vbm/pipeline.py",
       "registration": "src/freesurfer_torch/fast_vbm/registration.py",
+      "linear_registration": "src/freesurfer_torch/fast_vbm/linear.py",
+      "nonlinear_registration": "src/freesurfer_torch/fast_vbm/synthmorph_backend.py",
       "sequence_basis": "bb_struct_init brain and GM preparation followed by bb_vbm GM-to-template registration and Jacobian modulation",
-      "implementation": "SynthStrip and TorchFAST followed by an independently written PyTorch registration; no FLIRT or FNIRT source is included or called",
+      "implementation": "SynthStrip and TorchFAST followed by an independently written PyTorch FLIRT-compatible 12-DOF affine and the package PyTorch SynthMorph deform model",
+      "linear_method": "normalized-correlation and Adam optimization; no FSL FLIRT source or binary is included or called at runtime",
+      "nonlinear_method": "official synthmorph.deform.3.h5 checkpoint loaded by the package PyTorch SynthMorph implementation; affine initialization is supplied with mid_space=false",
+      "fsl_flirt_equivalent": false,
       "fnirt_equivalent": false,
       "component_license_files": {
         "synthstrip": "licenses/FreeSurfer.txt",
         "torch_fast": "licenses/FSL-6.0.txt",
+        "synthmorph_workflow": "licenses/FreeSurfer.txt",
+        "synthmorph_network_algorithms": "licenses/Apache-2.0.txt",
         "ukb_sequence_attribution": "licenses/Apache-2.0.txt"
       }
     },

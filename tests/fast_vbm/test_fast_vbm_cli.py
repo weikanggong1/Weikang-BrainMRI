@@ -42,16 +42,24 @@ def test_fast_vbm_cli_runs_one_subject_and_prints_all_outputs(
     cli.main([
         "fast-vbm", "-i", "T1w.nii.gz", "--template", "template.nii.gz",
         "-o", str(output), "--brain-mask", "mask.nii.gz",
-        "--synthstrip-weights", "weights", "--device", "cuda:2",
-        "--threads", "3", "--affine-steps", "7", "--deform-steps", "8",
-        "--smoothness", "9", "--no-bias", "--overwrite",
+        "--synthstrip-weights", "strip.pt", "--synthmorph-weights", "morph.h5",
+        "--device", "cuda:2", "--threads", "3",
+        "--linear-strides", "8", "4", "2",
+        "--linear-steps", "7", "8", "9",
+        "--linear-learning-rates", "0.1", "0.05", "0.02",
+        "--synthmorph-extent", "192", "--synthmorph-hyper", "0.4",
+        "--synthmorph-steps", "6", "--no-bias", "--overwrite",
     ])
 
     assert captured == {
         "options": {
             "device": "cuda:2", "threads": 3,
-            "synthstrip_weights": "weights", "bias_correction": False,
-            "affine_steps": 7, "deform_steps": 8, "smoothness": 9.0,
+            "synthstrip_weights": "strip.pt",
+            "synthmorph_weights": "morph.h5", "bias_correction": False,
+            "linear_strides": (8, 4, 2), "linear_steps": (7, 8, 9),
+            "linear_learning_rates": (0.1, 0.05, 0.02),
+            "synthmorph_extent": 192, "synthmorph_hyper": 0.4,
+            "synthmorph_steps": 6,
         },
         "call": ("T1w.nii.gz", "template.nii.gz", "mask.nii.gz"),
         "save": (output, True),

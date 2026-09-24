@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "release": "0.7.0",
+  "feature": "FSL FLIRT scaled-mm to world-RAS conversion",
+  "cohort": {
+    "modality": "real T1w-derived GM",
+    "count": 1,
+    "identifiers_published": false
+  },
+  "contract": {
+    "fsl_flirt_matrix": "moving/input to fixed/reference in FSL scaled-mm coordinates",
+    "package_forward": "moving to fixed in world-RAS coordinates",
+    "package_pull": "fixed to moving in world-RAS coordinates",
+    "synthmorph_warp": "fixed-grid target-to-source physical RAS displacement",
+    "direct_raw_warp_comparison_allowed": false
+  },
+  "checks": {
+    "fsl_img2imgcoord": {
+      "points": 3,
+      "coordinate_space": "voxel indices",
+      "maximum_absolute_difference_voxels": 0.00003743,
+      "note": "The FSL command prints limited decimal precision."
+    },
+    "fsl_coordinate_ramp_resampling": {
+      "axes": 3,
+      "points": 5,
+      "maximum_absolute_difference_voxels": 0.000237
+    },
+    "nearest_neighbour_volume_resampling": {
+      "pearson": 0.9999797635900096,
+      "mae": 0.000006824509000580292,
+      "fraction_exact": 0.9999800582520615,
+      "fraction_absolute_difference_above_1e_6": 0.000019941747938521807
+    }
+  },
+  "interpretation": "The converter reproduces FSL's coordinate mapping after the scaled-mm basis and direction are handled explicitly. Scalar comparison used a common fixed grid. FNIRT fields were not reinterpreted as SynthMorph RAS pull fields.",
+  "privacy": "Aggregate-only; source paths, subject identifiers, matrices, and point coordinates are excluded."
+}

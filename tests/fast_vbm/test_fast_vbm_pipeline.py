@@ -9,6 +9,7 @@ import surfa as sf
 from freesurfer_torch.fast import FASTConfig, FASTResult
 from freesurfer_torch.fast_vbm import FastVBM, FastVBMResult, OUTPUT_FILENAMES
 from freesurfer_torch.fast_vbm import pipeline as pipeline_module
+from freesurfer_torch.fast_vbm.registration import VBMRegistrationResult
 
 
 def _volume(shape=(8, 9, 10), affine=None):
@@ -55,9 +56,27 @@ class _FakeFAST:
 
 def _pipeline(monkeypatch):
     monkeypatch.setattr(pipeline_module, "TorchFAST", _FakeFAST)
+    def fake_registration(moving, fixed, **_):
+        warped = fixed.new(np.asarray(fixed.data, dtype=np.float32).copy())
+        jacobian = fixed.new(np.ones(fixed.shape[:3], dtype=np.float32))
+        return VBMRegistrationResult(
+            warped_gm=warped,
+            jacobian=jacobian,
+            modulated_gm=warped.copy(),
+            pull_world_affine=np.eye(4),
+            fit_score=1.0,
+            maximum_displacement_mm=0.0,
+            qc={
+                "jacobian_min": 1.0,
+                "jacobian_max": 1.0,
+                "nonpositive_jacobian_voxels": 0,
+            },
+        )
+    monkeypatch.setattr(pipeline_module, "register_gm", fake_registration)
+    monkeypatch.setattr(pipeline_module.FastVBM, "_deform_model", lambda self: object())
     return FastVBM(
-        device="cpu", affine_steps=0, deform_steps=0,
-        smoothness=10.0, scales=(1,),
+        device="cpu", linear_strides=(1,), linear_steps=(0,),
+        linear_learning_rates=(0.01,),
     )
 
 
@@ -73,8 +92,12 @@ def test_explicit_mask_pipeline_returns_input_and_template_grid_outputs(
     assert isinstance(result, FastVBMResult)
     assert result.settings["mask_source"] == "explicit"
     assert result.settings["bias_correction"] is True
-    assert result.settings["smoothness"] == 10.0
-    assert result.settings["scales"] == [1]
+    assert result.settings["linear_steps"] == [0]
+    assert result.settings["linear_strides"] == [1]
+    assert result.settings["nonlinear_backend"] == "pytorch-synthmorph-deform"
+    assert result.settings["synthmorph_implementation"] == (
+        "freesurfer_torch.synthmorph.SynthMorph"
+    )
     assert result.settings["fast"]["bias_fwhm_mm"] == 20.0
     for name in (
         "brain", "brain_mask", "pve_csf", "pve_gm", "pve_wm",
@@ -99,7 +122,9 @@ def test_explicit_mask_pipeline_returns_input_and_template_grid_outputs(
     report = json.loads((tmp_path / "result" / "fast_vbm_report.json").read_text())
     assert report["status"] == "experimental"
     assert report["fnirt_equivalent"] is False
-    assert "global normalized correlation + 0.2 MSE" in report["method"]
+    assert report["fsl_flirt_equivalent"] is False
+    assert "FLIRT-compatible 12-DOF" in report["method"]
+    assert "SynthMorph deform" in report["method"]
     assert report["registration"]["jacobian_convention"].startswith(
         "nonlinear-only")
     assert report["fast"]["bias_range_inside_mask"] == [1.0, 1.0]

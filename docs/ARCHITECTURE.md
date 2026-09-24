@@ -4,6 +4,8 @@
 
 SynthStrip、SynthMorph、WMH-SynthSeg、SynthSR、TorchFAST 和 FastVBM 分别位于 `src/freesurfer_torch/` 的功能目录；每个目录包含实现及简短说明。共享的 `cli.py` 提供单例命令行，`weights.py` 定位官方权重，`_batch_table.py` 检查前四项功能的多被试输入表，`batch.py` 调度 Python 多进程任务。各功能的参数、原版对应和验证见专属页面。
 
+FastVBM 0.7 的活跃配准链位于 `fast_vbm/linear.py`、`fast_vbm/registration.py` 和 `fast_vbm/synthmorph_backend.py`；非线性阶段使用本包 `synthmorph.SynthMorph(model="deform")`。`fast_vbm/legacy_registration.py` 只保留 0.6 实验工具的旧导入兼容。
+
 | 功能 | 详细说明 | 多被试入口 |
 |---|---|---|
 | SynthStrip | [脑提取](synthstrip/README.md) | 两列表 `predict_batch()` |
@@ -18,12 +20,14 @@ SynthStrip、SynthMorph、WMH-SynthSeg、SynthSR、TorchFAST 和 FastVBM 分别�
 ```python
 from freesurfer_torch import (
     SynthStrip, SynthMorph, WMHSynthSeg, SynthSR,
-    TorchFAST, FastVBM, BatchRunner, BatchResult, run_batch,
+    TorchFAST, FastVBM, FastVBMResult, VBMRegistrationResult,
+    LinearRegistrationResult, register_affine, register_gm,
+    BatchRunner, BatchResult, run_batch,
     apply_transform,
 )
 ```
 
-前四个学习模型构造时加载权重并选择 `device="cpu"` 或 `device="cuda:0"`；TorchFAST 不加载权重。单例调用返回带几何信息的结果对象，由调用者选择保存字段。FastVBM 将 SynthStrip、TorchFAST 与 GPU 配准组合成完整流程，其 SynthStrip 权重在首次需要脑提取时加载。旧导入路径 `freesurfer_torch.spatial` 和 `freesurfer_torch.synthmorph_models` 继续转导出对应实现。权重查找顺序为显式路径、`FREESURFER_TORCH_WEIGHTS`、配置脚本保存的目录、用户缓存目录、已设置的 `FREESURFER_HOME/models/`；见[权重说明](WEIGHTS.md)。
+前四个学习模型构造时加载权重并选择 `device="cpu"` 或 `device="cuda:0"`；TorchFAST 不加载权重。单例调用返回带几何信息的结果对象，由调用者选择保存字段。FastVBM 将 SynthStrip、TorchFAST、独立 PyTorch 12-DOF 线性配准与本包 PyTorch SynthMorph `deform` 组合成完整流程，并按需延迟加载两个官方 checkpoint。旧导入路径 `freesurfer_torch.spatial` 和 `freesurfer_torch.synthmorph_models` 继续转导出对应实现。权重查找顺序为显式路径、`FREESURFER_TORCH_WEIGHTS`、配置脚本保存的目录、用户缓存目录、已设置的 `FREESURFER_HOME/models/`；见[权重说明](WEIGHTS.md)。
 
 ## 批量执行
 
@@ -57,7 +61,7 @@ SynthMorph 的 `fixed` 可以是全表共用的一幅目标图像，也可以是
 
 默认 `workers=1` 在当前程序中逐例复用模型。表中至少有两行时，`workers=2` 用当前程序和一个 spawn 子进程在同一指定设备上各加载一份模型，按表行顺序返回结果。每次调用都会新建并关闭子进程，下次调用需重新加载子进程模型。多进程时 `threads_per_worker` 控制每个进程的 Torch CPU 线程数；脚本须以 `if __name__ == "__main__":` 保护调用。两种模式的每次网络推理均为 B=1；只有一行时实际只运行一个进程。各功能子页的 B2 对照使用未发布的合批实验路径，不代表单被试加速。
 
-FastVBM 多病例使用 Python `BatchRunner`，每例一个 `fast_vbm` job。`kwargs` 至少包含 `image` 和 `template`，可加与输入同网格的 `brain_mask`；`outputs` 将 `pve_gm`、`warped_gm`、`jacobian`、`modulated_gm` 等结果属性映射到完整文件路径。下面在两张 GPU 上处理两例，完整输出字段见[FastVBM 多病例说明](fast_vbm/README.md#多病例与多-gpu)：
+FastVBM 多病例使用 Python `BatchRunner`，每例一个 `fast_vbm` job。`kwargs` 至少包含 `image` 和 `template`，可加与输入同网格的 `brain_mask`；`outputs` 将 `pve_gm`、`warped_gm`、`jacobian`、`modulated_gm` 等结果属性映射到完整文件路径。下面在两张 GPU 上处理两例，完整输出字段见[FastVBM 多病例说明](fast_vbm/README.md#多被试python-batchrunner)：
 
 ```python
 from freesurfer_torch import BatchRunner

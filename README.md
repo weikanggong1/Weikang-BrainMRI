@@ -16,6 +16,8 @@
 
 GPU recon-all 的 SynthStrip、33 类 SynthSeg、SynthMorph 及三项辅助神经分割使用 PyTorch/CUDA；影像转换、强度校正、皮层拓扑、表面生成和统计运行于打包的原生 CPU 程序。单被试支持 `fs-torch-recon-all` 命令行和 Python 调用，多被试完整流程仅提供 Python 调用。
 
+FastVBM 0.7 的线性阶段是独立 PyTorch 12-DOF 实现，非线性阶段直接调用本包 PyTorch SynthMorph `deform`。它不在运行时调用 FSL FLIRT/FNIRT 或 FreeSurfer 可执行文件。
+
 ## 安装
 
 需要 Python ≥ 3.10。使用 GPU 时，请安装与本机驱动兼容的 CUDA 版 PyTorch。
@@ -38,11 +40,11 @@ python tools/setup_weights.py --model synthstrip --model synthmorph-joint \
   --model wmh-synthseg --model synthsr
 ```
 
-FastVBM 从原始 T1w 开始时需要默认 SynthStrip 权重；仅部署该流程可运行 `python tools/setup_weights.py --model fast-vbm`。GM 模板由用户提供，不由配置脚本下载。TorchFAST 不需要权重。
+FastVBM 从原始 T1w 开始时需要 `synthstrip.1.pt` 和 `synthmorph.deform.3.h5`；仅部署该流程可运行 `python tools/setup_weights.py --model fast-vbm`。GM 模板由用户提供，不由配置脚本下载。TorchFAST 不需要权重。
 
 GPU recon-all 还需要与固定 FreeSurfer 8.2 流程匹配的本地原生运行包；上述权重命令不提供它。运行包和个人 license 均不随仓库或 wheel 发布。构建、调用、输出和验收见[GPU recon-all 文档](docs/recon_all/README.md)。
 
-`--all` 下载全部模型变体；`--dest /path/to/weights` 指定本地目录；`--verify-only` 检查已有文件。安装后也可使用 `fs-torch-setup-weights`。前四项功能可通过 Python 的 `weights=`、CLI 的 `--weights` 或 `FREESURFER_TORCH_WEIGHTS` 指定权重；FastVBM 对应参数为 `synthstrip_weights=` / `--synthstrip-weights`。官方地址、文件大小、SHA-256、许可和离线部署方法见[权重说明](docs/WEIGHTS.md)。
+`--all` 下载全部模型变体；`--dest /path/to/weights` 指定本地目录；`--verify-only` 检查已有文件。安装后也可使用 `fs-torch-setup-weights`。前四项功能可通过 Python 的 `weights=`、CLI 的 `--weights` 或 `FREESURFER_TORCH_WEIGHTS` 指定权重；FastVBM 分别使用 `synthstrip_weights=` / `--synthstrip-weights` 和 `synthmorph_weights=` / `--synthmorph-weights`。官方地址、文件大小、SHA-256、许可和离线部署方法见[权重说明](docs/WEIGHTS.md)。
 
 ## 项目资料
 

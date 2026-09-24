@@ -52,7 +52,12 @@ def main(argv=None):
         ("Bias-corrected brain", root / "T1_brain_restore.nii.gz", "gray", None),
         ("TorchFAST GM PVE", root / "T1_brain_pve_1.nii.gz", "magma", (0, 1)),
         ("UKB GM template", args.template, "magma", None),
-        ("Warped GM", root / "T1_GM_to_template_GM.nii.gz", "magma", (0, 1)),
+        (
+            "PyTorch SynthMorph warped GM",
+            root / "T1_GM_to_template_GM.nii.gz",
+            "magma",
+            (0, 1),
+        ),
         ("Nonlinear Jacobian", root / "T1_GM_JAC_nl.nii.gz", "coolwarm", (0.2, 2.0)),
         ("Modulated GM", root / "T1_GM_to_template_GM_mod.nii.gz", "magma", None),
     ]
@@ -73,7 +78,7 @@ def main(argv=None):
         if title == "Nonlinear Jacobian":
             figure.colorbar(image, ax=axis, fraction=0.046, pad=0.02)
     figure.suptitle(
-        "FastVBM public example: native-space tissue estimation and template-space modulation",
+        "FastVBM public example: TorchFAST and PyTorch SynthMorph VBM",
         fontsize=14,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)

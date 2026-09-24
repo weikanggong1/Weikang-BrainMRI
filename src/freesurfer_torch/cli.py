@@ -147,10 +147,14 @@ def _run_fast_vbm(args):
         device=args.device,
         threads=args.threads,
         synthstrip_weights=args.synthstrip_weights,
+        synthmorph_weights=args.synthmorph_weights,
         bias_correction=not args.no_bias,
-        affine_steps=args.affine_steps,
-        deform_steps=args.deform_steps,
-        smoothness=args.smoothness,
+        linear_strides=tuple(args.linear_strides),
+        linear_steps=tuple(args.linear_steps),
+        linear_learning_rates=tuple(args.linear_learning_rates),
+        synthmorph_extent=args.synthmorph_extent,
+        synthmorph_hyper=args.synthmorph_hyper,
+        synthmorph_steps=args.synthmorph_steps,
     )
     result = model(args.image, args.template, brain_mask=args.brain_mask)
     paths = result.save(output_dir, overwrite=args.overwrite)
@@ -161,7 +165,7 @@ def _run_fast_vbm(args):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(prog='fs-torch')
-    parser.add_argument('--version', action='version', version='freesurfer-torch 0.6.0')
+    parser.add_argument('--version', action='version', version='freesurfer-torch 0.7.0')
     commands = parser.add_subparsers(dest='command', required=True)
     strip = commands.add_parser('synthstrip', help='brain extraction')
     strip.add_argument('-i', '--image', required=True)
@@ -254,11 +258,21 @@ def main(argv=None):
                           help='optional input-grid mask; skips SynthStrip')
     fast_vbm.add_argument('--synthstrip-weights',
                           help='official SynthStrip checkpoint or containing directory')
+    fast_vbm.add_argument('--synthmorph-weights',
+                          help='official SynthMorph deform checkpoint or containing directory')
     fast_vbm.add_argument('--device', default='cpu')
     fast_vbm.add_argument('--threads', type=int)
-    fast_vbm.add_argument('--affine-steps', type=int, default=50)
-    fast_vbm.add_argument('--deform-steps', type=int, default=40)
-    fast_vbm.add_argument('--smoothness', type=float, default=10.0)
+    fast_vbm.add_argument('--linear-strides', type=int, nargs=3,
+                          default=(4, 2, 1), metavar=('COARSE', 'MIDDLE', 'FINE'))
+    fast_vbm.add_argument('--linear-steps', type=int, nargs=3,
+                          default=(80, 60, 50), metavar=('COARSE', 'MIDDLE', 'FINE'))
+    fast_vbm.add_argument('--linear-learning-rates', type=float, nargs=3,
+                          default=(0.05, 0.025, 0.0125),
+                          metavar=('COARSE', 'MIDDLE', 'FINE'))
+    fast_vbm.add_argument('--synthmorph-extent', type=int, choices=(192, 256),
+                          default=256)
+    fast_vbm.add_argument('--synthmorph-hyper', type=float, default=0.5)
+    fast_vbm.add_argument('--synthmorph-steps', type=int, default=7)
     fast_vbm.add_argument('--no-bias', action='store_true',
                           help='disable TorchFAST bias-field correction')
     fast_vbm.add_argument('--overwrite', action='store_true')

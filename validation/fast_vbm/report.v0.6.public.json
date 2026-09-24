@@ -1,5 +1,7 @@
 {
   "schema": 1,
+  "release": "0.6.0",
+  "status": "historical; not evidence for the 0.7 SynthMorph pipeline",
   "feature": "FastVBM package API",
   "cohort": {
     "modality": "real T1w",
