@@ -48,6 +48,7 @@ fs-torch-recon-all -i subject_T1w.nii.gz -s subject01 -sd /empty/subjects_dir \
 ```
 
 运行包的固定单 T1 范围、依赖清单、构建及静态检查见[原生运行包说明](tools/recon_all_native/README.md)。默认入口只接受已完成独立运行验证的清单；开发中的候选包须显式加 `--development-bundle`。
+gpucw1 上的一例完整 T1 已通过 52 项主对照、2 项补充体素对照和 19 项汇总门槛；耗时及适用范围见[验证记录](validation/recon_all/gpucw1_sub01_2026-09-24.md)。
 
 ## 单例 Python 调用：输入、输出和每步作用
 

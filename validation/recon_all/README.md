@@ -19,7 +19,8 @@ changed `white.preaparc` vertex counts by +71 (left) and -79 (right). Full
 surface and regional metrics still require the checks below.
 
 These are **development thresholds, not frozen acceptance limits or FreeSurfer
-standards**. No full independent GPU workflow is validated by this configuration.
+standards**. One complete scoped workflow passed this profile on sub-01 as
+recorded in the [gpucw1 validation report](gpucw1_sub01_2026-09-24.md).
 Calibrate on development subjects and repeated official runs, then freeze before
 held-out evaluation. Do not relax thresholds after inspecting held-out failures.
 
