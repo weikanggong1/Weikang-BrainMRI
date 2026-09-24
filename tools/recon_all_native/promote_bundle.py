@@ -97,7 +97,9 @@ def trace_audit(path, bundle, source_home, license_file, candidate, image):
                 continue
             if target == license_file:
                 continue
-            if marker.search(accessed) or (target is not None and target.is_relative_to(source_home)):
+            nibabel_reader = re.search(r"/(?:site|dist)-packages/nibabel/freesurfer(?:/|$)", accessed)
+            if ((marker.search(accessed) and not nibabel_reader)
+                    or (target is not None and target.is_relative_to(source_home))):
                 violations.append({"line": number, "pid": pid, "call": name, "path": accessed})
     require(not pending, "Trace has unfinished open/exec records")
     require(successful > 0 and bundle_execs > 0 and run_execs > 0,

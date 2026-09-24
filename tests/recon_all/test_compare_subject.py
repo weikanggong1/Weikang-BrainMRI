@@ -219,6 +219,22 @@ def test_synthseg_csv_missing_column_and_nonfinite_value_fail(subjects):
     assert "Nonfinite" in check["reason"]
 
 
+def test_synthseg_stiv_measure_uses_same_bound_as_soft_total(subjects):
+    tolerances = json.loads(Path(__file__).with_name("tolerances_numeric.json").read_text())
+    measure = "# Measure SegmentedTotalIntraCranialVol, sTIV, Segmented Total Intracranial Volume, "
+    for subject, value in zip(subjects, ("1000000", "1000500")):
+        path = subject / "stats/aseg.stats"
+        path.write_text(measure + value + ", mm^3\n" + path.read_text())
+    report = compare_subject(*subjects, tolerances=tolerances)
+    assert report["passed"]
+    check = report["checks"]["stats/aseg.stats"]["measures"]["SegmentedTotalIntraCranialVol.sTIV"]
+    assert check["tolerance"] == tolerances["stats.measure.SegmentedTotalIntraCranialVol.sTIV"]
+    assert check["max_abs_error"] == 500
+    path = subjects[1] / "stats/aseg.stats"
+    path.write_text(path.read_text().replace(measure + "1000500", measure + "1001500"))
+    assert not compare_subject(*subjects, tolerances=tolerances)["passed"]
+
+
 def test_explicit_stats_volume_algorithm_difference_fails_even_if_numbers_match(subjects):
     path = subjects[1] / "stats/lh.aparc.stats"
     path.write_text(path.read_text().replace("-no-th3", "-th3"))

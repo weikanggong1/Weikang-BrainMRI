@@ -134,7 +134,8 @@ class PromoteBundle(unittest.TestCase):
                 stream.write('2 openat(AT_FDCWD, "/opt/fsl/absent", O_RDONLY) = -1 ENOENT\n'
                              '2 execve("/bin/echo", ["echo", "/opt/FreeSurfer"], 0x1) = 0\n'
                              '3 openat(AT_FDCWD, "/project/freesurfer_torch/module.py", O_RDONLY <unfinished ...>\n'
-                             '3 <... openat resumed>) = 5\n')
+                             '3 <... openat resumed>) = 5\n'
+                             '4 openat(AT_FDCWD, "/env/site-packages/nibabel/freesurfer/io.py", O_RDONLY) = 6\n')
             self.assertTrue(promotion.validate(args, manifest, preflight, software)["trace_audit"]["passed"])
 
     def test_successful_promotion_records_original_and_report_hashes(self):

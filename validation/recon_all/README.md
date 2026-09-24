@@ -91,7 +91,7 @@ use Euclidean displacement and an absolute mm limit, without registration.
 | ROI thickness mean/SD | Absolute difference <=0.01 mm | Each row must pass, never only the mean across ROIs |
 | ROI printed area/GrayVol | One printed unit (1 mm² / 1 mm³) + 0.1% of reference | The absolute term explicitly covers integer text quantization and tiny regions |
 | Aseg printed Volume_mm3 | 0.1 mm³ + 0.1% of reference | This is a stats-column check, not a replacement for label Dice |
-| SynthSeg soft volumes, including eTIV | 10 mm³ + 0.1% of reference per CSV column | Reports every structure and eTIV separately; hard-label agreement cannot establish soft-volume agreement |
+| SynthSeg soft volumes, including eTIV and the identical sTIV Measure in `aseg.stats` | 10 mm³ + 0.1% of reference per value | Reports every structure and eTIV separately; hard-label agreement cannot establish soft-volume agreement |
 | Other stats | Explicit per-column/per-Measure bounds in JSON; unlisted fields exact | All rows, all columns and global Measures must remain present |
 
 `normMean`/`normStdDev` use 0.01 native intensity units +0.1%; `normMin`,
@@ -112,6 +112,13 @@ compared with a 464.8 mm³ GPU-versus-official difference. This is a posterior
 inference difference, so the comparator retains a separate gate instead of
 using hard segmentation Dice as a proxy. These values are from one subject
 and do not establish performance across subjects.
+
+On 2026-09-24 the first complete candidate comparison found that the same
+SynthSeg total is copied into `aseg.stats` as `sTIV`, but this Measure had no
+explicit tolerance and therefore defaulted to exact equality. The profile was
+amended to apply the existing soft-volume bound to this duplicate value. The
+original 51/52 report is retained; the amended comparison is a new result,
+not a claim that the original profile passed.
 
 The current label criterion applies to **all** present structures, including
 small ones. It does not implement a two-voxel exception. Labels absent in both

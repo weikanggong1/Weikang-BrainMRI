@@ -27,6 +27,7 @@
   "stats.normMax": {"atol": 1.0, "rtol": 0.0},
   "stats.normRange": {"atol": 1.0, "rtol": 0.0},
   "synthseg.vol": {"atol": 10.0, "rtol": 0.001},
+  "stats.measure.SegmentedTotalIntraCranialVol.sTIV": {"atol": 10.0, "rtol": 0.001},
   "stats.measure.BrainSeg.BrainSegVol": {"atol": 1.0, "rtol": 0.001},
   "stats.measure.BrainSegNotVent.BrainSegVolNotVent": {"atol": 1.0, "rtol": 0.001},
   "stats.measure.BrainSegNotVentSurf.BrainSegVolNotVentSurf": {"atol": 1.0, "rtol": 0.001},

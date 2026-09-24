@@ -42,6 +42,13 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _package_tree_sha256() -> str:
+    root = Path(__file__).resolve().parents[1]
+    files = {str(path.relative_to(root)): _sha256(path)
+             for path in sorted(root.rglob("*.py"))}
+    return hashlib.sha256(json.dumps(files, sort_keys=True).encode()).hexdigest()
+
+
 def _check_bundle(bundle: Path, *, development: bool) -> dict:
     required = ["bin/recon-all", *(f"bin/{name}" for name in NEURAL_TOOLS),
                 "build-stamp.txt", "models/synthseg_2.0.h5",
@@ -62,6 +69,10 @@ def _check_bundle(bundle: Path, *, development: bool) -> dict:
     manifest = json.loads(manifest_file.read_text())
     if manifest.get("standalone_verified") is not True:
         raise ValueError("Bundle has not passed clean-environment validation")
+    expected_code = (manifest.get("verification", {}).get("software", {})
+                     .get("package_tree_sha256"))
+    if not isinstance(expected_code, str) or expected_code != _package_tree_sha256():
+        raise ValueError("Verified bundle was validated with different package code")
     if json.dumps(manifest.get("runtime_profile"), sort_keys=True) != json.dumps(
             RUNTIME_PROFILE, sort_keys=True):
         raise ValueError("Bundle has a different or missing single-T1 runtime profile")

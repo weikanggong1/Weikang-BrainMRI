@@ -34,6 +34,8 @@ def bundle_fixture(tmp_path):
         rows.append({"path": name, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
     (bundle / "manifest.json").write_text(json.dumps({
         "standalone_verified": True, "files": rows,
+        "verification": {"software": {
+            "package_tree_sha256": standalone._package_tree_sha256()}},
         "runtime_profile": standalone.RUNTIME_PROFILE,
         "inactive_command_audit": {
             "profile_id": standalone.RUNTIME_PROFILE["id"],
@@ -55,6 +57,16 @@ def test_manifest_rejects_truthy_string_and_missing_inventory(tmp_path):
     manifest["files"].pop()
     manifest_path.write_text(json.dumps(manifest))
     with pytest.raises(ValueError, match="does not cover"):
+        standalone._check_bundle(bundle, development=False)
+
+
+def test_bundle_rejects_different_validated_package_code(tmp_path):
+    bundle = bundle_fixture(tmp_path)
+    manifest_path = bundle / "manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["verification"]["software"]["package_tree_sha256"] = "0" * 64
+    manifest_path.write_text(json.dumps(manifest))
+    with pytest.raises(ValueError, match="different package code"):
         standalone._check_bundle(bundle, development=False)
 
 
