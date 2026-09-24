@@ -1,9 +1,10 @@
 # Weikang-BrainMRI
 
 面向脑 MRI 的独立 PyTorch 包，支持 CPU、CUDA 和多 GPU 批量推理。学习模型使用
-FreeSurfer 官方权重；运行时无需安装 FreeSurfer、FSL、TensorFlow、VoxelMorph 或
-Neurite。安装包名为 `freesurfer-torch`，Python 导入名为 `freesurfer_torch`，统一
-命令为 `fs-torch`。
+FreeSurfer 官方权重；单项推理无需安装 FreeSurfer、FSL、TensorFlow、VoxelMorph
+或 Neurite。`recon-all` 另需预先准备的 FreeSurfer 8.2 原生运行包和个人 license，
+运行时无需安装系统 FreeSurfer。安装包名为 `freesurfer-torch`，Python 导入名为
+`freesurfer_torch`，单项功能的统一命令为 `fs-torch`。
 
 ## 功能与文档
 
@@ -18,11 +19,16 @@ Neurite。安装包名为 `freesurfer-torch`，Python 导入名为 `freesurfer_t
 | SynthSR 单幅 MRI/CT 合成 1 mm T1w | [SynthSR](docs/synthsr/README.md) | [synthsr/](src/freesurfer_torch/synthsr/) | [12 例验证](validation/synthsr/README.md) |
 | TorchFAST 三组织 PVE、bias field 和校正图 | [TorchFAST](docs/fast/README.md) | [fast/](src/freesurfer_torch/fast/) | [10 例验证](validation/fast/README.md) |
 | GPU FAST VBM：raw T1w 到 warped GM、Jacobian 和 modulated GM | [GPU FAST VBM](docs/fast_vbm/README.md) | [fast_vbm/](src/freesurfer_torch/fast_vbm/) | [包级与科学验证](validation/fast_vbm/README.md) |
+| 单 T1 recon-all 与 Python 多 GPU 调度 | [GPU recon-all](docs/recon_all/README.md) | [recon_all/](src/freesurfer_torch/recon_all/) | [FreeSurfer 8.2 数值验收](validation/recon_all/README.md) |
 | 多病例与多 GPU 调度 | [批量执行与架构](docs/ARCHITECTURE.md#批量执行) | [batch.py](src/freesurfer_torch/batch.py) | [批量记录](benchmark/real_batch/execution.public.json) |
 
 TorchFAST 覆盖 FSL FAST 的单通道 T1、三组织、无 prior 路径。GPU FAST VBM 将
 SynthStrip、TorchFAST 偏置场校正、GM 配准、Jacobian 和 modulation 串成完整流程；
 它使用新的 PyTorch 配准方法，输出不能视为 FNIRT 的逐位或算法等价结果。
+
+GPU recon-all 的 SynthStrip、33 类 SynthSeg、SynthMorph 及三项辅助神经分割使用
+PyTorch/CUDA；影像转换、强度校正、皮层拓扑、表面生成和统计仍运行于打包的原生
+CPU 程序。单被试有 CLI 和 Python 入口，多被试完整流程只提供 Python 入口。
 
 ## 安装
 
@@ -71,6 +77,10 @@ python tools/setup_weights.py --model fast-vbm
 TorchFAST 不使用权重。`fast-vbm` 只下载 GPU FAST VBM 所需的默认 SynthStrip
 checkpoint；GM template 是独立输入，不由配置脚本下载。全部文件名、官方 URL、
 SHA-256、版本、许可和离线部署方法见[权重文档](docs/WEIGHTS.md)。
+
+`recon-all` 需额外提供与固定 FreeSurfer 8.2 流程匹配的本地原生运行包；上面的
+下载命令不提供它。运行包及个人 license 均不随本仓库或 wheel 发布。构建、
+单例与批量调用、输出和验收说明见[GPU recon-all 专页](docs/recon_all/README.md)。
 
 ## 其他入口
 
