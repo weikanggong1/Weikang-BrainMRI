@@ -16,31 +16,11 @@ SynthMorph 图以 `sub-02` 为 moving、`sub-01` 为 fixed，使用默认 `joint
 
 WMH-SynthSeg 图使用仓库的 [公开 FLAIR `sub-04`](../../examples/wmh_data/sub-04_FLAIR.nii.gz)。该文件来自 [OpenNeuro ds003592](https://openneuro.org/datasets/ds003592) CC0 原图，经原版 SynthStrip 脑掩膜外扩 6 mm 后清零其余强度；三例 FLAIR 的来源、处理步骤和 SHA-256 见 [FLAIR 清单](../../examples/wmh_data/SOURCES.json)。从左到右是输入、未改动的 FreeSurfer WMH-SynthSeg CUDA 源码、本包 PyTorch CUDA；上、下为相同输出网格的轴位与冠状位，红色显示标签 77。两次推理使用同一官方 checkpoint、`--crop`、GPU 和线程。**完整三维输出的标签不一致体素为 0，WMH Dice 为 1，概率图最大绝对差为 0，仿射矩阵相同**；图示指标见 [WMH 图示数据](wmh_metrics.json)。此结果是对官方实现的复现，不是对病灶真值的测量。
 
-## 重现这些图
+## 图示来源与重跑边界
 
-从仓库根目录开始，先安装本包和绘图依赖，再校验三份随仓库发布的影像。以下 Python 脚本均假设当前目录是仓库根目录。
+前两张图和 [metrics.json](metrics.json) 由本包 **0.2.0**、FreeSurfer 8.2.0 和同一官方权重在 gpucw1 上生成。当时的 `examples/run_batch.py` 使用两张 GPU 的常驻 worker，写出脑图、掩膜、配准图像和变换；原版由 `examples/run_reference.py` 在 CPU 上运行。原版 CPU 脑提取两例分别耗时 50.28、52.42 秒，joint 配准耗时 212.65 秒；两侧执行条件不同，不能从图示运行时间计算加速比。
 
-```bash
-python -m pip install . nibabel matplotlib
-python examples/check_data.py
-python tools/setup_weights.py --model synthstrip --model synthmorph-joint
-python examples/run_batch.py
-```
-
-`run_batch.py` 在 `cuda:0`、`cuda:1` 上各启动一个常驻 worker，处理三项 SynthStrip 和两项 joint SynthMorph 任务；十个输出及逐任务 JSON 报告写入 `examples/results/python/`。这五项均成功，两个 GPU 都承担了任务。CPU 机器可按 [batch 文档](../../examples/README.md#双-gpu-批量命令行或-python)调整设备；CPU/GPU 浮点结果可能不同。
-
-原版对照需要 FreeSurfer 8.2.0 和其 TensorFlow 依赖。以下脚本显式指定官方模型文件路径，禁用 CUDA，使原版在 CPU 执行；它对 `sub-01/02` 做脑提取，再将 `sub-02` 配准到 `sub-01`，结果写入 `examples/results/reference/`：
-
-```bash
-module load freesurfer
-export FREESURFER_TORCH_WEIGHTS="$HOME/.cache/freesurfer_torch"
-python examples/run_reference.py
-python examples/render_comparison.py
-```
-
-若用 `--dest` 指定了权重目录，将环境变量改为该路径。`module load freesurfer` 适用于 gpucw1；其他机器按安装位置设置 `FREESURFER_HOME`。`run_reference.py` 调用原版 `mri_synthstrip -i/-o/-m` 与 `mri_synthmorph register -m joint -o/-t`。`render_comparison.py` 要求两套结果均已存在；它核对几何、计算指标，并覆盖本目录的两个 PNG 与 `metrics.json`。
-
-这些图在 gpucw1 上使用 FreeSurfer 8.2.0、官方固定版本权重和本包 0.2.0 生成。原版 CPU 脑提取两例分别耗时 50.28、52.42 秒，joint 配准耗时 212.65 秒；本包示例采用两张 GPU 并行且复用模型，单任务报告中的时间包含 worker 执行、读写和可能的同时运行争用。严格的时间比较使用 [详细对照报告](../COMPARISON.md) 中同任务的成对测量。
+当前 `examples/run_batch.py` 已改为 pandas 表格接口的 SynthStrip 入门示例，会保存脑图、掩膜和距离场，但不运行 SynthMorph，也不采用历史图的输出布局。`examples/render_comparison.py` 仍按旧的文件布局和 0.2.0 标签写入指标；直接运行会覆盖历史 PNG 和 `metrics.json`。要做当前版本的新图，需另行生成配准结果并更新绘图脚本的输入路径和版本标签。当前多被试使用方法见[批量执行说明](../ARCHITECTURE.md#批量执行)，严格的历史计时比较见[详细对照报告](../COMPARISON.md)。
 
 第三张图由本包 0.3.0 在 gpucw1 上生成。以下命令在仓库根目录运行；需另行安装 FreeSurfer 8.2.0-1，并在 CUDA Python 环境中安装本包及绘图依赖。原版 GPU 参考直接执行**未修改的** `inference.py`，脚本自动建立指向所选 FreeSurfer 安装及官方权重的临时目录：
 

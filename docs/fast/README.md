@@ -87,8 +87,8 @@ fast -n 3 -t 1 -b -B -o results/T1_brain T1_brain.nii.gz
 
 ## 多病例并行
 
-FAST 没有权重，worker 只复用进程和 CUDA 上下文。下面的 JSON 把两例分配给批量
-调度器，并分别保存 GM、bias 和校正图：
+FAST 没有权重，worker 只复用进程和 CUDA 上下文。将下面的 JSON 保存为
+`fast_jobs.json`，把两例分配给批量调度器，并分别保存 GM、bias 和校正图：
 
 ```json
 [
@@ -113,15 +113,9 @@ FAST 没有权重，worker 只复用进程和 CUDA 上下文。下面的 JSON �
 ]
 ```
 
-```bash
-fs-torch batch fast_jobs.json --devices cuda:0 cuda:1 \
-  --workers-per-device 1 --threads-per-worker 1 \
-  --report results/fast_batch.json
-```
-
 `task` 选择 TorchFAST；`kwargs.image` 是单例 Python 调用的输入；`outputs` 的键是
 `FASTResult` 字段，值是保存路径。两个 worker 分别绑定 GPU 0 和 GPU 1，空闲 worker
-领取下一例，结果顺序仍与 JSON 一致。Python 中可用同一组 job 调用
+领取下一例，结果顺序仍与 JSON 一致。多病例仅在 Python 中用同一组 job 调用
 `BatchRunner(devices=("cuda:0", "cuda:1"))`：
 
 ```python

@@ -126,9 +126,9 @@ python tools/plot_synthsr_comparison.py \
 
 ## 三例、两张 GPU 的批量调用
 
-在 gpucw1 的两张 H100 上，三例公开 FLAIR 已用一个 `fs-torch batch` 命令完成。[脱敏批量记录](batch.public.json)显示三个任务的 `error` 均为 `null`，输出文件均已写出；`cuda:0` 与 `cuda:1` 各有一个独立 PID 执行任务，首轮两例的开始与结束时间区间重叠。第三例由先空闲的 worker 继续处理，因此同一进程复用已经加载的模型。这里的并行是**不同病例分给不同 GPU 进程**，并非把三例强行堆成同形状的网络 batch。
+在 gpucw1 的两张 H100 上，三例公开 FLAIR 曾通过旧版批量命令完成。[脱敏批量记录](batch.public.json)显示三个任务的 `error` 均为 `null`，输出文件均已写出；`cuda:0` 与 `cuda:1` 各有一个独立 PID 执行任务，首轮两例的开始与结束时间区间重叠。第三例由先空闲的 worker 继续处理，因此同一进程复用已经加载的模型。这里的并行是**不同病例分给不同 GPU 进程**，并非把三例强行堆成同形状的网络 batch。当前版本的多被试任务从 Python 调用。
 
-从仓库根目录生成任务清单并运行。`kwargs.image` 等同单例调用的输入，`outputs.image` 指定合成图像；`model.weights` 固定与原版比较所用的同一文件。显卡由 `--devices` 分配，不写入各任务。
+从仓库根目录生成任务清单并运行。`kwargs.image` 等同单例调用的输入，`outputs.image` 指定合成图像；`model.weights` 固定与原版比较所用的同一文件。显卡由 `BatchRunner.devices` 分配，不写入各任务。
 
 ```bash
 python - <<'PY'
@@ -150,12 +150,29 @@ jobs = [
 (folder / "jobs.json").write_text(json.dumps(jobs, indent=2) + "\n")
 PY
 
-fs-torch batch work/synthsr_public_batch/jobs.json \
-  --devices cuda:0 cuda:1 --workers-per-device 1 --threads-per-worker 4 \
-  --report work/synthsr_public_batch/report.json
+cat > work/synthsr_public_batch/run_batch.py <<'PY'
+from dataclasses import asdict
+import json
+from pathlib import Path
+from freesurfer_torch import BatchRunner
+
+def main():
+    folder = Path("work/synthsr_public_batch")
+    jobs = json.loads((folder / "jobs.json").read_text())
+    with BatchRunner(devices=("cuda:0", "cuda:1"), workers_per_device=1,
+                     threads_per_worker=4) as runner:
+        results = runner.run(jobs)
+    (folder / "report.json").write_text(json.dumps([asdict(row) for row in results], indent=2))
+    if any(not row.ok for row in results):
+        raise RuntimeError([row.error for row in results if not row.ok])
+
+if __name__ == "__main__":
+    main()
+PY
+python work/synthsr_public_batch/run_batch.py
 ```
 
-`--workers-per-device 1` 在每张 GPU 启一个 worker，`--threads-per-worker 4` 控制各进程的 CPU 线程。报告按输入顺序返回，记录每例设备、PID、起止时间、输出路径和错误。可直接检查是否真正由两个 GPU 进程同时工作，而不只看总耗时：
+`workers_per_device=1` 在每张 GPU 启一个 worker，`threads_per_worker=4` 控制各进程的 CPU 线程。报告按输入顺序返回，记录每例设备、PID、起止时间、输出路径和错误。可直接检查是否真正由两个 GPU 进程同时工作，而不只看总耗时：
 
 ```bash
 python - <<'PY'

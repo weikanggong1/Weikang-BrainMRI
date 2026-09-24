@@ -60,6 +60,16 @@ fs-torch synthstrip -i subject_T1w.nii.gz \
   -d results/subject_sdt.nii.gz --weights /path/to/weights --device cuda:0
 ```
 
+对应的 FreeSurfer 原版指令为：
+
+```bash
+mri_synthstrip -i subject_T1w.nii.gz \
+  -o results/subject_brain.nii.gz -m results/subject_mask.nii.gz \
+  -d results/subject_sdt.nii.gz
+```
+
+两条命令的 `-o`、`-m`、`-d` 分别保存脑图、掩膜和毫米单位的距离场；Python 返回字段依次为 `result.image`、`result.mask`、`result.distance`。原版 `-g` 选择可见 GPU，统一 CLI 用 `--device cuda:N` 指定设备；原版 `-t` 和 `--model` 分别对应统一 CLI 的 `-j` 与 `--weights`。
+
 | CLI 参数 | 对应 API / 行为 |
 |---|---|
 | `-i`, `--image` | 输入影像，必需 |
@@ -75,6 +85,39 @@ fs-torch synthstrip -i subject_T1w.nii.gz \
 
 至少指定一个输出。统一 CLI 会创建输出父目录。为兼容早期脚本，还保留 `python -m freesurfer_torch.synthstrip`，其参数接近官方命令，使用 `-g` 选择 CUDA、`-t` 设线程、`--model` 传权重文件；它与统一 `fs-torch` 的参数名不同，详情见各自 `--help`。
 
+## 多被试 Python
+
+`predict_batch(table, border=1, fill=None, workers=1, threads_per_worker=1)` 接受恰有 `input`、`output` 两列的 pandas 表。`input` 填入影像路径；`output` 是不带扩展名的绝对路径前缀，含被试 base name，不是目录。每行生成 `<output>_brain.nii.gz`、`<output>_mask.nii.gz` 和 `<output>_sdt.nii.gz`，按行顺序返回路径字典列表，键为 `image`、`mask`、`distance`。
+
+```python
+from pathlib import Path
+import pandas as pd
+from freesurfer_torch import SynthStrip
+
+table = pd.DataFrame({
+    "input": ["/data/sub-01_T1w.nii.gz", "/data/sub-02_T1w.nii.gz"],
+    "output": ["/results/sub-01", "/results/sub-02"],
+})
+if __name__ == "__main__":
+    extract = SynthStrip(device="cuda:0")
+    saved: list[dict[str, Path]] = extract.predict_batch(table, workers=2)
+    print(saved[0]["image"], saved[0]["mask"], saved[0]["distance"])
+```
+
+默认 `workers=1` 逐例复用模型；`workers=2` 在同一设备上启用两个 Python 进程，各加载一份模型，每个进程仍逐例推理。脚本中的多进程调用需放在 `if __name__ == "__main__":` 下。共享路径规则见[批量执行说明](../ARCHITECTURE.md#批量执行)。
+
+### 实验性 B2 对照
+
+在 gpucw1 的一张共享 H100 上，用相同的 12 例输入保存全部三项输出。B1 是单个常驻 Python 程序逐例运行，B2 使用未发布的实验代码在单个常驻程序中合批运行（12 例均实际进入 B=2 网络批），P2 是两个独立常驻 Python 程序各按 B=1 运行。正序和逆序各做一次 cold 与 warm 队列；下表是两轮 warm 队列总耗时的中位数。
+
+| B1 | B2 | P2 |
+|---:|---:|---:|
+| 135.38 s | 145.61 s | 73.82 s |
+
+本次 B2 慢于 B1，也慢于 P2。表中的 P2 由两个独立常驻脚本运行，并非当前 `workers=2` API 的实测；该对照衡量多被试队列吞吐。完整条件与逐轮结果见[批量性能报告](../../benchmark/batch_modes_2026-09-24.md)。
+
+公开 Python 表格接口另在同一台 gpucw1 对 12 例做了四组配对调用：`workers=1/2` 的整队列耗时中位数为 **129.19/77.98 s**，观察到 **1.66 倍**吞吐差；四组的 144 个输出文件对逐字节相同。`workers=2` 的计时已包含每次新建子进程并重载其模型。逐轮数据及共享 GPU 负载见[Python 接口验证](../../benchmark/batch_modes_2026-09-24.md#python-table-api-with-two-processes)。
+
 ## 权重与 CPU/GPU 分工
 
 | 文件 | 用途 |
@@ -84,7 +127,7 @@ fs-torch synthstrip -i subject_T1w.nii.gz \
 
 通过 `checkpoint["model_state_dict"]` 严格加载，无权重转换或精度压缩。下载、许可和 SHA-256 见 [WEIGHTS.md](../WEIGHTS.md)。推理使用本地权重，不调用 FreeSurfer 命令。
 
-U-Net 在所选设备执行。影像读写、Surfa conform/crop、归一化、SDT 扩展、连通域和最终重采样在 CPU 执行。4D 逐帧处理；病例并发由共享 [BatchRunner](../ARCHITECTURE.md#批量执行) 完成。GPU 可加快网络部分，完整进程耗时还取决于预后处理和 I/O。
+U-Net 在所选设备执行。影像读写、Surfa conform/crop、归一化、SDT 扩展、连通域和最终重采样在 CPU 执行。单例的 4D 输入逐帧处理；`predict_batch()` 按表行处理，每次网络推理 B=1，`workers=2` 时由两个进程并行处理。GPU 可加快网络部分，完整进程耗时还取决于预后处理和 I/O。
 
 ## 源码组织
 
@@ -131,12 +174,16 @@ U-Net 在所选设备执行。影像读写、Surfa conform/crop、归一化、SD
 
 以下数值来自 **0.1.0 参考实验**：12 例真实 T1w 在同设备对照中，脑图、掩膜和距离场全部逐元素一致；跨 CPU/GPU 时仅一个病例出现 1 个掩膜体素差异，最低 Dice 为 `0.999999858562`。0.2.0 是结构重整，单独的回归记录见 [refactor/report.public.json](../../validation/refactor/report.public.json)，历史运行时间未据此重新命名。
 
+以下使用同一份去面容的公开 `sub-02` T1w 输入和官方权重，展示原版与本包的脑图。两行分别为轴位和冠状位；三个面板使用同一切面及灰度范围。图片的制作步骤与完整影像比较见[图示记录](../figures/README.md)。
+
+![公开 T1w 输入、FreeSurfer 脑图与本包脑图](../figures/synthstrip_comparison.png)
+
 | 检查 | 记录 |
 |---|---|
 | 同设备官方类与本包类、默认/8 mm/no-CSF/4D 分支 | [模板验证](../../validation/synthstrip_fp32/synthstrip_validation.json) |
 | 原版 CPU 与本包 CPU | [CPU 验证](../../validation/synthstrip_cpu/synthstrip_validation.json) |
 | 12 例真实 T1w、四组 CPU/GPU 计时与数值比较 | [匿名数据](../../benchmark/summary.public.json)、[比较报告](../COMPARISON.md) |
-| 批量输出与单例输出一致性 | [真实批量比较](../../benchmark/real_batch/comparison.public.json) |
+| 0.1.0 旧 `BatchRunner` 输出与单例输出一致性 | [历史真实批量比较](../../benchmark/real_batch/comparison.public.json) |
 
 ### 原版与本包示意图
 

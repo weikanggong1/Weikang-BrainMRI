@@ -44,37 +44,27 @@ print(result.volumes_mm3[77])  # WMH 软体积；不是硬标签 77 的体素数
 
 CLI 会自动创建输出父目录。同一模型实例可继续处理 `sub-02/03`，无需再次加载权重。
 
-[批量清单](wmh_jobs.json) 可将三例分配到两张 GPU：
+三例 FLAIR 的多被试处理使用 Python 表格接口。`output` 是不带扩展名、含被试 base name 的绝对路径前缀；`workers=2` 在同一设备启动两个 Python 进程，各加载一次模型并逐例保存输出。
 
-```bash
-fs-torch batch examples/wmh_jobs.json --devices cuda:0 cuda:1 \
-  --workers-per-device 1 --threads-per-worker 4 \
-  --report examples/results/wmh_batch/report.json
-```
-
-清单为每例指定 `task="wmh_synthseg"`、FLAIR 路径、`crop=True` 和分割图、概率图的输出路径。`--devices` 指定两张 GPU，`--workers-per-device 1` 让每张卡启动一个进程并加载一份模型。两个进程可同时处理病例；第三例交给先空闲的进程。`--threads-per-worker 4` 限制每个进程的 PyTorch CPU 线程。结果 JSON 按清单顺序排列，`device`、`pid`、`error`、`outputs` 分别记录执行 GPU、进程、错误及保存的文件。已有旧输出时，改用新目录或加 `--overwrite`。
-
-运行后可检查每例两幅图、标签 77 和概率范围：
-
-```bash
-python - <<'PY'
-import json
+```python
 from pathlib import Path
-import nibabel as nib
-import numpy as np
+import pandas as pd
+from freesurfer_torch import WMHSynthSeg
 
-report = json.loads(Path("examples/results/wmh_batch/report.json").read_text())
-assert len(report) == 3 and {row["device"] for row in report} == {"cuda:0", "cuda:1"}
-for row in report:
-    assert row["error"] is None and len(row["outputs"]) == 2, row
-    seg = nib.load(row["outputs"]["segmentation"])
-    prob = nib.load(row["outputs"]["lesion_probability"])
-    assert seg.shape == prob.shape
-    labels = np.asarray(seg.dataobj)
-    values = np.asarray(prob.dataobj)
-    assert np.any(labels == 77) and np.all((0 <= values) & (values <= 1))
-print("3 subjects, 2 GPUs, 6 valid images")
-PY
+data = Path("examples/wmh_data").resolve()
+out = Path("examples/results/wmh_batch").resolve()
+subjects = ("sub-02", "sub-03", "sub-04")
+table = pd.DataFrame({
+    "input": [str(data / f"{subject}_FLAIR.nii.gz") for subject in subjects],
+    "output": [str(out / subject) for subject in subjects],
+})
+if __name__ == "__main__":
+    model = WMHSynthSeg(device="cuda:0", threads=1)
+    saved = model.predict_batch(table, crop=True, workers=2)
+    assert len(saved) == 3 and all(path.is_file() for files in saved for path in files.values())
+    print(saved)
 ```
+
+方法为每例保存分割图、病灶概率图和软体积 CSV，并按表行顺序返回含三项路径的字典。两幅影像输出位于处理后的 RAS/1 mm 网格。接口字段和路径规则见[批量执行说明](../docs/ARCHITECTURE.md#批量执行)。
 
 两版程序使用同一份发布输入的比较结果及并排图制作步骤见 [WMH 图示](../docs/figures/README.md) 和 [12 例对照](../validation/wmh/README.md)。这些公开图像没有人工 WMH 真值；这里的检查用于比较接口与输出，不能评价临床检测精度。

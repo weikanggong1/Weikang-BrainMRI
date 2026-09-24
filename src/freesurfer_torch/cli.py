@@ -1,8 +1,6 @@
-"""Command-line entry points for single images and JSON batch manifests."""
+"""Command-line entry points for single-image inference."""
 import argparse
-from dataclasses import asdict
 import csv
-import json
 import os
 from pathlib import Path
 import uuid
@@ -33,47 +31,30 @@ def _run_wmh(args):
     from .wmh_synthseg import LABEL_IDS, LABEL_NAMES, WMHSynthSeg
 
     source, target = Path(args.i), Path(args.o)
-    if source.is_file():
-        _wmh_suffix(source)
-        _wmh_suffix(target)
-        cases = [(source, target)]
-    elif source.is_dir():
-        if target.suffix in ('.nii', '.gz', '.mgz'):
-            raise ValueError('Directory input requires an output directory')
-        files = sorted(path for path in source.iterdir() if path.is_file()
-                       and path.name.endswith(('.nii', '.nii.gz', '.mgz')))
-        if not files:
-            raise ValueError(f'No supported MRI images in {source}')
-        cases = []
-        for path in files:
-            stem, suffix = _wmh_suffix(path)
-            cases.append((path, target / f'{stem}_seg{suffix}'))
-    else:
+    if not source.is_file():
         raise FileNotFoundError(source)
-
+    _wmh_suffix(source)
+    _wmh_suffix(target)
     target.parent.mkdir(parents=True, exist_ok=True)
-    if source.is_dir():
-        target.mkdir(parents=True, exist_ok=True)
     if args.csv_vols:
         Path(args.csv_vols).parent.mkdir(parents=True, exist_ok=True)
     model = WMHSynthSeg(weights=args.weights, device=args.device, threads=args.threads)
     rows = []
-    for image, output in cases:
-        result = model(image, crop=args.crop,
-                       save_lesion_probabilities=args.save_lesion_probabilities)
-        result.segmentation.save(output)
-        print(output)
-        if args.save_lesion_probabilities:
-            stem, suffix = _wmh_suffix(output)
-            probability = output.with_name(f'{stem}.lesion_probs{suffix}')
-            result.lesion_probability.save(probability)
-            print(probability)
-        if args.csv_vols:
-            import numpy as np
-            volumes = result.volumes_mm3
-            ordered = np.asarray([volumes[label] for label in LABEL_IDS], dtype=np.float32)
-            rows.append([str(output), str(np.sum(ordered[1:])),
-                         *(str(value) for value in ordered[1:])])
+    result = model(source, crop=args.crop,
+                   save_lesion_probabilities=args.save_lesion_probabilities)
+    result.segmentation.save(target)
+    print(target)
+    if args.save_lesion_probabilities:
+        stem, suffix = _wmh_suffix(target)
+        probability = target.with_name(f'{stem}.lesion_probs{suffix}')
+        result.lesion_probability.save(probability)
+        print(probability)
+    if args.csv_vols:
+        import numpy as np
+        volumes = result.volumes_mm3
+        ordered = np.asarray([volumes[label] for label in LABEL_IDS], dtype=np.float32)
+        rows.append([str(target), str(np.sum(ordered[1:])),
+                     *(str(value) for value in ordered[1:])])
     if args.csv_vols:
         with Path(args.csv_vols).open('w', newline='') as stream:
             writer = csv.writer(stream)
@@ -96,38 +77,21 @@ def _run_synthsr(args):
     from .synthsr import SynthSR
 
     source, target = Path(args.i), Path(args.o)
-    if source.is_dir():
-        if target.name.endswith(('.nii', '.nii.gz', '.mgz', '.npz', '.txt')):
-            raise ValueError('Directory input requires an output directory')
-        inputs = sorted(path for path in source.iterdir() if path.is_file()
-                        and path.name.endswith(('.nii', '.nii.gz', '.mgz', '.npz')))
-        cases = [(path, target / f'{_synthsr_suffix(path)[0]}_synthsr{_synthsr_suffix(path)[1]}')
-                 for path in inputs]
-    elif source.is_file() and source.suffix == '.txt':
-        if target.suffix != '.txt':
-            raise ValueError('A .txt input list requires a .txt output list')
-        inputs = [Path(line.strip()) for line in source.read_text().splitlines() if line.strip()]
-        outputs = [Path(line.strip()) for line in target.read_text().splitlines() if line.strip()]
-        if len(inputs) != len(outputs):
-            raise ValueError('Input and output lists must have equal length')
-        cases = list(zip(inputs, outputs))
-    elif source.is_file():
-        _synthsr_suffix(source)
-        if target.name.endswith(('.nii', '.nii.gz', '.mgz', '.npz')):
-            cases = [(source, target)]
-        else:
-            stem, suffix = _synthsr_suffix(source)
-            cases = [(source, target / f'{stem}_synthsr{suffix}')]
-    else:
+    if not source.is_file():
         raise FileNotFoundError(source)
-    if not cases:
-        raise ValueError(f'No supported MRI images in {source}')
+    _synthsr_suffix(source)
+    if target.name.endswith(('.nii', '.nii.gz', '.mgz', '.npz')):
+        output = target
+    else:
+        if target.suffix == '.txt':
+            raise ValueError('A .txt output list is not supported by the single-image CLI')
+        stem, suffix = _synthsr_suffix(source)
+        output = target / f'{stem}_synthsr{suffix}'
     model = SynthSR(weights=args.weights, device='cpu' if args.cpu else args.device,
                     lowfield=args.lowfield, v1=args.v1, threads=args.threads)
-    for image, output in cases:
-        model(image, ct=args.ct, disable_flipping=args.disable_flipping,
-              disable_sharpening=args.disable_sharpening).image.save(output)
-        print(output)
+    model(source, ct=args.ct, disable_flipping=args.disable_flipping,
+          disable_sharpening=args.disable_sharpening).image.save(output)
+    print(output)
 
 
 def _run_fast(args):
@@ -238,8 +202,8 @@ def main(argv=None):
     apply.add_argument('-t', '--dtype', choices=('uint8', 'uint16', 'int16', 'int32', 'float32'), default='float32')
     apply.add_argument('-H', '--header-only', action='store_true')
     wmh = commands.add_parser('wmh-synthseg', help='WMH and anatomy segmentation')
-    wmh.add_argument('--i', '-i', required=True, help='3D input image or directory')
-    wmh.add_argument('--o', '-o', required=True, help='segmentation image or directory')
+    wmh.add_argument('--i', '-i', required=True, help='single 3D input image')
+    wmh.add_argument('--o', '-o', required=True, help='segmentation image')
     wmh.add_argument('--csv_vols', '--csv-vols')
     wmh.add_argument('--device', default='cpu')
     wmh.add_argument('--threads', type=int, default=1)
@@ -247,8 +211,8 @@ def main(argv=None):
     wmh.add_argument('--save_lesion_probabilities', '--save-lesion-probabilities', action='store_true')
     wmh.add_argument('--weights', help='official checkpoint file or containing directory')
     sr = commands.add_parser('synthsr', help='synthesize a 1 mm T1-weighted image')
-    sr.add_argument('--i', '-i', required=True, help='input image, directory, or .txt path list')
-    sr.add_argument('--o', '-o', required=True, help='output image, directory, or .txt path list')
+    sr.add_argument('--i', '-i', required=True, help='single input image')
+    sr.add_argument('--o', '-o', required=True, help='output image or directory for this image')
     sr.add_argument('--device', default='cpu')
     sr.add_argument('--cpu', action='store_true', help='use CPU, matching the original --cpu')
     sr.add_argument('--threads', type=int, default=1)
@@ -298,47 +262,7 @@ def main(argv=None):
     fast_vbm.add_argument('--no-bias', action='store_true',
                           help='disable TorchFAST bias-field correction')
     fast_vbm.add_argument('--overwrite', action='store_true')
-    batch = commands.add_parser('batch', help='run a JSON list of jobs with persistent GPU workers')
-    batch.add_argument('manifest')
-    batch.add_argument('--devices', nargs='+', default=['cuda:0'])
-    batch.add_argument('--workers-per-device', type=int, default=1)
-    batch.add_argument('--threads-per-worker', type=int, default=4)
-    batch.add_argument('--report', required=True)
-    batch.add_argument('--overwrite', action='store_true')
     args = parser.parse_args(argv)
-    if args.command == 'batch':
-        from .batch import run_batch
-        jobs = json.loads(Path(args.manifest).read_text())
-        if any(job.get('task') == 'fast_vbm' for job in jobs):
-            parser.error('fast_vbm multi-subject execution is available through the Python BatchRunner API only')
-        path = Path(args.report).expanduser().resolve()
-        manifest_path = Path(args.manifest).expanduser().resolve()
-        if path == manifest_path:
-            parser.error('--report must differ from the manifest')
-        for index, job in enumerate(jobs):
-            outputs = list(job.get('outputs', {}).values())
-            if job.get('task') == 'synthmorph' and job.get('kwargs', {}).get('output_dir'):
-                debug = Path(job['kwargs']['output_dir'])
-                outputs.append(debug)
-                outputs.extend(
-                    debug / name for name in
-                    ('inp_1.nii.gz', 'inp_2.nii.gz', 'network_transforms.npz')
-                )
-            for output in outputs:
-                if Path(output).expanduser().resolve() == path:
-                    parser.error(f'--report conflicts with job {index} output: {path}')
-        if path.exists() and not args.overwrite:
-            parser.error(f'report exists: {path}; use --overwrite to replace it')
-        results = run_batch(jobs, devices=args.devices, workers_per_device=args.workers_per_device,
-                            threads_per_worker=args.threads_per_worker, overwrite=args.overwrite)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        temporary = path.with_name(f'.{path.name}.tmp-{os.getpid()}-{uuid.uuid4().hex}.json')
-        try:
-            temporary.write_text(json.dumps([asdict(result) for result in results], indent=2))
-            os.replace(temporary, path)
-        finally:
-            temporary.unlink(missing_ok=True)
-        raise SystemExit(int(any(result.error for result in results)))
     if args.command == 'wmh-synthseg':
         _run_wmh(args)
         return
