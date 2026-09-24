@@ -103,3 +103,14 @@ same OpenMP setting as the reference: without OpenMP, the original code enters
 `MRISaverageGradientsFast` before this bridge. Compare an unmodified rebuilt
 binary to the official binary first, then compare CUDA to that rebuilt CPU
 binary for every `mris_sphere` output and downstream per-vertex and ROI metrics.
+
+For that stage comparison, freeze one subject's `surf/lh.inflated` and run
+`benchmark_mris_sphere_stage.py` with the official, clean rebuilt, and patched
+binaries, the FreeSurfer home/license, and the target GPU UUID. The script
+runs the patched binary once with CUDA disabled and once enabled. It saves each
+log, wall time, output sphere, and ordered vertex/face comparison in a fresh
+`report.json`; it fails if the CUDA-active marker is absent or if the default
+1e-5 mm coordinate bound is exceeded. Run the right hemisphere separately.
+Pass `--existing-sphere` from the completed official subject to check that
+the stage-only official command reproduces the original recon-all result.
+The stage output alone does not establish downstream recon-all parity.
