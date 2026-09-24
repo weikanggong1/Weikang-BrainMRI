@@ -25,6 +25,23 @@ REQUIRED = ("mri/aparc+aseg.mgz", "stats/aseg.stats", "stats/lh.aparc.stats",
             "stats/rh.aparc.stats", "surf/lh.white", "surf/rh.white")
 GPU_QUERY = ("--query-gpu=index,uuid,name,"
              "utilization.gpu,memory.used", "--format=csv,noheader,nounits")
+CUDA_UUID_PROBE = """import json, os, subprocess, torch
+import freesurfer_torch.recon_all.standalone
+count = torch.cuda.device_count()
+if count == 1:
+    probe = torch.zeros(1, device='cuda:0')
+    torch.cuda.synchronize()
+    process = subprocess.run(
+        ['nvidia-smi', '--query-compute-apps=pid,gpu_uuid', '--format=csv,noheader,nounits'],
+        capture_output=True, text=True, check=True, timeout=10)
+    uuids = [row.split(',', 1)[1].strip() for row in process.stdout.splitlines()
+             if ',' in row and row.split(',', 1)[0].strip() == str(os.getpid())]
+    prop_uuid = getattr(torch.cuda.get_device_properties(0), 'uuid', None)
+else:
+    uuids, prop_uuid = [], None
+print(json.dumps({'device_count': count, 'property_uuid': str(prop_uuid) if prop_uuid else None,
+                  'process_gpu_uuids': uuids}))
+"""
 
 
 def sha256(path: Path) -> str:
@@ -141,9 +158,7 @@ def main() -> None:
     official = [str(official_recon), "-i", str(t1), "-s", "a_official",
                 "-sd", str(official_subjects), "-all", "-parallel",
                 "-openmp", "4", "-itkthreads", "1"]
-    visible_devices = (str(args.cuda_visible_devices)
-                       if args.cuda_visible_devices is not None
-                       else os.environ.get("CUDA_VISIBLE_DEVICES"))
+    visible_devices = os.environ.get("CUDA_VISIBLE_DEVICES")
     candidate_device = "cuda:0" if args.cuda_visible_devices is not None else "cuda:1"
     gpu_index = args.cuda_visible_devices if args.cuda_visible_devices is not None else 1
     candidate = [str(candidate_python), "-I", "-m",
@@ -156,8 +171,11 @@ def main() -> None:
     plan = {"order": args.order, "run_order": list(run_order), "t1": str(t1),
             "t1_sha256": sha256(t1), "hostname": socket.gethostname(),
             "cpu_affinity": sorted(os.sched_getaffinity(0)),
-            "cuda_visible_devices": visible_devices,
-            "cuda_visibility_source": ("--cuda-visible-devices" if args.cuda_visible_devices is not None
+            "cuda_visible_devices": (None if args.cuda_visible_devices is not None
+                                     else visible_devices),
+            "cuda_visible_devices_requested": args.cuda_visible_devices,
+            "cuda_visibility_source": ("nvidia-smi UUID resolved on execution"
+                                       if args.cuda_visible_devices is not None
                                        else "inherited environment"),
             "gpu_mapping": {"official_visible_physical_gpu": args.cuda_visible_devices,
                             "candidate_visible_physical_gpu": args.cuda_visible_devices,
@@ -189,16 +207,33 @@ def main() -> None:
     if shutil.which("nvidia-smi") is None or not Path("/usr/bin/time").is_file():
         raise FileNotFoundError("nvidia-smi and /usr/bin/time are required for the benchmark")
     inventory = gpu_sample(gpu_index)
+    if args.cuda_visible_devices is not None:
+        visible_devices = inventory[1].strip()
+        if not visible_devices.startswith("GPU-"):
+            raise RuntimeError(f"Cannot resolve physical GPU {gpu_index} to a UUID: {inventory}")
+        plan["cuda_visible_devices"] = visible_devices
+        plan["gpu_mapping"]["physical_gpu_uuid"] = visible_devices
     probe_env = os.environ.copy()
     if args.cuda_visible_devices is not None:
         probe_env["CUDA_VISIBLE_DEVICES"] = visible_devices
-    count = subprocess.run([str(candidate_python), "-I", "-c",
-                            "import torch, freesurfer_torch.recon_all.standalone; "
-                            "print(torch.cuda.device_count())"],
-                           env=probe_env, capture_output=True, text=True,
-                           check=True, timeout=120)
-    if int(count.stdout.strip()) < (1 if args.cuda_visible_devices is not None else 2):
-        raise RuntimeError(f"Logical {candidate_device} is unavailable in the candidate Python environment")
+        probe = subprocess.run([str(candidate_python), "-I", "-c", CUDA_UUID_PROBE],
+                               env=probe_env, capture_output=True, text=True,
+                               check=True, timeout=120)
+        observed = json.loads(probe.stdout.strip())
+        if observed["device_count"] != 1 or visible_devices not in observed["process_gpu_uuids"]:
+            raise RuntimeError(f"Candidate cuda:0 did not use physical GPU {gpu_index}: {observed}")
+        prop_uuid = observed["property_uuid"]
+        if prop_uuid and prop_uuid.startswith("GPU-") and prop_uuid != visible_devices:
+            raise RuntimeError(f"Candidate cuda:0 reports unexpected UUID {prop_uuid}")
+        plan["candidate_gpu_probe"] = observed
+    else:
+        count = subprocess.run([str(candidate_python), "-I", "-c",
+                                "import torch, freesurfer_torch.recon_all.standalone; "
+                                "print(torch.cuda.device_count())"],
+                               env=probe_env, capture_output=True, text=True,
+                               check=True, timeout=120)
+        if int(count.stdout.strip()) < 2:
+            raise RuntimeError("Logical cuda:1 is unavailable in the candidate Python environment")
 
     root.mkdir(parents=True, exist_ok=False)
     official_subjects.mkdir()
