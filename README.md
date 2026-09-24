@@ -37,9 +37,9 @@ python tools/setup_weights.py --model synthstrip --model synthmorph-joint \
 
 `python tools/setup_weights.py --all` 会配置全部官方权重。安装后也可运行 `fs-torch-setup-weights`。文件默认存入用户缓存目录；`--dest /path/to/weights` 可改下载位置，`--verify-only` 可检查已有文件。调用时可通过 Python 的 `weights=`、CLI 的 `--weights` 或环境变量 `FREESURFER_TORCH_WEIGHTS` 指定另一目录。推理过程不会联网下载。各权重的地址、版本、SHA-256 和许可见[权重说明](docs/WEIGHTS.md)。
 
-### 单 T1 `recon-all` 开发入口
+### GPU `recon-all` 单被试与批量入口
 
-此入口要求已准备好的、与 FreeSurfer 8.2 对应的**本地原生运行包**及用户自己的 FreeSurfer license；上面的权重下载命令不提供该运行包。`mri_synthseg` 使用本包的 PyTorch 33 类模型在指定 GPU 上推理。它运行时不调用系统安装的 FreeSurfer、FSL 或 TensorFlow。当前代码仓库不提供运行包下载或完整的公开二进制发布物，数值和速度验收见[验证说明](validation/recon_all/README.md)。
+此入口要求已准备好的、与 FreeSurfer 8.2 对应的**本地原生运行包**及用户自己的 FreeSurfer license；上面的权重下载命令不提供该运行包。`mri_synthseg` 使用本包的 PyTorch 33 类模型在指定 GPU 上推理；输入转换、强度校正、表面生成和统计等步骤仍由打包的原生 CPU 程序执行。它运行时不调用系统安装的 FreeSurfer、FSL 或 TensorFlow。当前代码仓库不提供运行包下载或完整的公开二进制发布物，数值和速度验收见[验证说明](validation/recon_all/README.md)。
 
 ```bash
 fs-torch-recon-all -i subject_T1w.nii.gz -s subject01 -sd /empty/subjects_dir \
