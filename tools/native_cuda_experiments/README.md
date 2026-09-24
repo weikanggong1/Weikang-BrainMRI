@@ -113,4 +113,6 @@ log, wall time, output sphere, and ordered vertex/face comparison in a fresh
 1e-5 mm coordinate bound is exceeded. Run the right hemisphere separately.
 Pass `--existing-sphere` from the completed official subject to check that
 the stage-only official command reproduces the original recon-all result.
+For the earlier `inflated.nofix` to `qsphere.nofix` call, use `--mode nofix`;
+the default `final` mode matches the later `inflated` to `sphere` call.
 The stage output alone does not establish downstream recon-all parity.

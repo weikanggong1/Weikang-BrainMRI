@@ -53,6 +53,7 @@ def main():
     parser.add_argument("--fs-home", type=Path, required=True)
     parser.add_argument("--license", type=Path, required=True)
     parser.add_argument("--gpu-uuid", required=True)
+    parser.add_argument("--mode", choices=("final", "nofix"), default="final")
     parser.add_argument("--output", type=Path, required=True,
                         help="fresh output directory")
     parser.add_argument("--max-abs-mm", type=float, default=1e-5)
@@ -69,6 +70,7 @@ def main():
     root.mkdir(parents=True, exist_ok=False)
     report = {"hostname": platform.node(), "input": str(paths["input"]),
               "input_sha256": digest(paths["input"]), "gpu_uuid": args.gpu_uuid,
+              "mode": args.mode,
               "max_abs_mm_gate": args.max_abs_mm,
               "binary_sha256": {name: digest(paths[name]) for name in
                                 ("official", "clean", "patched")}, "runs": {}}
@@ -78,8 +80,9 @@ def main():
         ("official", "official", False), ("clean", "clean", False),
         ("patched_cpu", "patched", False), ("patched_cuda", "patched", True)):
         output = root / (label + ".sphere")
-        command = [str(paths[binary]), "-threads", "4", "-seed", "1234",
-                   str(paths["input"]), str(output)]
+        options = (["-threads", "4", "-seed", "1234"] if args.mode == "final"
+                   else ["-q", "-p", "6", "-a", "128", "-seed", "1234"])
+        command = [str(paths[binary]), *options, str(paths["input"]), str(output)]
         env = os.environ.copy()
         env.update(FREESURFER_HOME=str(paths["fs_home"]),
                    FS_LICENSE=str(paths["license"]),
