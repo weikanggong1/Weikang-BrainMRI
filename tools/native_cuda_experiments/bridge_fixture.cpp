@@ -1,3 +1,5 @@
+#include <cuda_runtime.h>
+
 #include <chrono>
 #include <climits>
 #include <cmath>
@@ -100,6 +102,10 @@ int main(int argc, char** argv) {
     const auto expected = average_cpu(input, controls, neighbors);
     const auto cpu_stop = std::chrono::steady_clock::now();
     std::vector<Data> observed(expected.size());
+    const auto context_start = std::chrono::steady_clock::now();
+    if (cudaFree(nullptr) != cudaSuccess)
+      throw std::runtime_error("CUDA context initialization failed");
+    const auto context_stop = std::chrono::steady_clock::now();
     const auto cuda_start = std::chrono::steady_clock::now();
     const int status = fs_cuda_average_gradients(
         int(input.header.vertices), int(input.header.neighbors),
@@ -125,12 +131,15 @@ int main(int argc, char** argv) {
     }
     mean_abs /= expected.size() * 3;
     const double cpu_ms = std::chrono::duration<double, std::milli>(cpu_stop - cpu_start).count();
+    const double context_ms = std::chrono::duration<double, std::milli>(context_stop - context_start).count();
     const double cuda_ms = std::chrono::duration<double, std::milli>(cuda_stop - cuda_start).count();
     std::cout << "{\"vertices\":" << input.header.vertices
               << ",\"neighbors\":" << input.header.neighbors
               << ",\"iterations\":" << input.header.iterations
               << ",\"cpu_reference_ms\":" << cpu_ms
+              << ",\"cuda_context_init_ms\":" << context_ms
               << ",\"cuda_call_total_ms\":" << cuda_ms
+              << ",\"cuda_first_call_total_ms\":" << context_ms + cuda_ms
               << ",\"speedup_vs_cpu_reference\":" << cpu_ms / cuda_ms
               << ",\"max_abs\":" << max_abs
               << ",\"mean_abs\":" << mean_abs

@@ -54,8 +54,9 @@ nvcc -O2 -std=c++11 -arch=sm_90 --fmad=false --prec-div=true \
 ```
 
 `bridge_fixture` prints one JSON object with float32 bitwise mismatch count,
-maximum and mean absolute error, one-thread ordered CPU time, and total CUDA
-call time including allocation and both transfers. This checks the bridge
+maximum and mean absolute error, one-thread ordered CPU time, CUDA context
+initialization time, and the warm CUDA call time including allocation and both
+transfers. It also reports their sum as first-call time. This checks the bridge
 against a CPU reference using the same supplied vectors and neighbor order;
 it does not measure a FreeSurfer stage. Supply `-ccbin /path/to/g++` to `nvcc`
 when its default host compiler is incompatible with the CUDA Toolkit.
@@ -93,7 +94,20 @@ unset, or after a CUDA call fails, it uses the original CPU loop. The CUDA
 runtime is linked statically so missing `libcudart.so` does not prevent CPU
 fallback. A successful CUDA call writes `MRISaverageGradients: CUDA active` to
 the process log. This has not yet been integrated into the recon-all bundle or
-validated against the official executable.
+validated through a complete recon-all run. On one left-hemisphere
+`inflated.nofix` to `qsphere.nofix` stage, both the clean rebuilt and
+CUDA-enabled binaries produced the official ordered coordinates and faces
+exactly. Their measured stage times were about 76.0 and 76.7 seconds,
+respectively, so that run did not show a stage-level gain.
+
+The patch also fixes the bounding-box `abs` calls to retain the official 8.2
+binary's integer truncation when compiling with C++17 and ITK 5.3. Without
+that compatibility fix, the same `lh.inflated.nofix` scaled by 0.347 instead
+of 0.349 and its sphere differed by up to 3.055 mm. On CentOS 7 targets,
+compile `utils/chklc.cpp` against the target's `crypt.h`: linking an object
+compiled against newer `libxcrypt` headers caused a crash in `crypt_r` during
+license checking. Rebuild and relink both clean and CUDA binaries on the target
+before comparing outputs.
 
 The bridge consumes FreeSurfer's in-process active-vertex order, neighbor
 order, and actual float32 gradients, including its `num_avgs > 150` storage
@@ -116,3 +130,8 @@ the stage-only official command reproduces the original recon-all result.
 For the earlier `inflated.nofix` to `qsphere.nofix` call, use `--mode nofix`;
 the default `final` mode matches the later `inflated` to `sphere` call.
 The stage output alone does not establish downstream recon-all parity.
+The first full left-hemisphere final-stage replay failed the official gate:
+the clean rebuilt and patched CUDA outputs matched each other exactly but
+differed from the official sphere by up to 7.968 mm. The CUDA binary is not
+eligible for the validated bundle. See
+[`gpu_native_sphere_pilot_2026-09-24.md`](../../validation/recon_all/gpu_native_sphere_pilot_2026-09-24.md).
