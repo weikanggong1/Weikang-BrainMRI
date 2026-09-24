@@ -1,5 +1,6 @@
 include README.md THIRD_PARTY_NOTICES.md
 recursive-include licenses *.txt
 recursive-include docs *.md *.json
-recursive-include tools *.py
-recursive-include tests *.py
+recursive-include tools *.py *.md
+recursive-include tests *.py *.json
+recursive-include validation/recon_all *.py *.md *.json

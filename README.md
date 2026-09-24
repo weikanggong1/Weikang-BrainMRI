@@ -1,6 +1,6 @@
 # Weikang-BrainMRI
 
-这个独立 Python 包提供 **SynthStrip 脑提取**、**SynthMorph 配准**、**WMH-SynthSeg 脑结构及白质高信号分割**和 **SynthSR 1 mm T1w 合成**。单例可在 CPU 或 CUDA 上运行；批量任务可分配到多张 GPU。推理无需安装 FreeSurfer、TensorFlow、VoxelMorph 或 Neurite。
+这个独立 Python 包提供 **SynthStrip 脑提取**、**SynthMorph 配准**、**WMH-SynthSeg 脑结构及白质高信号分割**和 **SynthSR 1 mm T1w 合成**。单例可在 CPU 或 CUDA 上运行；批量任务可分配到多张 GPU。上述单项推理无需安装 FreeSurfer、TensorFlow、VoxelMorph 或 Neurite。仓库另附单 T1 `recon-all` 集成：神经网络步骤用 PyTorch/CUDA，表面重建和统计使用随运行包提供的原生程序。
 
 仓库名为 `Weikang-BrainMRI`。安装包名 `freesurfer-torch`、Python 导入名 `freesurfer_torch` 和命令 `fs-torch` 保持已有接口不变。0.4.0 增加了 SynthSR；各功能分别存放源码、测试和说明。
 
@@ -10,6 +10,7 @@
 | 刚性、仿射、非线性、联合配准及应用变换 | [SynthMorph](docs/synthmorph/README.md) | [synthmorph/](src/freesurfer_torch/synthmorph/) |
 | 脑结构及白质高信号分割 | [WMH-SynthSeg](docs/wmh_synthseg/README.md) | [wmh_synthseg/](src/freesurfer_torch/wmh_synthseg/) |
 | 单幅 MRI/CT 合成 1 mm T1w | [SynthSR](docs/synthsr/README.md) | [synthsr/](src/freesurfer_torch/synthsr/) |
+| 单 T1 皮层重建与统计（开发中） | [数值验收](validation/recon_all/README.md) | [recon_all/](src/freesurfer_torch/recon_all/) |
 | 多 GPU / 同 GPU 多进程批量调度 | [批量使用与架构](docs/ARCHITECTURE.md#批量执行) | [batch.py](src/freesurfer_torch/batch.py) |
 
 仓库附有 [3 例 T1w](examples/README.md) 和 [3 例 FLAIR](examples/WMH.md) 供直接试运行。它们来自 [OpenNeuro ds000114](https://openneuro.org/datasets/ds000114) 和 [ds003592](https://openneuro.org/datasets/ds003592) 的 CC0 影像；发布前清除了远离脑组织的影像强度。原图地址、处理过程及校验值见 [T1w 清单](examples/data/SOURCES.json) 和 [FLAIR 清单](examples/wmh_data/SOURCES.json)。
@@ -35,6 +36,18 @@ python tools/setup_weights.py --model synthstrip --model synthmorph-joint \
 ```
 
 `python tools/setup_weights.py --all` 会配置全部官方权重。安装后也可运行 `fs-torch-setup-weights`。文件默认存入用户缓存目录；`--dest /path/to/weights` 可改下载位置，`--verify-only` 可检查已有文件。调用时可通过 Python 的 `weights=`、CLI 的 `--weights` 或环境变量 `FREESURFER_TORCH_WEIGHTS` 指定另一目录。推理过程不会联网下载。各权重的地址、版本、SHA-256 和许可见[权重说明](docs/WEIGHTS.md)。
+
+### 单 T1 `recon-all` 开发入口
+
+此入口要求已准备好的、与 FreeSurfer 8.2 对应的**本地原生运行包**及用户自己的 FreeSurfer license；上面的权重下载命令不提供该运行包。它运行时不调用系统安装的 FreeSurfer、FSL 或 TensorFlow。当前代码仓库不提供运行包下载或完整的公开二进制发布物，数值和速度验收见[验证说明](validation/recon_all/README.md)。
+
+```bash
+fs-torch-recon-all -i subject_T1w.nii.gz -s subject01 -sd /empty/subjects_dir \
+  --bundle /path/to/native_bundle --license /path/to/license.txt \
+  --device cuda:0 --threads 4
+```
+
+运行包的固定单 T1 范围、依赖清单、构建及静态检查见[原生运行包说明](tools/recon_all_native/README.md)。默认入口只接受已完成独立运行验证的清单；开发中的候选包须显式加 `--development-bundle`。
 
 ## 单例 Python 调用：输入、输出和每步作用
 

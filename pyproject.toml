@@ -15,11 +15,13 @@ dependencies = [
   "surfa==0.6.3",
   "nibabel>=5",
   "h5py>=3.8",
+  "PyYAML>=6",
 ]
 
 [project.scripts]
 fs-torch = "freesurfer_torch.cli:main"
 fs-torch-setup-weights = "freesurfer_torch.weights:main"
+fs-torch-recon-all = "freesurfer_torch.recon_all.standalone:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
