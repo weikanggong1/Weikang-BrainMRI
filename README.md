@@ -39,7 +39,7 @@ python tools/setup_weights.py --model synthstrip --model synthmorph-joint \
 
 ### 单 T1 `recon-all` 开发入口
 
-此入口要求已准备好的、与 FreeSurfer 8.2 对应的**本地原生运行包**及用户自己的 FreeSurfer license；上面的权重下载命令不提供该运行包。它运行时不调用系统安装的 FreeSurfer、FSL 或 TensorFlow。当前代码仓库不提供运行包下载或完整的公开二进制发布物，数值和速度验收见[验证说明](validation/recon_all/README.md)。
+此入口要求已准备好的、与 FreeSurfer 8.2 对应的**本地原生运行包**及用户自己的 FreeSurfer license；上面的权重下载命令不提供该运行包。`mri_synthseg` 使用本包的 PyTorch 33 类模型在指定 GPU 上推理。它运行时不调用系统安装的 FreeSurfer、FSL 或 TensorFlow。当前代码仓库不提供运行包下载或完整的公开二进制发布物，数值和速度验收见[验证说明](validation/recon_all/README.md)。
 
 ```bash
 fs-torch-recon-all -i subject_T1w.nii.gz -s subject01 -sd /empty/subjects_dir \
@@ -49,6 +49,28 @@ fs-torch-recon-all -i subject_T1w.nii.gz -s subject01 -sd /empty/subjects_dir \
 
 运行包的固定单 T1 范围、依赖清单、构建及静态检查见[原生运行包说明](tools/recon_all_native/README.md)。默认入口只接受已完成独立运行验证的清单；开发中的候选包须显式加 `--development-bundle`。
 gpucw1 上的一例完整 T1 已通过 52 项主对照、2 项补充体素对照和 19 项汇总门槛；耗时及适用范围见[验证记录](validation/recon_all/gpucw1_sub01_2026-09-24.md)。
+
+单被试也可从 Python 调用 `run_recon_all`。多被试并行只提供 Python API，要求每例指定不同的空输出根目录；每张 GPU 同时运行一例，返回的报告保留输入顺序。每例的实际结果位于其 `subjects_dir/subject`。
+
+```python
+from freesurfer_torch.recon_all.standalone import run_recon_all, run_recon_all_batch
+
+single = run_recon_all(
+    "sub01_T1w.nii.gz", "sub01", "/results/single_sub01_subjects", "/path/to/native_bundle",
+    device="cuda:0", license_file="/path/to/license.txt",
+)
+
+jobs = [
+    {"t1": "sub01_T1w.nii.gz", "subject": "sub01", "subjects_dir": "/results/batch_sub01_subjects"},
+    {"t1": "sub02_T1w.nii.gz", "subject": "sub02", "subjects_dir": "/results/batch_sub02_subjects"},
+]
+reports = run_recon_all_batch(
+    jobs, "/path/to/native_bundle", devices=("cuda:0", "cuda:1"),
+    license_file="/path/to/license.txt",
+)
+```
+
+上面的输出根目录须分别为空。批量任务中的一个被试失败时，其余任务会继续完成，随后 Python 抛出汇总错误；每例日志及运行报告保留在各自的输出根中。没有多被试 `recon-all` 命令行入口。
 
 ## 单例 Python 调用：输入、输出和每步作用
 

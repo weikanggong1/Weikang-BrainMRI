@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 import time
@@ -193,6 +195,73 @@ def run_recon_all(
     if completed.returncode or missing_outputs or not config_match:
         raise RuntimeError(f"reconstruction failed; inspect {report_path} and {log_path}")
     return report
+
+
+def run_recon_all_batch(
+    jobs: list[dict], bundle_root: str | Path, *,
+    devices: tuple[str, ...] = ("cuda:0",), threads: int = 4,
+    license_file: str | Path | None = None, development_bundle: bool = False,
+) -> list[dict]:
+    """Run independent subjects concurrently, at most one per CUDA device.
+
+    Each job supplies ``t1``, ``subject``, and its own empty ``subjects_dir``.
+    Reports retain input order. Completed jobs keep their outputs if another
+    job fails; after every worker finishes, failures raise RuntimeError.
+    """
+    if not isinstance(devices, (tuple, list)) or not devices \
+            or any(not isinstance(device, str) or not re.fullmatch(r"cuda:\d+", device)
+                   for device in devices) or len(set(devices)) != len(devices):
+        raise ValueError("devices must be distinct CUDA device names")
+    bundle = Path(bundle_root).expanduser().resolve()
+    prepared, roots = [], []
+    for index, job in enumerate(jobs):
+        if not isinstance(job, dict) or set(job) != {"t1", "subject", "subjects_dir"}:
+            raise ValueError(f"job {index} must contain t1, subject, and subjects_dir")
+        image = Path(job["t1"]).expanduser().resolve(strict=True)
+        subject = job["subject"]
+        root = Path(job["subjects_dir"]).expanduser().resolve()
+        if not image.is_file() or not isinstance(subject, str) or not subject \
+                or subject in (".", "..") or Path(subject).name != subject:
+            raise ValueError(f"job {index} has an invalid T1 or subject")
+        if root.exists() and (not root.is_dir() or any(root.iterdir())):
+            raise FileExistsError(f"job {index} requires an empty subjects_dir: {root}")
+        if root == bundle or root.is_relative_to(bundle):
+            raise ValueError(f"job {index} subjects_dir cannot be inside the bundle: {root}")
+        if any(root == other or root.is_relative_to(other) or other.is_relative_to(root)
+               for other in roots):
+            raise ValueError(f"job {index} has an overlapping subjects_dir: {root}")
+        prepared.append((image, subject, root))
+        roots.append(root)
+
+    assignments = [[] for _ in devices]
+    for index, job in enumerate(prepared):
+        assignments[index % len(devices)].append((index, job))
+
+    def run_on_device(device, assigned):
+        completed = []
+        for index, (image, subject, root) in assigned:
+            try:
+                report = run_recon_all(
+                    image, subject, root, bundle_root, device=device, threads=threads,
+                    license_file=license_file, development_bundle=development_bundle)
+            except Exception as error:
+                completed.append((index, None, f"{type(error).__name__}: {error}"))
+            else:
+                completed.append((index, report, None))
+        return completed
+
+    reports, errors = [None] * len(prepared), []
+    with ThreadPoolExecutor(max_workers=len(devices)) as pool:
+        futures = [pool.submit(run_on_device, device, assigned)
+                   for device, assigned in zip(devices, assignments) if assigned]
+        for future in futures:
+            for index, report, error in future.result():
+                reports[index] = report
+                if error:
+                    errors.append(f"job {index} ({prepared[index][1]}): {error}")
+    if errors:
+        raise RuntimeError("batch reconstruction failed: " + "; ".join(errors))
+    return reports
 
 
 def main(argv: list[str] | None = None) -> None:
