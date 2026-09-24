@@ -80,6 +80,9 @@ def main():
         report["existing_sphere_sha256"] = digest(paths["existing_sphere"])
     hemi = paths["input"].name.split(".", 1)[0]
     surface_name = hemi + (".sphere" if args.mode == "final" else ".qsphere.nofix")
+    run_cwd = paths["input"].parent.parent / "scripts"
+    if not run_cwd.is_dir():
+        run_cwd = paths["input"].parent
     outputs = {}
     for label, binary, use_cuda in (
         ("official", "official", False), ("clean", "clean", False),
@@ -103,9 +106,10 @@ def main():
         load_start = os.getloadavg()[0]
         began = time.monotonic()
         with log.open("w") as stream:
-            result = subprocess.run(command, env=env, stdout=stream,
+            result = subprocess.run(command, cwd=run_cwd, env=env, stdout=stream,
                                     stderr=subprocess.STDOUT, check=False)
         run = {"command": command, "elapsed_seconds": time.monotonic() - began,
+               "cwd": str(run_cwd),
                "load_1m_start": load_start, "load_1m_end": os.getloadavg()[0],
                "exit_code": result.returncode, "log": str(log),
                "output": str(output), "output_exists": output.is_file(),
