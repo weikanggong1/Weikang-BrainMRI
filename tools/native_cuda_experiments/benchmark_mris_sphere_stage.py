@@ -66,6 +66,8 @@ def main():
         paths["existing_sphere"] = args.existing_sphere.resolve(strict=True)
     if not args.gpu_uuid.startswith("GPU-") or args.max_abs_mm < 0:
         parser.error("require a GPU UUID and nonnegative coordinate tolerance")
+    if paths["input"].name.split(".", 1)[0] not in ("lh", "rh"):
+        parser.error("input must be an lh or rh FreeSurfer surface")
     root = args.output.resolve()
     root.mkdir(parents=True, exist_ok=False)
     report = {"hostname": platform.node(), "input": str(paths["input"]),
@@ -76,10 +78,16 @@ def main():
                                 ("official", "clean", "patched")}, "runs": {}}
     if "existing_sphere" in paths:
         report["existing_sphere_sha256"] = digest(paths["existing_sphere"])
+    hemi = paths["input"].name.split(".", 1)[0]
+    surface_name = hemi + (".sphere" if args.mode == "final" else ".qsphere.nofix")
+    outputs = {}
     for label, binary, use_cuda in (
         ("official", "official", False), ("clean", "clean", False),
         ("patched_cpu", "patched", False), ("patched_cuda", "patched", True)):
-        output = root / (label + ".sphere")
+        output_dir = root / label
+        output_dir.mkdir()
+        output = output_dir / surface_name
+        outputs[label] = output
         options = (["-threads", "4", "-seed", "1234"] if args.mode == "final"
                    else ["-q", "-p", "6", "-a", "128", "-seed", "1234"])
         command = [str(paths[binary]), *options, str(paths["input"]), str(output)]
@@ -106,13 +114,13 @@ def main():
         (root / "report.json").write_text(json.dumps(report, indent=2) + "\n")
         if result.returncode or not output.is_file() or (use_cuda and not run["cuda_active"]):
             raise SystemExit(f"{label} failed; inspect {log} and report.json")
-    baseline = root / "official.sphere"
+    baseline = outputs["official"]
     comparisons = {}
     for label, left, right in (
-        ("clean_vs_official", baseline, root / "clean.sphere"),
-        ("patched_cpu_vs_clean", root / "clean.sphere", root / "patched_cpu.sphere"),
-        ("patched_cuda_vs_cpu", root / "patched_cpu.sphere", root / "patched_cuda.sphere"),
-        ("patched_cuda_vs_official", baseline, root / "patched_cuda.sphere")):
+        ("clean_vs_official", baseline, outputs["clean"]),
+        ("patched_cpu_vs_clean", outputs["clean"], outputs["patched_cpu"]),
+        ("patched_cuda_vs_cpu", outputs["patched_cpu"], outputs["patched_cuda"]),
+        ("patched_cuda_vs_official", baseline, outputs["patched_cuda"])):
         comparisons[label] = compare(left, right, args.max_abs_mm)
     if "existing_sphere" in paths:
         comparisons["official_replay_vs_existing"] = compare(
