@@ -195,13 +195,15 @@ def validate(args, manifest, fresh_preflight, software):
                         and str(target.relative_to(bundle)) in tracked, f"Untracked bundle symlink: {relative}")
             elif path.is_file() and relative != "manifest.json" and not relative.startswith("metadata/"):
                 require(relative in tracked, f"Untracked bundle file: {relative}")
-    reports = {name: load_report(getattr(args, name)) for name in ("preflight", "run", "comparison", "aggregate")}
+    reports = {name: load_report(getattr(args, name)) for name in
+               ("preflight", "run", "comparison", "aggregate", "aux_volumes")}
     for preflight in (reports["preflight"], fresh_preflight):
         require(preflight.get("hash_and_linkage_passed") is True and preflight.get("script_resource_checks_passed") is True
                 and preflight.get("errors") == [] and preflight.get("script_resource_closure", {}).get("errors") == []
                 and preflight.get("checked_staged_files") == sum(row.get("staged") is True for row in rows),
                 "Static preflight is incomplete, failed or for a different inventory")
-    run, comparison, aggregate = (reports[name] for name in ("run", "comparison", "aggregate"))
+    run, comparison, aggregate, aux_volumes = (reports[name] for name in
+                                                ("run", "comparison", "aggregate", "aux_volumes"))
     require(type(run.get("return_code")) is int and run["return_code"] == 0 and run.get("missing_outputs") == [],
             "Clean reconstruction did not complete successfully")
     require(Path(run["bundle"]).resolve() == bundle and run.get("input_sha256") == sha256(args.input), "Run bundle/input differs")
@@ -224,6 +226,7 @@ def validate(args, manifest, fresh_preflight, software):
             and sha256(candidate / "scripts/recon-config.yaml") == expected_config, "Effective configuration does not match")
     require(Path(comparison["candidate"]).resolve() == candidate and Path(comparison["reference"]).resolve() != candidate,
             "Comparator candidate differs from the run, or is the reference itself")
+    reference = Path(comparison["reference"]).resolve()
     checks = comparison.get("checks", {})
     require(set(checks) == required_checks() and len(checks) == 52 and comparison.get("passed") is True
             and comparison.get("failed_checks") == [] and all(row.get("status") == "passed" for row in checks.values()),
@@ -232,6 +235,19 @@ def validate(args, manifest, fresh_preflight, software):
     for name in ["mri/aseg.mgz", "mri/aparc+aseg.mgz", *[f"label/{hemi}.{atlas}.annot"
                  for hemi in ("lh", "rh") for atlas in ("aparc", "aparc.DKTatlas", "aparc.a2009s")]]:
         require(0.995 <= checks[name].get("min_dice", -1) <= 1, f"Relaxed or missing Dice threshold: {name}")
+    aux_names = {"mri/ribbon.mgz", "mri/wmparc.mgz"}
+    require(aux_volumes.get("passed") is True and aux_volumes.get("failed_checks") == []
+            and Path(aux_volumes["reference"]).resolve() == reference
+            and Path(aux_volumes["candidate"]).resolve() == candidate
+            and set(aux_volumes.get("checks", {})) == aux_names,
+            "Auxiliary voxel comparison is missing, failed or for different subjects")
+    for name in aux_names:
+        row = aux_volumes["checks"][name]
+        require(row.get("status") == "passed" and 0.995 <= row.get("min_dice", -1) <= 1
+                and 0.999 <= row.get("foreground_macro_dice", -1) <= 1
+                and row.get("reference_sha256") == sha256(reference / name)
+                and row.get("candidate_sha256") == sha256(candidate / name),
+                f"Auxiliary voxel gate or file hash failed: {name}")
     outputs = required_checks() | {"mri/orig.mgz", "mri/ribbon.mgz", "mri/wmparc.mgz", "surf/lh.sphere.reg", "surf/rh.sphere.reg"}
     output_hashes = {}
     for name in sorted(outputs):
@@ -248,7 +264,7 @@ def validate(args, manifest, fresh_preflight, software):
     trace = trace_audit(args.trace, bundle, Path(manifest["fs_home"]).resolve(),
                         args.license_file.resolve(), candidate, args.input.resolve())
     evidence = {name: {"path": str(getattr(args, name).resolve()), "sha256": sha256(getattr(args, name))}
-                for name in ("preflight", "run", "comparison", "aggregate", "trace", "trace_command_file", "tolerances", "code_manifest")}
+                for name in ("preflight", "run", "comparison", "aggregate", "aux_volumes", "trace", "trace_command_file", "tolerances", "code_manifest")}
     return {"schema_version": 1, "verified_utc": datetime.now(timezone.utc).isoformat(),
             "profile_id": PROFILE["id"], "evidence": evidence, "trace_audit": trace, "trace_launch": launch,
             "software": software, "candidate_outputs_sha256": output_hashes,
@@ -261,7 +277,7 @@ def main(argv=None):
     if argv and argv[0] == "freeze-code":
         return freeze_code(argv[1:])
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ("bundle", "preflight", "run", "comparison", "aggregate", "trace", "trace-command-file",
+    for name in ("bundle", "preflight", "run", "comparison", "aggregate", "aux-volumes", "trace", "trace-command-file",
                  "trace-cwd", "package-python", "input", "license-file", "code-manifest"):
         parser.add_argument("--" + name, required=True, type=Path)
     parser.add_argument("--tolerances", type=Path,

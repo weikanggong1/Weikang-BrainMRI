@@ -49,13 +49,26 @@ def evidence_fixture():
                "effective_config_matches_profile": True, "effective_config_sha256": sha256(config)}
         comparison = passing_report()
         comparison.update(candidate=str(candidate), reference=str(root / "reference"), tolerances={})
+        reference = root / "reference"
+        aux_checks = {}
+        for name in ("mri/ribbon.mgz", "mri/wmparc.mgz"):
+            path = reference / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(name)
+            aux_checks[name] = {"status": "passed", "min_dice": 0.995,
+                                "foreground_macro_dice": 1.0,
+                                "reference_sha256": sha256(path),
+                                "candidate_sha256": sha256(candidate / name)}
+        aux_volumes = {"reference": str(reference), "candidate": str(candidate),
+                       "passed": True, "failed_checks": [], "checks": aux_checks}
         for name in promotion.required_checks():
             comparison["checks"].setdefault(name, {}).update(status="passed")
             if name.startswith("label/") and name.endswith(".annot") or name.startswith("mri/"):
                 comparison["checks"][name]["min_dice"] = 0.995
         args = argparse.Namespace(bundle=bundle, package_python=Path(sys.executable), trace_cwd=root,
                                   input=image, license_file=license_file, check_only=False)
-        reports = {"preflight": preflight, "run": run, "comparison": comparison, "tolerances": {},
+        reports = {"preflight": preflight, "run": run, "comparison": comparison,
+                   "aux_volumes": aux_volumes, "tolerances": {},
                    "code_manifest": {"captured_utc": (now - timedelta(seconds=10)).isoformat(),
                                      "bundle_manifest_sha256": sha256(manifest_path), "software": software}}
         for name, report in reports.items():
@@ -89,6 +102,8 @@ class PromoteBundle(unittest.TestCase):
         cases = [("comparison", lambda r: r["checks"].pop("stats/synthseg.vol.csv")),
                  ("comparison", lambda r: r.update(candidate="/another/subject")),
                  ("aggregate", lambda r: r.update(comparison_sha256="0" * 64)),
+                 ("aux_volumes", lambda r: r["checks"]["mri/ribbon.mgz"].update(foreground_macro_dice=0.99)),
+                 ("aux_volumes", lambda r: r["checks"]["mri/wmparc.mgz"].update(candidate_sha256="0" * 64)),
                  ("preflight", lambda r: r.update(checked_staged_files=1)),
                  ("run", lambda r: r.update(return_code=1)),
                  ("run", lambda r: r.update(effective_config_matches_profile=False)),
@@ -142,7 +157,7 @@ class PromoteBundle(unittest.TestCase):
         with evidence_fixture() as (args, manifest, preflight, software):
             def preflight_run(command, **kwargs):
                 Path(command[-1]).write_text(json.dumps(preflight))
-            argv = [value for key in ("bundle", "preflight", "run", "comparison", "aggregate", "trace", "trace_command_file",
+            argv = [value for key in ("bundle", "preflight", "run", "comparison", "aggregate", "aux_volumes", "trace", "trace_command_file",
                                       "trace_cwd", "package_python", "input", "license_file", "code_manifest", "tolerances")
                     for value in ("--" + key.replace("_", "-"), str(getattr(args, key)))]
             with patch.object(promotion, "collect_software", return_value=software), \

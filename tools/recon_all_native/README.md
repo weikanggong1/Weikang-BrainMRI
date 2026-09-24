@@ -253,7 +253,16 @@ code. Preserve the original `env -i ... strace -f -e trace=file,process ...`
 launch command in a text file and keep the raw trace. A shell-history recovery
 is accepted as an operator-supplied record, not described as a digital signature.
 
-After the complete run and both comparison stages, check all linked evidence:
+After the complete run, compare the cortical ribbon and white-matter
+parcellation volumes as well as the 52-file surface/statistics report:
+
+```bash
+python tools/recon_all_native/compare_aux_volumes.py \
+  /absolute/reference/subject /absolute/candidate/subject \
+  --output work/validation/aux_volumes.json
+```
+
+Then check all linked evidence:
 
 ```bash
 python tools/recon_all_native/promote_bundle.py \
@@ -262,6 +271,7 @@ python tools/recon_all_native/promote_bundle.py \
   --run work/subjects/sub01.recon-all.run.json \
   --comparison work/comparison.numeric.json \
   --aggregate work/comparison.aggregate-gates.json \
+  --aux-volumes work/validation/aux_volumes.json \
   --trace work/validation/trace.log \
   --trace-command-file work/validation/command.txt \
   --trace-cwd "$PWD" --package-python .venv/bin/python \
@@ -271,8 +281,10 @@ python tools/recon_all_native/promote_bundle.py \
 
 The tool verifies source/configuration pins and bundle hashes, reruns static
 preflight, requires the same input/subject/configuration and successful run,
-checks all 52 comparator entries at the declared numerical tolerances, and
-recomputes all 19 aggregate gates. It rejects a stale aggregate report, changed
+checks all 52 comparator entries at the declared numerical tolerances, requires
+the two additional voxel volumes to pass per-label Dice and foreground macro
+Dice gates with matching file hashes, and recomputes all 19 aggregate gates.
+It rejects a stale aggregate report, changed
 outputs, package code or software versions, and a trace from another subject.
 
 The trace audit checks successful `open/openat/openat2/creat/execve/execveat`
@@ -289,3 +301,8 @@ gate passes. The original manifest and fresh preflight are retained in
 software versions and output hashes. Failure exits 2 without changing the
 manifest. Promotion does not set `redistribution_review_complete`, approve
 binary redistribution, or establish bitwise numerical identity.
+
+Build Python wheels from a clean checkout. A stale `build/lib` directory can
+carry removed Python modules into a wheel; compare every packaged `.py` hash
+with the pre-run code snapshot before distributing it. The production entry
+rejects a wheel whose package code tree differs from that snapshot.

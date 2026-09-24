@@ -87,6 +87,7 @@ use Euclidean displacement and an absolute mm limit, without registration.
 | White.K | 0.001 mm⁻² + 0.001 × absolute reference | Preserve principal-curvature estimation and sign conventions |
 | Sulc, inflated.H/K | 0.001 + 0.001 × absolute reference, in original file values | Confirm final writeout/normalization and units before freezing; no replacement with another curvature/depth definition |
 | Aseg and aparc+aseg | Exact grid/affine; every present label Dice >=0.995, no lost/new labels | Foreground macro Dice >=0.999; report small structures separately and inspect boundary errors |
+| Ribbon and wmparc | Separate auxiliary check: exact grid/affine/header zooms; every present label Dice >=0.995, no lost/new labels | Foreground macro Dice >=0.999; record both input file hashes |
 | DK, DKT, Destrieux annotations | Every region Dice >=0.995; exact name/color tables and valid native indexing | Total vertex agreement >=0.999 for each hemisphere/atlas; inspect parcellation boundaries |
 | ROI thickness mean/SD | Absolute difference <=0.01 mm | Each row must pass, never only the mean across ROIs |
 | ROI printed area/GrayVol | One printed unit (1 mm² / 1 mm³) + 0.1% of reference | The absolute term explicitly covers integer text quantization and tiny regions |
@@ -163,7 +164,10 @@ nearest-neighbour or spherical resampling is used to rescue changed topology.
 
 `standalone.py` has an additional mandatory output manifest. Its checks for
 `orig.mgz`, ribbon, wmparc and sphere.reg remain required; those outputs are not
-numerically compared by this comparator yet. Preserve both completeness gates.
+all numerically compared by this comparator. Run the separate
+`tools/recon_all_native/compare_aux_volumes.py` check for ribbon and wmparc;
+promotion requires its passing report bound to the exact input file hashes.
+Preserve both completeness gates.
 Neither gate proves independent generation, conform equivalence, surface
 self-intersection safety, repeatability, speedup, or absence of external
 FreeSurfer installations; those remain separate workflow gates.
