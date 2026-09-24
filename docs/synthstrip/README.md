@@ -174,6 +174,12 @@ U-Net 在所选设备执行。影像读写、Surfa conform/crop、归一化、SD
 
 以下数值来自 **0.1.0 参考实验**：12 例真实 T1w 在同设备对照中，脑图、掩膜和距离场全部逐元素一致；跨 CPU/GPU 时仅一个病例出现 1 个掩膜体素差异，最低 Dice 为 `0.999999858562`。0.2.0 是结构重整，单独的回归记录见 [refactor/report.public.json](../../validation/refactor/report.public.json)，历史运行时间未据此重新命名。
 
+12 例完整单例命令的耗时中位数如下，单位为秒；计时包含启动、权重加载、推理和写盘。CPU 固定 8 线程，GPU 使用同一张 H100，四臂均关闭 TF32。原版 GPU 指未修改官方脚本在 CUDA Python 环境运行；已安装的 FreeSurfer 自带 PyTorch 仅支持 CPU。[完整四分位数与逐例条件](../COMPARISON.md#cpugpu-时间)。
+
+| 原版 CPU | 本包 CPU | 原版 GPU | 本包 GPU |
+|---:|---:|---:|---:|
+| 16.92 | 16.96 | 16.92 | 18.27 |
+
 以下使用同一份去面容的公开 `sub-02` T1w 输入和官方权重，展示原版与本包的脑图。两行分别为轴位和冠状位；三个面板使用同一切面及灰度范围。图片的制作步骤与完整影像比较见[图示记录](../figures/README.md)。
 
 ![公开 T1w 输入、FreeSurfer 脑图与本包脑图](../figures/synthstrip_comparison.png)
@@ -184,17 +190,6 @@ U-Net 在所选设备执行。影像读写、Surfa conform/crop、归一化、SD
 | 原版 CPU 与本包 CPU | [CPU 验证](../../validation/synthstrip_cpu/synthstrip_validation.json) |
 | 12 例真实 T1w、四组 CPU/GPU 计时与数值比较 | [匿名数据](../../benchmark/summary.public.json)、[比较报告](../COMPARISON.md) |
 | 0.1.0 旧 `BatchRunner` 输出与单例输出一致性 | [历史真实批量比较](../../benchmark/real_batch/comparison.public.json) |
-
-### 原版与本包示意图
-
-下图使用仓库公开、已去面容的 `sub-02` T1w。左列为输入，中、右列分别为
-FreeSurfer 8.2.0 `mri_synthstrip` 和本包输出；两行使用相同的轴位、冠状位切面及
-灰度范围。图像用于检查空间位置和脑边界，数值结论来自完整三维输出。
-
-![原始 T1w、FreeSurfer SynthStrip 和本包 SynthStrip 脑图](../figures/synthstrip_comparison.png)
-
-该样例的输入来源、原版和本包命令、图像生成方法及完整 mask 比较见
-[图示记录](../figures/README.md)。
 
 测试源码在 [tests/synthstrip/](../../tests/synthstrip/)；原版对照工具在 [tools/validate_synthstrip.py](../../tools/validate_synthstrip.py)：
 

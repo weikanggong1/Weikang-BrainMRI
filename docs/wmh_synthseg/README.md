@@ -97,7 +97,13 @@ if __name__ == "__main__":
 
 数值对照固定同一官方权重、相同输入、设备、`--crop` 和线程，检查输出网格、所有标签、WMH 标签 77、病灶概率图及软体积；分别记录原版 CPU、官方源码 CUDA、本包 CPU、本包 CUDA 的完整命令运行时间。原版随 FreeSurfer 安装的 `fspython` 在 gpucw1 上为 CPU 版 PyTorch，因此 GPU 参考以未改动的官方 `inference.py` 在 CUDA PyTorch 环境中运行，并单独标记。公开病例没有人工 WMH 标注时，原版/本包的一致性不能解释为病灶检测准确率。完整 12 例结果、运行环境与复现命令见[WMH 验证记录](../../validation/wmh/README.md)。
 
-在 12 例公开 FLAIR 上，CPU 原版/本包和 CUDA 原版/本包两组的**逐例**标签、病灶概率、数值仿射和 CSV 软体积完全一致（WMH Dice=1，概率最大绝对差=0）。完整单例命令的中位时间依次为 **97.38、70.69、8.25、8.41 秒**。前两臂分别使用 FreeSurfer 的 Torch 2.1.2+cpu 与本包的 Torch 2.5.1，后两臂均用 Torch 2.5.1/CUDA 11.8；这不是控制 PyTorch 版本后的纯网络加速试验。原版写盘与 Surfa 写盘的 NIfTI qform/sform *code* 可能不同，体素值和数值仿射在本实验中相同。
+在 12 例公开 FLAIR 上，CPU 原版/本包和 CUDA 原版/本包两组的**逐例**标签、病灶概率、数值仿射和 CSV 软体积完全一致（WMH Dice=1，概率最大绝对差=0）。完整单例命令的耗时中位数（秒）如下；原版 GPU 指未改动的官方源码在 CUDA Python 环境运行。
+
+| 原版 CPU | 本包 CPU | 原版 GPU | 本包 GPU |
+|---:|---:|---:|---:|
+| 97.38 | 70.69 | 8.25 | 8.41 |
+
+前两臂分别使用 FreeSurfer 的 Torch 2.1.2+cpu 与本包的 Torch 2.5.1，后两臂均用 Torch 2.5.1/CUDA 11.8；这不是控制 PyTorch 版本后的纯网络加速试验。原版写盘与 Surfa 写盘的 NIfTI qform/sform *code* 可能不同，体素值和数值仿射在本实验中相同。[逐例范围与复现条件](../../validation/wmh/README.md#数值与耗时)。
 
 ### 原版与本包示意图
 

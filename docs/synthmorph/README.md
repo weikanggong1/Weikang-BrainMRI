@@ -265,6 +265,12 @@ Saved-transform application accepts multi-frame (4D) input images; neural regist
 - 默认 joint、256³ 的 12 例真实 T1w，同设备最大形变向量差为 `0.000790 mm`，最大正向 moved NRMSE 为 `4.05e-5`，见 [匿名逐例结果](../../benchmark/summary.public.json)。
 - 15 项选项检查的记录见 [options/report.json](../../validation/options/report.json)；初始化两项使用上文明确区分的 patched reference，其余 saved-transform apply 与未修改原版比较。
 
+默认 joint 模式的 12 例完整单例命令耗时中位数如下，单位为秒；CPU 固定 8 线程，GPU 使用同一张 H100，四臂均关闭 TF32，计时包含启动、权重加载、推理和写盘。原版 CPU/GPU 均运行 FreeSurfer 原生命令。[四分位数和环境差异](../COMPARISON.md#cpugpu-时间)保留在完整对照报告中。
+
+| 原版 CPU | 本包 CPU | 原版 GPU | 本包 GPU |
+|---:|---:|---:|---:|
+| 164.55 | 122.33 | 116.59 | 17.62 |
+
 下图使用公开 T1w 样例，展示 moving、fixed 以及原版和本包的 joint 配准图像。两列配准结果均在 fixed 网格；图中为展示使用相同的 fixed 脑掩膜。原版在 CPU、本包在 GPU 上推理，因此这张图用于查看结果，不用于比较运行速度。图像制作与完整体数据比较见[图示记录](../figures/README.md)。
 
 ![公开 T1w 输入及 FreeSurfer 与本包的 joint 配准结果](../figures/synthmorph_comparison.png)
@@ -272,18 +278,6 @@ Saved-transform application accepts multi-frame (4D) input images; neural regist
 模板反向图像存在少量采样有效域边界跳变：deform 为 1 个、joint 为 2 个体素，其强度误差超过输入最大强度的 0.1%。微小坐标误差使域外填零变为域内采样，因此接近的位移并不保证全部输出逐元素一致。完整误差、几何和定位见 [COMPARISON.md](../COMPARISON.md) 及[异常体素报告](../../validation/full192/reverse_output_diagnosis/report.json)。本包保留原边界规则，没有通过放宽规则掩盖这些差异。
 
 参考版本的 `-i` / `-i -M` 原命令因 float64/float32 混合而失败。记录同时保留原失败和两行类型转换副本的比较结果；调试输出布局、日志及线程默认值也与原 CLI 不同。
-
-### 原版与本包示意图
-
-下图使用仓库公开 T1w：`sub-02` 为 moving，`sub-01` 为 fixed。中间两列分别是
-FreeSurfer 8.2.0 `mri_synthmorph -m joint` 和本包 joint 配准的 moving 图像，均位于
-fixed 网格。显示时使用同一个 fixed 脑掩膜；误差指标则在完整三维图像和形变场上
-计算。
-
-![moving、fixed、FreeSurfer joint 配准和本包 joint 配准](../figures/synthmorph_comparison.png)
-
-图像只展示空间对齐，不从二维切面推断配准精度。原版/本包命令、输入来源和图像
-生成方法见[图示记录](../figures/README.md)。
 
 测试入口：
 
