@@ -26,15 +26,19 @@
     "torch": "2.5.1"
   },
   "full_source_suite": {
+    "clean_checkout": true,
     "completed": true,
-    "duration_seconds": 19.54,
-    "passed": 353,
+    "duration_seconds": 15.24,
+    "passed": 326,
     "skipped": 12,
+    "wall_seconds": 16.55,
     "warnings": 4
   },
+  "package_python_source_sha256": "2b51c1203d01651b4aa060b7e96f0a63fa483acfc11078a5f1ddecb2165e8ca3",
   "privacy": "Aggregate-only test and build summary; no account, host, path, or subject identifier is published.",
   "release": "0.9.0",
   "schema": 1,
+  "tested_git_commit": "1e1002a185fe77c067a5fb28261ee185ac6043e8",
   "wheel_install": {
     "isolated_target": true,
     "outside_source_tree": true,
