@@ -71,7 +71,11 @@ import surfa as sf
 import torch
 
 import freesurfer_torch
-from freesurfer_torch.fast_vbm import FastVBM, flirt_to_world_pull
+from freesurfer_torch.fast_vbm import (
+    FastVBM,
+    flirt_to_world_pull,
+    voxel_to_fsl_scaled_mm,
+)
 from freesurfer_torch.fast_vbm.registration import register_gm
 from freesurfer_torch.fast_vbm.synthmorph_backend import (
     SynthMorphDeformRegistration,
@@ -89,6 +93,9 @@ except ImportError:
 SCHEMA_VERSION = 1
 LAYERS = ("matched_affine", "matched_gm", "end_to_end")
 BACKENDS = ("fnirt", "synthmorph")
+BACKEND_ORDER_POLICY = (
+    "odd case slots use configured backend order; even case slots reverse it"
+)
 OUTPUT_FILENAMES = {
     "warped_gm": "T1_GM_to_template_GM.nii.gz",
     "jacobian": "T1_GM_JAC_nl.nii.gz",
@@ -236,25 +243,77 @@ def tf32_state(device: torch.device) -> dict[str, Any]:
 
 
 def execution_environment(device: torch.device) -> dict[str, Any]:
-    return {
+    result = {
         "platform": platform.system(),
+        "machine": platform.machine(),
+        "host_sha256": hashlib.sha256(
+            platform.node().encode("utf-8")
+        ).hexdigest(),
         "torch": torch.__version__,
         "cuda_runtime": torch.version.cuda,
-        "device_name": (
-            torch.cuda.get_device_name(device) if device.type == "cuda" else "CPU"
-        ),
+        "device_name": "CPU",
+        "cuda_total_memory_bytes": None,
+        "cuda_compute_capability": None,
+        "cuda_multiprocessor_count": None,
     }
+    if device.type == "cuda":
+        index = torch.cuda.current_device() if device.index is None else device.index
+        properties = torch.cuda.get_device_properties(index)
+        result.update(
+            device_name=properties.name,
+            cuda_total_memory_bytes=int(properties.total_memory),
+            cuda_compute_capability=[int(properties.major), int(properties.minor)],
+            cuda_multiprocessor_count=int(properties.multi_processor_count),
+        )
+    return result
 
 
-def affine_rmsdiff_mm(first: np.ndarray, second: np.ndarray, radius=80.0) -> float:
-    """Return the MISCMATHS affine RMS displacement used by FLIRT."""
+def fsl_scaled_mm_cog(image: nib.spatialimages.SpatialImage) -> np.ndarray:
+    """Return NEWIMAGE's intensity-weighted COG in FSL scaled-mm coordinates."""
+    data = np.asarray(image.dataobj, dtype=np.float64)
+    if data.ndim == 4:
+        data = data[..., 0]
+    if data.ndim != 3 or not np.isfinite(data).all():
+        raise ValueError("rmsdiff reference must contain a finite 3D image")
+    weights = data - data.min()
+    mass = float(weights.sum(dtype=np.float64))
+    denominator = mass if abs(mass) >= 1e-5 else 1.0
+    voxel_cog = np.asarray(
+        [
+            np.dot(
+                weights.sum(axis=tuple(other for other in range(3) if other != axis)),
+                np.arange(data.shape[axis], dtype=np.float64),
+            )
+            / denominator
+            for axis in range(3)
+        ],
+        dtype=np.float64,
+    )
+    voxel_to_fsl = voxel_to_fsl_scaled_mm(
+        image.affine,
+        data.shape,
+        image.header.get_zooms()[:3],
+    )
+    return (voxel_to_fsl @ np.r_[voxel_cog, 1.0])[:3]
+
+
+def affine_rmsdiff_mm(
+    first: np.ndarray,
+    second: np.ndarray,
+    reference_centre: np.ndarray,
+    radius=80.0,
+) -> float:
+    """Return FSL rmsdiff's reference-centred affine RMS displacement."""
     first = np.asarray(first, dtype=np.float64)
     second = np.asarray(second, dtype=np.float64)
     if first.shape != (4, 4) or second.shape != (4, 4):
         raise ValueError("affine RMS difference requires two 4x4 matrices")
+    reference_centre = np.asarray(reference_centre, dtype=np.float64)
+    if reference_centre.shape != (3,) or not np.isfinite(reference_centre).all():
+        raise ValueError("reference centre must contain three finite values")
     difference = first @ np.linalg.inv(second) - np.eye(4, dtype=np.float64)
     linear = difference[:3, :3]
-    translation = difference[:3, 3]
+    translation = difference[:3, 3] + linear @ reference_centre
     return float(
         np.sqrt(
             translation @ translation
@@ -307,6 +366,14 @@ def discover_cases(study_root: Path, case_count: int) -> list[CasePaths]:
             f"found {len(identifiers)} caseNN directories; expected at least {case_count}"
         )
     return [case_paths(study_root, value) for value in identifiers[:case_count]]
+
+
+def backend_execution_order(
+    case: CasePaths, backends: Iterable[str]
+) -> tuple[str, ...]:
+    order = tuple(backends)
+    index = int(case.case_id.removeprefix("case"))
+    return order if index % 2 else tuple(reversed(order))
 
 
 def required_case_files(case: CasePaths) -> dict[str, Path]:
@@ -442,6 +509,7 @@ def validation_context(
         },
         "device": args.device,
         "threads": args.threads,
+        "runtime_context": args.runtime_context,
         "tf32": tf32,
         "execution_environment": environment,
     }
@@ -471,6 +539,7 @@ def run_manifest_provenance(
         },
         "layers": list(layers),
         "backends": list(backends),
+        "backend_execution_order_policy": BACKEND_ORDER_POLICY,
     }
 
 
@@ -504,6 +573,7 @@ def run_flirt(
     args,
     case: CasePaths,
     template: sf.Volume,
+    reference_centre: np.ndarray,
     context: dict[str, Any],
     case_hashes: dict[str, str],
 ):
@@ -552,7 +622,9 @@ def run_flirt(
             status="success",
             synchronized_compute_sec=float(compute_sec),
             output_save_sec=float(save_sec),
-            matrix_rmsdiff_mm=affine_rmsdiff_mm(result.matrix, official),
+            matrix_rmsdiff_mm=affine_rmsdiff_mm(
+                result.matrix, official, reference_centre
+            ),
             qc=_jsonable(result.qc),
             output_sha256={
                 "matrix": sha256(paths["matrix"]),
@@ -636,11 +708,14 @@ def candidate_provenance(
         affine = sha256(case.fsl_matrix)
     elif layer == "matched_gm":
         affine = sha256(flirt_paths(args.work_dir, case.case_id)["matrix"])
+    execution_order = backend_execution_order(case, args.backends)
     return {
         **context,
         "case_inputs_sha256": case_hashes,
         "layer": layer,
         "backend": backend,
+        "backend_execution_order": execution_order,
+        "backend_execution_position": execution_order.index(backend),
         "moving_input_sha256": sha256(moving_path),
         "affine_input_sha256_or_role": affine,
     }
@@ -793,6 +868,7 @@ def dry_run(args) -> int:
         "backends": list(args.backends),
         "device": args.device,
         "threads": args.threads,
+        "runtime_context": args.runtime_context,
         "required_files_per_case": len(required_case_files(inputs["cases"][0])),
         "planned_candidate_runs": (
             len(inputs["cases"]) * len(args.layers) * len(args.backends)
@@ -807,12 +883,32 @@ def dry_run(args) -> int:
 
 def run(args) -> int:
     inputs = validate_inputs(args, require_weights=True)
+    source_digest = package_source_digest()
+    harness_digest = script_digest()
+    manifest_path = Path(args.work_dir) / "private" / "run.private.json"
+    atomic_json(
+        manifest_path,
+        {
+            "status": "running",
+            "schema": SCHEMA_VERSION,
+            "started_at": time.time(),
+            "package_version": freesurfer_torch.__version__,
+            "package_source_sha256": source_digest,
+            "script_sha256": harness_digest,
+            "layers": list(args.layers),
+            "backends": list(args.backends),
+            "device": args.device,
+            "threads": args.threads,
+            "runtime_context": args.runtime_context,
+        },
+    )
     device = torch.device(args.device)
     torch.set_num_threads(args.threads)
     template = sf.load_volume(str(inputs["template"]))
+    rmsdiff_reference_centre = fsl_scaled_mm_cog(
+        nib.load(str(inputs["template"]))
+    )
     reference_mask = sf.load_volume(str(inputs["reference_mask"]))
-    source_digest = package_source_digest()
-    harness_digest = script_digest()
     setup = []
     deform_models = {}
     pipelines = {}
@@ -861,8 +957,14 @@ def run(args) -> int:
     cache_hits = {"flirt": 0, "candidate": 0}
     started = time.perf_counter()
     for case in inputs["cases"]:
+        backend_order = backend_execution_order(case, args.backends)
         flirt, cached = run_flirt(
-            args, case, template, context, hashes_by_case[case.case_id]
+            args,
+            case,
+            template,
+            rmsdiff_reference_centre,
+            context,
+            hashes_by_case[case.case_id],
         )
         cache_hits["flirt"] += int(cached)
         print(
@@ -871,7 +973,7 @@ def run(args) -> int:
             flush=True,
         )
         for layer in args.layers:
-            for backend in args.backends:
+            for backend in backend_order:
                 record, cached = run_candidate(
                     args,
                     case,
@@ -919,8 +1021,10 @@ def run(args) -> int:
         "case_ids_private": [case.case_id for case in inputs["cases"]],
         "layers": list(args.layers),
         "backends": list(args.backends),
+        "backend_execution_order_policy": BACKEND_ORDER_POLICY,
         "device": args.device,
         "threads": args.threads,
+        "runtime_context": args.runtime_context,
         "tf32": actual_tf32,
         "execution_environment": environment,
         "constructor_setup_sec": setup,
@@ -936,7 +1040,7 @@ def run(args) -> int:
             "reported only when every record was computed in this invocation"
         ),
     }
-    atomic_json(Path(args.work_dir) / "private" / "run.private.json", manifest)
+    atomic_json(manifest_path, manifest)
     return 0
 
 
@@ -1026,14 +1130,40 @@ def aggregate_metrics(records: list[dict[str, Any]]) -> dict[str, Any]:
     return result
 
 
-def fsl_timing(case: CasePaths) -> dict[str, float]:
+def fsl_timing(case: CasePaths) -> dict[str, Any]:
     values = json.loads(case.fsl_timing.read_text())
-    preprocessing = sum(float(values[name]) for name in PREPROCESS_STAGES)
+    missing = [name for name in PREPROCESS_STAGES if name not in values]
+    preprocessing = sum(
+        float(values[name]) for name in PREPROCESS_STAGES if name in values
+    )
     registration = float(values["fsl_reg_ukb"]) + float(values["modulate_ukb"])
     return {
-        "preprocessing_through_fast_sec": preprocessing,
+        "preprocessing_through_fast_recorded_sec": preprocessing,
         "gm_registration_and_modulation_sec": registration,
-        "raw_t1_through_modulated_gm_sec": preprocessing + registration,
+        "raw_t1_through_modulated_gm_recorded_sec": preprocessing + registration,
+        "preprocessing_timing_complete": not missing,
+        "unmeasured_preprocessing_stages": missing,
+        "header_transform_used": bool(values.get("header_transform_used", False)),
+    }
+
+
+def aggregate_fsl_timings(records: list[dict[str, Any]]) -> dict[str, Any]:
+    complete = [record for record in records if record["preprocessing_timing_complete"]]
+    return {
+        "gm_registration_and_modulation_sec": distribution(
+            record["gm_registration_and_modulation_sec"] for record in records
+        ),
+        "preprocessing_through_fast_sec": distribution(
+            record["preprocessing_through_fast_recorded_sec"]
+            for record in complete
+        ),
+        "raw_t1_through_modulated_gm_sec": distribution(
+            record["raw_t1_through_modulated_gm_recorded_sec"]
+            for record in complete
+        ),
+        "gm_registration_complete_case_count": len(records),
+        "raw_t1_complete_case_count": len(complete),
+        "raw_t1_incomplete_case_count": len(records) - len(complete),
     }
 
 
@@ -1054,6 +1184,9 @@ def candidate_timing(record, flirt_record=None) -> dict[str, float]:
         result["comparable_compute_sec"] += result["flirt_compute_sec"]
         result["all_output_save_sec"] += result["flirt_output_save_sec"]
     result["compute_and_save_sec"] = (
+        result["comparable_compute_sec"] + result["vbm_output_save_sec"]
+    )
+    result["compute_and_all_output_save_sec"] = (
         result["comparable_compute_sec"] + result["all_output_save_sec"]
     )
     return result
@@ -1279,6 +1412,8 @@ def validated_run_manifest(args, inputs: dict[str, Any]):
         ("backends", list(args.backends)),
         ("device", args.device),
         ("threads", args.threads),
+        ("runtime_context", args.runtime_context),
+        ("backend_execution_order_policy", BACKEND_ORDER_POLICY),
     ):
         if manifest.get(key) != expected:
             raise RuntimeError(f"run manifest {key} does not match summary request")
@@ -1317,6 +1452,19 @@ def validated_run_manifest(args, inputs: dict[str, Any]):
         "execution_environment"
     ) != recorded_environment:
         raise RuntimeError("run manifest execution metadata is internally inconsistent")
+    required_environment = {
+        "platform",
+        "machine",
+        "host_sha256",
+        "torch",
+        "cuda_runtime",
+        "device_name",
+        "cuda_total_memory_bytes",
+        "cuda_compute_capability",
+        "cuda_multiprocessor_count",
+    }
+    if not required_environment.issubset(recorded_environment):
+        raise RuntimeError("run manifest execution environment is incomplete")
     cache_hits = manifest.get("cache_hits")
     if not isinstance(cache_hits, dict):
         raise RuntimeError("run manifest is missing cache accounting")
@@ -1350,6 +1498,7 @@ def summarize(args) -> int:
     inputs = validate_inputs(args, require_weights=True, check_device=False)
     run_manifest, context, hashes_by_case = validated_run_manifest(args, inputs)
     template_image, _ = load_image(inputs["template"])
+    rmsdiff_reference_centre = fsl_scaled_mm_cog(template_image)
     _, mask_values = load_image(inputs["reference_mask"], template_image)
     evaluation_mask = mask_values > 0
     expected_mask_array_hash = inputs["mask_array_sha256"]
@@ -1391,7 +1540,9 @@ def summarize(args) -> int:
             )
         candidate_matrix = np.loadtxt(fpaths["matrix"], dtype=np.float64)
         official_matrix = np.loadtxt(case.fsl_matrix, dtype=np.float64)
-        rmsdiff = affine_rmsdiff_mm(candidate_matrix, official_matrix)
+        rmsdiff = affine_rmsdiff_mm(
+            candidate_matrix, official_matrix, rmsdiff_reference_centre
+        )
         flirt_values.append(rmsdiff)
         execution_source_digests.add(
             flirt_record["provenance_private"]["package_source_sha256"]
@@ -1540,7 +1691,7 @@ def summarize(args) -> int:
         layer="matched_gm",
         backend="pytorch_flirt",
     )
-    fsl_timing_distribution = aggregate_metrics(raw_fsl_timings)
+    fsl_timing_distribution = aggregate_fsl_timings(raw_fsl_timings)
     append_distributions(
         rows,
         fsl_timing_distribution,
@@ -1552,20 +1703,27 @@ def summarize(args) -> int:
     paired_speed = {}
     for layer, reference_key in (
         ("matched_gm", "gm_registration_and_modulation_sec"),
-        ("end_to_end", "raw_t1_through_modulated_gm_sec"),
+        ("end_to_end", "raw_t1_through_modulated_gm_recorded_sec"),
     ):
         if layer not in args.layers:
             continue
         paired_speed[layer] = {}
-        reference_values = [value[reference_key] for value in raw_fsl_timings]
+        eligible_indices = [
+            index
+            for index, value in enumerate(raw_fsl_timings)
+            if layer != "end_to_end" or value["preprocessing_timing_complete"]
+        ]
+        reference_values = [
+            raw_fsl_timings[index][reference_key] for index in eligible_indices
+        ]
         for backend in args.backends:
             compute_values = [
-                value["comparable_compute_sec"]
-                for value in raw_timings[layer][backend]
+                raw_timings[layer][backend][index]["comparable_compute_sec"]
+                for index in eligible_indices
             ]
             compute_and_save_values = [
-                value["compute_and_save_sec"]
-                for value in raw_timings[layer][backend]
+                raw_timings[layer][backend][index]["compute_and_save_sec"]
+                for index in eligible_indices
             ]
             primary_ratios = [
                 reference / candidate
@@ -1588,6 +1746,10 @@ def summarize(args) -> int:
                 for reference, candidate in zip(reference_values, compute_values)
             ]
             paired_speed[layer][backend] = {
+                "paired_case_count": len(eligible_indices),
+                "excluded_incomplete_reference_timing_case_count": (
+                    len(raw_fsl_timings) - len(eligible_indices)
+                ),
                 "fsl_observed_wall_over_candidate_compute_and_save": distribution(
                     primary_ratios
                 ),
@@ -1635,7 +1797,11 @@ def summarize(args) -> int:
         )
 
     hardware = {
-        **context["execution_environment"],
+        **{
+            key: value
+            for key, value in context["execution_environment"].items()
+            if key != "host_sha256"
+        },
         "device": context["device"],
         "tf32": context["tf32"],
         "threads": context["threads"],
@@ -1655,6 +1821,7 @@ def summarize(args) -> int:
             "reference_software_context": "FSL 6.0.7.4 project environment",
             "template_sha256": sha256(inputs["template"]),
             "official_reference_mask_sha256": sha256(inputs["reference_mask"]),
+            "official_weights_sha256": context["weights_sha256"],
             "candidate_execution_package_source_sha256": execution_source_digest,
             "summarizer_package_source_sha256": package_source_digest(),
             "source_unchanged_at_summarize": (
@@ -1714,6 +1881,17 @@ def summarize(args) -> int:
             "batch_wall_sec": run_manifest["batch_wall_sec"],
             "all_records_fresh": run_manifest["all_records_fresh"],
             "cache_hits": run_manifest["cache_hits"],
+            "backend_execution_order_policy": run_manifest[
+                "backend_execution_order_policy"
+            ],
+            "runtime_context": context["runtime_context"],
+            "candidate_timing_controlled": context["runtime_context"]
+            == "exclusive-node",
+            "candidate_timing_interpretation": (
+                "Observed shared-node timing; concurrent load was not controlled"
+                if context["runtime_context"] == "shared-node"
+                else "Runtime context was declared by the validation invocation"
+            ),
             "first_call_boundary": (
                 "end-to-end first calls include lazy SynthStrip loading; nonlinear "
                 "models are constructed in the separately reported setup"
@@ -1722,6 +1900,11 @@ def summarize(args) -> int:
         "flirt": {
             "matrix_contract": "input to reference in FSL scaled-mm coordinates",
             "rmsdiff_radius_mm": 80.0,
+            "rmsdiff_reference_centre_scaled_mm": rmsdiff_reference_centre,
+            "rmsdiff_definition": (
+                "FSL rmsdiff/MISCMATHS displacement about the reference "
+                "image intensity-weighted COG"
+            ),
             "matrix_rmsdiff_mm": flirt_distribution,
         },
         "reference_fsl_timing": fsl_timing_distribution,
@@ -1731,6 +1914,16 @@ def summarize(args) -> int:
             "original_thread_count_recorded": False,
             "fsl_version_recorded_per_case": False,
             "controlled_speed_claim_allowed": False,
+            "raw_t1_complete_case_count": fsl_timing_distribution[
+                "raw_t1_complete_case_count"
+            ],
+            "raw_t1_incomplete_case_count": fsl_timing_distribution[
+                "raw_t1_incomplete_case_count"
+            ],
+            "incomplete_raw_t1_timing_handling": (
+                "Cases with an unmeasured preprocessing stage are excluded from "
+                "raw-T1 end-to-end paired timing; GM registration timing remains eligible"
+            ),
             "interpretation": (
                 "Observed historical wall times only; they are not a controlled "
                 "CPU-versus-GPU speed benchmark"
@@ -1837,6 +2030,12 @@ def add_common(parser: argparse.ArgumentParser, *, include_weights: bool) -> Non
     parser.add_argument("--case-count", type=int, default=10)
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--threads", type=int, default=4)
+    parser.add_argument(
+        "--runtime-context",
+        choices=("shared-node", "exclusive-node", "unspecified"),
+        default="unspecified",
+        help="resource-sharing context for interpreting observed timings",
+    )
     parser.add_argument("--layers", nargs="+", choices=LAYERS, default=list(LAYERS))
     parser.add_argument(
         "--backends", nargs="+", choices=BACKENDS, default=list(BACKENDS)

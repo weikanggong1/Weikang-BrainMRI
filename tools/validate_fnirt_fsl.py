@@ -37,6 +37,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import platform
 import re
 import subprocess
 import time
@@ -168,6 +169,29 @@ def apply_tf32_policy(device: str | torch.device) -> dict[str, bool]:
     if torch.device(device).type == "cuda" and actual != policy:
         raise RuntimeError(f"failed to apply CUDA TF32 policy: {actual}")
     return policy
+
+
+def execution_environment(device: str | torch.device) -> dict[str, Any]:
+    device = torch.device(device)
+    result = {
+        "platform": platform.system(),
+        "machine": platform.machine(),
+        "host_sha256": hashlib.sha256(platform.node().encode("utf-8")).hexdigest(),
+        "device_name": "CPU",
+        "cuda_total_memory_bytes": None,
+        "cuda_compute_capability": None,
+        "cuda_multiprocessor_count": None,
+    }
+    if device.type == "cuda":
+        index = torch.cuda.current_device() if device.index is None else device.index
+        properties = torch.cuda.get_device_properties(index)
+        result.update(
+            device_name=properties.name,
+            cuda_total_memory_bytes=int(properties.total_memory),
+            cuda_compute_capability=[int(properties.major), int(properties.minor)],
+            cuda_multiprocessor_count=int(properties.multi_processor_count),
+        )
+    return result
 
 
 def execution_order(case: CaseInputs) -> tuple[str, str]:
@@ -318,7 +342,14 @@ def validate_inputs(args, *, check_device: bool) -> dict[str, Any]:
     }
 
 
-def case_provenance(args, inputs: dict[str, Any], case: CaseInputs) -> dict[str, Any]:
+def case_provenance(
+    args,
+    inputs: dict[str, Any],
+    case: CaseInputs,
+    environment: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if environment is None:
+        environment = execution_environment(args.device)
     return {
         "schema": SCHEMA_VERSION,
         "script_sha256": inputs["script_sha256"],
@@ -327,6 +358,8 @@ def case_provenance(args, inputs: dict[str, Any], case: CaseInputs) -> dict[str,
         "torch_version": torch.__version__,
         "cuda_runtime": torch.version.cuda,
         "device": args.device,
+        "runtime_context": args.runtime_context,
+        "execution_environment": environment,
         "tf32": tf32_policy(args.device),
         "threads": args.threads,
         "execution_order": list(execution_order(case)),
@@ -683,10 +716,15 @@ def compare_outputs(
     return metrics, contracts
 
 
-def run_case(args, inputs: dict[str, Any], case: CaseInputs) -> tuple[dict[str, Any], bool]:
+def run_case(
+    args,
+    inputs: dict[str, Any],
+    case: CaseInputs,
+    environment: dict[str, Any] | None = None,
+) -> tuple[dict[str, Any], bool]:
     paths = output_paths(args.work_dir, case.case_id)
     outputs = _result_files(paths)
-    provenance = case_provenance(args, inputs, case)
+    provenance = case_provenance(args, inputs, case, environment)
     run_signature = signature(provenance)
     if not args.overwrite:
         cached = completed_record(paths["record"], run_signature, outputs)
@@ -827,10 +865,13 @@ def cache_status(
 
 def dry_run(args) -> int:
     inputs = validate_inputs(args, check_device=True)
+    environment = execution_environment(args.device)
     cases = []
     for case in inputs["cases"]:
         paths = output_paths(args.work_dir, case.case_id)
-        run_signature = signature(case_provenance(args, inputs, case))
+        run_signature = signature(
+            case_provenance(args, inputs, case, environment)
+        )
         cases.append(
             {
                 "case_id": case.case_id,
@@ -856,6 +897,7 @@ def dry_run(args) -> int:
         "fsl_version": inputs["tools"].version,
         "device": args.device,
         "threads": args.threads,
+        "runtime_context": args.runtime_context,
     }
     atomic_json(args.output_json, report)
     print(json.dumps(_jsonable(report), indent=2, allow_nan=False))
@@ -864,9 +906,25 @@ def dry_run(args) -> int:
 
 def run(args) -> int:
     inputs = validate_inputs(args, check_device=True)
+    manifest_path = Path(args.work_dir) / "private" / "run.private.json"
+    atomic_json(
+        manifest_path,
+        {
+            "schema": SCHEMA_VERSION,
+            "status": "running",
+            "private_report": True,
+            "started_at": time.time(),
+            "package_source_sha256": inputs["package_source_sha256"],
+            "script_sha256": inputs["script_sha256"],
+            "device": args.device,
+            "threads": args.threads,
+            "runtime_context": args.runtime_context,
+        },
+    )
     torch.set_num_threads(args.threads)
     device = torch.device(args.device)
     tf32 = apply_tf32_policy(device)
+    environment = execution_environment(device)
     setup_started = time.perf_counter()
     if device.type == "cuda":
         torch.empty(1, device=device)
@@ -875,7 +933,7 @@ def run(args) -> int:
     started = time.perf_counter()
     cache_hits = 0
     for case in inputs["cases"]:
-        record, cached = run_case(args, inputs, case)
+        record, cached = run_case(args, inputs, case, environment)
         cache_hits += int(cached)
         timing = record["timing_seconds"]
         print(
@@ -887,6 +945,10 @@ def run(args) -> int:
         if device.type == "cuda":
             torch.cuda.empty_cache()
     synchronize(device)
+    invocation_wall_seconds = time.perf_counter() - started
+    planned_record_count = len(inputs["cases"])
+    fresh_record_count = planned_record_count - cache_hits
+    all_records_fresh = cache_hits == 0
     manifest = {
         "schema": SCHEMA_VERSION,
         "status": "success",
@@ -894,13 +956,19 @@ def run(args) -> int:
         "case_count": len(inputs["cases"]),
         "case_ids": [case.case_id for case in inputs["cases"]],
         "device": args.device,
-        "device_name": (
-            torch.cuda.get_device_name(device) if device.type == "cuda" else "CPU"
-        ),
+        "device_name": environment["device_name"],
+        "execution_environment": environment,
         "tf32": tf32,
         "threads": args.threads,
+        "runtime_context": args.runtime_context,
         "device_setup_seconds": setup_seconds,
-        "batch_wall_seconds": time.perf_counter() - started,
+        "planned_record_count": planned_record_count,
+        "fresh_record_count": fresh_record_count,
+        "all_records_fresh": all_records_fresh,
+        "invocation_wall_seconds": invocation_wall_seconds,
+        "batch_wall_seconds": (
+            invocation_wall_seconds if all_records_fresh else None
+        ),
         "cache_hits": cache_hits,
         "package_source_sha256": inputs["package_source_sha256"],
         "script_sha256": inputs["script_sha256"],
@@ -913,10 +981,7 @@ def run(args) -> int:
             "odd case slots run FSL then Torch; even case slots run Torch then FSL"
         ),
     }
-    atomic_json(
-        Path(args.work_dir) / "private" / "run.private.json",
-        manifest,
-    )
+    atomic_json(manifest_path, manifest)
     return 0
 
 
@@ -992,6 +1057,7 @@ def validated_run_manifest(args, inputs: dict[str, Any]) -> dict[str, Any]:
         "device": args.device,
         "tf32": tf32_policy(args.device),
         "threads": args.threads,
+        "runtime_context": args.runtime_context,
         "package_source_sha256": inputs["package_source_sha256"],
         "script_sha256": inputs["script_sha256"],
     }
@@ -1004,15 +1070,44 @@ def validated_run_manifest(args, inputs: dict[str, Any]) -> dict[str, Any]:
         raise RuntimeError(f"run manifest does not match summary inputs: {mismatches}")
     try:
         cache_hits = int(manifest["cache_hits"])
+        planned = int(manifest["planned_record_count"])
+        fresh = int(manifest["fresh_record_count"])
     except (KeyError, TypeError, ValueError) as error:
         raise RuntimeError("run manifest cache accounting is incomplete") from error
-    if not 0 <= cache_hits <= len(inputs["cases"]):
+    expected_planned = len(inputs["cases"])
+    if (
+        min(cache_hits, planned, fresh) < 0
+        or planned != expected_planned
+        or fresh != planned - cache_hits
+    ):
         raise RuntimeError("run manifest cache accounting is inconsistent")
+    all_fresh = manifest.get("all_records_fresh") is True
+    if all_fresh != (cache_hits == 0):
+        raise RuntimeError("run manifest cache accounting is inconsistent")
+    batch_wall = manifest.get("batch_wall_seconds")
+    if not all_fresh and batch_wall is not None:
+        raise RuntimeError("resumed runs cannot report a complete cohort batch wall")
+    if all_fresh and not isinstance(batch_wall, (int, float)):
+        raise RuntimeError("fresh runs must report the complete cohort batch wall")
     expected_order_policy = (
         "odd case slots run FSL then Torch; even case slots run Torch then FSL"
     )
     if manifest.get("execution_order_policy") != expected_order_policy:
         raise RuntimeError("run manifest execution-order policy is inconsistent")
+    environment = manifest.get("execution_environment")
+    required_environment = {
+        "platform",
+        "machine",
+        "host_sha256",
+        "device_name",
+        "cuda_total_memory_bytes",
+        "cuda_compute_capability",
+        "cuda_multiprocessor_count",
+    }
+    if not isinstance(environment, dict) or set(environment) != required_environment:
+        raise RuntimeError("run manifest execution environment is incomplete")
+    if manifest.get("device_name") != environment["device_name"]:
+        raise RuntimeError("run manifest execution environment is inconsistent")
     return manifest
 
 
@@ -1026,7 +1121,9 @@ def summarize(args) -> int:
     execution_digests = set()
     for case in inputs["cases"]:
         paths = output_paths(args.work_dir, case.case_id)
-        provenance = case_provenance(args, inputs, case)
+        provenance = case_provenance(
+            args, inputs, case, run_manifest["execution_environment"]
+        )
         expected_signature = signature(provenance)
         record = completed_record(
             paths["record"], expected_signature, _result_files(paths)
@@ -1146,9 +1243,26 @@ def summarize(args) -> int:
                 "writes and exclude fnirtfileutils expansion and modulation."
             ),
             "distributions_seconds_or_ratio": timing,
+            "invocation_wall_seconds": run_manifest["invocation_wall_seconds"],
+            "batch_wall_seconds": run_manifest["batch_wall_seconds"],
+            "all_records_fresh": run_manifest["all_records_fresh"],
+            "cache_hits": run_manifest["cache_hits"],
             "device_name": run_manifest["device_name"],
+            "execution_environment": {
+                key: value
+                for key, value in run_manifest["execution_environment"].items()
+                if key != "host_sha256"
+            },
             "tf32": run_manifest["tf32"],
             "execution_order_policy": run_manifest["execution_order_policy"],
+            "runtime_context": run_manifest["runtime_context"],
+            "timing_controlled": run_manifest["runtime_context"]
+            == "exclusive-node",
+            "timing_interpretation": (
+                "Observed shared-node timing; concurrent load was not controlled"
+                if run_manifest["runtime_context"] == "shared-node"
+                else "Runtime context was declared by the validation invocation"
+            ),
         },
         "interpretation": {
             "equivalence_decision": "not made by this tool",
@@ -1211,6 +1325,12 @@ def add_common(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--case-count", type=int, default=10)
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--threads", type=int, default=4)
+    parser.add_argument(
+        "--runtime-context",
+        choices=("shared-node", "exclusive-node", "unspecified"),
+        default="unspecified",
+        help="resource-sharing context for interpreting observed timings",
+    )
 
 
 def parse_args(argv=None):

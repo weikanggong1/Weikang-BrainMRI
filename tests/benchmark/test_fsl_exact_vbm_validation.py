@@ -1,6 +1,8 @@
 import importlib.util
 import json
 from pathlib import Path
+import shutil
+import subprocess
 import sys
 from types import SimpleNamespace
 
@@ -69,6 +71,7 @@ def test_summarize_keeps_case_details_private(tmp_path):
         case_count=1,
         device="cpu",
         threads=1,
+        runtime_context="shared-node",
         layers=list(MODULE.LAYERS),
         backends=list(MODULE.BACKENDS),
         private_json=work / "private" / "summary.private.json",
@@ -84,9 +87,14 @@ def test_summarize_keeps_case_details_private(tmp_path):
     }
     environment = {
         "platform": "test-platform",
+        "machine": "test-machine",
+        "host_sha256": "test-host-sha256",
         "torch": "test-torch",
         "cuda_runtime": None,
         "device_name": "CPU",
+        "cuda_total_memory_bytes": None,
+        "cuda_compute_capability": None,
+        "cuda_multiprocessor_count": None,
     }
     source_digest = MODULE.package_source_digest()
     context = MODULE.validation_context(
@@ -98,6 +106,18 @@ def test_summarize_keeps_case_details_private(tmp_path):
         environment=environment,
     )
     case_hashes = {case.case_id: MODULE.case_input_hashes(case)}
+    other_environment = {**environment, "host_sha256": "other-host-sha256"}
+    other_context = MODULE.validation_context(
+        args,
+        inputs,
+        source_digest=source_digest,
+        harness_digest=MODULE.script_digest(),
+        tf32=recorded_tf32,
+        environment=other_environment,
+    )
+    assert MODULE.signature(MODULE.flirt_provenance(context, case_hashes[case.case_id])) != MODULE.signature(
+        MODULE.flirt_provenance(other_context, case_hashes[case.case_id])
+    )
 
     flirt = MODULE.flirt_paths(work, case.case_id)
     flirt["directory"].mkdir(parents=True, exist_ok=True)
@@ -178,8 +198,10 @@ def test_summarize_keeps_case_details_private(tmp_path):
             "case_ids_private": [case.case_id],
             "layers": args.layers,
             "backends": args.backends,
+            "backend_execution_order_policy": MODULE.BACKEND_ORDER_POLICY,
             "device": args.device,
             "threads": args.threads,
+            "runtime_context": args.runtime_context,
             "tf32": recorded_tf32,
             "execution_environment": environment,
             "constructor_setup_sec": [],
@@ -200,7 +222,18 @@ def test_summarize_keeps_case_details_private(tmp_path):
         "pre_nonlinear_signature_equal_count"
     ] == {layer: 1 for layer in MODULE.LAYERS}
     assert public["execution"]["hardware"]["tf32"] == recorded_tf32
+    assert "host_sha256" not in public["execution"]["hardware"]
     assert public["execution"]["batch_wall_sec"] == 2.0
+    assert public["execution"]["runtime_context"] == "shared-node"
+    assert not public["execution"]["candidate_timing_controlled"]
+    assert (
+        public["provenance"]["official_weights_sha256"]
+        == context["weights_sha256"]
+    )
+    assert (
+        public["execution"]["backend_execution_order_policy"]
+        == MODULE.BACKEND_ORDER_POLICY
+    )
     assert not public["reference_fsl_timing_provenance"][
         "controlled_speed_claim_allowed"
     ]
@@ -208,6 +241,7 @@ def test_summarize_keeps_case_details_private(tmp_path):
         "fsl_observed_wall_over_candidate_compute_and_save"
         in public["paired_timing"]["matched_gm"]["fnirt"]
     )
+    assert public["paired_timing"]["end_to_end"]["fnirt"]["paired_case_count"] == 1
     assert "case01" not in public_text
     assert str(study.resolve()) not in public_text
     assert (
@@ -217,13 +251,119 @@ def test_summarize_keeps_case_details_private(tmp_path):
 
 def test_affine_rmsdiff_and_image_metrics_identity():
     identity = np.eye(4)
-    assert MODULE.affine_rmsdiff_mm(identity, identity) == 0.0
+    assert MODULE.affine_rmsdiff_mm(identity, identity, np.zeros(3)) == 0.0
     values = np.arange(27, dtype=np.float32).reshape(3, 3, 3)
     metrics = MODULE.image_metrics(values, values, np.ones_like(values, bool), 4.0)
     assert np.isclose(metrics["pearson"], 1.0)
     assert metrics["mae"] == 0.0
     assert metrics["rmse"] == 0.0
     assert metrics["dice"] == 1.0
+
+
+def test_backend_execution_order_alternates_by_case_slot(tmp_path):
+    odd = MODULE.case_paths(tmp_path, "case01")
+    even = MODULE.case_paths(tmp_path, "case02")
+    backends = ("fnirt", "synthmorph")
+    assert MODULE.backend_execution_order(odd, backends) == backends
+    assert MODULE.backend_execution_order(even, backends) == tuple(reversed(backends))
+
+
+def test_matched_gm_primary_timing_excludes_flirt_diagnostic_writes():
+    candidate = {"synchronized_compute_sec": 3.0, "output_save_sec": 0.5}
+    flirt = {"synchronized_compute_sec": 2.0, "output_save_sec": 0.25}
+    timing = MODULE.candidate_timing(candidate, flirt)
+    assert timing["comparable_compute_sec"] == 5.0
+    assert timing["vbm_output_save_sec"] == 0.5
+    assert timing["all_output_save_sec"] == 0.75
+    assert timing["compute_and_save_sec"] == 5.5
+    assert timing["compute_and_all_output_save_sec"] == 5.75
+
+
+def test_fsl_timing_marks_unmeasured_preprocessing_and_aggregates_complete_only(
+    tmp_path,
+):
+    complete_case = MODULE.case_paths(tmp_path, "case01")
+    incomplete_case = MODULE.case_paths(tmp_path, "case02")
+    complete_case.fsl_timing.parent.mkdir(parents=True, exist_ok=True)
+    incomplete_case.fsl_timing.parent.mkdir(parents=True, exist_ok=True)
+    complete_values = {
+        **{name: 1.0 for name in MODULE.PREPROCESS_STAGES},
+        "fsl_reg_ukb": 2.0,
+        "modulate_ukb": 0.5,
+    }
+    incomplete_values = {
+        key: value
+        for key, value in complete_values.items()
+        if key != "flirt_xyztrans"
+    }
+    incomplete_values["header_transform_used"] = True
+    complete_case.fsl_timing.write_text(json.dumps(complete_values))
+    incomplete_case.fsl_timing.write_text(json.dumps(incomplete_values))
+
+    complete = MODULE.fsl_timing(complete_case)
+    incomplete = MODULE.fsl_timing(incomplete_case)
+    assert complete["preprocessing_timing_complete"]
+    assert not incomplete["preprocessing_timing_complete"]
+    assert incomplete["unmeasured_preprocessing_stages"] == ["flirt_xyztrans"]
+    aggregate = MODULE.aggregate_fsl_timings([complete, incomplete])
+    assert aggregate["gm_registration_and_modulation_sec"]["n"] == 2
+    assert aggregate["raw_t1_through_modulated_gm_sec"]["n"] == 1
+    assert aggregate["raw_t1_complete_case_count"] == 1
+    assert aggregate["raw_t1_incomplete_case_count"] == 1
+
+
+def test_affine_rmsdiff_uses_fsl_scaled_mm_reference_cog(tmp_path):
+    shape = (5, 4, 3)
+    affine = np.diag([2.0, 3.0, 4.0, 1.0])
+    data = np.full(shape, 7.0, dtype=np.float32)
+    data[1, 2, 1] += 1.0
+    path = tmp_path / "reference.nii.gz"
+    nib.save(nib.Nifti1Image(data, affine), path)
+
+    centre = MODULE.fsl_scaled_mm_cog(nib.load(path))
+    np.testing.assert_allclose(centre, [6.0, 6.0, 4.0], atol=1e-12)
+    first = np.eye(4)
+    first[0, 0] = 1.01
+    linear = first[:3, :3] - np.eye(3)
+    expected = np.sqrt(
+        np.square(linear @ centre).sum()
+        + (80.0**2 / 5.0) * np.trace(linear.T @ linear)
+    )
+    observed = MODULE.affine_rmsdiff_mm(first, np.eye(4), centre)
+    assert np.isclose(observed, expected)
+    assert not np.isclose(
+        observed, MODULE.affine_rmsdiff_mm(first, np.eye(4), np.zeros(3))
+    )
+
+
+@pytest.mark.skipif(shutil.which("rmsdiff") is None, reason="FSL is unavailable")
+def test_affine_rmsdiff_matches_fsl_binary(tmp_path):
+    shape = (5, 4, 3)
+    affine = np.diag([2.0, 3.0, 4.0, 1.0])
+    data = np.full(shape, 7.0, dtype=np.float32)
+    data[1, 2, 1] += 1.0
+    reference = tmp_path / "reference.nii.gz"
+    first_path = tmp_path / "first.mat"
+    second_path = tmp_path / "second.mat"
+    nib.save(nib.Nifti1Image(data, affine), reference)
+    first = np.eye(4)
+    first[0, 0] = 1.01
+    first[1, 3] = 0.25
+    second = np.eye(4)
+    np.savetxt(first_path, first)
+    np.savetxt(second_path, second)
+
+    expected = float(
+        subprocess.run(
+            ["rmsdiff", first_path, second_path, reference],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+    )
+    centre = MODULE.fsl_scaled_mm_cog(nib.load(reference))
+    observed = MODULE.affine_rmsdiff_mm(first, second, centre)
+    assert np.isclose(observed, expected, atol=5e-7, rtol=0)
 
 
 def test_completed_record_rejects_changed_output(tmp_path):

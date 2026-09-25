@@ -77,6 +77,7 @@ def _synthetic_tree(tmp_path, monkeypatch, case_count=2):
         case_count=case_count,
         device="cpu",
         threads=1,
+        runtime_context="shared-node",
         overwrite=False,
         output_json=work / "private" / "dry_run.private.json",
         private_json=work / "private" / "summary.private.json",
@@ -165,6 +166,11 @@ def test_run_cache_summary_and_public_privacy(tmp_path, monkeypatch, capsys):
     assert calls["torch"] == 2
     assert calls["expand"] == 4
 
+    other_host = MODULE.execution_environment("cpu")
+    other_host["host_sha256"] = "different-host"
+    with pytest.raises(RuntimeError, match="stale successful cache"):
+        MODULE.run_case(args, inputs, inputs["cases"][0], other_host)
+
     assert MODULE.summarize(args) == 0
     public = json.loads(args.public_json.read_text())
     private = json.loads(args.private_json.read_text())
@@ -178,6 +184,8 @@ def test_run_cache_summary_and_public_privacy(tmp_path, monkeypatch, capsys):
     ]["median"] == 1.0
     assert public["metrics"]["results"]["iout"]["mae"]["count"] == 2
     assert public["metrics"]["results"]["coefficients"]["mae"]["count"] == 2
+    assert public["timing"]["runtime_context"] == "shared-node"
+    assert not public["timing"]["timing_controlled"]
     for output in MODULE.OUTPUT_KEYS:
         assert public["output_contract"][output]["all_fields_equal"]["all_cases"]
     assert len(private["cases"]) == 2
@@ -206,6 +214,22 @@ def test_run_cache_summary_and_public_privacy(tmp_path, monkeypatch, capsys):
     assert dry["cases"][0]["cache_status"] == "stale_or_corrupt"
     assert dry["cases"][1]["cache_status"] == "valid"
     capsys.readouterr()
+
+
+def test_failed_run_invalidates_previous_success_manifest(tmp_path, monkeypatch):
+    args, _, _ = _synthetic_tree(tmp_path, monkeypatch, case_count=1)
+    manifest = args.work_dir / "private" / "run.private.json"
+    MODULE.atomic_json(manifest, {"status": "success", "batch_wall_seconds": 1.0})
+
+    def fail(*_args, **_kwargs):
+        raise RuntimeError("intentional test failure")
+
+    monkeypatch.setattr(MODULE, "run_case", fail)
+    with pytest.raises(RuntimeError, match="intentional test failure"):
+        MODULE.run(args)
+    current = json.loads(manifest.read_text())
+    assert current["status"] == "running"
+    assert "batch_wall_seconds" not in current
 
 
 def test_fsl_commands_use_matched_inputs_and_expand_without_affine(
