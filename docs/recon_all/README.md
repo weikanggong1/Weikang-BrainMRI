@@ -26,7 +26,8 @@ flowchart LR
 
 运行时无须安装系统 FreeSurfer、FSL 或 TensorFlow。原生运行包包含此流程实际需要的
 程序、脚本、模型、影像数据、解释器和动态库；它不是纯 PyTorch 发布物。仓库和
-wheel 均不提供该约 4.33 GiB 运行包或个人 license，也不提供自动下载命令。
+wheel 均不提供该约 4.35 GB（4.05 GiB）运行包或个人 license，也不提供自动下载命令。
+其中约 3.51 GB 是 SynthMorph deform 模型，其余主要是原生程序和图谱模板。
 制作和审计运行包的步骤见[构建说明](../../tools/recon_all_native/README.md)。
 默认调用只接受其清单中 `standalone_verified=true` 且包内文件、运行配置和当前
 Python 源码哈希都匹配的运行包；候选包只能显式指定 `development_bundle=True`
