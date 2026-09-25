@@ -23,6 +23,7 @@ def main() -> None:
     parser.add_argument("output_entowm", type=Path)
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--official-stats", type=Path)
+    parser.add_argument("--talairach-xfm", type=Path)
     parser.add_argument("--report", type=Path, required=True)
     args = parser.parse_args()
     torch.set_num_threads(4)
@@ -31,7 +32,8 @@ def main() -> None:
     started = time.perf_counter()
     stats_path = args.output_entowm.with_suffix(".stats") if args.official_stats else None
     mri_entowm_seg(args.input_nu, args.output_entowm, args.weights,
-                   device=args.device, stats_path=stats_path)
+                   device=args.device, stats_path=stats_path,
+                   talairach_xfm=args.talairach_xfm)
     elapsed = time.perf_counter() - started
     official, candidate = (nib.load(str(path)) for path in
                            (args.official_entowm, args.output_entowm))
@@ -69,6 +71,19 @@ def main() -> None:
         reference, actual = rows(args.official_stats), rows(stats_path)
         if reference.keys() != actual.keys():
             raise ValueError("EntoWM stats structure IDs differ")
+        def etiv(path: Path) -> float | None:
+            for line in path.read_text().splitlines():
+                if line.startswith("# Measure EstimatedTotalIntraCranialVol"):
+                    return float(line.split(",")[3])
+            return None
+        reference_etiv, candidate_etiv = etiv(args.official_stats), etiv(stats_path)
+        report["eTIV"] = {
+            "official_mm3": reference_etiv,
+            "candidate_mm3": candidate_etiv,
+            "absolute_difference_mm3":
+                abs(reference_etiv - candidate_etiv)
+                if reference_etiv is not None and candidate_etiv is not None else None,
+        }
         report["stats_numeric"] = [
             {"label": label, "official_voxels": reference[label][0],
              "candidate_voxels": actual[label][0],

@@ -20,6 +20,7 @@ env -u FREESURFER_HOME -u FS_LICENSE -u SUBJECTS_DIR \
   "$work/connected_input_ca_chain_cpu_20260926/mri/nu.mgz" \
   "$official/mri/entowm.mgz" "$weights" "$stage/entowm.mgz" \
   --device cpu --official-stats "$official/stats/entowm.stats" \
+  --talairach-xfm "$work/connected_input_ca_chain_cpu_20260926/mri/transforms/talairach.xfm" \
   --report "$stage/comparison.json" > "$stage/run.log" 2>&1
 code=$?
 printf '%s\n' "$code" > "$stage/exit"

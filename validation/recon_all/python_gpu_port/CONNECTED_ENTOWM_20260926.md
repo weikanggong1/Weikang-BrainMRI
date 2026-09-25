@@ -18,11 +18,13 @@ FreeSurfer output includes a color table and trailing metadata that this stage
 does not serialize. Its label values and spatial metadata match.
 
 The four `entowm.stats` label counts also match exactly. Posterior-based volumes
-differ by at most 0.0227 mm³, at label 4006. The diagnostic did not generate
-the eTIV header line because the connected chain does not yet write the
-`talairach.xfm.lta` file read by the native EntoWM stats wrapper. This is a
-remaining stats-output gap. One headcw CPU call including inference and output
-write took 17.59 s under shared load; it is not a paired native speed estimate.
+differ by at most 0.0227 mm³, at label 4006. The Python command uses the
+connected `talairach.xfm` directly for eTIV when the native-generated
+`talairach.xfm.lta` is absent: 1,310,265.101954 versus the official
+1,310,266.552537 mm³, an absolute difference of 1.450583 mm³ (about 1.1 ppm).
+One headcw CPU call including inference and output write took 11.50 s under
+shared load; it is not a paired native speed estimate. The full stats file is
+not byte-identical because the eTIV and posterior volumes differ slightly.
 
 The [machine-readable report](connected_entowm_cpu_20260926.json),
 [comparator](experimental/compare_connected_entowm.py), and

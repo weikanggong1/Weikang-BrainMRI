@@ -18,6 +18,8 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
+from .estimated_tiv import estimate_tiv
+
 
 class LimbicUNet(nn.Module):
     """The three-level U-Net used by entowm, MCA/dura, and vsinus models."""
@@ -245,14 +247,17 @@ ENTOWM_CTAB = "entowm.ctab"
 def mri_entowm_seg(input_path: str | Path, output_path: str | Path,
                    asset_dir: str | Path, *, device: str = "cpu",
                    stats_path: str | Path | None = None,
-                   talairach_lta: str | Path | None = None) -> Path:
+                   talairach_lta: str | Path | None = None,
+                   talairach_xfm: str | Path | None = None) -> Path:
     """Segment entorhinal/ambiens white matter from a 1 mm recon-all T1."""
     assets = Path(asset_dir)
+    etiv = (_etiv_from_lta(talairach_lta) if talairach_lta else
+            estimate_tiv(talairach_xfm) if talairach_xfm else None)
     return mri_sclimbic_seg(input_path, output_path,
                             model_path=assets / ENTOWM_MODEL,
                             ctab_path=assets / ENTOWM_CTAB,
                             fov=160, device=device, stats_path=stats_path,
-                            etiv=_etiv_from_lta(talairach_lta) if talairach_lta else None)
+                            etiv=etiv)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -289,10 +294,13 @@ def main(argv: list[str] | None = None) -> int:
     for subject in args.s:
         subject_dir = Path(args.sd) / subject
         stats = subject_dir / "stats" / "entowm.stats"
+        lta = subject_dir / "mri" / "transforms" / "talairach.xfm.lta"
         mri_entowm_seg(subject_dir / "mri" / "nu.mgz",
                        subject_dir / "mri" / "entowm.mgz", args.assets,
                        device=device, stats_path=stats,
-                       talairach_lta=subject_dir / "mri" / "transforms" / "talairach.xfm.lta")
+                       talairach_lta=lta if lta.is_file() else None,
+                       talairach_xfm=None if lta.is_file() else
+                           subject_dir / "mri" / "transforms" / "talairach.xfm")
         values = [float(line.split()[3]) for line in stats.read_text().splitlines()
                   if line and not line.startswith("#")]
         summary.append((subject, values))

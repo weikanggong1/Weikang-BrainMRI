@@ -63,7 +63,8 @@ def test_segmentation_restores_native_grid_and_label_ids(tmp_path, monkeypatch, 
     assert set(np.unique(labels)) == {0, 3006}
 
 
-def test_recon_all_subject_cli_writes_entowm_seg_and_stats(tmp_path, monkeypatch):
+@pytest.mark.parametrize("transform", ("lta", "xfm"))
+def test_recon_all_subject_cli_writes_entowm_seg_and_stats(tmp_path, monkeypatch, transform):
     class FixedModel(torch.nn.Module):
         def forward(self, image):
             prediction = torch.zeros((1, 5, *image.shape[-3:]), device=image.device)
@@ -80,9 +81,15 @@ def test_recon_all_subject_cli_writes_entowm_seg_and_stats(tmp_path, monkeypatch
     affine = np.diag([-1, -1, 1, 1]).astype(float)
     source = np.arange(16 ** 3, dtype=np.float32).reshape((16,) * 3)
     nib.save(nib.MGHImage(source, affine), mri / "nu.mgz")
-    (mri / "transforms" / "talairach.xfm.lta").write_text(
-        "type = 0\n1 4 4\n1 0 0 0\n0 1 0 0\n0 0 1 0\n0 0 0 1\n"
-    )
+    if transform == "lta":
+        (mri / "transforms" / "talairach.xfm.lta").write_text(
+            "type = 0\n1 4 4\n1 0 0 0\n0 1 0 0\n0 0 1 0\n0 0 0 1\n"
+        )
+    else:
+        (mri / "transforms" / "talairach.xfm").write_text(
+            "MNI Transform File\nLinear_Transform =\n"
+            "1 0 0 0\n0 1 0 0\n0 0 1 0 ;\n"
+        )
     assets = tmp_path / "assets"
     assets.mkdir()
     (assets / "entowm.ctab").write_text(
