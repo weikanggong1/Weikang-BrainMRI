@@ -13,7 +13,7 @@ from freesurfer_torch.fnirt.spline import (
 )
 
 
-def test_fsl_cubic_control_count_includes_legacy_boundary_rule():
+def test_fsl_cubic_control_count_includes_retired_boundary_rule():
     assert fsl_control_shape((91, 109, 91), (5, 5, 5)) == (21, 24, 21)
     assert fsl_control_shape((24, 28, 24), (5, 5, 5)) == (7, 8, 7)
     assert fsl_control_shape((7, 8, 9), (1, 1, 1)) == (7, 8, 9)

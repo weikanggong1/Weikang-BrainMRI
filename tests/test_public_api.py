@@ -19,7 +19,6 @@ import pytest
                "voxel_to_fsl_scaled_mm", "world_to_flirt_affine")),
     ("fnirt", ("TorchFNIRT", "TorchFNIRTResult", "GMFNIRTConfig")),
     ("fast_vbm", ("FastVBM", "FastVBMResult", "VBMRegistrationResult")),
-    ("batch", ("BatchRunner", "BatchResult", "run_batch")),
 ])
 def test_top_level_exports_are_feature_objects(module, names):
     package = importlib.import_module("freesurfer_torch")
@@ -28,31 +27,13 @@ def test_top_level_exports_are_feature_objects(module, names):
         assert getattr(package, name) is getattr(feature, name)
 
 
-def test_removed_compatibility_api_is_absent():
+def test_removed_batch_api_is_absent():
     package = importlib.import_module("freesurfer_torch")
-    for name in (
-        "FASTVBMResult",
-        "FSLFLIRT",
-        "LegacyTorchFLIRT",
-        "LinearRegistrationResult",
-        "FNIRTVBMResult",
-        "PyTorchFNIRTRegistration",
-        "register_affine",
-        "register_gm",
-    ):
+    for name in ("BatchRunner", "BatchResult", "run_batch"):
         assert not hasattr(package, name)
 
-    for module in (
-        "freesurfer_torch.spatial",
-        "freesurfer_torch.synthmorph_models",
-        "freesurfer_torch.fast_vbm.linear",
-        "freesurfer_torch.fast_vbm.fnirt_backend",
-        "freesurfer_torch.fast_vbm.legacy_registration",
-        "freesurfer_torch.flirt.legacy",
-        "freesurfer_torch.synthstrip.__main__",
-    ):
-        with pytest.raises(ModuleNotFoundError):
-            importlib.import_module(module)
+    with pytest.raises(ModuleNotFoundError):
+        importlib.import_module("freesurfer_torch.batch")
 
     apply_transform = package.apply_transform
     assert "device" not in inspect.signature(apply_transform).parameters

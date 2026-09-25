@@ -1,125 +1,25 @@
-# UK Biobank v1.5 VBM：FSL 参考与历史实验路径
+# UK Biobank v1.5 VBM 参考
 
-[返回主页](../../README.md) · [GPU FAST VBM 稳定接口](../fast_vbm/README.md) · [研究脚本](../../tools/experimental/ukb_vbm/) · [10 例验证](../../validation/ukb_vbm/)
+[返回主页](../../README.md) · [FastVBM 接口](../fast_vbm/README.md) · [当前验证](../../validation/fast_vbm/README.md)
 
-本页记录 `tools/experimental/ukb_vbm/` 的历史研究臂和 FSL 参考生成方法。当前稳定
-`FastVBM` 已提供 `registration_backend="synthmorph"` 与 `"fnirt"` 两个分支；后者是
-source-derived `TorchFNIRT` GM-config 实现。当前接口、输入输出和新的双后端对照以
-[FastVBM 专页](../fast_vbm/README.md)及其[版本化验证](../../validation/fast_vbm/README.md)
-为准。
+本页只记录 FastVBM 当前实现所对应的 UK Biobank/FSL 方法和公开模板。旧的实验注册器、研究脚本和聚合报告已经删除。
 
-## 这组脚本复现了什么
+## 官方 VBM 步骤
 
-UK Biobank v1.5 的 `bb_struct_init` 从原始 T1 开始，依次缩小视野、递归 BET 脑提取、配准到 MNI、把标准脑掩膜逆变换回 T1 空间，再用 FAST 生成 GM partial-volume estimate。`bb_vbm` 随后执行：
+UK Biobank v1.5 的 `bb_struct_init` 从原始 T1 开始，执行视野裁剪、BET、标准空间掩膜回投和 FAST。随后 `bb_vbm` 对 GM PVE 运行：
 
 ```bash
-fsl_reg T1_brain_pve_1.nii.gz template_GM.nii.gz \
-  T1_GM_to_template_GM -fnirt \
-  "--config=GM_2_MNI152GM_2mm.cnf --jout=T1_GM_JAC_nl"
-fslmaths T1_GM_to_template_GM -mul T1_GM_JAC_nl \
-  T1_GM_to_template_GM_mod -odt float
+fsl_reg T1_brain_pve_1.nii.gz template_GM.nii.gz   T1_GM_to_template_GM -fnirt   "--config=GM_2_MNI152GM_2mm.cnf --jout=T1_GM_JAC_nl"
+fslmaths T1_GM_to_template_GM -mul T1_GM_JAC_nl   T1_GM_to_template_GM_mod -odt float
 ```
 
-本仓库的 `run_fsl_reference.py` 按该顺序运行从原始 T1 到 FAST 和 `bb_vbm` 的部分。测试数据不是 UK Biobank 扫描，缺少扫描仪梯度系数，因此按原脚本的 `coeff=none` 分支省略 gradient distortion correction。FIRST、SIENAX、去面容、T2/FLAIR、BIANCA、不被 FAST/VBM 读取的 `T1_brain_to_MNI` 派生图像和后续 IDP 未纳入。`bb_vbm` 本身不做群体平滑或统计，本实验也在 modulated GM 结束。
+FastVBM 以相同的输出角色结束：GM、warped GM、nonlinear-only Jacobian 和 modulated GM。当前两条分支共用 SynthStrip/TorchFAST、TorchFLIRT、FSL 坐标转换、TorchApplyWarp、Jacobian 与 modulation，只在非线性估计器上选择 PyTorch SynthMorph 或 TorchFNIRT。逐阶段对应和输入输出见 [FastVBM 文档](../fast_vbm/README.md#与-ukb-v1fsl-vbm-的对应关系)。
 
-FSL 参考使用 FSL 6.0.7.4。UKB 早期生产文档记录的是 FSL 5.0.10，因此这里复现的是 v1.5 脚本步骤和参数，不是原生产环境的逐字节重放。
-源码核对基于 v1.5 仓库 commit `0e39a7f7eb76b55437942bfa3073512506b6c8fa`；该版本 `bb_structural_pipeline/bb_vbm` 的 SHA-256 为 `efdca88961dad9eeec52e15e2d26ad5f807b2c0bd3b41c547990ba78ebb7753f`。
+源码核对基于 UKB v1.5 commit `0e39a7f7eb76b55437942bfa3073512506b6c8fa`；`bb_structural_pipeline/bb_vbm` 的 SHA-256 为 `efdca88961dad9eeec52e15e2d26ad5f807b2c0bd3b41c547990ba78ebb7753f`。当前 FSL 参考环境为 6.0.7.4，因此验证范围是 v1.5 方法与参数复现，不包含逐字节等价声明。
 
-## 与 BWAS 脚本的关系
+## 公开模板
 
-`BWAS_preprocess_VBM.py` 先运行 `fsl_anat`，再将 FAST 的 GM PVE 用 `fsl_reg -fnirt` 配准到 local HCP-derived GM template，乘以 `--jout` 生成的 Jacobian，最后以 `sigma = 5 / 2.3548` 执行 5 mm FWHM Gaussian 平滑并生成 QC 图。它还保存 T1、CSF、GM 和 WM 的 1 mm MNI 空间图像。
-
-本实验的 FSL 参考臂复现 UKB v1.5 的 `bb_struct_init` 和 `bb_vbm` 路径，同时把 local HCP-derived template 作为第二个受控比较臂。两者的 VBM 核心都是 GM 非线性配准和 Jacobian modulation；前处理入口、默认模板和终点不同。UKB `bb_vbm` 在 modulated GM 结束，因此这次时间和数值比较不包含 BWAS 脚本后续的 5 mm 平滑和 QC 绘图。
-
-## 历史实验路径替换了哪些步骤
-
-```mermaid
-flowchart LR
-  A[Raw T1] --> B1[UKB/FSL: BET + MNI mask]
-  B1 --> C1[FAST GM PVE]
-  C1 --> D1[FLIRT + FNIRT to UKB GM template]
-  D1 --> E1[FNIRT Jacobian modulation]
-
-  A --> B2a[PyTorch: WMH-SynthSeg]
-  B2a --> C2a[SynthSeg-derived GM probability]
-  A --> B2b[SynthStrip or input-grid brain mask]
-  B2b --> C2b[TorchFAST GM PVE; bias correction on]
-  C2a --> D2[Global normalized correlation + 0.2 MSE; scales 4, 2, 1]
-  C2b --> D2
-  D2 --> E2[PyTorch Jacobian modulation]
-```
-
-两条路径生成同名的三幅 2 mm 模板空间图像：warped GM、非线性 Jacobian 和 modulated GM。GPU 路径的命名和网格与 `bb_vbm` 对齐，但算法不同：
-
-| 阶段 | UKB v1.5 参考 | PyTorch 实验路径 |
-|---|---|---|
-| 脑与组织估计 | BET、逆变换 MNI mask、FAST | `synthseg`：WMH-SynthSeg 后验汇总为 GM；`torch-fast`：SynthStrip 或现有 mask 后运行 TorchFAST，取 GM PVE |
-| 仿射初始化 | `fsl_reg`/FLIRT | GM 重心加可优化仿射 |
-| 图像目标 | FNIRT 强度模型 | 每个尺度对整幅展平图像计算 `1 - global normalized correlation + 0.2 × MSE` |
-| 非线性模型 | FNIRT cubic B-spline | 低分辨率位移控制网格；按 4、2、1 三个尺度优化 |
-| 正则化 | `GM_2_MNI152GM_2mm.cnf` | 位移平滑项；验证设置为 10 |
-| Jacobian 处理 | FNIRT 配置设为 0.2–5；受控单例最终输出全为正，但范围为 0.271–5.816 | 整体缩放位移场直到落入 0.2–5；不逐体素裁剪 |
-| 调制 | warped GM × nonlinear Jacobian | 同一公式 |
-
-本节所述旧注册器不是 FNIRT 的源码移植；它的控制网格、损失和约束回退也不代表当前
-`FastVBM(registration_backend="fnirt")`。当前 `TorchFNIRT` 另行实现 cubic B-spline、
-FSL scaled-mm residual、SSD、bending energy、FSL schedule 和 nonlinear-only
-Jacobian；其数值等价标志仍为 `false`。本页工具继续保留 FSL 参考臂、SynthSeg
-实验臂、双模板比较和历史公开报告生成工具。
-
-## 研究脚本的输入与输出
-
-稳定的 `FastVBM` Python/CLI 输入输出见[专属页面](../fast_vbm/README.md)。下面的
-`run_gpu_vbm.py` 是研究对照入口，可在相同注册器上选择 SynthSeg 或 TorchFAST GM：
-
-```bash
-python tools/experimental/ukb_vbm/run_gpu_vbm.py \
-  --input subject_T1w.nii.gz \
-  --template assets/template_GM.nii.gz \
-  --output-dir results/sub-01 --device cuda:0
-```
-
-`--input` 是单帧 3D T1 NIfTI；`--template` 是 3D GM 模板，其 shape 和 affine 决定最终输出网格。`--device` 选择 PyTorch 设备。默认 `--affine-steps 50 --deform-steps 40 --smoothness 10` 对应本次实测；其中 smoothness 由一例调参病例选定。
-
-默认 `--gm-method synthseg` 使用 WMH-SynthSeg 后验得到 GM，需要 checkpoint；可用
-`--weights` 显式指定，或先运行 `python tools/setup_weights.py --model wmh-synthseg`。
-另一入口是：
-
-```bash
-python tools/experimental/ukb_vbm/run_gpu_vbm.py \
-  --input subject_T1w.nii.gz \
-  --template assets/template_GM.nii.gz \
-  --output-dir results/sub-01-fast --device cuda:0 \
-  --gm-method torch-fast
-```
-
-`torch-fast` 默认先用 SynthStrip 脑提取，再运行三组织 TorchFAST，并以 GM PVE
-进入配准；`--brain-mask` 可提供与 T1 同网格的现有 mask，跳过 SynthStrip。
-TorchFAST bias correction 默认启用，`--fast-no-bias` 才关闭；该开关用于消融，不是
-默认流程。TorchFAST 本身不需要权重；自动脑提取需要 SynthStrip 权重，可先运行
-`python tools/setup_weights.py --model synthstrip`，或用 `--synthstrip-weights` 指定。
-
-| 文件 | 网格和数值含义 | 原 `bb_vbm` 对应物 |
-|---|---|---|
-| `GM_prob.nii.gz` | 输入 T1 网格；SynthSeg-derived GM 概率或 TorchFAST GM PVE | `T1_fast/T1_brain_pve_1.nii.gz`；`torch-fast` 仍是独立实现 |
-| `brain_mask.nii.gz` | 输入 T1 网格；硬脑掩膜 | `T1_brain_mask.nii.gz`，算法不同 |
-| `T1_GM_to_template_GM.nii.gz` | 模板网格；warped GM | 同名文件 |
-| `T1_GM_JAC_nl.nii.gz` | 模板网格；非线性 pull-map determinant | 同名文件 |
-| `T1_GM_to_template_GM_mod.nii.gz` | 模板网格；warped GM × Jacobian | 同名文件 |
-| `report.private.json` | 本地输入/模板路径、GM 方法、运行参数、原始/约束后 Jacobian、拟合分数和墙钟时间 | 原脚本没有统一 JSON 报告 |
-
-`torch-fast` 还写出 `T1_brain.nii.gz`、`T1_brain_pve_0/1/2.nii.gz`、
-`T1_brain_seg.nii.gz`、`T1_brain_pveseg.nii.gz`、
-`T1_brain_mixeltype.nii.gz`、`T1_brain_bias.nii.gz` 和
-`T1_brain_restore.nii.gz`。报告包含本地路径，不能直接作为公开聚合报告发布。
-
-## 官方模板和权重
-
-模型权重不进入 Git。`synthseg` 使用的 WMH-SynthSeg checkpoint 和 `torch-fast`
-自动脑提取所用的 SynthStrip checkpoint 均由现有权重配置脚本从 FreeSurfer 官方
-地址下载并校验 SHA-256；见[权重说明](../WEIGHTS.md)。TorchFAST 分割不读取权重。
-
-UKB v1.5 把模板作为外部 ancillary data 使用。官方公开压缩包为：
+UKB ancillary archive：
 
 ```text
 https://www.fmrib.ox.ac.uk/ukbiobank/fbp/templates/dckr_build/DATA_public.tar.gz
@@ -127,42 +27,20 @@ SHA-256: 52c2349270d4d19b8de6a0d136270e74f6a68379d02bda6635a92306c18e2319
 size: 689432077 bytes
 ```
 
-只运行 GPU 路径需要压缩包内的 `templates/template_GM.nii.gz`。运行 FSL 参考还需要两个脑掩膜和 `bb_pipeline_v_2.5/bb_data/bb_fnirt.cnf`。下面的命令把这些文件提取为 `assets/template_GM.nii.gz`、两个 `assets/MNI152_*.nii.gz` 和 `assets/bb_fnirt.cnf`；模板文件不由本仓库再分发。
+FastVBM 需要其中的 `templates/template_GM.nii.gz`；TorchFNIRT 参考运行还使用模板网格的脑掩膜。仓库与 wheel 不分发该 archive 或模板。
 
 ```bash
-curl -L -o DATA_public.tar.gz \
-  https://www.fmrib.ox.ac.uk/ukbiobank/fbp/templates/dckr_build/DATA_public.tar.gz
-echo '52c2349270d4d19b8de6a0d136270e74f6a68379d02bda6635a92306c18e2319  DATA_public.tar.gz' \
-  | sha256sum -c -
+curl -L -o DATA_public.tar.gz   https://www.fmrib.ox.ac.uk/ukbiobank/fbp/templates/dckr_build/DATA_public.tar.gz
+echo '52c2349270d4d19b8de6a0d136270e74f6a68379d02bda6635a92306c18e2319  DATA_public.tar.gz'   | sha256sum -c -
 mkdir -p assets
-tar -xzf DATA_public.tar.gz -C assets --strip-components=1 \
-  templates/template_GM.nii.gz \
-  templates/MNI152_T1_1mm_brain_mask.nii.gz \
-  templates/MNI152_T1_1mm_brain_mask_dil_GD7.nii.gz
-tar -xzf DATA_public.tar.gz -C assets --strip-components=2 \
-  bb_pipeline_v_2.5/bb_data/bb_fnirt.cnf
+tar -xzf DATA_public.tar.gz -C assets --strip-components=1   templates/template_GM.nii.gz   templates/MNI152_T1_1mm_brain_mask.nii.gz   templates/MNI152_T1_1mm_brain_mask_dil_GD7.nii.gz
 ```
 
-公开 UKB `template_GM.nii.gz` 的 SHA-256 为 `ab933db7455d7c4b88624d54f41a3065be4ba4289d00b9230daec0cdb1597a77`。实测比较的另一幅图像是用户现有的 local HCP-derived GM template，SHA-256 为 `2f20eeb19a8f9c3514d1bd1f4d46bca13065ca66bae723721e413688bde9110c`。它的上游来源和许可没有得到确认，因此本仓库不分发，也不称为官方 HCP 模板。
+公开 `template_GM.nii.gz` 的 SHA-256 为 `ab933db7455d7c4b88624d54f41a3065be4ba4289d00b9230daec0cdb1597a77`。模型权重由 [权重配置](../WEIGHTS.md)单独下载；模板不是模型权重。
 
-## 评估设计
+## 当前证据边界
 
-验证使用 10 例真实 T1w。一例用于选择 GPU smoothness；主要稳健性结果同时报告全部 10 例和排除该例后的 9 例。病例标识、原始图像、逐例结果和服务器路径不进入 Git。
-
-模板比较使用固定 mask：`(UKB template > 0.01) OR (local HCP-derived template > 0.01)`，共 214,263 个 2 mm 体素；受试者输出不参与 mask。每例与同一 arm 其余病例的平均图计算 leave-one-out Pearson 和 Dice；精确检验枚举全部 2^N 个受试者内模板标签交换，并在每个交换后重新建立两组 LOO 参考。普通 bootstrap 不能处理这些共享 LOO 参考带来的依赖，因此未使用。
-
-队列内一致性可能偏好更平滑、更收缩或模板印记更强的结果。它不是人工标注的解剖准确性，也不能证明某幅模板普遍更好。完整数字、运行时间和聚合图见[验证报告](../../validation/ukb_vbm/README.md)。
-
-## 一个几何失败及处理
-
-10 例中有一例在原 v1.5 `xyztrans.sch` 步骤产生无效变换，随后 T1→MNI 输出为空。该例改用 NIfTI header 推导 cropped-to-original 的 FSL scaled-voxel transform，再继续原 FNIRT、逆 mask 和 FAST 步骤。其余 9 例使用原脚本的 FLIRT schedule。这个 fallback 使该例可处理，但它是数据几何兼容修复，不属于原 UKB v1.5 代码。
-
-## 批量执行
-
-稳定 GPU FAST VBM 的多被试 Python 调用见
-[FastVBM 多病例与多 GPU](../fast_vbm/README.md#多被试python-batchrunner)。研究脚本和验证臂的
-分组方法见[实验脚本说明](../../tools/experimental/ukb_vbm/README.md)。验证报告中的
-GPU 吞吐时间来自一张 H100 上的顺序批量，不把双 GPU 调度写成实测加速。
+当前正式报告使用 10 例真实 T1w，比较两条 FastVBM 分支与 UKB/FSL reference 的 warped GM、Jacobian 和 modulated GM。报告不是 UK Biobank 原始生产环境的复跑，也不包含 gradient distortion correction、群体平滑、统计模型或结构 IDP。准确度、计时和 FNIRT 数值等价边界只以 [当前 0.9 验证](../../validation/fast_vbm/README.md)为准。
 
 ## 来源
 
@@ -170,4 +48,3 @@ GPU 吞吐时间来自一张 H100 上的顺序批量，不把双 GPU 调度写�
 - [FMRIB UK Biobank pipeline and ancillary files](https://www.fmrib.ox.ac.uk/ukbiobank/fbp/)
 - [FNIRT user guide](https://fsl.fmrib.ox.ac.uk/fsl/docs/registration/fnirt/user_guide.html)
 - [FSL FNIRT source](https://git.fmrib.ox.ac.uk/fsl/fnirt)
-- [FSL-VBM guide](https://fsl.fmrib.ox.ac.uk/fsl/docs/structural/fslvbm.html)

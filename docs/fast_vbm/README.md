@@ -58,7 +58,7 @@ flowchart LR
 FNIRT 分支沿用 UKB GM 配置的四层下采样、输入/参考平滑、10 mm 控制点
 间距、bending-energy 权重和 0.2–5 Jacobian 范围。FastVBM 的 common
 Jacobian 对 dense residual 使用 FSL 的中心有限差分（边界单侧差分）；独立
-`TorchFNIRT` 仍保留 spline analytic Jacobian。此前的 case01 matched-input 诊断
+`TorchFNIRT` 仍保留 spline analytic Jacobian。case01 matched-input 诊断
 使用官方 intent-2007 coefficient；common dense 与 `fnirtfileutils --jout`
 analytic 的全图相关为 0.999916，MAE 0.001555，最大绝对差 0.07110；这属于 FastVBM common
 postprocessing 的离散化差异，不能写成逐体素相同。
@@ -173,7 +173,7 @@ FastVBM(
 | 参数 | 作用 |
 |---|---|
 | `device` | `cpu` 或 `cuda:N`；选择整条流程的设备 |
-| `threads` | 当前 worker 的 PyTorch CPU 线程数；`None` 保留现有设置 |
+| `threads` | 当前调用的 PyTorch CPU 线程数；`None` 保留现有设置 |
 | `synthstrip_weights` | `synthstrip.1.pt` 或其目录；有显式 `brain_mask` 时不读取 |
 | `synthmorph_weights` | `synthmorph.deform.3.h5` 或其目录；仅 SynthMorph 分支读取 |
 | `bias_correction` | 默认 `True`；TorchFAST 同时估计平滑乘性 bias field |
@@ -257,7 +257,7 @@ fs-torch fast-vbm \
 | `--no-bias` | 关闭 TorchFAST bias correction，用于消融 |
 | `--overwrite` | 允许覆盖同名输出 |
 
-完整参数以 `fs-torch fast-vbm --help` 为准。多被试只提供下文 Python `BatchRunner` 形式。
+完整参数以 `fs-torch fast-vbm --help` 为准。
 
 ## 独立 PyTorch FLIRT 接口
 
@@ -405,85 +405,12 @@ FastVBM 在 modulated GM 结束，不包含 UKB gradient distortion correction�
 
 GM template 是运行输入，不是模型权重，也不由配置脚本下载。UKB 公开 `template_GM.nii.gz` 的下载和 SHA-256 见 [UKB/FSL 专页](../ukb_vbm/README.md)；模型 URL、权重校验和离线部署见[权重文档](../WEIGHTS.md)。
 
-## 多被试：Python BatchRunner
-
-多被试只保留 Python 调用。下面在两张 GPU 上处理全部 `*_T1w.nii.gz`，并为所有病例选择同一个 `TorchFNIRT` 后端：
-
-```python
-from pathlib import Path
-
-from freesurfer_torch import BatchRunner
-from freesurfer_torch.fast_vbm import OUTPUT_FILENAMES
-
-
-def main():
-    template = "assets/template_GM.nii.gz"
-    model = {
-        "registration_backend": "fnirt",  # 改为 synthmorph 即切换后端
-        "bias_correction": True,
-    }
-
-    jobs = []
-    for image in sorted(Path("inputs").glob("*_T1w.nii.gz")):
-        subject = image.name.removesuffix("_T1w.nii.gz")
-        output_dir = Path("results") / subject
-        jobs.append({
-            "task": "fast_vbm",
-            "model": model,
-            "kwargs": {
-                "image": str(image),
-                "template": template,
-                "reference_mask": "assets/MNI152_T1_2mm_brain_mask_dil.nii.gz",
-            },
-            "outputs": {
-                name: str(output_dir / filename)
-                for name, filename in OUTPUT_FILENAMES.items()
-            },
-        })
-
-    with BatchRunner(
-        devices=("cuda:0", "cuda:1"),
-        workers_per_device=1,
-        threads_per_worker=4,
-    ) as runner:
-        reports = runner.run(jobs, overwrite=False)
-
-    failed = [report for report in reports if not report.ok]
-    if failed:
-        raise RuntimeError([report.error for report in failed])
-
-
-if __name__ == "__main__":
-    main()
-```
-
-调度规则：
-
-1. 一个 job 对应一个 subject；`model` 传给 `FastVBM(...)`，`kwargs` 传给单例 `FastVBM.__call__(...)`。
-2. `devices=("cuda:0", "cuda:1")` 与 `workers_per_device=1` 建立两个进程，每个进程固定到一张 GPU。
-3. worker 完成一例后领取下一例，病例动态分配；返回的 `reports` 顺序仍与 `jobs` 一致。
-4. 每个 worker 按 `model` 配置构造并缓存一套 FastVBM。它复用 SynthStrip、TorchFAST 和所选非线性后端；不同 worker 不共享 GPU 模型或显存。
-5. `outputs` 可列全部 13 项，也可只列 `warped_gm`、`jacobian`、`modulated_gm` 以减少写盘。
-6. 同一个 runner 可连续提交多批。`spawn` 多进程要求脚本用 `if __name__ == "__main__":` 保护入口。
-7. 增加 `workers_per_device` 会在同一 GPU 复制模型和显存；应根据显存与实测吞吐决定。
-
-示例为每例传入同一 template-grid official reference mask。两个后端都会把它写入
-共同上下文和 `pre_nonlinear_signature`；只有 `TorchFNIRT` estimator 会在最后一级
-目标函数中使用它，SynthMorph 网络没有 mask 输入。切换后端不会改变 FAST GM、
-`TorchFLIRT`、FSL 坐标转换、`TorchApplyWarp`、Jacobian 或 modulation 路径。
-
-SynthMorph 批量分支只需把 `model["registration_backend"]` 改成 `"synthmorph"`，并确保 deform checkpoint 已配置。`BatchResult.metadata` 包含该例的 `result.report()`；批量 API 不自动写 `fast_vbm_report.json`。失败信息可能含本地路径，应作为私有运行记录。
-
 ## 图示与验证
-
-下图是 0.7 版公开去面容 T1w 经当时 SynthMorph 分支生成的历史流程示意。第一行依次为 raw T1w、brain、bias-corrected brain 和 GM PVE；第二行依次为 UKB GM template、warped GM、nonlinear-only Jacobian 和 modulated GM。图中的输出角色与当前版本相同，但图像不能作为 0.9 共享链路的数值验证。
-
-![FastVBM 从原始 T1w 到 modulated GM](figures/fast_vbm_pipeline.png)
 
 当前 0.9 FastVBM 使用本页所述共享链路。正式 10 例报告只运行
 `end_to_end`：raw T1w 依次经过本包 SynthStrip、TorchFAST、source-derived
 `TorchFLIRT` 和所选 nonlinear backend。详细的三输出 median [Q1–Q3]、compute/save、
-release gate 与历史 FSL timing 表见
+release gate 见
 [`validation/fast_vbm`](../../validation/fast_vbm/README.md)。
 
 FLIRT reference-suite matrix gate 为 10/10 通过；其 matrix RMS difference
@@ -501,11 +428,3 @@ Jacobian modulation 又把 warped GM 与 Jacobian 的差异共同带入 modulate
 
 0.9 公开文件为 [`report.v0.9.public.json`](../../validation/fast_vbm/report.v0.9.public.json)、[`backend_comparison.v0.9.public.csv`](../../validation/fast_vbm/backend_comparison.v0.9.public.csv)、[`test_summary.v0.9.public.json`](../../validation/fast_vbm/test_summary.v0.9.public.json) 和 [`release.v0.9.public.json`](../../validation/fast_vbm/release.v0.9.public.json)。Direct FNIRT 报告见
 [`fnirt_fsl_10case.v0.9.public.json`](../../validation/fast_vbm/fnirt_fsl_10case.v0.9.public.json)。
-
-0.8 的 10 例报告属于**历史记录**：其中 affine 是旧 NCC/Adam，
-FNIRT-style 也是旧非线性实现，未经过当前统一的 `TorchFLIRT`、`TorchFNIRT` 和
-`TorchApplyWarp` 链路。文中的旧模块名和类名只记录 **0.8 当时归档**；这些实现已从
-当前安装包删除，不是当前 API。旧报告仍保留用于版本追溯，不能作为 0.9 的准确度或计时结果：
-[`report.v0.8.public.json`](../../validation/fast_vbm/report.v0.8.public.json)、
-[`backend_comparison.v0.8.public.csv`](../../validation/fast_vbm/backend_comparison.v0.8.public.csv)
-和 [`flirt_io.v0.8.public.json`](../../validation/fast_vbm/flirt_io.v0.8.public.json)。

@@ -82,7 +82,6 @@
             },
             "candidate_sources_sha256": {
               "__init__.py": "c39022541bf543ad8246cbc8173e165c1a67fb90a7c08c76ae94bf8adc5e480b",
-              "batch.py": "b33a19c107634ce38e154da078ceb1f378c978cfdfc86889c107cc582feda53c",
               "cli.py": "a11dd411b73180e16da951dad0bec1ade0b7b501ae9a5a4004e2d9ef632568ae",
               "spatial.py": "9c629a94827a987fcc4880cbf18f36aa79f347270585b8c4b92b3fc1660104ee",
               "synthmorph.py": "bcc13ae18df78ad5f13030db29a3fb70c1afe22f264b7f7068431a8cab31762d",
@@ -100,7 +99,6 @@
             },
             "candidate_sources_sha256": {
               "__init__.py": "c39022541bf543ad8246cbc8173e165c1a67fb90a7c08c76ae94bf8adc5e480b",
-              "batch.py": "b33a19c107634ce38e154da078ceb1f378c978cfdfc86889c107cc582feda53c",
               "cli.py": "a11dd411b73180e16da951dad0bec1ade0b7b501ae9a5a4004e2d9ef632568ae",
               "spatial.py": "9c629a94827a987fcc4880cbf18f36aa79f347270585b8c4b92b3fc1660104ee",
               "synthmorph.py": "bcc13ae18df78ad5f13030db29a3fb70c1afe22f264b7f7068431a8cab31762d",
@@ -118,7 +116,6 @@
             },
             "candidate_sources_sha256": {
               "__init__.py": "c39022541bf543ad8246cbc8173e165c1a67fb90a7c08c76ae94bf8adc5e480b",
-              "batch.py": "b33a19c107634ce38e154da078ceb1f378c978cfdfc86889c107cc582feda53c",
               "cli.py": "a11dd411b73180e16da951dad0bec1ade0b7b501ae9a5a4004e2d9ef632568ae",
               "spatial.py": "9c629a94827a987fcc4880cbf18f36aa79f347270585b8c4b92b3fc1660104ee",
               "synthmorph.py": "bcc13ae18df78ad5f13030db29a3fb70c1afe22f264b7f7068431a8cab31762d",
@@ -136,7 +133,6 @@
             },
             "candidate_sources_sha256": {
               "__init__.py": "c39022541bf543ad8246cbc8173e165c1a67fb90a7c08c76ae94bf8adc5e480b",
-              "batch.py": "b33a19c107634ce38e154da078ceb1f378c978cfdfc86889c107cc582feda53c",
               "cli.py": "a11dd411b73180e16da951dad0bec1ade0b7b501ae9a5a4004e2d9ef632568ae",
               "spatial.py": "9c629a94827a987fcc4880cbf18f36aa79f347270585b8c4b92b3fc1660104ee",
               "synthmorph.py": "bcc13ae18df78ad5f13030db29a3fb70c1afe22f264b7f7068431a8cab31762d",
@@ -2931,7 +2927,6 @@
             },
             "candidate_sources_sha256": {
               "__init__.py": "c39022541bf543ad8246cbc8173e165c1a67fb90a7c08c76ae94bf8adc5e480b",
-              "batch.py": "b33a19c107634ce38e154da078ceb1f378c978cfdfc86889c107cc582feda53c",
               "cli.py": "a11dd411b73180e16da951dad0bec1ade0b7b501ae9a5a4004e2d9ef632568ae",
               "spatial.py": "9c629a94827a987fcc4880cbf18f36aa79f347270585b8c4b92b3fc1660104ee",
               "synthmorph.py": "bcc13ae18df78ad5f13030db29a3fb70c1afe22f264b7f7068431a8cab31762d",
@@ -2950,7 +2945,6 @@
             },
             "candidate_sources_sha256": {
               "__init__.py": "c39022541bf543ad8246cbc8173e165c1a67fb90a7c08c76ae94bf8adc5e480b",
-              "batch.py": "b33a19c107634ce38e154da078ceb1f378c978cfdfc86889c107cc582feda53c",
               "cli.py": "a11dd411b73180e16da951dad0bec1ade0b7b501ae9a5a4004e2d9ef632568ae",
               "spatial.py": "9c629a94827a987fcc4880cbf18f36aa79f347270585b8c4b92b3fc1660104ee",
               "synthmorph.py": "bcc13ae18df78ad5f13030db29a3fb70c1afe22f264b7f7068431a8cab31762d",
@@ -2969,7 +2963,6 @@
             },
             "candidate_sources_sha256": {
               "__init__.py": "c39022541bf543ad8246cbc8173e165c1a67fb90a7c08c76ae94bf8adc5e480b",
-              "batch.py": "b33a19c107634ce38e154da078ceb1f378c978cfdfc86889c107cc582feda53c",
               "cli.py": "a11dd411b73180e16da951dad0bec1ade0b7b501ae9a5a4004e2d9ef632568ae",
               "spatial.py": "9c629a94827a987fcc4880cbf18f36aa79f347270585b8c4b92b3fc1660104ee",
               "synthmorph.py": "bcc13ae18df78ad5f13030db29a3fb70c1afe22f264b7f7068431a8cab31762d",
@@ -2988,7 +2981,6 @@
             },
             "candidate_sources_sha256": {
               "__init__.py": "c39022541bf543ad8246cbc8173e165c1a67fb90a7c08c76ae94bf8adc5e480b",
-              "batch.py": "b33a19c107634ce38e154da078ceb1f378c978cfdfc86889c107cc582feda53c",
               "cli.py": "a11dd411b73180e16da951dad0bec1ade0b7b501ae9a5a4004e2d9ef632568ae",
               "spatial.py": "9c629a94827a987fcc4880cbf18f36aa79f347270585b8c4b92b3fc1660104ee",
               "synthmorph.py": "bcc13ae18df78ad5f13030db29a3fb70c1afe22f264b7f7068431a8cab31762d",

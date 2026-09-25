@@ -127,7 +127,7 @@ export FREESURFER_TORCH_WEIGHTS="$PWD/weights"
 
 ## TorchFAST 不需要权重
 
-`TorchFAST`、`fs-torch fast` 和 batch 中的 `"task": "fast"` 直接运行 HMRF-EM、
+`TorchFAST` 和 `fs-torch fast` 直接运行 HMRF-EM、
 bias field 和 PVE 数值计算，不读取 checkpoint，也不需要执行
 `tools/setup_weights.py`。只有从原始、未去颅骨 T1 开始并先调用 SynthStrip 时，
 才需要配置 `synthstrip.1.pt`。`setup_weights.py --all` 的 19 个文件属于上表

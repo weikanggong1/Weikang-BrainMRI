@@ -33,7 +33,7 @@ result.image.save("case_synthsr.nii.gz")
 print(result.image.data.shape, result.image.affine)
 ```
 
-构造 `SynthSR` 时加载一次权重，之后可连续处理多个病例。`device="cpu"` 是 Python 默认值；要用 GPU，显式指定 `"cuda:0"` 等设备。`weights` 可以是 `.h5` 文件或包含所选官方文件的目录；省略时按[权重配置](../WEIGHTS.md)自动查找。`threads` 控制 PyTorch CPU 线程，省略时保留当前设置。
+构造 `SynthSR` 时加载一次权重；每次调用接收一幅影像。`device="cpu"` 是 Python 默认值；要用 GPU，显式指定 `"cuda:0"` 等设备。`weights` 可以是 `.h5` 文件或包含所选官方文件的目录；省略时按[权重配置](../WEIGHTS.md)自动查找。`threads` 控制 PyTorch CPU 线程，省略时保留当前设置。
 
 | 本包接口 | 输入或返回值 | 原版对应 |
 |---|---|---|
@@ -55,39 +55,6 @@ fs-torch synthsr --i case_FLAIR.nii.gz --o case_synthsr.nii.gz \
 ```
 
 这条命令读取 `case_FLAIR.nii.gz`，在 `cuda:0` 上用通用 v2 模型合成图像，并把 1 mm `uint8` T1w 写到 `case_synthsr.nii.gz`。本包的 `--device` 可选具体 GPU，原版没有对应的 GPU 编号参数；原版自动选择可用的 TensorFlow GPU。`--cpu` 可覆盖 `--device` 强制 CPU；`--weights` 或同义的 `--model` 指定本地权重。其余模型和处理开关与上表同名。单幅输入的 `--o` 也可指定目录，输出文件名自动加 `_synthsr`。
-
-## 多被试 Python
-
-`predict_batch(table, ct=False, disable_flipping=False, disable_sharpening=False, workers=1, threads_per_worker=1)` 接受恰有 `input`、`output` 两列的 pandas 表。`input` 填入影像路径；`output` 是不带扩展名的绝对路径前缀，含被试 base name。每行生成 `<output>_synthsr.nii.gz`，按行顺序返回键为 `image` 的路径字典列表。
-
-```python
-from pathlib import Path
-import pandas as pd
-from freesurfer_torch import SynthSR
-
-table = pd.DataFrame({
-    "input": ["/data/sub-02_FLAIR.nii.gz", "/data/sub-03_FLAIR.nii.gz"],
-    "output": ["/results/sub-02", "/results/sub-03"],
-})
-if __name__ == "__main__":
-    sr = SynthSR(device="cuda:0")
-    saved: list[dict[str, Path]] = sr.predict_batch(table, workers=2)
-    print(saved[0]["image"])
-```
-
-低场或 v1 模型在构造 `SynthSR` 时选择；`ct` 和两个后处理开关适用于整张表。默认 `workers=1` 逐例复用模型；`workers=2` 在同一设备使用两个 Python 进程、各加载一份模型，每个进程仍逐例推理。多进程脚本须保护主入口；表格和输出路径的共同规则见[批量执行说明](../ARCHITECTURE.md#批量执行)。
-
-### 实验性 B2 对照
-
-在 gpucw1 的一张共享 H100 上，用相同的 12 例输入保存全部 SynthSR 输出。B1 是单个常驻 Python 程序逐例运行，B2 使用未发布的实验代码在单个常驻程序中合批运行（12 例均实际进入 B=2 网络批），P2 是两个独立常驻 Python 程序各按 B=1 运行。正序和逆序各做一次 cold 与 warm 队列；下表是两轮 warm 队列总耗时的中位数。
-
-| B1 | B2 | P2 |
-|---:|---:|---:|
-| 57.95 s | 53.72 s | 30.79 s |
-
-本次 B2 相对 B1 的热队列吞吐提速为 1.08 倍，但仍慢于 P2。表中的 P2 由两个独立常驻脚本运行，并非当前 `workers=2` API 的实测；该对照不代表单被试加速。完整条件与逐轮结果见[批量性能报告](../../benchmark/batch_modes_2026-09-24.md)。
-
-公开 Python 表格接口在 gpucw1 的 12 例队列中，四组 `workers=1/2` 调用耗时中位数为 **53.45/36.84 s**，观察到 **1.45 倍**吞吐差；48 个输出文件对逐字节相同。两例时则为 **9.15/18.22 s**，第二个进程的启动和模型加载反而增加总耗时。逐轮数据见[Python 接口验证](../../benchmark/batch_modes_2026-09-24.md#python-table-api-with-two-processes)。
 
 ## 对照验证
 

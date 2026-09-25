@@ -2,7 +2,7 @@
 
 [返回主页](../../README.md) · [功能说明](../../docs/wmh_synthseg/README.md) · [官方源码](https://github.com/freesurfer/freesurfer/tree/dev/mri_WMHsynthseg/WMHSynthSeg)
 
-本实验比较独立包与 FreeSurfer 8.2.0-1 WMH-SynthSeg 的输入、输出和运算结果。原版已使用 PyTorch；独立包保留官方 checkpoint、33 类标签、WMH 概率图及软体积计算，同时提供无需 FreeSurfer 安装的 Python 接口和多 GPU worker。公开病例没有人工 WMH 标注，因此一致性结果不能衡量临床准确率。
+本实验比较独立包与 FreeSurfer 8.2.0-1 WMH-SynthSeg 的输入、输出和运算结果。原版已使用 PyTorch；独立包保留官方 checkpoint、33 类标签、WMH 概率图及软体积计算，同时提供无需 FreeSurfer 安装的单被试 Python 接口。公开病例没有人工 WMH 标注，因此一致性结果不能衡量临床准确率。
 
 ## 病例与来源
 
@@ -82,4 +82,4 @@ python tools/summarize_wmh_validation.py \
 
 以中位数比较，本包 CPU 命令少 **26.70 秒**（约 27%），12 例中 11 例短于原生 CPU；CUDA 中位数比官方源码多 **0.16 秒**，属于同量级。CUDA 本包第一例为 13.39 秒，其余例为 8.06–9.65 秒。计时反映**整条命令及各自 Python/PyTorch 运行环境**：原生 CPU 用 FreeSurfer 的 Torch 2.1.2，而本包 CPU 用 Torch 2.5.1，因此不能把 CPU 差异全归因于改写代码或网络本身。不同设备之间的运行时间与数值不要混作同设备移植误差。
 
-[report.public.json](report.public.json) 给出 12 例匿名逐例秒数、比较指标和汇总分布；只包含匿名病例序号，没有服务器路径或账号。另用仓库发布的三例脑外清零 FLAIR 进行了双 H100 worker 批量测试：`cuda:0` 和 `cuda:1` 都处理了病例，共六幅分割/概率图全部保存，且与相同输入的官方 CUDA 输出逐体素一致。见 [批量公开记录](batch.public.json)、[运行示例](../../examples/WMH.md)及[并排图](../../docs/figures/README.md)。
+[report.public.json](report.public.json) 给出 12 例匿名逐例秒数、比较指标和汇总分布；只包含匿名病例序号，没有服务器路径或账号。单例运行示例见[公开 FLAIR](../../examples/WMH.md)，影像对照见[并排图](../../docs/figures/README.md)。

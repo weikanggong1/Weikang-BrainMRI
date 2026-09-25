@@ -299,13 +299,5 @@
     "registered_mask": "official UKB GM template > 0.01",
     "native_mask": "union of FSL and resampled TorchFAST GM > 0.01 on the FSL FAST grid",
     "timing": "GPU values are persistent-model warm per-case saved-stage wall times and exclude the one-time model load; FSL values sum all available raw-to-VBM stages. Methods ran in different windows on a shared node."
-  },
-  "batch_check": {
-    "jobs": 4,
-    "device": "cuda:0",
-    "workers": 2,
-    "outputs_per_job": 3,
-    "wall_sec": 14.6,
-    "status": "4/4 succeeded; repeated case01 GM and bias outputs were elementwise identical to the single-image CLI output."
   }
 }

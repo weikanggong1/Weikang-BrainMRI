@@ -205,24 +205,3 @@ Hessian 并按固定顺序累加，TorchFNIRT 使用 matrix-free FP64 `einsum`�
 归一化、LM 阻尼、边界计算、topology projection 和后续更新顺序还会继续传播该
 差异；现有实验不能把最终误差分解到某一个步骤。GPU topology projection 为保留
 FSL 的更新顺序采用串行 kernel，也是当前 Torch 路径没有快于 FSL CPU 的原因之一。
-
-### 此前的 FSL 6.0.7.4 单例 matched-input 诊断
-
-此前的 case01 使用同一幅真实 FAST GM、同一模板、官方 FLIRT matrix、官方
-reference mask 和 `GM_2_MNI152GM_2mm.cnf`。数值比较覆盖完整 reference grid；
-运行时间是在共享 H100 节点上同步 CUDA 后得到的观测值。
-
-| 输出 | Pearson r | MAE | RMSE |
-|---|---:|---:|---:|
-| cubic coefficients | 0.999416 | 0.028560 | 0.063963 |
-| warped GM | 0.999089 | 0.002453 | 0.011100 |
-| nonlinear Jacobian | 0.999669 | 0.002840 | 0.005656 |
-| modulated GM | 0.999206 | 0.002818 | 0.012855 |
-
-该共享节点观测中，PyTorch CUDA 总时间为 69.32 秒，其中用于保持 FSL Jacobian
-范围的 topology projection 占 62.57 秒。首两次 accepted coefficient update 对 FSL 的 MAE 为
-`5.45e-7` 和 `2.05e-6`；第三次开始，FSL `SpMat` 的固定稀疏列累加顺序与本包
-matrix-free Hessian 的 reduction 顺序使 1e-3 截断 PCG 走向不同 Krylov 轨迹。
-因此标量输出高度接近，但不满足“仅浮点误差”或逐体素数值等价。完整无私有路径
-记录见
-[`fnirt_fsl_6074_real_case_01.public.json`](../../../validation/fast_vbm/fnirt_fsl_6074_real_case_01.public.json)。

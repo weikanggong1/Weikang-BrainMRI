@@ -11,8 +11,6 @@ import surfa as sf
 import torch
 
 from ..weights import resolve_weights
-from .._batch_table import cases_from_table
-from .._parallel_table import run_parallel
 from .model import SynthSRUNet, load_h5_weights
 from .spatial import align_volume_to_ref, crop_volume_with_idx, pad_volume, resample_volume
 
@@ -60,7 +58,6 @@ class SynthSR:
             torch.set_num_threads(os.cpu_count() if threads < 0 else threads)
         variant = "v1" if v1 else "lowfield" if lowfield else "general"
         checkpoint = resolve_weights(_WEIGHTS[variant], explicit=weights)
-        self._batch_weights = str(Path(checkpoint).resolve())
         self.model = SynthSRUNet().to(self.device)
         load_h5_weights(self.model, checkpoint)
         self.model.eval()
@@ -95,28 +92,6 @@ class SynthSR:
         quantized = np.clip(prediction * 2, 0, 255).astype(np.uint8)
         return SynthSRResult(SynthSRImage(quantized, affine, header, prediction))
 
-    def predict_batch(self, table, ct=False, disable_flipping=False,
-                      disable_sharpening=False, workers=1, threads_per_worker=1):
-        """Save synthesized images for absolute output prefixes."""
-        cases = cases_from_table(table)
-        options = dict(ct=ct, disable_flipping=disable_flipping,
-                       disable_sharpening=disable_sharpening)
-        def run_local(case):
-            source, prefix = case
-            result = self(source, **options)
-            path = Path(f"{prefix}_synthsr.nii.gz")
-            prefix.parent.mkdir(parents=True, exist_ok=True)
-            result.image.save(path)
-            return {"image": path}
-
-        def make_job(case):
-            source, prefix = case
-            return {"task": "synthsr", "model": {"weights": self._batch_weights},
-                    "kwargs": {"image": source, **options},
-                    "outputs": {"image": Path(f"{prefix}_synthsr.nii.gz")}}
-
-        return run_parallel(cases, self, 'synthsr', workers, threads_per_worker,
-                            make_job, run_local)
 
 
 def _load_image(image):

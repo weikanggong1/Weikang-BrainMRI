@@ -226,7 +226,7 @@ def test_spline_jacobian_matches_reproduced_linear_field():
         coefficients, shape, spacing, voxel_sizes
     )
     expected = torch.full_like(determinant, 1.1 * 0.95 * 1.2)
-    # The legacy cubic NCoef rule truncates one still-nonzero spline when
+    # The retired cubic NCoef rule truncates one still-nonzero spline when
     # (size + 1) is exactly divisible by the knot spacing.  FSL therefore
     # reproduces the linear field on the interior but not on that final plane.
     torch.testing.assert_close(

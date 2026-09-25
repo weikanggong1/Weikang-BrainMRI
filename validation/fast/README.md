@@ -89,17 +89,6 @@ TorchFAST 接收同一 brain-only 输入；中间两列叠加 GM PVE，右侧比
 [`figures/metrics.json`](figures/metrics.json)。聚合结果及计时口径见
 [`report.public.json`](report.public.json)。
 
-## 复现
+## 当前公开记录
 
-已有 FSL 输出时，可在 gpucw1 运行：
-
-```bash
-python tools/experimental/ukb_vbm/validate_torch_fast.py \
-  --subjects-root /path/to/anonymous/subjects \
-  --output work/torch_fast.private.json --csv work/torch_fast.private.csv \
-  --limit 10 --device cuda:0 --threads 1 --warmup 1
-```
-
-该报告含匿名逐例值，应作为私有中间文件。原始 T1 VBM 汇总使用
-[`summarize_torch_fast_vbm.py`](../../tools/experimental/ukb_vbm/summarize_torch_fast_vbm.py)；
-其 `--public-output` 只写聚合统计，并检查模板网格、固定模板和 GPU 注册设置。
+单被试聚合结果、计时口径和公开示意图分别见 [`report.public.json`](report.public.json) 与 [`figures/metrics.json`](figures/metrics.json)。原始病例、私有路径和运行输出不进入仓库。

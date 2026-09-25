@@ -97,7 +97,7 @@ def test_summarize_keeps_case_details_private(tmp_path):
         "cuda_multiprocessor_count": None,
     }
     source_digest = MODULE.package_source_digest()
-    execution_harness_digest = MODULE.LEGACY_EXACT_TARGET_HARNESS_SHA256
+    execution_harness_digest = MODULE.FORMAL_RUN_HARNESS_SHA256
     context = MODULE.validation_context(
         args,
         inputs,
@@ -211,7 +211,7 @@ def test_summarize_keeps_case_details_private(tmp_path):
             "fresh_record_count": 7,
             "all_records_fresh": True,
             "invocation_wall_sec": 2.0,
-            "batch_wall_sec": 2.0,
+            "cohort_wall_sec": 2.0,
         },
     )
     assert MODULE.summarize(args) == 0
@@ -224,7 +224,7 @@ def test_summarize_keeps_case_details_private(tmp_path):
     ] == {layer: 1 for layer in MODULE.LAYERS}
     assert public["execution"]["hardware"]["tf32"] == recorded_tf32
     assert "host_sha256" not in public["execution"]["hardware"]
-    assert public["execution"]["batch_wall_sec"] == 2.0
+    assert public["execution"]["cohort_wall_sec"] == 2.0
     assert public["execution"]["runtime_context"] == "shared-node"
     assert not public["execution"]["candidate_timing_controlled"]
     assert public["flirt"]["case_count"] == 1
@@ -276,10 +276,10 @@ def test_affine_rmsdiff_and_image_metrics_identity():
 
 def test_flirt_provenance_preserves_formal_execution_signature_wording():
     context = {
-        "script_sha256": MODULE.LEGACY_EXACT_TARGET_HARNESS_SHA256,
+        "script_sha256": MODULE.FORMAL_RUN_HARNESS_SHA256,
     }
-    legacy = MODULE.flirt_provenance(context, {"gm": "digest"})
-    assert legacy["algorithm"].startswith("FSLFLIRT exact-target")
+    formal = MODULE.flirt_provenance(context, {"gm": "digest"})
+    assert formal["algorithm"].startswith("FSLFLIRT exact-target")
 
     current = MODULE.flirt_provenance(
         {"script_sha256": "a" * 64}, {"gm": "digest"}

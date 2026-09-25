@@ -19,10 +19,6 @@ component versions:
 | warpfns | `2203.0` | `50ea45cb0b9661adba7844444cb38649ae44892b` |
 | fugue | `2201.3` | `9d815181a19c4fe1aebac74e9fa6601cde4e1ded` |
 
-`fugue-2603.0` is also retained because that checkout was inspected while the
-port was developed. It is an audit record only. FSL 6.0.7.4 comparisons use
-`fugue-2201.3`; the newer snapshot is not part of the numerical target.
-
 [`manifest.json`](manifest.json) records the upstream repository, tag, commit,
 Git tree, deterministic `git archive` SHA-256, and SHA-256 of every distributed
 source file. The original repositories are:

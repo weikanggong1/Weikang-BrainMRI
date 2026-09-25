@@ -14,7 +14,6 @@ raw T1w
 ```
 
 线性阶段固定使用 FSL default correlation-ratio/Brent FLIRT 实现。
-早期 NCC + Adam 仿射和 FNIRT-style/Adam 实现已从安装包删除。
 
 非线性阶段由 `registration_backend` 选择：
 
@@ -53,7 +52,7 @@ result = pipeline.run(
 )
 ```
 
-构造一次后可继续调用，worker 会复用已加载组件。只需内存结果时使用 `result = pipeline(image, template)`；已有同网格 mask 时增加 `brain_mask="mask.nii.gz"`，可跳过 SynthStrip。
+构造一次后可继续调用并复用已加载组件。只需内存结果时使用 `result = pipeline(image, template)`；已有同网格 mask 时增加 `brain_mask="mask.nii.gz"`，可跳过 SynthStrip。
 
 ## 单被试命令行
 
@@ -70,9 +69,7 @@ fs-torch fast-vbm \
 
 `-i` 是 raw T1w，`--template` 是 fixed GM template，`-o` 是完整输出目录。
 `--registration-backend` 选择 `synthmorph` 或 `fnirt`；`--reference-mask` 进入
-共同配准上下文，但只有 `TorchFNIRT` 使用。多被试只用 Python `BatchRunner`；
-`model` 字典中的 `registration_backend` 控制所有 job 的后端，每个 worker 固定到
-一张 GPU 并缓存一套 pipeline。
+共同配准上下文，但只有 `TorchFNIRT` 使用。
 
 ## 独立 PyTorch FLIRT
 
@@ -95,7 +92,7 @@ fs-torch flirt -in moving.nii.gz -ref fixed.nii.gz \
 
 `moved` 与 reference 的 shape/geometry 一致；`.mat` 是 input → reference 的
 FSL scaled-mm matrix。当前 `TorchFLIRT` 来自 FSL 2111.2 默认
-correlation-ratio/Brent 路径源码，不是旧 NCC/Adam 实现。0.9 reference suite 的
+correlation-ratio/Brent 路径源码。0.9 reference suite 的
 matrix gate 为 10/10 通过（`rmsdiff ≤ 0.05 mm`；中位数 0.008544 mm，
 最大值 0.028984 mm）。运行时仍报告
 `validated_fsl_equivalent=false`；`reference_validation_matrix_gate_passed=true`
@@ -154,7 +151,4 @@ modulated GM 中位 Pearson 为 0.998695、0.999267 和
 [`test_summary.v0.9.public.json`](https://github.com/weikanggong1/Weikang-BrainMRI/blob/main/validation/fast_vbm/test_summary.v0.9.public.json) 和
 [`release.v0.9.public.json`](https://github.com/weikanggong1/Weikang-BrainMRI/blob/main/validation/fast_vbm/release.v0.9.public.json)。
 
-验证目录中的旧 FNIRT-style/NCC-Adam 数值及其模块名、类名只记录 **0.8 当时归档**。
-这些实现已从当前安装包删除，不是当前 API，也不能作为当前实现的准确度或计时结果。
-
-完整参数、坐标与 Jacobian 约定、Python BatchRunner 多 GPU 示例、FSL/UKB 对应和验证入口见 [`docs/fast_vbm/README.md`](../../../docs/fast_vbm/README.md)。公开统计只以 [`validation/fast_vbm`](../../../validation/fast_vbm/README.md) 为准。
+完整参数、坐标与 Jacobian 约定、FSL/UKB 对应和验证入口见 [`docs/fast_vbm/README.md`](../../../docs/fast_vbm/README.md)。公开统计只以 [`validation/fast_vbm`](../../../validation/fast_vbm/README.md) 为准。

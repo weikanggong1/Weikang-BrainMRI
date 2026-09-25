@@ -122,7 +122,7 @@ PRIVATE_ID = re.compile(r"case[0-9]+")
 FLIRT_RMSDIFF_MAX_MM = 0.05
 # The formal 0.9 execution started with this wording inside private record
 # signatures. Keep that exact value only when validating those signed records.
-LEGACY_EXACT_TARGET_HARNESS_SHA256 = (
+FORMAL_RUN_HARNESS_SHA256 = (
     "8e117010611373e7ff2ef5507c0ec0bc7e5d71e05fb39e84f4f9c6dc4f346879"
 )
 FNIRT_FUNCTIONAL_OUTPUT_GATES = {
@@ -517,7 +517,7 @@ def validation_context(
 def flirt_provenance(
     context: dict[str, Any], case_hashes: dict[str, str]
 ) -> dict[str, Any]:
-    if context["script_sha256"] == LEGACY_EXACT_TARGET_HARNESS_SHA256:
+    if context["script_sha256"] == FORMAL_RUN_HARNESS_SHA256:
         algorithm = "FSLFLIRT exact-target default 12-DOF correlation-ratio path"
     else:
         algorithm = "source-derived TorchFLIRT default 12-DOF correlation-ratio path"
@@ -1036,10 +1036,10 @@ def run(args) -> int:
         "fresh_record_count": planned_records - total_cache_hits,
         "all_records_fresh": all_records_fresh,
         "invocation_wall_sec": invocation_wall_sec,
-        "batch_wall_sec": invocation_wall_sec if all_records_fresh else None,
+        "cohort_wall_sec": invocation_wall_sec if all_records_fresh else None,
         "timing_contract": (
             "CUDA is synchronized immediately before and after each compute call; "
-            "NIfTI and matrix writes are measured separately; batch_wall_sec is "
+            "NIfTI and matrix writes are measured separately; cohort_wall_sec is "
             "reported only when every record was computed in this invocation"
         ),
     }
@@ -1495,10 +1495,10 @@ def validated_run_manifest(args, inputs: dict[str, Any]):
     all_fresh = manifest.get("all_records_fresh") is True
     if all_fresh != (total_hits == 0):
         raise RuntimeError("run manifest cache accounting is inconsistent")
-    if not all_fresh and manifest.get("batch_wall_sec") is not None:
-        raise RuntimeError("resumed runs cannot report a complete cohort batch wall")
-    if all_fresh and not isinstance(manifest.get("batch_wall_sec"), (int, float)):
-        raise RuntimeError("fresh runs must report the complete cohort batch wall")
+    if not all_fresh and manifest.get("cohort_wall_sec") is not None:
+        raise RuntimeError("resumed runs cannot report a complete cohort cohort wall")
+    if all_fresh and not isinstance(manifest.get("cohort_wall_sec"), (int, float)):
+        raise RuntimeError("fresh runs must report the complete cohort cohort wall")
     return manifest, context, hashes_by_case
 
 
@@ -1917,7 +1917,7 @@ def summarize(args) -> int:
             ),
             "constructor_setup_sec": run_manifest["constructor_setup_sec"],
             "invocation_wall_sec": float(run_manifest["invocation_wall_sec"]),
-            "batch_wall_sec": run_manifest["batch_wall_sec"],
+            "cohort_wall_sec": run_manifest["cohort_wall_sec"],
             "all_records_fresh": run_manifest["all_records_fresh"],
             "cache_hits": run_manifest["cache_hits"],
             "backend_execution_order_policy": run_manifest[

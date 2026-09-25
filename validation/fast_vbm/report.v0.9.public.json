@@ -104,7 +104,7 @@
       }
     ],
     "invocation_wall_sec": 3138.937609091401,
-    "batch_wall_sec": 3138.937609091401,
+    "cohort_wall_sec": 3138.937609091401,
     "all_records_fresh": true,
     "cache_hits": {
       "flirt": 0,

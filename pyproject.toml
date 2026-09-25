@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "freesurfer-torch"
 version = "0.9.0"
-description = "Standalone PyTorch brain MRI inference with Python multi-subject APIs"
+description = "Standalone PyTorch brain MRI inference with single-subject Python and CLI APIs"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
@@ -15,7 +15,6 @@ dependencies = [
   "surfa==0.6.3",
   "nibabel>=5",
   "h5py>=3.8",
-  "pandas>=1.5",
   "PyYAML>=6",
 ]
 

@@ -600,7 +600,7 @@
       }
     },
     "invocation_wall_seconds": 21152.745969003998,
-    "batch_wall_seconds": 21152.745969003998,
+    "cohort_wall_seconds": 21152.745969003998,
     "all_records_fresh": true,
     "cache_hits": 0,
     "device_name": "NVIDIA H100 PCIe",

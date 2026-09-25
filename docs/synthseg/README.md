@@ -26,7 +26,7 @@ result.write_volumes_csv("sub-01_T1w.nii.gz", "sub-01_synthseg.vol.csv")
 print(result.total_intracranial_mm3, result.volumes_mm3)
 ```
 
-`SynthSeg(weights=None, device="cpu", threads=None)` 在构造时加载一次模型，适合顺序处理多幅图像。`weights` 可传包含四个文件的目录，或直接传 `synthseg_2.0.h5` 路径；三个 `.npy` 必须与这份 `.h5` 位于同一目录。省略 `weights` 时先查 `FREESURFER_TORCH_WEIGHTS`、配置脚本记录的目录，再查默认缓存。输入是单幅 3D `.nii`、`.nii.gz` 或 `.mgz` T1 路径。
+`SynthSeg(weights=None, device="cpu", threads=None)` 在构造时加载一次模型；每次调用接收一幅图像。`weights` 可传包含四个文件的目录，或直接传 `synthseg_2.0.h5` 路径；三个 `.npy` 必须与这份 `.h5` 位于同一目录。省略 `weights` 时先查 `FREESURFER_TORCH_WEIGHTS`、配置脚本记录的目录，再查默认缓存。输入是单幅 3D `.nii`、`.nii.gz` 或 `.mgz` T1 路径。
 
 `result.segmentation` 是 `surfa.Volume`，默认位于 SynthSeg 预处理后的 RAS 方向、约 1 mm 网格。`model(image, keep_geometry=True)` 会将标签以最近邻法重采样到输入网格。`color_lut="/path/to/FreeSurferColorLUT.txt"` 可选地附加色表；默认不读取 FreeSurfer 文件。
 
@@ -60,7 +60,7 @@ fs-torch synthseg --i sub-01_T1w.nii.gz --o sub-01_synthseg.nii.gz \
 | `--keep-geometry` | `--keepgeom` | 以最近邻法把硬标签重采样回输入网格 |
 | `--color-lut` | `--addctab` / `--noaddctab` | 本包只在显式提供 FreeSurfer LUT 时附加色表；原版默认附加色表 |
 
-原版还支持目录输入、robust、皮层分区、QC、posterior、CT、Photo-SynthSeg 和其他
+原版的目录输入、robust、皮层分区、QC、posterior、CT、Photo-SynthSeg 和其他
 模型路径；本接口没有实现这些选项，也不会把它们近似为 33 类单幅 T1 路径。
 
 ## 命令行
@@ -70,45 +70,8 @@ fs-torch synthseg --i sub-01_T1w.nii.gz --o sub-01_synthseg.nii.gz \
   --csv-vols sub-01_synthseg.vol.csv --device cuda:0 --threads 4
 ```
 
-可选参数为 `--weights /path/to/weights`、`--keep-geometry` 和 `--color-lut /path/to/FreeSurferColorLUT.txt`。命令行每次处理一幅图像；Python 可复用同一个模型依次处理多幅。独立入口不依赖 recon-all 的原生运行包或个人 license。
-
-## 多被试 Python
-
-独立 `SynthSeg` 当前没有多被试命令行或 `predict_batch()`。在 Python 中构造一次
-模型，再按病例循环，可避免重复加载权重：
-
-```python
-from pathlib import Path
-from freesurfer_torch import SynthSeg
-
-inputs = sorted(Path("/data/t1w").glob("*_T1w.nii.gz"))
-output_dir = Path("/results/synthseg")
-output_dir.mkdir(parents=True, exist_ok=True)
-
-model = SynthSeg(device="cuda:0", threads=4)
-for image in inputs:
-    subject = image.name.removesuffix("_T1w.nii.gz")
-    result = model(image)
-    result.segmentation.save(output_dir / f"{subject}_synthseg.nii.gz")
-    result.write_volumes_csv(
-        image, output_dir / f"{subject}_synthseg.vol.csv"
-    )
-```
-
-这个循环在一个 Python 进程和一张设备上顺序处理病例。它不启动隐藏的批量 CLI，
-也不把多例合成一个网络 batch。
+可选参数为 `--weights /path/to/weights`、`--keep-geometry` 和 `--color-lut /path/to/FreeSurferColorLUT.txt`。命令行和 Python 每次均处理一幅图像。独立入口不依赖 recon-all 的原生运行包或个人 license。
 
 ## 验证边界
 
-公开 CLI、Python API 和 recon-all 内部启动器调用同一套 33 类推理与软体积代码，
-相应接口测试见 [`tests/synthseg_parc/`](../../tests/synthseg_parc/)。
-[外置模型检查](../../validation/recon_all/external_models_2026-09-25.md)记录：在
-`sub-01` 的同一 `orig.mgz` 上，独立 `fs-torch synthseg` 与 v0.6 recon-all
-SynthSeg 输出的硬标签和软体积 CSV 相同，硬标签变化体素为 0。
-
-完整 recon-all 与 FreeSurfer 8.2 的 `sub-01` 比较中，硬分割及下游检查通过；
-SynthSeg 软体积通过预设字段容差，但并非逐位相同。独立的 `sub-02` 检查中，硬分割
-相同，CSF 软体积差为 389.03125 mm³，超过固定的 360.4035 mm³ 上限。现有证据
-不支持多病例逐体素等价结论；范围和数值见
-[单例记录](../../validation/recon_all/gpucw1_sub01_2026-09-24.md)及
-[批量集成记录](../../validation/recon_all/gpucw1_batch_integration_2026-09-24.md)。
+公开 CLI 与 Python API 调用同一套 33 类推理与软体积代码，相应接口测试见 [`tests/synthseg_parc/`](../../tests/synthseg_parc/)。当前独立接口的验证范围是单幅 T1 的输出 shape、几何、标签集合、软体积和 CLI/Python 一致性。

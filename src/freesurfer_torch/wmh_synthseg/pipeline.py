@@ -15,8 +15,6 @@ import surfa as sf
 import torch
 
 from ..weights import resolve_weights
-from .._batch_table import cases_from_table
-from .._parallel_table import run_parallel
 from .model import UNet3D
 from .spatial import align_volume_to_ref, myzoom_torch
 
@@ -61,7 +59,6 @@ class WMHSynthSeg:
         if threads is not None:
             torch.set_num_threads(os.cpu_count() if threads < 0 else threads)
         checkpoint_path = resolve_weights('WMH-SynthSeg_v10_231110.pth', explicit=weights)
-        self._batch_weights = str(Path(checkpoint_path).resolve())
         self.model = UNet3D().to(self.device)
         # The official checkpoint contains NumPy scalars outside its state_dict.
         checkpoint = torch.load(checkpoint_path, map_location=self.device, weights_only=False)
@@ -116,32 +113,6 @@ class WMHSynthSeg:
         return WMHResult(seg_volume, lesion_volume,
                          {label: float(value) for label, value in zip(LABEL_IDS, volumes)})
 
-    def predict_batch(self, table, crop=False, workers=1, threads_per_worker=1):
-        """Save segmentation, lesion probabilities and volumes per prefix."""
-        cases = cases_from_table(table)
-        def paths_for(prefix):
-            return {"segmentation": Path(f"{prefix}_seg.nii.gz"),
-                    "lesion_probability": Path(f"{prefix}_lesion_probs.nii.gz"),
-                    "volumes_csv": Path(f"{prefix}_volumes.csv")}
-
-        def run_local(case):
-            source, prefix = case
-            result = self(source, crop=crop, save_lesion_probabilities=True)
-            paths = paths_for(prefix)
-            prefix.parent.mkdir(parents=True, exist_ok=True)
-            result.segmentation.save(paths["segmentation"])
-            result.lesion_probability.save(paths["lesion_probability"])
-            _write_volumes_csv(result.volumes_mm3, paths["segmentation"], paths["volumes_csv"])
-            return paths
-
-        def make_job(case):
-            source, prefix = case
-            return {"task": "wmh_synthseg", "model": {"weights": self._batch_weights},
-                    "kwargs": {"image": source, "crop": crop},
-                    "outputs": paths_for(prefix)}
-
-        return run_parallel(cases, self, 'wmh_synthseg', workers, threads_per_worker,
-                            make_job, run_local)
 
     def _crop(self, upscaled, affine):
         target = (192, 224, 192)

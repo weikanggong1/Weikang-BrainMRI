@@ -133,7 +133,7 @@ def test_fast_vbm_cli_selects_fnirt_backend(tmp_path, monkeypatch):
         "--fnirt-jacobian-penalty",
     ),
 )
-def test_fast_vbm_cli_rejects_removed_legacy_options(removed_option, capsys):
+def test_fast_vbm_cli_rejects_removed_retired_options(removed_option, capsys):
     with pytest.raises(SystemExit) as error:
         cli.main([
             "fast-vbm",

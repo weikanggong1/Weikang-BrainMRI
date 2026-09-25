@@ -966,7 +966,7 @@ def run(args) -> int:
         "fresh_record_count": fresh_record_count,
         "all_records_fresh": all_records_fresh,
         "invocation_wall_seconds": invocation_wall_seconds,
-        "batch_wall_seconds": (
+        "cohort_wall_seconds": (
             invocation_wall_seconds if all_records_fresh else None
         ),
         "cache_hits": cache_hits,
@@ -1084,11 +1084,11 @@ def validated_run_manifest(args, inputs: dict[str, Any]) -> dict[str, Any]:
     all_fresh = manifest.get("all_records_fresh") is True
     if all_fresh != (cache_hits == 0):
         raise RuntimeError("run manifest cache accounting is inconsistent")
-    batch_wall = manifest.get("batch_wall_seconds")
-    if not all_fresh and batch_wall is not None:
-        raise RuntimeError("resumed runs cannot report a complete cohort batch wall")
-    if all_fresh and not isinstance(batch_wall, (int, float)):
-        raise RuntimeError("fresh runs must report the complete cohort batch wall")
+    cohort_wall = manifest.get("cohort_wall_seconds")
+    if not all_fresh and cohort_wall is not None:
+        raise RuntimeError("resumed runs cannot report a complete cohort cohort wall")
+    if all_fresh and not isinstance(cohort_wall, (int, float)):
+        raise RuntimeError("fresh runs must report the complete cohort cohort wall")
     expected_order_policy = (
         "odd case slots run FSL then Torch; even case slots run Torch then FSL"
     )
@@ -1244,7 +1244,7 @@ def summarize(args) -> int:
             ),
             "distributions_seconds_or_ratio": timing,
             "invocation_wall_seconds": run_manifest["invocation_wall_seconds"],
-            "batch_wall_seconds": run_manifest["batch_wall_seconds"],
+            "cohort_wall_seconds": run_manifest["cohort_wall_seconds"],
             "all_records_fresh": run_manifest["all_records_fresh"],
             "cache_hits": run_manifest["cache_hits"],
             "device_name": run_manifest["device_name"],

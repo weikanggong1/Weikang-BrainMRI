@@ -17,6 +17,6 @@ result.segmentation.save("subject_synthseg.nii.gz")
 result.write_volumes_csv("subject_T1w.nii.gz", "subject_synthseg.vol.csv")
 ```
 
-单被试 CLI、原版 `mri_synthseg` 参数对应、权重、多被试 Python 循环和验证边界见
+单被试 CLI、原版 `mri_synthseg` 参数对应、权重和验证边界见
 [功能说明](../../../docs/synthseg/README.md)。GPU recon-all 中的使用方式见
 [recon-all 说明](../../../docs/recon_all/README.md)。

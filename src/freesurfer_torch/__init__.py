@@ -40,7 +40,4 @@ def __getattr__(name):
                 'VBMRegistrationResult'):
         from . import fast_vbm
         return getattr(fast_vbm, name)
-    if name in ('BatchRunner', 'BatchResult', 'run_batch'):
-        from . import batch
-        return getattr(batch, name)
     raise AttributeError(name)

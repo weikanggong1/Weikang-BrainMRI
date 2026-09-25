@@ -11,7 +11,7 @@ result.moved.save("moving_in_fixed.nii.gz")
 result.transform.save("moving_to_fixed.mgz")
 ```
 
-可选择 joint、deform、affine 或 rigid 模型。调用返回双向配准图像和带几何信息的变换。配准接受单帧 3D 图像；多被试 Python 接口为 `model.predict_batch(table, fixed="/path/to/template.nii.gz")`，其中 `fixed` 也可为与表行顺序对应的列表，`output` 列指定不带扩展名的绝对输出前缀。`apply_transform` 可处理 3D 或 4D 图像，并使用 Surfa 在 CPU 上重采样。
+可选择 joint、deform、affine 或 rigid 模型。调用返回双向配准图像和带几何信息的变换。配准接受单帧 3D 图像。`apply_transform` 可处理 3D 或 4D 图像，并使用 Surfa 在 CPU 上重采样。
 
 默认 joint 模式的 12 例完整单例命令耗时中位数（秒）：
 
@@ -19,6 +19,6 @@ result.transform.save("moving_to_fixed.mgz")
 |---:|---:|---:|---:|
 | 164.55 | 122.33 | 116.59 | 17.62 |
 
-基准条件、四分位数及数值对照见[功能说明](../../../docs/synthmorph/README.md)；此表不是多被试批量计时。
+基准条件、四分位数及数值对照见[功能说明](../../../docs/synthmorph/README.md)。
 
-[完整参数、CLI、源码分析与验证](../../../docs/synthmorph/README.md) · [权重](../../../docs/WEIGHTS.md) · [批量执行](../../../docs/ARCHITECTURE.md#批量执行)
+[完整参数、CLI、源码分析与验证](../../../docs/synthmorph/README.md) · [权重](../../../docs/WEIGHTS.md)

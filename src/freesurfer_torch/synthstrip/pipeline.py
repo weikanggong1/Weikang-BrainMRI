@@ -16,8 +16,6 @@ import surfa as sf
 import torch
 
 from ..weights import resolve_weights
-from .._batch_table import cases_from_table
-from .._parallel_table import run_parallel
 from .model import StripModel
 
 
@@ -98,29 +96,3 @@ class SynthStrip:
         background = np.min([image.min(), 0]) if fill is None else fill
         output[mask == 0] = background
         return StripResult(output, image.new(mask), image.new(distance))
-
-    def predict_batch(self, table, border=1, fill=None, workers=1, threads_per_worker=1):
-        """Save brain image, mask and distance map for each output prefix."""
-        cases = cases_from_table(table)
-        def paths_for(prefix):
-            return {"image": Path(f"{prefix}_brain.nii.gz"),
-                    "mask": Path(f"{prefix}_mask.nii.gz"),
-                    "distance": Path(f"{prefix}_sdt.nii.gz")}
-
-        def run_local(case):
-            source, prefix = case
-            result = self(source, border=border, fill=fill)
-            paths = paths_for(prefix)
-            prefix.parent.mkdir(parents=True, exist_ok=True)
-            for name, path in paths.items():
-                getattr(result, name).save(path)
-            return paths
-
-        def make_job(case):
-            source, prefix = case
-            return {"task": "synthstrip", "model": {"weights": str(self.model_path.resolve())},
-                    "kwargs": {"image": source, "border": border, "fill": fill},
-                    "outputs": paths_for(prefix)}
-
-        return run_parallel(cases, self, 'synthstrip', workers, threads_per_worker,
-                            make_job, run_local)

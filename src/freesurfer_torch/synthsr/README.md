@@ -10,7 +10,7 @@ result = sr("case_FLAIR.nii.gz")
 result.image.save("case_synthsr.nii.gz")
 ```
 
-`result.image.data` 是写盘前量化为 `uint8` 的 0–255 体素，`result.image.affine` 描述 1 mm 输出网格。MGZ 经 nibabel 保存后重新读入会报告 `float32` 存储类型，数值仍是这组量化值。构造时加载一次权重；多被试 Python 接口为 `sr.predict_batch(table)`，`output` 列指定不带扩展名的绝对输出前缀。接口参数、原版 `mri_synthsr` 对应关系、权重和输出格式见[完整说明](../../../docs/synthsr/README.md)。
+`result.image.data` 是写盘前量化为 `uint8` 的 0–255 体素，`result.image.affine` 描述 1 mm 输出网格。MGZ 经 nibabel 保存后重新读入会报告 `float32` 存储类型，数值仍是这组量化值。构造时加载一次权重，可复用于后续单被试调用。接口参数、原版 `mri_synthsr` 对应关系、权重和输出格式见[完整说明](../../../docs/synthsr/README.md)。
 
 12 例完整单例命令的耗时中位数（秒）：
 
@@ -18,4 +18,4 @@ result.image.save("case_synthsr.nii.gz")
 |---:|---:|---:|---:|
 | 103.60 | 42.32 | 53.27 | 13.80 |
 
-基准条件、逐例范围及数值对照见[验证记录](../../../validation/synthsr/README.md)；此表不是多被试批量计时。
+基准条件、逐例范围及数值对照见[验证记录](../../../validation/synthsr/README.md)。

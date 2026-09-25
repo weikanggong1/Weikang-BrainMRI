@@ -80,7 +80,7 @@ def _pipeline(monkeypatch):
     return FastVBM(device="cpu")
 
 
-def test_public_pipeline_has_no_affine_bypass_or_ignored_legacy_options():
+def test_public_pipeline_has_no_affine_bypass_or_ignored_retired_options():
     removed = {
         "initial_pull",
         "initial_pull_convention",

@@ -16,9 +16,9 @@
 | GPU applywarp | 应用 FSL dense warp、FNIRT coefficient、premat 和 postmat | [applywarp 文档](docs/applywarp/README.md) |
 | GPU recon-all | T1w 到结构分割、皮层表面、顶点指标和脑区统计 | [GPU recon-all 文档](docs/recon_all/README.md) |
 
-SynthStrip、SynthMorph、WMH-SynthSeg 和 SynthSR 的多被试处理使用 Python `predict_batch()`：pandas 表含 `input` 影像和 `output` 绝对路径前缀两列；`workers=2` 可在同一设备启用两个 Python 进程。独立 33 类 SynthSeg 可在 Python 中复用模型逐例处理。FastVBM 的多病例 Python 调用见其子页。输出命名和调度规则见[批量执行说明](docs/ARCHITECTURE.md#批量执行)；仓库提供 [T1w 样例](examples/README.md)和 [FLAIR 样例](examples/WMH.md)。
+所有功能只提供单被试 Python 和单被试命令行接口；需要处理多个病例时，由调用方在包外组织任务与设备。仓库提供 [T1w 样例](examples/README.md)和 [FLAIR 样例](examples/WMH.md)。
 
-GPU recon-all 的 SynthStrip、33 类 SynthSeg、SynthMorph 及三项辅助神经分割使用 PyTorch/CUDA；影像转换、强度校正、皮层拓扑、表面生成和统计运行于打包的原生 CPU 程序。单被试支持 `fs-torch-recon-all` 命令行和 Python 调用，多被试完整流程仅提供 Python 调用。
+GPU recon-all 的 SynthStrip、33 类 SynthSeg、SynthMorph 及三项辅助神经分割使用 PyTorch/CUDA；影像转换、强度校正、皮层拓扑、表面生成和统计运行于打包的原生 CPU 程序。公开用法只说明 `fs-torch-recon-all` 单被试命令行和 Python 调用。
 
 相关 CUDA 路径允许 NVIDIA TF32 matmul 和 cuDNN 内核；模型与影像张量仍保持 float32，本包不会自动改用 float16 或 bfloat16。各验证报告记录实际开关。
 
@@ -63,6 +63,6 @@ GPU recon-all 的 13 个权重和辅助资源文件可单独配置：`python too
 
 ## 项目资料
 
-- 各功能的调用、输出、原版对应和数值比较见上表各子页；[代码结构与批量 API](docs/ARCHITECTURE.md)说明共享接口。
-- [FastVBM 验证](validation/fast_vbm/README.md)、[其他对照报告](docs/COMPARISON.md)、[模型及源码来源](docs/provenance.json)。
+- 各功能的调用、输出、原版对应和数值比较见上表各子页；[代码结构](docs/ARCHITECTURE.md)说明共享接口。
+- [FastVBM 验证](validation/fast_vbm/README.md)、[模型及源码来源](docs/provenance.json)。
 - [第三方许可与引用](THIRD_PARTY_NOTICES.md)。

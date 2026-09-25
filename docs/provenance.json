@@ -45,7 +45,6 @@
       "implementation": "SynthStrip and TorchFAST followed by the source-derived PyTorch FLIRT path and a selectable package PyTorch SynthMorph deform or source-derived PyTorch FNIRT path",
       "linear_method": "PyTorch port of the FSL FLIRT 2111.2 12-DOF correlation-ratio path; matrices use the FSL input-to-reference scaled-mm contract",
       "synthmorph_method": "official synthmorph.deform.3.h5 checkpoint loaded by the package PyTorch SynthMorph implementation after the same FLIRT affine stage used by the FNIRT branch",
-      "retired_experiment": "tools/experimental/ukb_vbm/_legacy_registration.py is repository-only provenance for historical 0.6 results and is excluded from wheel and sdist",
       "fsl_fnirt_source": "https://git.fmrib.ox.ac.uk/fsl/fnirt",
       "component_license_files": {
         "synthstrip": "licenses/FreeSurfer.txt",
@@ -112,7 +111,7 @@
     "purpose": "complete unmodified upstream sources consulted for the modified PyTorch FLIRT, FNIRT and applywarp ports",
     "validation_baseline": "FSL 6.0.7.4",
     "manifest": "src/freesurfer_torch/_vendor_fsl/manifest.json",
-    "manifest_sha256": "d78ca64b693babbc13185e69c39e3b0fd9e965085aba13ee738f066d2a096bfe",
+    "manifest_sha256": "7050329ef6f6c7f695b080086dd6e0221412213563fff7446afc8489a1856e1c",
     "license_file": "licenses/FSL-6.0.txt",
     "license_sha256": "137735ac0d0f075d58e85642972692b92073711752b273e7de7ed38c6147a8eb",
     "licence_scope": "non-commercial redistribution under the FSL Software Licence, Release 6.0; licence conditions and original and amended source code accompany the product",
@@ -186,19 +185,8 @@
         "directory": "src/freesurfer_torch/_vendor_fsl/sources/fugue-2201.3",
         "role": "validation_target",
         "fsl_6_0_7_4_package": "fsl-fugue 2201.3"
-      },
-      {
-        "repository": "https://git.fmrib.ox.ac.uk/fsl/fugue.git",
-        "tag": "2603.0",
-        "commit": "1c15c49f632dfa4b1e51acd651efc3c795c4acf1",
-        "git_tree": "0931aacaee668d81e6ff676c44b220b86833150d",
-        "git_archive_sha256": "efe0f49c9b4ee3199b09bf468d7c2760e5473b1a562f96d5e24151697ad9f058",
-        "directory": "src/freesurfer_torch/_vendor_fsl/sources/fugue-2603.0",
-        "role": "inspected_only",
-        "fsl_6_0_7_4_package": null
       }
     ],
-    "fugue_version_boundary": "fugue 2201.3 is the FSL 6.0.7.4 validation target; fugue 2603.0 is retained only because it was inspected during development",
     "runtime_dependency": false
   }
 }

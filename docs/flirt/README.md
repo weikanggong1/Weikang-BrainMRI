@@ -182,38 +182,3 @@ is an artifact identifier relative to the source repository. The root
 can open the [public report on GitHub](https://github.com/weikanggong1/Weikang-BrainMRI/blob/main/validation/fast_vbm/report.v0.9.public.json); a source checkout can
 use the relative link
 [`report.v0.9.public.json`](../../validation/fast_vbm/report.v0.9.public.json).
-
-### Historical run: TF32 disabled
-
-The earlier public run disabled TF32 and made CUDA reductions deterministic.
-Its results are retained for provenance and are not combined with the current
-default-TF32 result.
-
-| Check | Result | Gate |
-|---|---:|---:|
-| Matrix RMS difference, median | 0.00875803 mm | 0.05 mm |
-| Matrix RMS difference, maximum | 0.0541455 mm | 0.05 mm |
-| Matrix cases passing | 9 / 10 | 10 / 10 |
-| Same-matrix resampling maximum absolute error, maximum | 0.000280291 | 0.0005 |
-| Same-matrix resampling correlation, minimum | 0.9999999966 | descriptive |
-| CUDA time, median | 21.59 s | descriptive |
-
-The same-matrix resampling gate passed all 10 cases. The matrix gate failed
-one case by 0.0041455 mm. The historical public status therefore remains
-`validated_fsl_equivalent=false`; the residual exceeds the declared threshold
-and is not relabeled as floating-point noise.
-
-One case was also run on CPU and with the FSL executable on the shared gpucw1
-node:
-
-| Implementation | Time | Matrix RMS difference from FSL |
-|---|---:|---:|
-| FSL 6.0.7.4 CPU | 33.52 s | reference |
-| PyTorch CPU | 90.71 s | 0.00399667 mm |
-| PyTorch H100 CUDA | 22.22 s | 0.0103038 mm |
-
-These timings describe the historical TF32-off shared-node runs, not isolated
-throughput. The historical aggregate record is in
-[`flirt_exact_target_10case.public.json`](../../validation/fast_vbm/flirt_exact_target_10case.public.json),
-with the CPU/GPU component checks in
-[`flirt_exact_target_case01.public.json`](../../validation/fast_vbm/flirt_exact_target_case01.public.json).

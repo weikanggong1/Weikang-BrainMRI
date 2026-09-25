@@ -3,7 +3,6 @@ recursive-include licenses *.txt
 recursive-include src/freesurfer_torch/_vendor_fsl * .*
 recursive-include docs *.md *.json *.png
 recursive-include tools *.py *.md
-prune tools/experimental
 recursive-include tests *.py *.json
 recursive-include validation/recon_all *.py *.md *.json *.cu
 recursive-include validation/fast_vbm README.md SHA256SUMS *.public.json *.public.csv *.py

@@ -7,8 +7,6 @@ import surfa as sf
 import torch
 from .spatial import compose, transform
 from ..weights import resolve_weights
-from .._batch_table import cases_from_table
-from .._parallel_table import run_parallel
 
 
 @dataclass
@@ -72,8 +70,6 @@ class SynthMorph:
         paths = {key: resolve_weights(names[key], weights.get(key) if isinstance(weights, dict) else weights)
                  for key in needed}
         self.device, self.model, self.extent = torch.device(device), model, extent
-        self._batch_weights = {key: str(path.resolve()) for key, path in paths.items()}
-        self._batch_hyper, self._batch_steps = hyper, steps
         # Keep FP32 tensors while allowing TF32 kernels on Ampere/Hopper.
         torch.backends.cuda.matmul.allow_tf32 = True
         torch.backends.cudnn.allow_tf32 = True
@@ -143,50 +139,6 @@ class SynthMorph:
             np.savez_compressed(root / 'network_transforms.npz', forward=_numpy(fw_net), inverse=_numpy(bw_net))
         return RegistrationResult(moved, fixed_moved, forward, inverse)
 
-    def predict_batch(self, table, fixed, workers=1, threads_per_worker=1):
-        """Register each input to one shared or row-aligned list of fixed images."""
-        cases = cases_from_table(table)
-        if isinstance(fixed, list):
-            if len(fixed) != len(cases):
-                raise ValueError('fixed list length must equal the number of input rows')
-            fixed_images = fixed
-        else:
-            fixed_images = ([_load(fixed)] if workers == 1 else [fixed]) * len(cases) if cases else []
-        if not cases:
-            return []
-        if workers != 1 and len(cases) > 1 and any(
-                not isinstance(target, (str, Path)) for target in fixed_images):
-            raise TypeError('parallel fixed images must be file paths')
-        transform_suffix = '.lta' if self.model in ('affine', 'rigid') else '.mgz'
-        def paths_for(prefix):
-            return {"moved": Path(f"{prefix}_moved.nii.gz"),
-                    "fixed_moved": Path(f"{prefix}_fixed_moved.nii.gz"),
-                    "transform": Path(f"{prefix}_transform{transform_suffix}"),
-                    "inverse": Path(f"{prefix}_inverse{transform_suffix}")}
-
-        def run_local(case):
-            source, prefix, target = case
-            result = self(source, target)
-            paths = paths_for(prefix)
-            prefix.parent.mkdir(parents=True, exist_ok=True)
-            for name, path in paths.items():
-                getattr(result, name).save(path)
-            return paths
-
-        def make_job(case):
-            source, prefix, target = case
-            hyper = (self.network.deform.hyper if self.model in ('joint', 'deform')
-                     else self._batch_hyper)
-            return {"task": "synthmorph",
-                    "model": {"weights": self._batch_weights, "model": self.model,
-                              "extent": self.extent, "hyper": hyper,
-                              "steps": self._batch_steps},
-                    "kwargs": {"moving": source, "fixed": target},
-                    "outputs": paths_for(prefix)}
-
-        rows = [(source, prefix, target) for (source, prefix), target in zip(cases, fixed_images)]
-        return run_parallel(rows, self, 'synthmorph', workers, threads_per_worker,
-                            make_job, run_local)
 
 
 @torch.inference_mode()
