@@ -20,6 +20,7 @@ weights/
 !examples/wmh_data/sub-02_FLAIR.nii.gz
 !examples/wmh_data/sub-03_FLAIR.nii.gz
 !examples/wmh_data/sub-04_FLAIR.nii.gz
+!tests/fnirt/data/fsl_coefficient_2203_0_oracle.nii.gz
 *.mgz
 *.mgh
 *.lta
