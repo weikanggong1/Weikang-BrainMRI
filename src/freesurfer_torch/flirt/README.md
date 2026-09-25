@@ -32,8 +32,9 @@ The input is the moving image. The reference defines the output grid. The
 matrix maps input to reference in FSL scaled-mm coordinates; it is not a
 world-RAS affine.
 
-The fixed 0.05 mm ten-case matrix gate passed 9 of 10 cases, with a maximum
-RMS difference of 0.0541455 mm. The implementation therefore reports
+With CUDA TF32 enabled by default, the fixed 0.05 mm ten-case matrix gate
+passed 0 of 10 cases; the median and maximum RMS differences were 0.185545 mm
+and 0.456724 mm. The implementation therefore reports
 `validated_fsl_equivalent=false`. See `docs/flirt/README.md` in the source
 repository for the full input/output contract, argument-by-argument examples,
 coordinate conversion, validation table, and timing context.

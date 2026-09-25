@@ -4,6 +4,8 @@
 
 `FastVBM` 接收一幅原始 3D T1w 和一幅 GM 模板，输出脑提取、三组织 PVE、偏置场校正结果，以及模板空间 warped GM、nonlinear-only Jacobian 和 modulated GM。整条流程在 Python 内运行，不调用 FreeSurfer 或 FSL 可执行文件。
 
+CUDA 路径默认允许 TF32 matmul 和 cuDNN 内核，输入、权重及输出张量仍为 float32；不启用 float16 或 bfloat16。`fast_vbm_report.json` 的 `settings.tf32` 记录运行时开关。
+
 非线性配准由 `registration_backend` 选择：
 
 - `"synthmorph"`：本包 PyTorch SynthMorph `deform`，默认分支；

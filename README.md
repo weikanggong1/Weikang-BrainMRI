@@ -20,6 +20,8 @@ SynthStrip、SynthMorph、WMH-SynthSeg 和 SynthSR 的多被试处理使用 Pyth
 
 GPU recon-all 的 SynthStrip、33 类 SynthSeg、SynthMorph 及三项辅助神经分割使用 PyTorch/CUDA；影像转换、强度校正、皮层拓扑、表面生成和统计运行于打包的原生 CPU 程序。单被试支持 `fs-torch-recon-all` 命令行和 Python 调用，多被试完整流程仅提供 Python 调用。
 
+CUDA 路径默认允许 NVIDIA TF32 matmul 和 cuDNN 内核，模型与影像张量仍保持 float32；本包不会自动改用 float16 或 bfloat16。验证报告会记录实际 TF32 开关。
+
 FastVBM 的两个分支共用 TorchFLIRT、FSL 坐标转换、GPU applywarp、nonlinear-only Jacobian 和 modulation，只替换 nonlinear pull-field estimator。FLIRT 的固定 0.05 mm matrix 门通过 9/10 例；FNIRT 的 case01 warped GM、Jacobian 和 modulated GM 与 FSL 的相关均高于 0.999，但 coefficient 优化仍会因 PCG reduction 顺序分叉。FLIRT 保留 `validated_fsl_equivalent=false`，FNIRT 保留 `fsl_fnirt_numerically_equivalent=false`；具体数值见各自子页。
 
 FLIRT、FNIRT 和 applywarp 的移植代码及随包提供的 FSL 上游源码受 [FSL Software Licence 6.0](licenses/FSL-6.0.txt) 的非商业使用条款约束。运行这些 PyTorch 接口无需安装 FSL。

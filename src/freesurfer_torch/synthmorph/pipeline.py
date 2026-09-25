@@ -74,9 +74,9 @@ class SynthMorph:
         self.device, self.model, self.extent = torch.device(device), model, extent
         self._batch_weights = {key: str(path.resolve()) for key, path in paths.items()}
         self._batch_hyper, self._batch_steps = hyper, steps
-        # Preserve FP32 accuracy for the TF checkpoint conversion on Ampere/Hopper.
-        torch.backends.cuda.matmul.allow_tf32 = False
-        torch.backends.cudnn.allow_tf32 = False
+        # Keep FP32 tensors while allowing TF32 kernels on Ampere/Hopper.
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.allow_tf32 = True
         self.network = SynthMorphNetwork(weights=paths, model=model, hyper=hyper,
                                         int_steps=steps, device=device)
 

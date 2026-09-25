@@ -5,6 +5,10 @@
 仿射矩阵和 binary reference mask，输出 cubic B-spline 系数、配准后的输入图以及
 非线性 Jacobian。运行时不调用 FSL。
 
+CUDA 运行默认允许 TF32 matmul 和 cuDNN 内核，同时保留实现声明的
+float32/float64 张量；不使用 float16 或 bfloat16。实际开关写入
+`result.qc["tf32"]`。
+
 ## 命令行调用
 
 ```bash

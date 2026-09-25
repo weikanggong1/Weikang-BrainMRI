@@ -4,6 +4,10 @@
 FSL，可在 CPU 或 CUDA 上读取 FSL dense warp 以及 FNIRT cubic coefficient
 文件，并把 3D/4D 输入重采样到 reference 网格。
 
+CUDA 运行默认允许 TF32 matrix/cuDNN 内核，影像张量和输出仍使用所声明的
+float32/float64 dtype；不自动使用 float16 或 bfloat16。实际开关记录在
+`result.qc["tf32"]`。
+
 ## Python 调用
 
 ```python

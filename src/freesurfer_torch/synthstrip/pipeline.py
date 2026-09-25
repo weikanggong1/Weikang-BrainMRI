@@ -64,8 +64,8 @@ class SynthStrip:
         # Match the executable's convolution backend settings.
         torch.backends.cudnn.benchmark = True
         torch.backends.cudnn.deterministic = True
-        torch.backends.cuda.matmul.allow_tf32 = False
-        torch.backends.cudnn.allow_tf32 = False
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.allow_tf32 = True
         name = "synthstrip.nocsf.1.pt" if no_csf else "synthstrip.1.pt"
         self.model_path = Path(resolve_weights(name, explicit=weights))
         self.model = StripModel().to(self.device).eval()

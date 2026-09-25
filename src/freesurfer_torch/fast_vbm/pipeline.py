@@ -427,6 +427,11 @@ class FastVBM:
         }
         settings = {
             "device": str(self.device),
+            "tf32": {
+                "matmul": bool(torch.backends.cuda.matmul.allow_tf32),
+                "cudnn": bool(torch.backends.cudnn.allow_tf32),
+                "reduced_precision_tensor_dtype": False,
+            },
             "mask_source": mask_source,
             "bias_correction": self.bias_correction,
             "linear_backend": "pytorch-fsl-flirt-default",

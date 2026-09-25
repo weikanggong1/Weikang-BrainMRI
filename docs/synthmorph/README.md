@@ -49,7 +49,7 @@ labels.save(out / "labels_in_fixed.nii.gz")
 | `hyper` | 非线性正则化参数，`0 < hyper < 1`，默认 0.5；实例构造时固定 |
 | `steps` | scaling-and-squaring 次数，至少 5，默认 7 |
 
-模型使用 FP32，并关闭当前进程的 PyTorch TF32。不同 `hyper` 需构造另一实例；底层 `DeformNetwork.set_hyper()` 是显式重新计算特化权重的入口。改变实例的普通属性不会自动更新这些权重。Python 的 CPU 线程数可用 `torch.set_num_threads()` 设置；统一 CLI 提供 `-j` 参数。
+模型使用 float32 张量；CUDA 构造默认允许 TF32 matmul 和 cuDNN 内核，不使用 float16 或 bfloat16。不同 `hyper` 需构造另一实例；底层 `DeformNetwork.set_hyper()` 是显式重新计算特化权重的入口。改变实例的普通属性不会自动更新这些权重。Python 的 CPU 线程数可用 `torch.set_num_threads()` 设置；统一 CLI 提供 `-j` 参数。
 
 ### 配准调用与结果
 
@@ -265,7 +265,7 @@ Saved-transform application accepts multi-frame (4D) input images; neural regist
 - 默认 joint、256³ 的 12 例真实 T1w，同设备最大形变向量差为 `0.000790 mm`，最大正向 moved NRMSE 为 `4.05e-5`，见 [匿名逐例结果](../../benchmark/summary.public.json)。
 - 15 项选项检查的记录见 [options/report.json](../../validation/options/report.json)；初始化两项使用上文明确区分的 patched reference，其余 saved-transform apply 与未修改原版比较。
 
-默认 joint 模式的 12 例完整单例命令耗时中位数如下，单位为秒；CPU 固定 8 线程，GPU 使用同一张 H100，四臂均关闭 TF32，计时包含启动、权重加载、推理和写盘。原版 CPU/GPU 均运行 FreeSurfer 原生命令。[四分位数和环境差异](../COMPARISON.md#cpugpu-时间)保留在完整对照报告中。
+下表是 0.8 及更早版本在 TF32 关闭条件下的历史默认 joint 12 例计时，不代表 0.9 的 TF32 默认性能。CPU 固定 8 线程，GPU 使用同一张 H100，计时包含启动、权重加载、推理和写盘。原版 CPU/GPU 均运行 FreeSurfer 原生命令。[四分位数和环境差异](../COMPARISON.md#cpugpu-时间)保留在完整对照报告中。
 
 | 原版 CPU | 本包 CPU | 原版 GPU | 本包 GPU |
 |---:|---:|---:|---:|

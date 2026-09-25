@@ -35,7 +35,7 @@ result.distance.save(out / "subject_sdt.nii.gz")
 | `no_csf` | 为 `True` 时使用排除 CSF 的官方权重 |
 | `threads` | 当前进程的 Torch 线程数；`None` 保留当前值 |
 
-模型进入 eval 模式，使用 FP32 推理，并保留官方卷积后端设置。构造会关闭当前进程的 PyTorch TF32。重复使用实例可避免重复加载权重。
+模型进入 eval 模式并使用 float32 张量；CUDA 构造默认允许 TF32 matmul 和 cuDNN 内核，不使用 float16 或 bfloat16。重复使用实例可避免重复加载权重。
 
 ### 单次调用与结果
 
@@ -174,7 +174,7 @@ U-Net 在所选设备执行。影像读写、Surfa conform/crop、归一化、SD
 
 以下数值来自 **0.1.0 参考实验**：12 例真实 T1w 在同设备对照中，脑图、掩膜和距离场全部逐元素一致；跨 CPU/GPU 时仅一个病例出现 1 个掩膜体素差异，最低 Dice 为 `0.999999858562`。0.2.0 是结构重整，单独的回归记录见 [refactor/report.public.json](../../validation/refactor/report.public.json)，历史运行时间未据此重新命名。
 
-12 例完整单例命令的耗时中位数如下，单位为秒；计时包含启动、权重加载、推理和写盘。CPU 固定 8 线程，GPU 使用同一张 H100，四臂均关闭 TF32。原版 GPU 指未修改官方脚本在 CUDA Python 环境运行；已安装的 FreeSurfer 自带 PyTorch 仅支持 CPU。[完整四分位数与逐例条件](../COMPARISON.md#cpugpu-时间)。
+下表是 0.8 及更早版本在 TF32 关闭条件下的历史 12 例计时，不代表 0.9 的 TF32 默认性能。计时包含启动、权重加载、推理和写盘；CPU 固定 8 线程，GPU 使用同一张 H100。原版 GPU 指未修改官方脚本在 CUDA Python 环境运行；已安装的 FreeSurfer 自带 PyTorch 仅支持 CPU。[完整四分位数与逐例条件](../COMPARISON.md#cpugpu-时间)。
 
 | 原版 CPU | 本包 CPU | 原版 GPU | 本包 GPU |
 |---:|---:|---:|---:|

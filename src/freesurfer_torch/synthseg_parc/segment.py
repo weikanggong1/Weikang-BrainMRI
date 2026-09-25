@@ -111,7 +111,7 @@ class SynthSegSegmenter:
         if image.ndim != 3:
             raise ValueError("image must be a preprocessed 3-D tensor")
         x = image.to(device=self.device, dtype=torch.float32)[None, None]
-        with torch.backends.cudnn.flags(enabled=True, allow_tf32=False):
+        with torch.backends.cudnn.flags(enabled=True, allow_tf32=True):
             original = self.model(x)
             if not smooth:
                 if flip:

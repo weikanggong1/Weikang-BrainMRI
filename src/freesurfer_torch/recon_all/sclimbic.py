@@ -206,7 +206,7 @@ def mri_sclimbic_seg(input_path: str | Path, output_path: str | Path, *,
     conformed, offset = _fit_shape(ras, fov)
 
     model = LimbicUNet.from_h5(model_path).to(device).eval()
-    with torch.backends.cudnn.flags(enabled=True, allow_tf32=False):
+    with torch.backends.cudnn.flags(enabled=True, allow_tf32=True):
         posterior = model(conformed[None, None])[0]
     posterior, box = _cleanup(posterior)
     rows = _ctab_rows(ctab_path)

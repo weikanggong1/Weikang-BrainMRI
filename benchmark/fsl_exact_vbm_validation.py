@@ -1382,6 +1382,11 @@ def summarize(args) -> int:
             if summary_device.type == "cuda" and torch.cuda.is_available()
             else "unavailable during summary" if summary_device.type == "cuda" else "CPU"
         ),
+        "tf32": {
+            "matmul": bool(torch.backends.cuda.matmul.allow_tf32),
+            "cudnn": bool(torch.backends.cudnn.allow_tf32),
+            "reduced_precision_tensor_dtype": False,
+        },
         "threads": args.threads,
     }
     public = {

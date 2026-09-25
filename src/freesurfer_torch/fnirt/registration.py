@@ -727,6 +727,9 @@ class TorchFNIRT:
         self.device = torch.device(device)
         if self.device.type == "cuda" and not torch.cuda.is_available():
             raise RuntimeError("CUDA was requested but is not available")
+        if self.device.type == "cuda":
+            torch.backends.cuda.matmul.allow_tf32 = True
+            torch.backends.cudnn.allow_tf32 = True
         self.config = GMFNIRTConfig() if config is None else config
         self.reference_mask = reference_mask
         self.pcg_tolerance = float(pcg_tolerance)
@@ -1139,6 +1142,12 @@ class TorchFNIRT:
         )
         qc = {
             "backend": "pytorch-fnirt-matrix-free-lm",
+            "device": str(self.device),
+            "tf32": {
+                "matmul": bool(torch.backends.cuda.matmul.allow_tf32),
+                "cudnn": bool(torch.backends.cudnn.allow_tf32),
+                "reduced_precision_tensor_dtype": False,
+            },
             "fsl_fnirt_numerically_equivalent": False,
             "equivalence_status": "external FSL 6.0.7.4 numerical gate not passed",
             "fsl_source_versions": FSL_SOURCE_VERSIONS,

@@ -13,7 +13,7 @@ from freesurfer_torch.synthseg_parc.segment import SynthSegSegmenter, run_synths
 
 
 @pytest.mark.parametrize("initial_enabled", [False, True])
-def test_segmenter_uses_cudnn_without_tf32_and_restores_flags(monkeypatch, initial_enabled):
+def test_segmenter_uses_cudnn_with_tf32_and_restores_flags(monkeypatch, initial_enabled):
     seen = []
 
     class RecordingModel(torch.nn.Module):
@@ -30,7 +30,7 @@ def test_segmenter_uses_cudnn_without_tf32_and_restores_flags(monkeypatch, initi
     monkeypatch.setattr(torch.backends.cudnn, "enabled", initial_enabled)
     monkeypatch.setattr(torch.backends.cudnn, "allow_tf32", True)
     segmenter.posterior(torch.zeros((32, 32, 32)))
-    assert seen == [(True, False), (True, False)]
+    assert seen == [(True, True), (True, True)]
     assert torch.backends.cudnn.enabled is initial_enabled
     assert torch.backends.cudnn.allow_tf32 is True
 

@@ -52,7 +52,7 @@ def test_segmentation_restores_native_grid_and_label_ids(tmp_path, monkeypatch, 
     monkeypatch.setattr(torch.backends.cudnn, "allow_tf32", True)
     result = mri_sclimbic_seg(source, output, model_path=tmp_path / "unused.h5",
                              ctab_path=ctab, fov=8)
-    assert seen == [(True, False)]
+    assert seen == [(True, True)]
     assert torch.backends.cudnn.enabled is initial_enabled
     assert torch.backends.cudnn.allow_tf32 is True
     saved = nib.load(result)

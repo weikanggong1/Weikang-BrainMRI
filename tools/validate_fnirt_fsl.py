@@ -289,6 +289,7 @@ def case_provenance(args, inputs: dict[str, Any], case: CaseInputs) -> dict[str,
         "torch_version": torch.__version__,
         "cuda_runtime": torch.version.cuda,
         "device": args.device,
+        "tf32_requested_for_cuda": torch.device(args.device).type == "cuda",
         "threads": args.threads,
         "fsl_version": inputs["tools"].version,
         "fsl_fnirt_sha256": inputs["fnirt_sha256"],
@@ -756,6 +757,11 @@ def run(args) -> int:
         "device_name": (
             torch.cuda.get_device_name(device) if device.type == "cuda" else "CPU"
         ),
+        "tf32": {
+            "matmul": bool(torch.backends.cuda.matmul.allow_tf32),
+            "cudnn": bool(torch.backends.cudnn.allow_tf32),
+            "reduced_precision_tensor_dtype": False,
+        },
         "threads": args.threads,
         "device_setup_seconds": setup_seconds,
         "batch_wall_seconds": time.perf_counter() - started,
@@ -949,6 +955,7 @@ def summarize(args) -> int:
             ),
             "distributions_seconds_or_ratio": timing,
             "device_name": run_manifest.get("device_name") if run_manifest else None,
+            "tf32": run_manifest.get("tf32") if run_manifest else None,
         },
         "interpretation": {
             "equivalence_decision": "not made by this tool",

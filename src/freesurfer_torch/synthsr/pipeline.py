@@ -65,8 +65,8 @@ class SynthSR:
         load_h5_weights(self.model, checkpoint)
         self.model.eval()
         if self.device.type == "cuda":
-            torch.backends.cuda.matmul.allow_tf32 = False
-            torch.backends.cudnn.allow_tf32 = False
+            torch.backends.cuda.matmul.allow_tf32 = True
+            torch.backends.cudnn.allow_tf32 = True
 
     @torch.inference_mode()
     def __call__(self, image, ct=False, disable_flipping=False, disable_sharpening=False):

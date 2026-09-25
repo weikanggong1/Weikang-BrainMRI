@@ -379,6 +379,9 @@ class TorchApplyWarp:
         self.device = torch.device(device)
         if self.device.type == "cuda" and not torch.cuda.is_available():
             raise RuntimeError("CUDA was requested but is not available")
+        if self.device.type == "cuda":
+            torch.backends.cuda.matmul.allow_tf32 = True
+            torch.backends.cudnn.allow_tf32 = True
 
     def __call__(
         self,
@@ -509,6 +512,11 @@ class TorchApplyWarp:
         output = _output_image(reference_image, input_image, result, dtype)
         qc = {
             "device": str(self.device),
+            "tf32": {
+                "matmul": bool(torch.backends.cuda.matmul.allow_tf32),
+                "cudnn": bool(torch.backends.cudnn.allow_tf32),
+                "reduced_precision_tensor_dtype": False,
+            },
             "output_grid": "reference",
             "matrix_coordinate_system": "FSL scaled-mm",
             "transform_order": "premat then warp then postmat",

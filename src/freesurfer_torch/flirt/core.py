@@ -1133,8 +1133,8 @@ class TorchFLIRT:
     """FSL 6.0.7.4 FLIRT-equivalence target implemented with PyTorch.
 
     This class ports the FLIRT default correlation-ratio and coordinate-search
-    path. ``qc['validated_fsl_equivalent']`` remains false because the fixed
-    0.05 mm ten-case matrix gate passed 9 of 10 cases.
+    path. ``qc['validated_fsl_equivalent']`` remains false because the default
+    TF32 run did not pass the fixed 0.05 mm ten-case matrix gate.
     """
 
     def __init__(self, device=None, *, angular_search=True):
@@ -1143,6 +1143,9 @@ class TorchFLIRT:
         self.device = torch.device(device)
         if self.device.type == "cuda" and not torch.cuda.is_available():
             raise RuntimeError("CUDA was requested but is not available")
+        if self.device.type == "cuda":
+            torch.backends.cuda.matmul.allow_tf32 = True
+            torch.backends.cudnn.allow_tf32 = True
         self.angular_search = bool(angular_search)
 
     def __call__(self, moving, fixed, *, init=None):
@@ -1224,6 +1227,11 @@ class TorchFLIRT:
         qc = {
             "backend": "pytorch-fsl-flirt-2111.2-exact-target",
             "device": str(self.device),
+            "tf32": {
+                "matmul": bool(torch.backends.cuda.matmul.allow_tf32),
+                "cudnn": bool(torch.backends.cudnn.allow_tf32),
+                "reduced_precision_tensor_dtype": False,
+            },
             "cost": "FSL correlation ratio",
             "optimizer": "MISCMATHS Brent coordinate search",
             "schedule": "FSL default 8/4/2/1 mm",
@@ -1241,9 +1249,10 @@ class TorchFLIRT:
             "source_commit": FSL_FLIRT_COMMIT,
             "initial_matrix_used": init is not None,
             "validation_matrix_gate_mm": 0.05,
-            "validation_matrix_cases_passed": 9,
+            "validation_profile": "CUDA TF32 default",
+            "validation_matrix_cases_passed": 0,
             "validation_matrix_cases_total": 10,
-            "validation_matrix_maximum_rmsdiff_mm": 0.0541455,
+            "validation_matrix_maximum_rmsdiff_mm": 0.45672378318405493,
             "validated_fsl_equivalent": False,
         }
         return FLIRTResult(

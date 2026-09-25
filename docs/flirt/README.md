@@ -7,6 +7,10 @@ used by `fsl_reg`: 12 degrees of freedom, correlation-ratio cost, the
 The implementation runs on a PyTorch CPU or CUDA device and does not call the
 FSL executable at runtime.
 
+CUDA execution enables TF32 matrix kernels by default while retaining the
+declared float32/float64 tensor dtypes. It does not use float16 or bfloat16;
+the active flags are written to `result.qc["tf32"]`.
+
 This is an exact-target port, not a claim of complete numerical equivalence.
 The fixed 0.05 mm matrix gate passed 9 of 10 real GM registrations. The one
 failure measured 0.0541455 mm, so `result.qc["validated_fsl_equivalent"]` is
