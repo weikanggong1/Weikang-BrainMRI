@@ -33,9 +33,20 @@ The input is the moving image. The reference defines the output grid. The
 matrix maps input to reference in FSL scaled-mm coordinates; it is not a
 world-RAS affine.
 
-The implementation reports `validated_fsl_equivalent=false`. The current
-ten-case report uses FSL `rmsdiff` about the reference intensity-weighted COG
-with an 80 mm radius. See `docs/flirt/README.md` in the source
+The implementation reports a passed FLIRT matrix functional gate for the 0.9
+reference suite: 10/10 cases (`rmsdiff <= 0.05 mm`; median 0.008544 mm,
+maximum 0.028984 mm). Runtime QC still reports
+`validated_fsl_equivalent=false` and `current_input_compared_with_fsl=false`.
+`reference_validation_matrix_gate_passed=true` describes that fixed suite; it
+does not compare the current input or claim bitwise/complete numerical
+equivalence.
+
+The QC value `reference_validation_report="validation/fast_vbm/report.v0.9.public.json"`
+is a source-repository artifact identifier. The wheel does not contain the
+root `validation/` directory; use the
+[public GitHub report](https://github.com/weikanggong1/Weikang-BrainMRI/blob/main/validation/fast_vbm/report.v0.9.public.json) for an installed package.
+
+See `docs/flirt/README.md` in the source
 repository for the full input/output contract, argument-by-argument examples,
 coordinate conversion, validation table, and timing context.
 

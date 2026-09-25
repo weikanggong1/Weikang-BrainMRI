@@ -1,5 +1,7 @@
 """Component oracles for the FSL FLIRT 2111.2 PyTorch target."""
 
+from types import SimpleNamespace
+
 import numpy as np
 import pytest
 import torch
@@ -9,6 +11,8 @@ from freesurfer_torch.flirt import TorchFLIRT
 from freesurfer_torch.flirt.core import (
     _DefaultFLIRTEngine,
     _centre_of_gravity,
+    _coordinates_from_fsl_coefficients,
+    _fsl_pull_coefficients,
     _newimage_percentile,
     _resample_output,
     fsl_affine_from_parameters,
@@ -271,3 +275,161 @@ def test_output_resampling_includes_flirt_default_antialias_blur():
     assert float(output[2, 2, 2]) < 1
     assert abs(float(output[2, 2, 2]) - centre_weight) < 1e-6
     assert torch.count_nonzero(output) == 1
+
+
+def test_cost_cache_does_not_alias_distinct_float64_affines():
+    engine = object.__new__(_DefaultFLIRTEngine)
+    engine.initial_matrix = np.eye(4, dtype=np.float64)
+    engine.cost_evaluations = 0
+    engine._cache = {}
+    engine.level = SimpleNamespace(cost=lambda affine: float(affine[0, 3]))
+    first = np.eye(4, dtype=np.float64)
+    first[0, 3] = 1.0
+    second = first.copy()
+    second[0, 3] += 2.0**-30
+
+    assert np.array_equal(first.astype(np.float32), second.astype(np.float32))
+    assert engine.cost(first) == 1.0
+    assert engine.cost(second) == 1.0 + 2.0**-30
+    assert engine.cost_evaluations == 2
+
+
+def test_pull_coefficients_cast_only_after_double_inverse_and_sampling():
+    affine = np.array(
+        [
+            [1.03870052035, .0581360013514, .0208731747207, -.742409058073],
+            [-.0332339779434, .967363767006, .06686295822, -2.34995929637],
+            [-.0399591258423, -.0507381279885, 1.01791154105, 1.88608230552],
+            [0, 0, 0, 1],
+        ],
+        dtype=np.float64,
+    )
+    coefficients = _fsl_pull_coefficients(
+        affine,
+        (.73, 1.17, 2.31),
+        (2.0, 1.3, .91),
+        device=torch.device("cpu"),
+    ).numpy()
+    # uint32 is the direct oracle for the twelve assignments from NEWMAT
+    # double values to the local float a11 ... a34 variables.
+    expected_bits = np.array(
+        [
+            [1076387784, 3184885958, 3164721319, 1062485557],
+            [1028916002, 1066549451, 3176737758, 1074557794],
+            [1024133320, 1021425494, 1053120071, 3208414883],
+        ],
+        dtype=np.uint32,
+    )
+
+    np.testing.assert_array_equal(coefficients.view(np.uint32), expected_bits)
+
+
+def test_explicit_float_coordinate_generation_matches_scalar_oracle():
+    coefficient_bits = np.array(
+        [
+            [1076387784, 3184885958, 3164721319, 1062485557],
+            [1028916002, 1066549451, 3176737758, 1074557794],
+            [1024133320, 1021425494, 1053120071, 3208414883],
+        ],
+        dtype=np.uint32,
+    )
+    coefficients = coefficient_bits.view(np.float32)
+    grid = np.array(
+        [[0, 1, 7, 19], [0, 3, 11, 2], [0, 5, 13, 17]],
+        dtype=np.float32,
+    )
+    expected = np.empty((3, grid.shape[1]), dtype=np.float32)
+    for row in range(3):
+        for column in range(grid.shape[1]):
+            x, y, z = grid[:, column]
+            value = np.float32(y * coefficients[row, 1])
+            value = np.float32(value + np.float32(z * coefficients[row, 2]))
+            value = np.float32(value + coefficients[row, 3])
+            value = np.float32(value + np.float32(x * coefficients[row, 0]))
+            expected[row, column] = value
+
+    measured = _coordinates_from_fsl_coefficients(
+        torch.from_numpy(coefficients.copy()), torch.from_numpy(grid)
+    ).numpy()
+
+    np.testing.assert_array_equal(measured.view(np.uint32), expected.view(np.uint32))
+
+
+def _newimage_cog_scalar_oracle(array, sampling):
+    minimum = np.float32(array.min())
+    nlim = max(int(np.sqrt(float(array.size))), 1000)
+    total = vx = vy = vz = 0.0
+    block_total = block_x = block_y = block_z = 0.0
+    count = 0
+    for z in range(array.shape[2]):
+        for y in range(array.shape[1]):
+            for x in range(array.shape[0]):
+                value = float(np.float32(array[x, y, z] - minimum))
+                block_x += value * x
+                block_y += value * y
+                block_z += value * z
+                block_total += value
+                count += 1
+                if count > nlim:
+                    total += block_total
+                    vx += block_x
+                    vy += block_y
+                    vz += block_z
+                    block_total = block_x = block_y = block_z = 0.0
+                    count = 0
+    total += block_total
+    vx += block_x
+    vy += block_y
+    vz += block_z
+    if abs(total) < 1e-5:
+        total = 1.0
+    voxel = np.array([vx / total, vy / total, vz / total])
+    return sampling[:3, :3] @ voxel + sampling[:3, 3]
+
+
+def test_cpu_centre_of_gravity_matches_newimage_scalar_block_order():
+    index = np.arange(11 * 10 * 11, dtype=np.float32).reshape(11, 10, 11)
+    array = np.float32(np.sin(index * np.float32(.071)))
+    array += np.float32((index % 17) * np.float32(.003))
+    sampling = np.array(
+        [[.73, 0, 0, 1.2], [0, 1.17, 0, -3.4], [0, 0, 2.31, .8], [0, 0, 0, 1]],
+        dtype=np.float64,
+    )
+    expected = _newimage_cog_scalar_oracle(array, sampling)
+    measured = _centre_of_gravity(torch.from_numpy(array), sampling)
+
+    np.testing.assert_array_equal(measured.view(np.uint64), expected.view(np.uint64))
+
+
+def test_affine_decomposition_uses_fsl_float_intermediates():
+    affine = np.array(
+        [
+            [1.03870052035, .0581360013514, .0208731747207, -.742409058073],
+            [-.0332339779434, .967363767006, .06686295822, -2.34995929637],
+            [-.0399591258423, -.0507381279885, 1.01791154105, 1.88608230552],
+            [0, 0, 0, 1],
+        ],
+        dtype=np.float64,
+    )
+    centre = np.array([16.98656918, 16, 17], dtype=np.float64)
+    expected = np.array(
+        [
+            float.fromhex("0x1.99999a0000000p-5"),
+            float.fromhex("-0x1.47ae140000000p-5"),
+            float.fromhex("0x1.eb851c0000000p-6"),
+            float.fromhex("0x1.33333333529d0p+0"),
+            float.fromhex("-0x1.2666666664498p+1"),
+            float.fromhex("0x1.66666666ed840p-1"),
+            float.fromhex("0x1.0a3d700000000p+0"),
+            float.fromhex("0x1.f0a3d80000000p-1"),
+            float.fromhex("0x1.051eb80000000p+0"),
+            float.fromhex("0x1.eb851e0000000p-6"),
+            float.fromhex("-0x1.47ae160000000p-6"),
+            float.fromhex("0x1.eb851e0000000p-7"),
+        ],
+        dtype=np.float64,
+    )
+
+    measured = fsl_parameters_from_affine(affine, centre)
+
+    np.testing.assert_array_equal(measured.view(np.uint64), expected.view(np.uint64))

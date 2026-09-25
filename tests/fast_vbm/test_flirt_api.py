@@ -3,9 +3,11 @@
 import numpy as np
 import pytest
 import surfa as sf
+import torch
 
 import freesurfer_torch
 from freesurfer_torch.flirt import FLIRTResult, TorchFLIRT
+from freesurfer_torch.flirt import core as flirt_core
 from freesurfer_torch.flirt.coordinates import (
     flirt_to_world_affine,
     world_to_flirt_affine,
@@ -69,3 +71,30 @@ def test_flirt_result_rejects_one_path_for_image_and_matrix(tmp_path):
         result.save(output=destination, omat=destination)
 
     assert not destination.exists()
+
+
+def test_reference_validation_is_not_reported_as_current_input_equivalence(
+        monkeypatch):
+    class FakeEngine:
+        cost_evaluations = 1
+
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def run(self, qsform):
+            return 0.0, np.eye(4)
+
+    monkeypatch.setattr(flirt_core, "_DefaultFLIRTEngine", FakeEngine)
+    monkeypatch.setattr(
+        flirt_core,
+        "_resample_output",
+        lambda moving, fixed_shape, *args, **kwargs: torch.zeros(fixed_shape),
+    )
+
+    result = TorchFLIRT(device="cpu", angular_search=False)(_volume(), _volume())
+
+    assert result.qc["reference_validation_matrix_gate_passed"] is True
+    assert result.qc["validation_parameter_profile_matches_run"] is False
+    assert result.qc["current_input_compared_with_fsl"] is False
+    assert result.qc["validated_fsl_equivalent"] is False
+    assert result.qc["complete_numerical_equivalence_claimed"] is False

@@ -133,38 +133,59 @@ def fsl_parameters_from_affine(affine, centre):
         raise ValueError("affine and centre must have shapes (4, 4) and (3,)")
     linear = affine[:3, :3]
     x, y, z = linear[:, 0], linear[:, 1], linear[:, 2]
-    sx = np.linalg.norm(x)
+    # MISCMATHS ``decompose_aff`` stores these six intermediates as float,
+    # even though NEWMAT's input vectors and subsequent matrices are double.
+    # The casts therefore belong at assignment, not at function entry.
+    sx = np.float32(np.linalg.norm(x))
     if sx <= 1e-12:
         raise ValueError("affine has a singular x scale")
-    sy_sq = float(y @ y - (x @ y) ** 2 / sx**2)
-    sy = math.sqrt(max(sy_sq, 0.0))
+    xy = float(x @ y)
+    sx_squared = np.float32(sx * sx)
+    sy_sq = float(y @ y - xy**2 / float(sx_squared))
+    sy = np.float32(math.sqrt(max(sy_sq, 0.0)))
     if sy <= 1e-12:
         raise ValueError("affine has a singular y scale")
-    a = float(x @ y / (sx * sy))
-    x0 = x / sx
-    y0 = y / sy - a * x0
+    a = np.float32(xy / float(np.float32(sx * sy)))
+    x0 = x / float(sx)
+    y0 = y / float(sy) - float(a) * x0
     sz_sq = float(z @ z - (x0 @ z) ** 2 - (y0 @ z) ** 2)
-    sz = math.sqrt(max(sz_sq, 0.0))
+    sz = np.float32(math.sqrt(max(sz_sq, 0.0)))
     if sz <= 1e-12:
         raise ValueError("affine has a singular z scale")
-    b = float(x0 @ z / sz)
-    c = float(y0 @ z / sz)
-    scale = np.diag([sx, sy, sz])
-    skew = np.array([[1, a, b], [0, 1, c], [0, 0, 1]], dtype=np.float64)
+    b = np.float32(float(x0 @ z) / float(sz))
+    c = np.float32(float(y0 @ z) / float(sz))
+    scale = np.diag([float(sx), float(sy), float(sz)])
+    skew = np.array(
+        [[1, float(a), float(b)], [0, 1, float(c)], [0, 0, 1]],
+        dtype=np.float64,
+    )
     rotation = linear @ np.linalg.inv(scale) @ np.linalg.inv(skew)
 
-    cy = math.sqrt(rotation[0, 0] ** 2 + rotation[0, 1] ** 2)
+    # ``rotmat2euler`` likewise narrows each named scalar to float before the
+    # branch and atan2 calls.
+    cy = np.float32(
+        math.sqrt(rotation[0, 0] ** 2 + rotation[0, 1] ** 2)
+    )
     if cy < 1e-4:
-        rx = math.atan2(-rotation[2, 1], rotation[1, 1])
-        ry = math.atan2(-rotation[0, 2], 0.0)
-        rz = 0.0
+        cos_x = np.float32(rotation[1, 1])
+        sin_x = np.float32(-rotation[2, 1])
+        sin_y = np.float32(-rotation[0, 2])
+        rx = np.float32(math.atan2(float(sin_x), float(cos_x)))
+        ry = np.float32(math.atan2(float(sin_y), 0.0))
+        rz = np.float32(0.0)
     else:
-        rx = math.atan2(rotation[1, 2] / cy, rotation[2, 2] / cy)
-        ry = math.atan2(-rotation[0, 2], cy)
-        rz = math.atan2(rotation[0, 1] / cy, rotation[0, 0] / cy)
+        cos_z = np.float32(rotation[0, 0] / float(cy))
+        sin_z = np.float32(rotation[0, 1] / float(cy))
+        cos_x = np.float32(rotation[2, 2] / float(cy))
+        sin_x = np.float32(rotation[1, 2] / float(cy))
+        sin_y = np.float32(-rotation[0, 2])
+        rx = np.float32(math.atan2(float(sin_x), float(cos_x)))
+        ry = np.float32(math.atan2(float(sin_y), float(cy)))
+        rz = np.float32(math.atan2(float(sin_z), float(cos_z)))
     translation = linear @ centre + affine[:3, 3] - centre
     return np.array(
-        [rx, ry, rz, *translation, sx, sy, sz, a, b, c], dtype=np.float64
+        [rx, ry, rz, *translation, sx, sy, sz, a, b, c],
+        dtype=np.float64,
     )
 
 
@@ -359,6 +380,54 @@ def _voxel_grid(shape, *, device):
     return torch.stack(axes).reshape(3, -1)
 
 
+def _fsl_pull_coefficients(
+    moving_to_reference,
+    moving_voxel_sizes,
+    reference_voxel_sizes,
+    *,
+    device,
+):
+    """Return the 12 float coefficients used by NEWIMAGE cost functions."""
+    affine = np.asarray(moving_to_reference, dtype=np.float64)
+    if affine.shape != (4, 4):
+        raise ValueError("moving_to_reference must have shape (4, 4)")
+    moving_sampling_inverse = np.diag(
+        [
+            1 / float(moving_voxel_sizes[0]),
+            1 / float(moving_voxel_sizes[1]),
+            1 / float(moving_voxel_sizes[2]),
+            1,
+        ]
+    )
+    reference_sampling = np.diag(
+        [
+            float(reference_voxel_sizes[0]),
+            float(reference_voxel_sizes[1]),
+            float(reference_voxel_sizes[2]),
+            1,
+        ]
+    )
+    # NEWIMAGE forms iaffbig with NEWMAT Real (double), then assigns its first
+    # three rows to twelve local float variables a11 ... a34.
+    pull = moving_sampling_inverse @ np.linalg.inv(affine) @ reference_sampling
+    coefficients = np.asarray(pull[:3, :], dtype=np.float32)
+    return torch.as_tensor(coefficients, dtype=torch.float32, device=device)
+
+
+def _coordinates_from_fsl_coefficients(coefficients, grid):
+    """Evaluate FSL float affine coefficients without a TF32 matrix multiply."""
+    x, y, z = grid.unbind(0)
+    rows = []
+    for row in coefficients:
+        # Match the grouping at x=0 in p_corr_ratio_smoothed, followed by the
+        # x contribution.  Scalar elementwise operations do not use TF32.
+        coordinate = torch.add(torch.mul(y, row[1]), torch.mul(z, row[2]))
+        coordinate = torch.add(coordinate, row[3])
+        coordinate = torch.add(coordinate, torch.mul(x, row[0]))
+        rows.append(coordinate)
+    return torch.stack(rows)
+
+
 class FSLCorrelationRatio:
     """FSL 2111.2 unweighted correlation-ratio cost on a PyTorch device."""
 
@@ -404,33 +473,17 @@ class FSLCorrelationRatio:
         self.bin_lengths = torch.bincount(
             self.bin_index, minlength=self.bins
         )
-        self.reference_sampling = torch.diag(
-            torch.tensor(
-                [*self.reference_voxel_sizes, 1],
-                dtype=torch.float32,
-                device=self.device,
-            )
-        )
-        self.moving_sampling_inverse = torch.diag(
-            torch.tensor(
-                [
-                    1 / self.moving_voxel_sizes[0],
-                    1 / self.moving_voxel_sizes[1],
-                    1 / self.moving_voxel_sizes[2],
-                    1,
-                ],
-                dtype=torch.float32,
-                device=self.device,
-            )
-        )
 
     def __call__(self, moving_to_reference):
-        affine = torch.as_tensor(
-            moving_to_reference, dtype=torch.float32, device=self.device
+        coefficients = _fsl_pull_coefficients(
+            moving_to_reference,
+            self.moving_voxel_sizes,
+            self.reference_voxel_sizes,
+            device=self.device,
         )
-        pull = self.moving_sampling_inverse @ torch.linalg.inv(affine)
-        pull = pull @ self.reference_sampling
-        coordinates = pull[:3, :3] @ self.grid + pull[:3, 3:4]
+        coordinates = _coordinates_from_fsl_coefficients(
+            coefficients, self.grid
+        )
         upper = torch.tensor(
             [size - 1.0001 for size in self.moving.shape],
             dtype=torch.float32,
@@ -673,7 +726,43 @@ def fsl_coordinate_optimize(
     return point, float(value)
 
 
+def _serial_float64_sum(values):
+    """Sum one NEWIMAGE COG block in scalar double order."""
+    if values.size == 0:
+        return 0.0
+    return float(np.add.accumulate(values, dtype=np.float64)[-1])
+
+
 def _centre_of_gravity(data, sampling):
+    if data.device.type == "cpu":
+        # NEWIMAGE calc_cog traverses x fastest, accumulates double scalars,
+        # and flushes each block after n becomes greater than nlim.
+        array = data.detach().numpy()
+        minimum = np.float32(array.min())
+        ordered = np.transpose(array, (2, 1, 0)).reshape(-1)
+        values = np.asarray(ordered - minimum, dtype=np.float64)
+        nlim = max(int(math.sqrt(values.size)), 1000)
+        block_size = nlim + 1
+        xsize, ysize, _ = array.shape
+        total = vx = vy = vz = 0.0
+        for start in range(0, values.size, block_size):
+            stop = min(start + block_size, values.size)
+            block = values[start:stop]
+            indices = np.arange(start, stop, dtype=np.int64)
+            x = indices % xsize
+            yz = indices // xsize
+            y = yz % ysize
+            z = yz // ysize
+            total += _serial_float64_sum(block)
+            vx += _serial_float64_sum(block * x)
+            vy += _serial_float64_sum(block * y)
+            vz += _serial_float64_sum(block * z)
+        if abs(total) < 1e-5:
+            total = 1.0
+        voxel = np.array([vx / total, vy / total, vz / total])
+        sampling = np.asarray(sampling, dtype=np.float64)
+        return sampling[:3, :3] @ voxel + sampling[:3, 3]
+
     values = data.to(torch.float64) - data.min().to(torch.float64)
     total = values.sum()
     if abs(float(total)) < 1e-5:
@@ -861,7 +950,7 @@ class _DefaultFLIRTEngine:
 
     def cost(self, affine):
         affine = np.asarray(affine, dtype=np.float64)
-        key = affine.astype(np.float32).tobytes()
+        key = affine.tobytes(order="C")
         if key not in self._cache:
             self._cache[key] = self.level.cost(affine @ self.initial_matrix)
             self.cost_evaluations += 1
@@ -1134,8 +1223,8 @@ class TorchFLIRT:
     """Source-derived PyTorch implementation of the supported FLIRT path.
 
     This class ports the FLIRT default correlation-ratio and coordinate-search
-    path. Numerical equivalence is reported only after the external FSL
-    validation gate passes.
+    path. External validation is reported as reference-suite evidence and is
+    never treated as a per-input comparison with FSL.
     """
 
     def __init__(self, device=None, *, angular_search=True):
@@ -1218,6 +1307,13 @@ class TorchFLIRT:
         )
         pull_world = np.linalg.inv(forward_world)
         pull_world[3] = (0, 0, 0, 1)
+        validation_parameter_profile_matches_run = (
+            self.device.type == "cuda"
+            and bool(torch.backends.cuda.matmul.allow_tf32)
+            and bool(torch.backends.cudnn.allow_tf32)
+            and self.angular_search
+            and init is None
+        )
         qc = {
             "backend": "pytorch-fsl-flirt-2111.2-source-derived",
             "device": str(self.device),
@@ -1246,9 +1342,33 @@ class TorchFLIRT:
             "validation_matrix_metric": (
                 "FSL rmsdiff about the reference intensity-weighted COG"
             ),
-            "validation_profile": "CUDA TF32 default",
-            "validation_report": "validation/fast_vbm/report.v0.9.public.json",
+            "validation_rmsdiff_radius_mm": 80.0,
+            "validation_case_count": 10,
+            "validation_matrix_pass_count": 10,
+            "validation_matrix_median_mm": 0.00854449,
+            "validation_matrix_maximum_mm": 0.0289838,
+            "reference_validation_profile": (
+                "CUDA TF32 default; angular search; no init"
+            ),
+            "validation_parameter_profile_matches_run": (
+                validation_parameter_profile_matches_run
+            ),
+            "reference_validation_report": (
+                "validation/fast_vbm/report.v0.9.public.json"
+            ),
+            "reference_validation_domain": (
+                "10 real T1w-derived FSL FAST GM maps registered to one UKB "
+                "group-GM template on an NVIDIA H100 PCIe"
+            ),
+            "reference_validation_matrix_gate_passed": True,
+            "current_input_compared_with_fsl": False,
             "validated_fsl_equivalent": False,
+            "validation_scope": (
+                "reference-suite tolerance-based matrix functional agreement; "
+                "not a per-input FSL comparison"
+            ),
+            "bitwise_identity_claimed": False,
+            "complete_numerical_equivalence_claimed": False,
         }
         return FLIRTResult(
             moved=moved,

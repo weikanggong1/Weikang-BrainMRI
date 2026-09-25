@@ -12,11 +12,14 @@ declared float32/float64 tensor dtypes. It does not use float16 or bfloat16;
 the active flags are written to `result.qc["tf32"]`.
 
 This source-derived PyTorch port implements the supported default FSL path; it
-is not a claim of complete numerical equivalence.
-`result.qc["validated_fsl_equivalent"]` is `False`. The current ten-case
-report uses FSL `rmsdiff` about the reference image intensity-weighted COG
-with an 80 mm radius; its aggregate values are published only after that run
-completes.
+does not claim bitwise or complete numerical equivalence. The declared
+reference-suite matrix gate passed 10/10 cases at `rmsdiff <= 0.05 mm`, with a median
+of 0.008544 mm and maximum of 0.028984 mm.
+
+Runtime QC still reports `result.qc["validated_fsl_equivalent"] = False` and
+`current_input_compared_with_fsl = False`. The field
+`reference_validation_matrix_gate_passed = True` records the named ten-case
+suite, rather than equivalence for the image currently being processed.
 
 The port is derived from FSL source and is covered by the non-commercial FSL
 Software Licence. See [the FSL licence](../../licenses/FSL-6.0.txt),
@@ -157,10 +160,28 @@ GM template. FSL 6.0.7.4 is the executable oracle.
 
 ### Current default: TF32 enabled
 
-The current ten-case report is pending. It computes the official FSL
-reference-centred `rmsdiff`, rather than a zero-centred displacement surrogate,
-and records the reference COG and 80 mm radius. The status remains
-`validated_fsl_equivalent=false` until every declared gate passes.
+The 0.9 reference suite used 10 real T1-derived FSL FAST GM maps, the UKB
+group-GM template, FSL 6.0.7.4, and the FSL reference image
+intensity-weighted COG with an 80 mm radius.
+
+| 指标 | median [Q1–Q3] | maximum | 判据 |
+| --- | --- | --- | --- |
+| matrix RMS difference | 0.008544 [0.006265–0.019436] mm | 0.028984 mm | 10/10 ≤ 0.05 mm |
+| CUDA-synchronized compute | 24.015 [23.100–30.327] s | 85.818 s | 描述性计时 |
+
+This is a tolerance-based matrix functional gate for the declared suite.
+`validated_fsl_equivalent`, `bitwise_identity_claimed`, and
+`complete_numerical_equivalence_claimed` remain `False`. In particular,
+`reference_validation_matrix_gate_passed=True` does not mean that a new input
+was compared with FSL.
+
+The QC string
+`reference_validation_report="validation/fast_vbm/report.v0.9.public.json"`
+is an artifact identifier relative to the source repository. The root
+`validation/` directory is not included in the installed wheel. Wheel users
+can open the [public report on GitHub](https://github.com/weikanggong1/Weikang-BrainMRI/blob/main/validation/fast_vbm/report.v0.9.public.json); a source checkout can
+use the relative link
+[`report.v0.9.public.json`](../../validation/fast_vbm/report.v0.9.public.json).
 
 ### Historical run: TF32 disabled
 

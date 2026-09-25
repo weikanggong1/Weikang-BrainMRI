@@ -1,0 +1,77 @@
+{
+  "attestation": "FNIRT source-equivalence inheritance",
+  "baseline": {
+    "git_commit": "aece9c7e4cc2c030a8ebb925c4d670f7c841a8ea",
+    "package_python_source_sha256": "ab87e9fdc53f1c70991fd038b5abef0cebff6b288a76a1d202bd9756198c325c"
+  },
+  "checks": {
+    "coordinate_definitions_ast_identical": true,
+    "expected_package_digests": true,
+    "fnirt_python_file_sets_equal": true,
+    "import_relocations_normalized_ast_identical": true,
+    "passed": true,
+    "unchanged_fnirt_files_byte_identical": true
+  },
+  "coordinate_source_relocation": {
+    "baseline_file": "fast_vbm/linear.py",
+    "definition_ast_sha256": {
+      "_numpy_affine": "4525dba6ead2ed32d2ce243c10ea791e3992c378b9e4ff063e9035ddf1074faa",
+      "flirt_to_world_affine": "548800d22377d181fe2d8e6c60a48bc55b429c841a55e95f3460178661868c29",
+      "voxel_to_fsl_scaled_mm": "c559cbc3ad75d15255c430500a732b112ab984d3710d7276d2f61cf01a7f5c45",
+      "world_to_flirt_affine": "279644987ec768c27768030792b9b6e203b27c9c08e82ffcc01f0933bb472510"
+    },
+    "final_file": "flirt/coordinates.py",
+    "functions": [
+      "voxel_to_fsl_scaled_mm",
+      "flirt_to_world_affine",
+      "world_to_flirt_affine"
+    ],
+    "support_definitions": [
+      "_numpy_affine"
+    ]
+  },
+  "evidence_inherited_from": "fnirt_fsl_10case.v0.9.public.json",
+  "final": {
+    "package_python_source_sha256": "8bea5a883d0043a5d1264994dddf0fcbdb88fbdf3c1d22a753107754b24b6438"
+  },
+  "fnirt_python_sources": {
+    "byte_identical_files": [
+      "fnirt/__init__.py",
+      "fnirt/__main__.py",
+      "fnirt/_topology_triton.py",
+      "fnirt/cli.py",
+      "fnirt/io.py",
+      "fnirt/optimizer.py",
+      "fnirt/spline.py",
+      "fnirt/topology.py"
+    ],
+    "file_count": 10,
+    "import_relocations": [
+      {
+        "baseline_module": "fast_vbm.linear",
+        "file": "fnirt/registration.py",
+        "final_module": "flirt.coordinates",
+        "imported_names": [
+          "voxel_to_fsl_scaled_mm",
+          "world_to_flirt_affine"
+        ],
+        "normalized_ast_sha256": "a9c3f52b3446dbae73ca270a22d69171072f3cdcb0386edd499b1f92943b1a89"
+      },
+      {
+        "baseline_module": "fast_vbm.linear",
+        "file": "fnirt/standalone.py",
+        "final_module": "flirt.coordinates",
+        "imported_names": [
+          "flirt_to_world_affine"
+        ],
+        "normalized_ast_sha256": "756bef44e73aeb36a6804b411bb826de96313117f3e782eada4de7c355050d61"
+      }
+    ]
+  },
+  "interpretation": {
+    "fsl_numerical_equivalent": false,
+    "new_numerical_run": false,
+    "scope": "The final package inherits the baseline FNIRT numerical results because FNIRT executable source is unchanged apart from verified import and coordinate-function relocation. This attestation is not a new numerical run."
+  },
+  "schema_version": 1
+}

@@ -165,13 +165,46 @@ DCT basis 或 quadratic spline。CLI 遇到这些参数会报告未识别参数�
 commit、文件哈希保存在
 [`_vendor_fsl`](../_vendor_fsl/README.md)。
 
-intent-2007 header、B-spline expansion、ZoomField、bending energy、拓扑约束和
-Jacobian 都有独立 FSL oracle 测试。只有在真实 GM 数据上通过以下外部门后，
-才能把端到端结果标记为 FSL 数值等价：使用同一个 input、reference、FLIRT
-matrix 和官方 reference mask；逐例比较 coefficient-expanded residual、`iout`、
-`jout` 和 modulated GM；报告最大误差、MAE、RMSE、Pearson 及运行时间。目前
-`TorchFNIRT.qc["fsl_fnirt_numerically_equivalent"]` 仍为 `False`，文档不把组件
-级 oracle 通过写成端到端等价。
+intent-2007 header、ZoomField 和 bending energy 使用 FSL 生成的 oracle fixture；
+B-spline expansion 与 Jacobian 有解析/组件测试。topology 路径目前覆盖 identity 和
+无需投影的 affine 回归，仓库中的 C++ topology oracle 尚未纳入自动门，因此不据此声称
+逐元素复现。0.9 的真实 GM 外部门使用相同 input、reference、
+FLIRT matrix 和官方 reference mask，比较 coefficient-expanded residual、`iout`、
+`jout` 和 modulated GM。文件合同 10/10 一致，数值结果高度相关，但误差不只来自
+末位舍入。因此 `TorchFNIRT.qc["fsl_fnirt_numerically_equivalent"]` 保持 `False`。
+
+### 当前 FSL 6.0.7.4 十例 matched-input 对照
+
+10 例真实 T1w-derived FSL FAST GM 均使用官方
+`GM_2_MNI152GM_2mm.cnf`、同一 UKB GM template、同一 FSL FLIRT matrix 和同一
+`MNI152_T1_2mm_brain_mask_dil`。下表是完整 coefficient grid 或 reference grid
+上的十例中位数；最大误差一列也是逐例 maximum absolute error 的中位数。
+
+| 输出 | Pearson r | MAE | RMSE | 最大绝对误差 |
+|---|---:|---:|---:|---:|
+| cubic coefficients | 0.999089 | 0.033959 | 0.074783 | 2.106445 |
+| expanded nonlinear residual | 0.999508 | 0.028455 | 0.051817 | 0.980345 |
+| warped GM (`iout`) | 0.998695 | 0.003101 | 0.013682 | 0.642930 |
+| nonlinear Jacobian (`jout`) | 0.999267 | 0.003395 | 0.007417 | 0.240333 |
+| modulated GM | 0.998507 | 0.003759 | 0.017655 | 1.186854 |
+
+五类输出的 shape、affine、voxel size、dtype、qform、sform 和 NIfTI intent 均为
+10/10 一致。共享节点上的 FSL CPU `fnirt` 中位数为 855.583 秒
+[IQR 822.899–910.276]，TorchFNIRT H100 同步墙钟中位数为 1244.896 秒
+[1054.397–1337.331]；逐例 `FSL/Torch` 时间比中位数为 0.686。该执行未隔离节点
+负载，说明本次实现的实际时间，不能解释为硬件加速倍数。完整分布和计时边界见
+[`fnirt_fsl_10case.v0.9.public.json`](../../../validation/fast_vbm/fnirt_fsl_10case.v0.9.public.json)。
+最终发布源码只移动了 FNIRT 使用的三个坐标函数及其 import；归一化 AST 和其余
+FNIRT Python 源码的逐字节核验见
+[`fnirt_source_equivalence.v0.9.public.json`](../../../validation/fast_vbm/fnirt_source_equivalence.v0.9.public.json)。该记录是源码继承证明，
+不是新的数值运行，也不改变 `fsl_fnirt_numerically_equivalent=false`。
+
+最早可定位的分叉出现在第三次 coefficient update 的截断 PCG：FSL 组装稀疏
+Hessian 并按固定顺序累加，TorchFNIRT 使用 matrix-free FP64 `einsum`。两者都在
+相对残差 `1e-3` 处停止，因此不同的归约顺序会使后续 Krylov 和 LM 轨迹分开。
+归一化、LM 阻尼、边界计算、topology projection 和后续更新顺序还会继续传播该
+差异；现有实验不能把最终误差分解到某一个步骤。GPU topology projection 为保留
+FSL 的更新顺序采用串行 kernel，也是当前 Torch 路径没有快于 FSL CPU 的原因之一。
 
 ### 此前的 FSL 6.0.7.4 单例 matched-input 诊断
 

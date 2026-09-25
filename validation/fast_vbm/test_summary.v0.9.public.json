@@ -1,0 +1,45 @@
+{
+  "build": {
+    "backend": "setuptools.build_meta",
+    "network_used": false,
+    "passed": true
+  },
+  "cli_help": {
+    "fs-torch": true,
+    "fs-torch-applywarp": true,
+    "fs-torch-flirt": true,
+    "fs-torch-fnirt": true,
+    "fs-torch-recon-all": true,
+    "fs-torch-setup-weights": true
+  },
+  "environment": {
+    "cuda_runtime": "11.8",
+    "device_name": "NVIDIA H100 PCIe",
+    "platform": "Linux",
+    "python": "3.11.7",
+    "tf32": {
+      "cudnn": true,
+      "matmul": true,
+      "reduced_precision_tensor_dtype": false
+    },
+    "threads": 4,
+    "torch": "2.5.1"
+  },
+  "full_source_suite": {
+    "completed": true,
+    "duration_seconds": 19.54,
+    "passed": 353,
+    "skipped": 12,
+    "warnings": 4
+  },
+  "privacy": "Aggregate-only test and build summary; no account, host, path, or subject identifier is published.",
+  "release": "0.9.0",
+  "schema": 1,
+  "wheel_install": {
+    "isolated_target": true,
+    "outside_source_tree": true,
+    "passed": true,
+    "public_api_import": true,
+    "version": "0.9.0"
+  }
+}

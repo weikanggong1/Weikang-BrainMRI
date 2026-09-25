@@ -95,10 +95,15 @@ fs-torch flirt -in moving.nii.gz -ref fixed.nii.gz \
 
 `moved` 与 reference 的 shape/geometry 一致；`.mat` 是 input → reference 的
 FSL scaled-mm matrix。当前 `TorchFLIRT` 来自 FSL 2111.2 默认
-correlation-ratio/Brent 路径源码，不是旧
-NCC/Adam 实现。当前十例验证使用 FSL reference image intensity-weighted COG
-和 80 mm radius 计算 `rmsdiff`；汇总完成前仍标记
-`validated_fsl_equivalent=false`。详见
+correlation-ratio/Brent 路径源码，不是旧 NCC/Adam 实现。0.9 reference suite 的
+matrix gate 为 10/10 通过（`rmsdiff ≤ 0.05 mm`；中位数 0.008544 mm，
+最大值 0.028984 mm）。运行时仍报告
+`validated_fsl_equivalent=false`；`reference_validation_matrix_gate_passed=true`
+只描述固定套件，不表示当前输入已与 FSL 比较。
+
+QC 中的 `validation/fast_vbm/report.v0.9.public.json` 是源码仓库 artifact id，wheel
+不包含根 `validation/` 目录。安装 wheel 后请使用
+[GitHub report](https://github.com/weikanggong1/Weikang-BrainMRI/blob/main/validation/fast_vbm/report.v0.9.public.json)；完整边界见
 [`docs/flirt/README.md`](../../../docs/flirt/README.md)。
 
 ## 输出
@@ -134,9 +139,22 @@ python tools/setup_weights.py --model fast-vbm
 不需要 checkpoint。TorchFAST、`TorchFLIRT`、`TorchFNIRT`、`TorchApplyWarp`、
 Jacobian 和 modulation 都没有模型权重。
 
-当前 0.9 共享链路的正式 10 例双后端结果和 FNIRT 10 例汇总均待完成。
-验证目录中的 0.8
-FNIRT-style/NCC-Adam 数值是历史记录，只用于追溯旧版本，不能作为当前
-实现的准确度或计时结果。
+当前 0.9 共享链路的正式 10 例双后端 FastVBM 结果已经完成；报告只包含
+`end_to_end`，未在该报告中重新运行 matched-GM 或 matched-affine。FLIRT matrix
+functional gate 为
+10/10 通过；独立 direct FNIRT matched-input 报告的 warped GM、Jacobian 和
+modulated GM 中位 Pearson 为 0.998695、0.999267 和
+0.998507，但仍保持 `fsl_fnirt_numerically_equivalent=false`。
+
+详细精度、计时、gate 和归因边界见
+[`validation/fast_vbm/README.md`](../../../validation/fast_vbm/README.md)。Wheel 不包含
+根 `validation/` 目录；安装包用户可直接查看
+[GitHub 上的 0.9 report](https://github.com/weikanggong1/Weikang-BrainMRI/blob/main/validation/fast_vbm/report.v0.9.public.json)。公开 artifact 还包括
+[`backend_comparison.v0.9.public.csv`](https://github.com/weikanggong1/Weikang-BrainMRI/blob/main/validation/fast_vbm/backend_comparison.v0.9.public.csv)、
+[`test_summary.v0.9.public.json`](https://github.com/weikanggong1/Weikang-BrainMRI/blob/main/validation/fast_vbm/test_summary.v0.9.public.json) 和
+[`release.v0.9.public.json`](https://github.com/weikanggong1/Weikang-BrainMRI/blob/main/validation/fast_vbm/release.v0.9.public.json)。
+
+验证目录中的旧 FNIRT-style/NCC-Adam 数值及其模块名、类名只记录 **0.8 当时归档**。
+这些实现已从当前安装包删除，不是当前 API，也不能作为当前实现的准确度或计时结果。
 
 完整参数、坐标与 Jacobian 约定、Python BatchRunner 多 GPU 示例、FSL/UKB 对应和验证入口见 [`docs/fast_vbm/README.md`](../../../docs/fast_vbm/README.md)。公开统计只以 [`validation/fast_vbm`](../../../validation/fast_vbm/README.md) 为准。

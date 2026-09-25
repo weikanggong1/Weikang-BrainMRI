@@ -20,7 +20,7 @@ SynthStrip、SynthMorph、WMH-SynthSeg 和 SynthSR 的多被试处理使用 Pyth
 
 GPU recon-all 的 SynthStrip、33 类 SynthSeg、SynthMorph 及三项辅助神经分割使用 PyTorch/CUDA；影像转换、强度校正、皮层拓扑、表面生成和统计运行于打包的原生 CPU 程序。单被试支持 `fs-torch-recon-all` 命令行和 Python 调用，多被试完整流程仅提供 Python 调用。
 
-CUDA 路径默认允许 NVIDIA TF32 matmul 和 cuDNN 内核，模型与影像张量仍保持 float32；本包不会自动改用 float16 或 bfloat16。验证报告会记录实际 TF32 开关。
+相关 CUDA 路径允许 NVIDIA TF32 matmul 和 cuDNN 内核；模型与影像张量仍保持 float32，本包不会自动改用 float16 或 bfloat16。各验证报告记录实际开关。
 
 FastVBM 的两个分支共用仿射配准、FSL 坐标转换、GPU 重采样、仅非线性
 Jacobian 和调制步骤；差别只在非线性形变由 SynthMorph 或 TorchFNIRT 估计。
