@@ -227,6 +227,9 @@ def test_summarize_keeps_case_details_private(tmp_path):
     assert public["execution"]["batch_wall_sec"] == 2.0
     assert public["execution"]["runtime_context"] == "shared-node"
     assert not public["execution"]["candidate_timing_controlled"]
+    assert public["flirt"]["case_count"] == 1
+    assert public["flirt"]["matrix_rmsdiff_threshold_mm"] == 0.05
+    assert public["flirt"]["matrix_rmsdiff_pass_count"] == 1
     assert public["flirt"]["timing"]["synchronized_compute_sec"]["median"] == 1.0
     assert public["flirt"]["timing"]["output_save_sec"]["median"] == 0.1
     assert (

@@ -1936,6 +1936,11 @@ def summarize(args) -> int:
         },
         "flirt": {
             "matrix_contract": "input to reference in FSL scaled-mm coordinates",
+            "case_count": len(flirt_values),
+            "matrix_rmsdiff_threshold_mm": FLIRT_RMSDIFF_MAX_MM,
+            "matrix_rmsdiff_pass_count": sum(
+                value <= FLIRT_RMSDIFF_MAX_MM for value in flirt_values
+            ),
             "rmsdiff_radius_mm": 80.0,
             "rmsdiff_reference_centre_scaled_mm": rmsdiff_reference_centre,
             "rmsdiff_definition": (
