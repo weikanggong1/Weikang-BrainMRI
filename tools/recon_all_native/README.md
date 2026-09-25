@@ -337,6 +337,11 @@ scientific comparison.
 
 ### Move recon-all models into the shared weight directory
 
+The [2026-09-25 candidate record](../../validation/recon_all/external_models_2026-09-25.md)
+contains the measured package size, static preflight and standalone SynthSeg
+checks. The full reconstruction was stopped at the user's request, so the thin
+bundle remains unverified and is rejected by the default entry.
+
 `externalize_models.py` derives an **unverified** thin candidate from a copy
 of a certified bundle. The original certified bundle remains untouched. First
 install the 13 pinned models and lookup files with

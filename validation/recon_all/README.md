@@ -8,6 +8,9 @@ replacement candidates that were not integrated.
 The [0.6-to-0.7 source-equivalence record](v06_to_v07_runtime_equivalence.json)
 links the independently certified 0.6 source and bundle to the 0.7 source
 snapshot. It is a source audit; 0.7 did not repeat the full reconstruction.
+The [external-model candidate record](external_models_2026-09-25.md) covers
+the smaller runtime and independent 33-class SynthSeg. Its full reconstruction
+was stopped at the user's request; that candidate is not numerically certified.
 
 ## SynthSeg numerical boundary on the development T1
 

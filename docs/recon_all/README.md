@@ -30,6 +30,9 @@ flowchart LR
 3.65 GB 为 13 个模型和查找表资源；移出它们后，原生运行包约 0.70 GB。
 仓库和 wheel 均不提供该原生运行包或个人 license，也不提供原生运行包的自动下载命令。
 统一权重目录则可按下面的命令从官方地址安装并逐文件校验。
+约 0.70 GB 的外置权重运行包目前是未完成全流程数值认证的候选版；
+[验证记录](../../validation/recon_all/external_models_2026-09-25.md)列明已通过的
+静态预检与 SynthSeg 单项检查。默认入口拒绝其 `standalone_verified=false` 清单。
 制作和审计运行包的步骤见[构建说明](../../tools/recon_all_native/README.md)。
 默认调用只接受其清单中 `standalone_verified=true` 且包内文件、运行配置和当前
 Python 源码哈希都匹配的运行包；候选包只能显式指定 `development_bundle=True`
