@@ -1,0 +1,16 @@
+{
+  "candidate_sha256": "21b82cb1934cb569da2df2c2be1392b78ebf5e8ef93413ff94d65bf0d9691ce7",
+  "reference_sha256": "ca0e7455d909e1b6d3ea5f3eddba180f981556512a1313555bb57d14a06024d3",
+  "atlas_sha256": "2fcd276a39800f01f93a4c8828ae6d0a8cea3d8b8b9fe1599d4ee54e806be93e",
+  "matrix_max_abs_error": 1.4901161193847656e-08,
+  "matrix_elements_above_2e-5": 0,
+  "atlas_samples": 315638,
+  "atlas_samples_with_different_source_voxel": 0,
+  "metadata_equal_after_path_basename": true,
+  "metadata_differences": [
+    {
+      "candidate": "filename = /cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_python_gpu_20260925/connected_input_talairach_assets_20260926/average/RB_all_2020-01-02.gca",
+      "reference": "filename = /public/software/apps/Freesurfer/8.2.0-1/average/RB_all_2020-01-02.gca"
+    }
+  ]
+}

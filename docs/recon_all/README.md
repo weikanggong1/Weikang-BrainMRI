@@ -95,6 +95,12 @@ MGH 头和仿射一致；Talairach 变换在输入网格八角点的最大位移
 输入的新跑官方命令全体素匹配；相对旧版完整官方归档有 112 个体素差异。
 [同输入与归档对照](../../validation/recon_all/python_gpu_port/CONNECTED_T1_NORMALIZE_20260926.md)
 将两种比较分开记录。
+新增 [`run_input_brainmask_chain`](../../src/fnit/recon_all/input_brainmask_chain.py)
+在单次 Python 调用中从原始 T1 运行至初始 `brainmask.mgz`。headcw CPU
+新目录回放耗时 175.86 秒；`nu.mgz` 和 `T1.mgz` 与此前独立 Python 输出
+逐体素一致。`brainmask.mgz` 相对历史官方归档的 49 个差异全部由上游
+`T1.mgz` 差异经相同 SynthStrip 掩膜传递；[报告](../../validation/recon_all/python_gpu_port/CONNECTED_BRAINMASK_20260926.md)
+保留了比较范围和分步时间。这个入口仍只覆盖早期体积链。
 
 [ANTs 去噪](../../validation/recon_all/python_gpu_port/ANTS_DENOISE_STATUS.md)另以
 `antspyx==0.6.3` Python API 在同一冻结 T1 输入上匹配全部 16,777,216 个输出体素；
@@ -111,6 +117,22 @@ MGH 头和仿射一致；Talairach 变换在输入网格八角点的最大位移
 矩阵最大误差 `7.45e-9`，315,638 个 atlas 样本的源体素映射零差异。
 该阶段尚未接入完整入口，其他被试和 GPU 实现仍待验证；单次同机运行耗时为
 Python 230.20 秒、原生 236.52 秒，尚非严格配对速度测试。
+另有 [`run_input_ca_normalize_chain`](../../src/fnit/recon_all/input_ca_normalize_chain.py)
+从原始 T1 单次调用到 `norm.mgz`、六帧 `ctrl_pts.mgz`，无需 FreeSurfer
+可执行程序。headcw CPU 实测 433.99 秒；LTA 的 315,638 个 atlas 样本
+映射均与归档官方一致，控制点 100,663,296 个值全等，`norm.mgz` 仍有
+25 个体素差异且全部落在上游 `nu.mgz` 的 34 个历史差异位置。
+[一次性调用及逐段对照](../../validation/recon_all/python_gpu_port/CONNECTED_CA_NORMALIZE_20260926.md)
+明确区分了归档与同输入原生基准。它仍是早期体积链，未产生完整分割和表面。
+
+```python
+from fnit.recon_all.input_ca_normalize_chain import run_input_ca_normalize_chain
+
+report = run_input_ca_normalize_chain(
+    "subject_T1w.nii.gz", "/scratch/sub01", "/models/weights", "/models/fs-assets",
+    device="cpu", threads=4,
+)
+```
 [GCA 逆场生成](../../validation/recon_all/python_gpu_port/CA_REGISTER_INVERSE_KERNELS.md)
 在冻结 warp 输入上已由 Python/Numba 逐字节复现完整压缩 NIfTI；它仍是独立 CPU 阶段，
 尚未接入完整入口。

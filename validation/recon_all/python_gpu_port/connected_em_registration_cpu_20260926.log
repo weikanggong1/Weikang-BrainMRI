@@ -1,0 +1,40 @@
+{
+  "output": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_python_gpu_20260925/connected_input_brainmask_cpu_20260926/mri/transforms/talairach.lta",
+  "matrix": [
+    [
+      1.158416986465454,
+      0.07760573923587799,
+      -0.12837934494018555,
+      -19.75442886352539
+    ],
+    [
+      -0.06050217151641846,
+      1.2994401454925537,
+      0.31439509987831116,
+      -52.99283218383789
+    ],
+    [
+      0.09091073274612427,
+      -0.2863314747810364,
+      1.0192095041275024,
+      4.7753071784973145
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "em_cost": 3.900984287261963,
+  "em_trials": 20,
+  "linear_iterations": 9,
+  "timing": {
+    "prepare_seconds": 11.482364747673273,
+    "translation_seconds": 9.066917381249368,
+    "linear_search_seconds": 220.2777792206034,
+    "em_seconds": 5.860048236325383,
+    "write_seconds": 0.08750371262431145,
+    "total_seconds": 246.77464016526937
+  }
+}

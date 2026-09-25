@@ -1,0 +1,11 @@
+{
+  "candidate_sha256": "21b82cb1934cb569da2df2c2be1392b78ebf5e8ef93413ff94d65bf0d9691ce7",
+  "reference_sha256": "21b82cb1934cb569da2df2c2be1392b78ebf5e8ef93413ff94d65bf0d9691ce7",
+  "atlas_sha256": "2fcd276a39800f01f93a4c8828ae6d0a8cea3d8b8b9fe1599d4ee54e806be93e",
+  "matrix_max_abs_error": 0.0,
+  "matrix_elements_above_2e-5": 0,
+  "atlas_samples": 315638,
+  "atlas_samples_with_different_source_voxel": 0,
+  "metadata_equal_after_path_basename": true,
+  "metadata_differences": []
+}
