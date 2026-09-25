@@ -16,6 +16,16 @@ from audit_bundle import SYSTEM_LIBRARIES, sha256
 from script_closure import scan_scripts
 
 
+MODEL_FILES = (
+    "synthstrip.1.pt", "synthmorph.affine.2.h5", "synthmorph.deform.3.h5",
+    "synthseg_2.0.h5", "synthseg_segmentation_labels_2.0.npy",
+    "synthseg_segmentation_names_2.0.npy", "synthseg_topological_classes_2.0.npy",
+    "entowm.fsm31.t1.nstd00-30.nstd21-108.h5", "entowm.ctab",
+    "mca-dura.both-lh.nstd21.fhs.h5", "mca-dura.ctab",
+    "vsinus.no-sp.m.all.nstd10-070.h5", "sclimbic.volstats.csv",
+)
+
+
 def under(path, root):
     try:
         path.resolve().relative_to(root.resolve())
@@ -24,16 +34,71 @@ def under(path, root):
         return False
 
 
+def check_external_models(rows, models_dir):
+    if not isinstance(rows, list):
+        return [{"error": "external_models must be a list"}], 0
+    paths = [row.get("path") if isinstance(row, dict) else None for row in rows]
+    expected = {f"models/{name}" for name in MODEL_FILES}
+    if (len(paths) != len(expected) or
+            not all(isinstance(path, str) for path in paths) or set(paths) != expected):
+        return [{"error": "Invalid external model inventory: expected 13 unique fixed model names"}], 0
+    if models_dir is None:
+        return [{"error": "External models require --models-dir"}], 0
+    try:
+        root = models_dir.resolve(strict=True)
+        if not root.is_dir():
+            raise NotADirectoryError(root)
+    except (OSError, RuntimeError):
+        return [{"error": "Invalid --models-dir", "path": str(models_dir)}], 0
+
+    errors = []
+    checked = 0
+    for row in rows:
+        relative = row["path"]  # The fixed inventory above allows only flat models/name paths.
+        if type(row.get("bytes")) is not int or row["bytes"] < 0 or not (
+                isinstance(row.get("sha256"), str) and
+                re.fullmatch(r"[0-9a-f]{64}", row["sha256"])):
+            errors.append({"file": relative, "error": "Invalid external model size or SHA-256"})
+            continue
+        try:
+            candidate = root / relative.removeprefix("models/")
+            if candidate.is_symlink():
+                raise ValueError("symlink")
+            path = candidate.resolve(strict=True)
+            if not under(path, root) or not path.is_file():
+                raise ValueError("escape or non-file")
+            size = path.stat().st_size
+            digest = sha256(path)
+        except (OSError, RuntimeError, ValueError):
+            errors.append({"file": relative, "error": "Missing, symlinked or escaped external model path"})
+            continue
+        checked += 1
+        if size != row["bytes"]:
+            errors.append({"file": relative, "error": "External model size mismatch",
+                           "expected": row["bytes"], "actual": size})
+        if digest != row["sha256"]:
+            errors.append({"file": relative, "error": "External model hash mismatch"})
+    return errors, checked
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bundle", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--package-python", type=Path,
                         help="Python interpreter used by the installed freesurfer-torch package")
+    parser.add_argument("--models-dir", type=Path,
+                        help="Directory containing files listed as models/name in external_models")
     args = parser.parse_args()
     bundle = args.bundle.resolve()
     manifest = json.loads((bundle / "manifest.json").read_text())
     errors = []
+    model_errors, checked_models = (check_external_models(manifest["external_models"], args.models_dir)
+                                    if "external_models" in manifest else ([], 0))
+    errors.extend(model_errors)
+    if "external_models" in manifest and args.models_dir is not None and manifest.get("fs_home"):
+        if args.models_dir.resolve().is_relative_to(Path(manifest["fs_home"]).resolve()):
+            errors.append({"error": "External models cannot be inside source FreeSurfer"})
     if manifest.get("target_system") and manifest["target_system"] != platform.system():
         errors.append({"error": "Unsupported target system", "required": manifest["target_system"],
                        "actual": platform.system()})
@@ -89,6 +154,7 @@ def main():
             closure["errors"].append({"command": command, "error": "Required command missing"})
             closure["script_resource_checks_passed"] = False
     result = {"hash_and_linkage_passed": not errors, "checked_staged_files": checked,
+              "checked_external_models": checked_models,
               "errors": errors, "elf_linkage": linkage, "standalone_verified": False,
               "script_resource_closure": closure,
               "script_resource_checks_passed": closure["script_resource_checks_passed"],
@@ -99,7 +165,8 @@ def main():
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps({key: result[key] for key in
-                      ("hash_and_linkage_passed", "script_resource_checks_passed", "checked_staged_files", "errors", "standalone_verified")}))
+                      ("hash_and_linkage_passed", "script_resource_checks_passed", "checked_staged_files",
+                       "checked_external_models", "errors", "standalone_verified")}))
     if errors or not closure["script_resource_checks_passed"]:
         raise SystemExit(2)
 

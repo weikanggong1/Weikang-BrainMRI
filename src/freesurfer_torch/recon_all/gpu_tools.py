@@ -3,31 +3,23 @@
 from __future__ import annotations
 
 import argparse
-import csv
 import os
 from pathlib import Path
 import sys
 
-import numpy as np
-import surfa as sf
 import torch
 
-
-# Cross-framework FP32 convolutions can reverse an almost exact SynthSeg tie.
-# Extend argmax's lower-channel tie rule by 16 float32 unit roundoffs.
-SYNTHSEG_TIE_EPSILON = 2 ** -20
-
-
-def _synthseg_index_with_numerical_ties(posterior: torch.Tensor) -> torch.Tensor:
-    peak = posterior.amax(dim=0, keepdim=True)
-    return (posterior >= peak - SYNTHSEG_TIE_EPSILON).to(torch.uint8).argmax(dim=0)
+from ..synthseg_parc.synthseg import (
+    SYNTHSEG_TIE_EPSILON, _synthseg_index_with_numerical_ties,
+)
 
 
 def _models() -> Path:
+    external = os.environ.get("FS_TORCH_MODEL_DIR")
     root = os.environ.get("FREESURFER_HOME")
-    if not root:
-        raise RuntimeError("FREESURFER_HOME must point to the packaged runtime")
-    models = Path(root) / "models"
+    if not external and not root:
+        raise RuntimeError("Set FS_TORCH_MODEL_DIR or FREESURFER_HOME")
+    models = Path(external) if external else Path(root) / "models"
     if not models.is_dir():
         raise FileNotFoundError(models)
     return models
@@ -98,9 +90,7 @@ def _morph(argv: list[str]) -> None:
 
 
 def _segment(argv: list[str]) -> None:
-    from ..synthseg_parc.postprocess import postprocess_segmentation
-    from ..synthseg_parc.preprocess import preprocess_t1
-    from ..synthseg_parc.segment import SynthSegSegmenter
+    from ..synthseg_parc import SynthSeg
 
     parser = argparse.ArgumentParser(prog="mri_synthseg")
     parser.add_argument("--i", required=True)
@@ -116,62 +106,25 @@ def _segment(argv: list[str]) -> None:
     if args.parc:
         parser.error("the pinned recon-all call uses 33-class SynthSeg without --parc")
 
-    torch.set_num_threads(args.threads)
     device = _device()
     models = _models()
-    prepared = preprocess_t1(args.i, device=device)
-    raw_labels = np.load(models / "synthseg_segmentation_labels_2.0.npy")
-    unique_labels, unique_indices = np.unique(raw_labels, return_index=True)
-    topology = torch.as_tensor(
-        np.load(models / "synthseg_topological_classes_2.0.npy")[unique_indices],
-        device=device,
-    )
-    segmenter = SynthSegSegmenter(
-        models / "synthseg_2.0.h5",
-        models / "synthseg_segmentation_labels_2.0.npy", device=device,
-    )
-    posterior = segmenter.posterior(prepared.image)
-    ordinary_labels, posterior = postprocess_segmentation(
-        posterior, segmenter.labels, topology, prepared.content_slices)
-    labels = segmenter.labels[_synthseg_index_with_numerical_ties(posterior)]
-    print("FS_TORCH_SYNTHSEG_NEAR_TIE"
-          f" epsilon={SYNTHSEG_TIE_EPSILON}"
-          f" changed_voxels={int(torch.count_nonzero(labels != ordinary_labels))}",
-          flush=True)
-    aligned_affine = prepared.aligned_affine.copy()
-    aligned_affine[:3, 3] += aligned_affine[:3, :3] @ np.asarray(
-        [part.start for part in prepared.content_slices])
-
-    data = labels.to(torch.int32).cpu().numpy()
-    source = sf.Volume(
-        data, geometry=sf.ImageGeometry(shape=data.shape, vox2world=aligned_affine))
-    if args.keepgeom:
-        source = source.resample_like(sf.load_volume(args.i), method="nearest")
+    lookup = None
     if not args.noaddctab:
         lookup = Path(os.environ["FREESURFER_HOME"]) / "FreeSurferColorLUT.txt"
         if not lookup.is_file():
             raise FileNotFoundError(lookup)
-        source.labels = sf.load_label_lookup(str(lookup))
+    result = SynthSeg(weights=models, device=device, threads=args.threads)(
+        args.i, keep_geometry=args.keepgeom, color_lut=lookup)
+    print("FS_TORCH_SYNTHSEG_NEAR_TIE"
+          f" epsilon={SYNTHSEG_TIE_EPSILON}"
+          f" changed_voxels={result.near_tie_voxels}",
+          flush=True)
     output = Path(args.o)
     output.parent.mkdir(parents=True, exist_ok=True)
-    source.save(str(output))
+    result.segmentation.save(str(output))
 
     if args.vol:
-        # FreeSurfer's non-parcellated 2.0 CSV places total intracranial
-        # volume first, then 32 foreground soft volumes in label order.
-        soft = posterior[1:].sum(dim=(1, 2, 3)).cpu().numpy()
-        voxel_volume = abs(np.linalg.det(aligned_affine[:3, :3]))
-        values = np.around(np.concatenate(([soft.sum()], soft)) * voxel_volume, 3)
-        raw_names = np.load(models / "synthseg_segmentation_names_2.0.npy")
-        names = raw_names[unique_indices]
-        assert len(unique_labels) == len(names) == len(soft) + 1
-        csv_path = Path(args.vol)
-        csv_path.parent.mkdir(parents=True, exist_ok=True)
-        with csv_path.open("w", newline="") as stream:
-            writer = csv.writer(stream)
-            writer.writerow(["subject", "total intracranial", *names[1:]])
-            writer.writerow([Path(args.i).name.replace(".nii.gz", ""),
-                             *(str(float(value)) for value in values)])
+        result.write_volumes_csv(args.i, args.vol)
 
 
 def main(argv: list[str] | None = None) -> None:

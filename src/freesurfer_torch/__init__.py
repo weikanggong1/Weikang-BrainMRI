@@ -12,6 +12,9 @@ def __getattr__(name):
     if name in ('WMHSynthSeg', 'WMHResult'):
         from . import wmh_synthseg
         return getattr(wmh_synthseg, name)
+    if name in ('SynthSeg', 'SynthSegResult'):
+        from . import synthseg_parc
+        return getattr(synthseg_parc, name)
     if name in ('SynthSR', 'SynthSRResult', 'SynthSRImage'):
         from . import synthsr
         return getattr(synthsr, name)

@@ -7,13 +7,14 @@
 | SynthStrip | 脑图、脑掩膜、有符号距离场 | [SynthStrip 文档](docs/synthstrip/README.md) |
 | SynthMorph | 刚性、仿射、非线性及联合配准；应用已有变换 | [SynthMorph 文档](docs/synthmorph/README.md) |
 | WMH-SynthSeg | 脑结构标签、白质高信号及软体积 | [WMH-SynthSeg 文档](docs/wmh_synthseg/README.md) |
+| 33 类 SynthSeg | T1 结构标签和软体积 | [独立 SynthSeg 文档](docs/synthseg/README.md) |
 | SynthSR | 从单幅 MRI 或 CT 合成 1 mm T1w | [SynthSR 文档](docs/synthsr/README.md) |
 | TorchFAST | T1 三组织分割、PVE 与偏置场校正 | [TorchFAST 文档](docs/fast/README.md) |
 | GPU FAST VBM | 原始 T1w 到 warped GM、Jacobian 和 modulated GM；可选 PyTorch SynthMorph 或 FNIRT-style 非线性配准 | [FastVBM 文档](docs/fast_vbm/README.md) |
 | PyTorch FLIRT | CPU/CUDA 12-DOF affine；输出 reference-grid image 和 FSL scaled-mm `.mat` | [FastVBM 中的 FLIRT 接口](docs/fast_vbm/README.md#独立-pytorch-flirt-接口) |
 | GPU recon-all | T1w 到结构分割、皮层表面、顶点指标和脑区统计 | [GPU recon-all 文档](docs/recon_all/README.md) |
 
-前四项功能的多被试处理使用 Python `predict_batch()`：pandas 表含 `input` 影像和 `output` 绝对路径前缀两列；`workers=2` 可在同一设备启用两个 Python 进程。FastVBM 的多病例 Python 调用见其子页。输出命名和调度规则见[批量执行说明](docs/ARCHITECTURE.md#批量执行)；仓库提供 [T1w 样例](examples/README.md)和 [FLAIR 样例](examples/WMH.md)。
+SynthStrip、SynthMorph、WMH-SynthSeg 和 SynthSR 的多被试处理使用 Python `predict_batch()`：pandas 表含 `input` 影像和 `output` 绝对路径前缀两列；`workers=2` 可在同一设备启用两个 Python 进程。独立 33 类 SynthSeg 可在 Python 中复用模型逐例处理。FastVBM 的多病例 Python 调用见其子页。输出命名和调度规则见[批量执行说明](docs/ARCHITECTURE.md#批量执行)；仓库提供 [T1w 样例](examples/README.md)和 [FLAIR 样例](examples/WMH.md)。
 
 GPU recon-all 的 SynthStrip、33 类 SynthSeg、SynthMorph 及三项辅助神经分割使用 PyTorch/CUDA；影像转换、强度校正、皮层拓扑、表面生成和统计运行于打包的原生 CPU 程序。单被试支持 `fs-torch-recon-all` 命令行和 Python 调用，多被试完整流程仅提供 Python 调用。
 
@@ -34,7 +35,7 @@ python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
 
 ## 下载和部署权重
 
-Git 仓库及 wheel 均不包含模型权重。下面从 FreeSurfer 官方地址下载四项学习模型的默认权重，校验 SHA-256，并记录权重目录；推理时不会自动联网。
+Git 仓库及 wheel 均不包含模型权重。下面从 FreeSurfer 官方地址下载各功能的默认权重，校验 SHA-256，并记录权重目录；推理时不会自动联网。GPU recon-all 的 33 类 SynthSeg 与 WMH-SynthSeg 是不同模型，分别用 `--model synthseg` 和 `--model wmh-synthseg` 安装。
 
 ```bash
 python tools/setup_weights.py --model synthstrip --model synthmorph-joint \
@@ -45,7 +46,11 @@ FastVBM 的 SynthMorph 分支从原始 T1w 开始时需要 `synthstrip.1.pt` 和
 
 GPU recon-all 还需要与固定 FreeSurfer 8.2 流程匹配的本地原生运行包；上述权重命令不提供它。运行包和个人 license 均不随仓库或 wheel 发布。构建、调用、输出和验收见[GPU recon-all 文档](docs/recon_all/README.md)。
 
-`--all` 下载全部模型变体；`--dest /path/to/weights` 指定本地目录；`--verify-only` 检查已有文件。安装后也可使用 `fs-torch-setup-weights`。前四项功能可通过 Python 的 `weights=`、CLI 的 `--weights` 或 `FREESURFER_TORCH_WEIGHTS` 指定权重；FastVBM 分别使用 `synthstrip_weights=` / `--synthstrip-weights` 和 `synthmorph_weights=` / `--synthmorph-weights`。官方地址、文件大小、SHA-256、许可和离线部署方法见[权重说明](docs/WEIGHTS.md)。
+GPU recon-all 的全部 13 个模型与辅助资源可单独配置：`python tools/setup_weights.py --model recon-all`。该组复用 SynthStrip 和 SynthMorph 的通用权重，也包含 33 类 SynthSeg、EntoWM、MCA 和静脉窦模型及其查找表；原生运行包仍需单独准备。
+
+独立使用 33 类 SynthSeg 时只需 `python tools/setup_weights.py --model synthseg`，随后运行 `fs-torch synthseg --i T1.nii.gz --o seg.nii.gz --csv-vols seg.vol.csv`，或使用 Python 的 `SynthSeg` 类；详见[独立接口](docs/synthseg/README.md)。
+
+`--all` 下载全部模型变体；`--dest /path/to/weights` 指定本地目录；`--verify-only` 检查已有文件。安装后也可使用 `fs-torch-setup-weights`。SynthStrip、SynthMorph、WMH-SynthSeg、33 类 SynthSeg 和 SynthSR 可通过 Python 的 `weights=`、CLI 的 `--weights` 或 `FREESURFER_TORCH_WEIGHTS` 指定权重；FastVBM 分别使用 `synthstrip_weights=` / `--synthstrip-weights` 和 `synthmorph_weights=` / `--synthmorph-weights`。官方地址、文件大小、SHA-256、许可和离线部署方法见[权重说明](docs/WEIGHTS.md)。
 
 ## 项目资料
 

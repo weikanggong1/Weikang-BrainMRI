@@ -23,6 +23,12 @@ from audit_bundle import sha256
 from check_comparison_gate import check_report
 from single_t1_scope import PROFILE, validate_scope_audit
 
+CORE_MODEL_READS = {
+    "synthstrip.1.pt", "synthseg_2.0.h5", "synthmorph.affine.2.h5",
+    "synthmorph.deform.3.h5", "entowm.fsm31.t1.nstd00-30.nstd21-108.h5",
+    "mca-dura.both-lh.nstd21.fhs.h5", "vsinus.no-sp.m.all.nstd10-070.h5",
+}
+
 
 def require(condition, message):
     if not condition:
@@ -49,10 +55,15 @@ def required_checks():
     return names | {"mri/aseg.mgz", "mri/aparc+aseg.mgz", "stats/aseg.stats", "stats/synthseg.vol.csv"}
 
 
-def trace_audit(path, bundle, source_home, license_file, candidate, image):
+def trace_audit(path, bundle, source_home, license_file, candidate, image,
+                models_dir=None, external_names=()):
     """Pair split open/exec records and reject visible external scientific code/assets."""
     calls = {"open", "openat", "openat2", "creat", "execve", "execveat"}
     pending, violations = {}, []
+    model_reads = set()
+    external_names = set(external_names)
+    allowed_models = ({models_dir / name for name in external_names}
+                      if models_dir is not None else set())
     successful, bundle_execs, run_execs = 0, 0, 0
     marker = re.compile(r"(?:^|/)(?:freesurfer|fsl|tensorflow)(?:[-_.]v?\d[^/]*)?(?:/|$)|(?:^|/)libtensorflow[^/]*", re.I)
     with path.open(errors="strict") as stream:
@@ -87,6 +98,16 @@ def trace_audit(path, bundle, source_home, license_file, candidate, image):
             successful += 1
             absolute = Path(accessed).is_absolute()
             target = Path(accessed).resolve() if absolute else None
+            if target in allowed_models:
+                if name in {"open", "openat", "openat2"} and re.search(r"\bO_RDONLY\b", line) \
+                        and not re.search(r"\bO_(?:WRONLY|RDWR|TRUNC|CREAT)\b", line):
+                    model_reads.add(target.name)
+                else:
+                    violations.append({"line": number, "pid": pid, "call": name, "path": accessed})
+                continue
+            if models_dir is not None and target is not None and target.is_relative_to(models_dir):
+                violations.append({"line": number, "pid": pid, "call": name, "path": accessed})
+                continue
             if target is not None and target.is_relative_to(bundle):
                 bundle_execs += int(name.startswith("exec"))
                 if name.startswith("exec") and target == bundle / "bin/recon-all":
@@ -105,9 +126,12 @@ def trace_audit(path, bundle, source_home, license_file, candidate, image):
     require(successful > 0 and bundle_execs > 0 and run_execs > 0,
             "Trace lacks bundle recon-all execution matching this subject and T1")
     require(not violations, f"External FreeSurfer/FSL/TensorFlow access: {violations[:10]}")
+    missing_models = CORE_MODEL_READS.intersection(external_names) - model_reads
+    require(not missing_models, f"Trace lacks reads of core external models: {sorted(missing_models)}")
     return {"passed": True, "successful_open_exec_records": successful,
             "bundle_exec_records": bundle_execs, "matching_run_exec_records": run_execs,
             "external_scientific_accesses": violations,
+            "external_models_read": sorted(model_reads),
             "license_exception": str(license_file),
             "boundary": "Visible path arguments only; relative cwd/dirfd targets and arbitrary other external resources are not reconstructed"}
 
@@ -130,6 +154,10 @@ def validate_launch(path, cwd, args, run):
                            ("--bundle", args.bundle.resolve()), ("--license", args.license_file.resolve())):
         require(flag in options and (cwd / options[options.index(flag) + 1]).resolve() == expected,
                 f"Trace launch has different {flag}")
+    if getattr(args, "models_dir", None) is not None:
+        require("--models-dir" in options and
+                (cwd / options[options.index("--models-dir") + 1]).resolve() == args.models_dir.resolve(),
+                "Trace launch has different --models-dir")
     for flag, expected in (("-s", run["subject"]), ("--threads", "4"), ("--device", run["device"])):
         require(flag in options and options[options.index(flag) + 1] == expected, f"Trace launch has different {flag}")
     return {"cwd": str(cwd), "command": path.read_text().strip(),
@@ -177,6 +205,14 @@ def validate(args, manifest, fresh_preflight, software):
     _, scope_errors = validate_scope_audit(bundle, manifest.get("runtime_profile"), manifest.get("inactive_command_audit"))
     require(not scope_errors and manifest.get("runtime_profile") is not None, f"Invalid scoped bundle: {scope_errors}")
     rows = manifest.get("files", [])
+    external = manifest.get("external_models", [])
+    models_dir = getattr(args, "models_dir", None)
+    require(not external or models_dir is not None,
+            "External-model candidate requires --models-dir")
+    models_root = models_dir.resolve(strict=True) if external else None
+    if models_root is not None:
+        require(not models_root.is_relative_to(Path(manifest["fs_home"]).resolve()),
+                "External models cannot be inside the source FreeSurfer installation")
     require(rows and len({row["path"] for row in rows}) == len(rows), "Missing/duplicate bundle inventory")
     for row in rows:
         path = bundle / row["path"]
@@ -200,13 +236,18 @@ def validate(args, manifest, fresh_preflight, software):
     for preflight in (reports["preflight"], fresh_preflight):
         require(preflight.get("hash_and_linkage_passed") is True and preflight.get("script_resource_checks_passed") is True
                 and preflight.get("errors") == [] and preflight.get("script_resource_closure", {}).get("errors") == []
-                and preflight.get("checked_staged_files") == sum(row.get("staged") is True for row in rows),
+                and preflight.get("checked_staged_files") == sum(row.get("staged") is True for row in rows)
+                and (not external or preflight.get("checked_external_models") == len(external)),
                 "Static preflight is incomplete, failed or for a different inventory")
     run, comparison, aggregate, aux_volumes = (reports[name] for name in
                                                 ("run", "comparison", "aggregate", "aux_volumes"))
     require(type(run.get("return_code")) is int and run["return_code"] == 0 and run.get("missing_outputs") == [],
             "Clean reconstruction did not complete successfully")
     require(Path(run["bundle"]).resolve() == bundle and run.get("input_sha256") == sha256(args.input), "Run bundle/input differs")
+    if external:
+        require(Path(run.get("models_dir", "")).resolve() == models_root and
+                run.get("external_models") == {row["path"]: row["sha256"] for row in external},
+                "Run used different external models")
     require(run.get("threads") == 4 and run.get("itk_threads") == 1 and run.get("parallel_hemispheres") is True
             and str(run.get("device", "")).startswith("cuda"), "Run is outside the fixed CUDA profile")
     require(math.isfinite(run["elapsed_seconds"]) and run["elapsed_seconds"] > 0, "Invalid run elapsed time")
@@ -262,7 +303,8 @@ def validate(args, manifest, fresh_preflight, software):
             and all(aggregate.get(key) == value for key, value in recalculated.items()), "Aggregate report is stale or inconsistent")
     launch = validate_launch(args.trace_command_file, args.trace_cwd.resolve(), args, run)
     trace = trace_audit(args.trace, bundle, Path(manifest["fs_home"]).resolve(),
-                        args.license_file.resolve(), candidate, args.input.resolve())
+                        args.license_file.resolve(), candidate, args.input.resolve(),
+                        models_root, (row["path"].removeprefix("models/") for row in external))
     evidence = {name: {"path": str(getattr(args, name).resolve()), "sha256": sha256(getattr(args, name))}
                 for name in ("preflight", "run", "comparison", "aggregate", "aux_volumes", "trace", "trace_command_file", "tolerances", "code_manifest")}
     return {"schema_version": 1, "verified_utc": datetime.now(timezone.utc).isoformat(),
@@ -282,6 +324,7 @@ def main(argv=None):
         parser.add_argument("--" + name, required=True, type=Path)
     parser.add_argument("--tolerances", type=Path,
                         default=Path(__file__).resolve().parents[2] / "tests/recon_all/tolerances_numeric.json")
+    parser.add_argument("--models-dir", type=Path)
     parser.add_argument("--check-only", action="store_true", help="Check evidence without changing the manifest")
     args = parser.parse_args(argv)
     try:
@@ -291,9 +334,12 @@ def main(argv=None):
         software = collect_software(args.package_python)
         with tempfile.TemporaryDirectory(prefix="fs-promotion-") as temporary:
             fresh_path = Path(temporary) / "preflight.json"
-            subprocess.run([str(args.package_python.absolute()), str(Path(__file__).with_name("preflight_bundle.py")),
+            preflight_command = [str(args.package_python.absolute()), str(Path(__file__).with_name("preflight_bundle.py")),
                             "--bundle", str(args.bundle.resolve()), "--package-python", str(args.package_python.absolute()),
-                            "--output", str(fresh_path)], check=True)
+                            "--output", str(fresh_path)]
+            if args.models_dir is not None:
+                preflight_command += ["--models-dir", str(args.models_dir.resolve())]
+            subprocess.run(preflight_command, check=True)
             fresh = load_report(fresh_path)
             verification = validate(args, manifest, fresh, software)
             verification["original_manifest_sha256"] = hashlib.sha256(original).hexdigest()

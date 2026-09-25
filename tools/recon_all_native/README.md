@@ -334,3 +334,33 @@ contains the exact snapshot and manifest hashes. On `gpucw1`, the 0.7.0
 default `_check_bundle` path accepted the derived copy after checking all 308
 inventoried files; this is a compatibility and integrity check, not a new
 scientific comparison.
+
+### Move recon-all models into the shared weight directory
+
+`externalize_models.py` derives an **unverified** thin candidate from a copy
+of a certified bundle. The original certified bundle remains untouched. First
+install the 13 pinned models and lookup files with
+`python tools/setup_weights.py --model recon-all --dest /path/to/weights`.
+The converter checks that all 13 external files have the same size and SHA-256
+as the certified bundle before removing them from the copy:
+
+```bash
+python tools/recon_all_native/externalize_models.py \
+  --certified-manifest /path/to/certified_bundle/manifest.json \
+  --bundle-copy /path/to/copied_bundle --models-dir /path/to/weights --check-only
+python tools/recon_all_native/externalize_models.py \
+  --certified-manifest /path/to/certified_bundle/manifest.json \
+  --bundle-copy /path/to/copied_bundle --models-dir /path/to/weights
+```
+
+The copied bundle must initially have a byte-identical manifest and its model
+files. `external_models` records their names, sizes and hashes; old verification
+is retained only as provenance. Static preflight and promotion both take
+`--models-dir /path/to/weights`. The clean traced `fs-torch-recon-all` run must
+also pass that argument. All 52 primary, two auxiliary voxel and 19 aggregate
+checks, plus trace and source checks, must pass before promoting the new bundle.
+The default runner accepts a thin bundle only after that promotion; the model
+directory is selected by `--models-dir`, `FREESURFER_TORCH_WEIGHTS`, or the
+saved weight configuration, then rehashed at startup. A thin bundle still
+contains the native CPU programs, scripts, atlases, templates, interpreter and
+libraries needed for the fixed FreeSurfer 8.2 workflow.

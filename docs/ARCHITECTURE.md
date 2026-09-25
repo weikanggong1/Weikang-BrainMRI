@@ -2,7 +2,7 @@
 
 [返回首页](../README.md) · [新增功能](ADDING_FUNCTIONS.md)
 
-SynthStrip、SynthMorph、WMH-SynthSeg、SynthSR、TorchFAST 和 FastVBM 分别位于 `src/freesurfer_torch/` 的功能目录；每个目录包含实现及简短说明。共享的 `cli.py` 提供单例命令行，`weights.py` 定位官方权重，`_batch_table.py` 检查前四项功能的多被试输入表，`batch.py` 调度 Python 多进程任务。各功能的参数、原版对应和验证见专属页面。
+SynthStrip、SynthMorph、WMH-SynthSeg、33 类 SynthSeg、SynthSR、TorchFAST 和 FastVBM 分别位于 `src/freesurfer_torch/` 的功能目录；每个目录包含实现及简短说明。共享的 `cli.py` 提供单例命令行，`weights.py` 定位官方权重，`_batch_table.py` 检查 SynthStrip、SynthMorph、WMH-SynthSeg 和 SynthSR 的多被试输入表，`batch.py` 调度 Python 多进程任务。各功能的参数、原版对应和验证见专属页面。
 
 FastVBM 的活跃配准链位于 `fast_vbm/linear.py`、`fast_vbm/flirt.py`、`fast_vbm/registration.py`、`fast_vbm/synthmorph_backend.py` 和 `fast_vbm/fnirt_backend.py`。`flirt.py` 提供 FSL 文件角色与 scaled-mm matrix 契约；`registration.py` 在本包 PyTorch SynthMorph `deform` 与 PyTorch FNIRT-style cubic B-spline 后端之间调度。`fast_vbm/legacy_registration.py` 只保留早期实验工具的旧导入兼容。
 
@@ -11,6 +11,7 @@ FastVBM 的活跃配准链位于 `fast_vbm/linear.py`、`fast_vbm/flirt.py`、`f
 | SynthStrip | [脑提取](synthstrip/README.md) | 两列表 `predict_batch()` |
 | SynthMorph | [配准](synthmorph/README.md) | 两列表 `predict_batch()` |
 | WMH-SynthSeg | [结构及 WMH 分割](wmh_synthseg/README.md) | 两列表 `predict_batch()` |
+| 33 类 SynthSeg | [T1 结构分割](synthseg/README.md) | Python 复用 `SynthSeg` 逐例处理 |
 | SynthSR | [合成 T1w](synthsr/README.md) | 两列表 `predict_batch()` |
 | TorchFAST | [三组织分割及偏置校正](fast/README.md) | Python `BatchRunner` |
 | FastVBM | [原始 T1w 到 modulated GM](fast_vbm/README.md) | Python `BatchRunner` |
@@ -19,7 +20,7 @@ FastVBM 的活跃配准链位于 `fast_vbm/linear.py`、`fast_vbm/flirt.py`、`f
 
 ```python
 from freesurfer_torch import (
-    SynthStrip, SynthMorph, WMHSynthSeg, SynthSR,
+    SynthStrip, SynthMorph, WMHSynthSeg, SynthSeg, SynthSR,
     TorchFAST, FastVBM, FastVBMResult, VBMRegistrationResult,
     TorchFLIRT, FLIRTResult, PyTorchFNIRTRegistration, FNIRTVBMResult,
     LinearRegistrationResult, register_affine, register_gm,
@@ -28,7 +29,7 @@ from freesurfer_torch import (
 )
 ```
 
-前四个学习模型构造时加载权重并选择 `device="cpu"` 或 `device="cuda:0"`；TorchFAST 与 TorchFLIRT 不加载权重。单例调用返回带几何信息的结果对象，由调用者选择保存字段。FastVBM 组合 SynthStrip、TorchFAST、PyTorch 12-DOF affine 和一个可选非线性后端。`registration_backend="synthmorph"` 延迟加载官方 deform checkpoint；`registration_backend="fnirt"` 构造无 checkpoint 的 PyTorch B-spline 优化器。旧导入路径 `freesurfer_torch.spatial` 和 `freesurfer_torch.synthmorph_models` 继续转导出对应实现。权重查找顺序为显式路径、`FREESURFER_TORCH_WEIGHTS`、配置脚本保存的目录、用户缓存目录、已设置的 `FREESURFER_HOME/models/`；见[权重说明](WEIGHTS.md)。
+五个学习模型构造时加载权重并选择 `device="cpu"` 或 `device="cuda:0"`；TorchFAST 与 TorchFLIRT 不加载权重。单例调用返回带几何信息的结果对象，由调用者选择保存字段。FastVBM 组合 SynthStrip、TorchFAST、PyTorch 12-DOF affine 和一个可选非线性后端。`registration_backend="synthmorph"` 延迟加载官方 deform checkpoint；`registration_backend="fnirt"` 构造无 checkpoint 的 PyTorch B-spline 优化器。旧导入路径 `freesurfer_torch.spatial` 和 `freesurfer_torch.synthmorph_models` 继续转导出对应实现。权重查找顺序为显式路径、`FREESURFER_TORCH_WEIGHTS`、配置脚本保存的目录、用户缓存目录、已设置的 `FREESURFER_HOME/models/`；见[权重说明](WEIGHTS.md)。
 
 ## 批量执行
 

@@ -25,13 +25,27 @@ flowchart LR
 - 每例一幅 T1w、一个安全的被试名称和一个独立的空 `subjects_dir`。
 
 运行时无须安装系统 FreeSurfer、FSL 或 TensorFlow。原生运行包包含此流程实际需要的
-程序、脚本、模型、影像数据、解释器和动态库；它不是纯 PyTorch 发布物。仓库和
-wheel 均不提供该约 4.35 GB（4.05 GiB）运行包或个人 license，也不提供自动下载命令。
-其中约 3.51 GB 是 SynthMorph deform 模型，其余主要是原生程序和图谱模板。
+程序、脚本、影像数据、解释器和动态库；它不是纯 PyTorch 发布物。模型可放在
+独立的统一权重目录。已验证的原始运行包约 4.35 GB（4.05 GiB），其中
+3.65 GB 为 13 个模型和查找表资源；移出它们后，原生运行包约 0.70 GB。
+仓库和 wheel 均不提供该原生运行包或个人 license，也不提供原生运行包的自动下载命令。
+统一权重目录则可按下面的命令从官方地址安装并逐文件校验。
 制作和审计运行包的步骤见[构建说明](../../tools/recon_all_native/README.md)。
 默认调用只接受其清单中 `standalone_verified=true` 且包内文件、运行配置和当前
 Python 源码哈希都匹配的运行包；候选包只能显式指定 `development_bundle=True`
 或 `--development-bundle` 用于开发验证。
+
+```bash
+python tools/setup_weights.py --model recon-all --dest /path/to/weights
+python tools/setup_weights.py --model recon-all --dest /path/to/weights --verify-only
+```
+
+`recon-all` 权重组包含 33 类 SynthSeg、SynthStrip、SynthMorph 及三个辅助分割模型
+的共 13 个文件，复用本仓库其他功能已安装的同名权重。只使用 33 类 SynthSeg 时可选
+`--model synthseg`；它不同于 `--model wmh-synthseg` 的 39 类模型。外置模型运行包
+的清单固定这 13 个文件的大小和 SHA-256，启动时再次校验。可显式传
+`models_dir="/path/to/weights"` / `--models-dir /path/to/weights`；省略时读取
+`FREESURFER_TORCH_WEIGHTS` 或已保存的权重目录。
 
 ## 单被试 Python 调用
 
@@ -46,6 +60,7 @@ report = run_recon_all(
     device="cuda:0",
     threads=4,
     license_file="/path/to/license.txt",
+    models_dir="/path/to/weights",  # 外置模型运行包
 )
 print(report["subject_dir"], report["elapsed_seconds"])
 ```
@@ -63,6 +78,7 @@ print(report["subject_dir"], report["elapsed_seconds"])
 fs-torch-recon-all \
   -i subject_T1w.nii.gz -s sub01 -sd /results/sub01_subjects \
   --bundle /path/to/verified_native_bundle \
+  --models-dir /path/to/weights \
   --license /path/to/license.txt --device cuda:0 --threads 4
 ```
 
@@ -89,6 +105,7 @@ reports = run_recon_all_batch(
     devices=("cuda:0", "cuda:1"),
     threads=4,
     license_file="/path/to/license.txt",
+    models_dir="/path/to/weights",
 )
 ```
 

@@ -65,6 +65,22 @@ def _run_wmh(args):
         print(args.csv_vols)
 
 
+def _run_synthseg(args):
+    from .synthseg_parc import SynthSeg
+
+    source, target = Path(args.i), Path(args.o)
+    if not source.is_file():
+        raise FileNotFoundError(source)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    result = SynthSeg(weights=args.weights, device=args.device, threads=args.threads)(
+        source, keep_geometry=args.keep_geometry, color_lut=args.color_lut)
+    result.segmentation.save(target)
+    print(target)
+    if args.csv_vols:
+        result.write_volumes_csv(source, args.csv_vols)
+        print(args.csv_vols)
+
+
 def _synthsr_suffix(path):
     name = Path(path).name
     for suffix in ('.nii.gz', '.nii', '.mgz', '.npz'):
@@ -267,6 +283,17 @@ def main(argv=None):
     wmh.add_argument('--crop', action='store_true')
     wmh.add_argument('--save_lesion_probabilities', '--save-lesion-probabilities', action='store_true')
     wmh.add_argument('--weights', help='official checkpoint file or containing directory')
+    synthseg = commands.add_parser('synthseg', help='33-class T1 segmentation and soft volumes')
+    synthseg.add_argument('--i', '-i', required=True, help='single 3D T1 image')
+    synthseg.add_argument('--o', '-o', required=True, help='segmentation image')
+    synthseg.add_argument('--csv-vols', '--csv_vols',
+                          help='FreeSurfer-style soft volumes CSV')
+    synthseg.add_argument('--weights', help='official SynthSeg 2.0 H5 or containing directory')
+    synthseg.add_argument('--device', default='cpu')
+    synthseg.add_argument('--threads', type=int, default=4)
+    synthseg.add_argument('--keep-geometry', action='store_true',
+                          help='resample labels back to the input image grid')
+    synthseg.add_argument('--color-lut', help='optional FreeSurfer color lookup table')
     sr = commands.add_parser('synthsr', help='synthesize a 1 mm T1-weighted image')
     sr.add_argument('--i', '-i', required=True, help='single input image')
     sr.add_argument('--o', '-o', required=True, help='output image or directory for this image')
@@ -372,6 +399,9 @@ def main(argv=None):
     args = parser.parse_args(argv)
     if args.command == 'wmh-synthseg':
         _run_wmh(args)
+        return
+    if args.command == 'synthseg':
+        _run_synthseg(args)
         return
     if args.command == 'synthsr':
         _run_synthsr(args)

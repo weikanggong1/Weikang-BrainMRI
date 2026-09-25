@@ -51,10 +51,10 @@ def test_batch_uses_distinct_gpus_concurrently_and_preserves_order(tmp_path, mon
     lock = threading.Lock()
 
     def fake_run(t1, subject, subjects_dir, bundle_root, *, device, threads,
-                 license_file, development_bundle):
+                 license_file, development_bundle, models_dir):
         with lock:
             calls.append((t1, subject, subjects_dir, bundle_root, device, threads,
-                          license_file, development_bundle))
+                          license_file, development_bundle, models_dir))
         barrier.wait(timeout=3)
         return {"subject": subject, "device": device, "subjects_dir": str(subjects_dir)}
 
@@ -67,7 +67,7 @@ def test_batch_uses_distinct_gpus_concurrently_and_preserves_order(tmp_path, mon
     assert {(call[1], call[4]) for call in calls} == {("sub0", "cuda:0"), ("sub1", "cuda:1")}
     assert all(call[0] == jobs[int(call[1][-1])]["t1"].resolve()
                and call[2] == jobs[int(call[1][-1])]["subjects_dir"].resolve()
-               and call[3] == bundle and call[5:] == (4, license_file, False)
+               and call[3] == bundle and call[5:] == (4, license_file, False, None)
                for call in calls)
 
 

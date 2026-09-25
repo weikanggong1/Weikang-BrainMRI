@@ -64,9 +64,12 @@ def test_mcadura_left_right_flip_and_label_swap(tmp_path, monkeypatch):
     _lta(lta_dir / "reg.targ_to_invol.lta")
     nib.save(nib.MGHImage(np.ones((40, 40, 40), np.float32), np.eye(4)), source)
     calls = []
+    external_models = tmp_path / "weights"
+    external_models.mkdir()
+    monkeypatch.setenv("FS_TORCH_MODEL_DIR", str(external_models))
 
     def fake_infer(crop, native, start, model, rows, fov, device):
-        calls.append((crop.copy(), start.copy(), model.name, fov))
+        calls.append((crop.copy(), start.copy(), model, fov))
         seg = np.zeros(crop.shape, np.int32)
         seg[(10 if len(calls) == 1 else 59), 12, 18] = 6101
         return seg
@@ -77,7 +80,8 @@ def test_mcadura_left_right_flip_and_label_swap(tmp_path, monkeypatch):
     assert result[10, 12, 18] == 6101
     assert result[20, 12, 18] == 6102
     assert set(np.unique(result)) == {0, 6101, 6102}
-    assert [call[2:] for call in calls] == [(aux_seg.MCA_MODEL, 72)] * 2
+    assert [call[2:] for call in calls] == [
+        (external_models / aux_seg.MCA_MODEL, 72)] * 2
     assert np.array_equal(calls[1][0], calls[0][0][::-1])
 
 

@@ -262,6 +262,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--threads", type=int, default=1)
     parser.add_argument("--device", default="auto")
     args = parser.parse_args(argv)
+    if os.environ.get("FS_TORCH_MODEL_DIR"):
+        args.assets = os.environ["FS_TORCH_MODEL_DIR"]
     if args.assets is None:
         parser.error("--assets or FREESURFER_TORCH_WEIGHTS is required")
     if args.s is None and (args.i is None or args.o is None):

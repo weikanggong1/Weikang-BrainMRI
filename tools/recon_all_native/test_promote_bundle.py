@@ -98,6 +98,60 @@ class PromoteBundle(unittest.TestCase):
             self.assertTrue(result["trace_audit"]["passed"])
             self.assertIs(json.loads((args.bundle / "manifest.json").read_text())["standalone_verified"], False)
 
+    def test_external_model_evidence_and_trace_are_bound_to_one_directory(self):
+        with evidence_fixture() as (args, manifest, preflight, software):
+            models = args.bundle.parent / "weights"
+            models.mkdir()
+            model = models / "model.h5"
+            model.write_bytes(b"weights")
+            row = {"path": "models/model.h5", "bytes": model.stat().st_size,
+                   "sha256": sha256(model)}
+            manifest["external_models"] = [row]
+            (args.bundle / "manifest.json").write_text(json.dumps(manifest))
+            frozen = json.loads(args.code_manifest.read_text())
+            frozen["bundle_manifest_sha256"] = sha256(args.bundle / "manifest.json")
+            args.code_manifest.write_text(json.dumps(frozen))
+            args.models_dir = models
+            preflight["checked_external_models"] = 1
+            args.preflight.write_text(json.dumps(preflight))
+            run = json.loads(args.run.read_text())
+            run.update(models_dir=str(models), external_models={row["path"]: row["sha256"]})
+            args.run.write_text(json.dumps(run))
+            tokens = shlex.split(args.trace_command_file.read_text())
+            tokens.extend(["--models-dir", str(models)])
+            args.trace_command_file.write_text(shlex.join(tokens))
+            with args.trace.open("a") as stream:
+                stream.write(f'2 openat(AT_FDCWD, "{model}", O_RDONLY) = 3\n')
+            result = promotion.validate(args, manifest, preflight, software)
+            self.assertEqual(result["trace_audit"]["external_models_read"], ["model.h5"])
+            with args.trace.open("a") as stream:
+                stream.write(f'2 openat(AT_FDCWD, "{models}/other.h5", O_RDONLY) = 3\n')
+            with self.assertRaisesRegex(ValueError, "External FreeSurfer/FSL/TensorFlow access"):
+                promotion.validate(args, manifest, preflight, software)
+
+    def test_core_external_model_must_be_opened_read_only(self):
+        with evidence_fixture() as (args, manifest, _, _):
+            models = args.bundle.parent / "weights"
+            models.mkdir()
+            name = "synthseg_2.0.h5"
+            model = models / name
+            model.write_bytes(b"model")
+
+            def audit():
+                return promotion.trace_audit(
+                    args.trace, args.bundle, Path(manifest["fs_home"]),
+                    args.license_file, Path(json.loads(args.run.read_text())["subject_dir"]),
+                    args.input, models, [name])
+
+            with self.assertRaisesRegex(ValueError, "lacks reads of core external models"):
+                audit()
+            with args.trace.open("a") as stream:
+                stream.write(f'2 openat(AT_FDCWD, "{model}", O_WRONLY) = 3\n')
+            with self.assertRaisesRegex(ValueError, "External FreeSurfer/FSL/TensorFlow access"):
+                audit()
+            args.trace.write_text(args.trace.read_text().replace("O_WRONLY", "O_RDONLY"))
+            self.assertEqual(audit()["external_models_read"], [name])
+
     def test_missing_failed_or_stale_reports_fail(self):
         cases = [("comparison", lambda r: r["checks"].pop("stats/synthseg.vol.csv")),
                  ("comparison", lambda r: r.update(candidate="/another/subject")),

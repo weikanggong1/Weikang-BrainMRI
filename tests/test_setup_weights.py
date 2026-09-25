@@ -69,6 +69,29 @@ def test_interrupted_download_resumes_with_http_range(tmp_path, monkeypatch, tin
     assert not (destination / (name + ".part")).exists()
 
 
+def test_network_timeout_resumes_partial_file(tmp_path, monkeypatch, tiny_weight):
+    name, content = tiny_weight
+    requests = []
+
+    class InterruptedResponse(Response):
+        def read(self, count=-1):
+            if self.tell() == 7:
+                raise TimeoutError("temporary network timeout")
+            return super().read(7)
+
+    def fetch(request, timeout):
+        requests.append(request.get_header("Range"))
+        if len(requests) == 1:
+            return InterruptedResponse(content)
+        assert request.get_header("Range") == "bytes=7-"
+        return Response(content[7:], 206,
+                        {"Content-Range": f"bytes 7-{len(content) - 1}/{len(content)}"})
+
+    monkeypatch.setattr(weights, "urlopen", fetch)
+    assert weights.download_file(name, tmp_path / "models").read_bytes() == content
+    assert requests == [None, "bytes=7-"]
+
+
 def test_range_ignored_by_server_restarts_full_file(tmp_path, monkeypatch, tiny_weight):
     name, content = tiny_weight
     destination = tmp_path / "models"
@@ -143,6 +166,44 @@ def test_wmh_selection_downloads_only_its_official_checkpoint(tmp_path, monkeypa
     assert requested == [url]
     assert (destination / name).read_bytes() == content
     assert weights.resolve_weights(name) == destination / name
+
+
+def test_recon_synthseg_has_independent_install_entry(tmp_path, monkeypatch):
+    names = weights.MODEL_FILES["synthseg"]
+    assert names == (
+        "synthseg_2.0.h5", "synthseg_segmentation_labels_2.0.npy",
+        "synthseg_segmentation_names_2.0.npy", "synthseg_topological_classes_2.0.npy")
+    assert not set(names) & set(weights.MODEL_FILES["wmh-synthseg"])
+    monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))
+    urls = []
+    names_by_url = {}
+    for name in names:
+        content = name.encode()
+        url = weights.WEIGHT_FILES[name][0]
+        names_by_url[url] = name
+        monkeypatch.setitem(weights.WEIGHT_FILES, name,
+                            (url, len(content), hashlib.sha256(content).hexdigest()))
+
+    def fetch(request, timeout):
+        urls.append(request.full_url)
+        return Response(names_by_url[request.full_url].encode())
+
+    monkeypatch.setattr(weights, "urlopen", fetch)
+    destination = tmp_path / "models"
+    weights.main(["--model", "synthseg", "--dest", str(destination)])
+    assert urls == [weights.WEIGHT_FILES[name][0] for name in names]
+    assert all((destination / name).is_file() for name in names)
+    assert not (destination / weights.MODEL_FILES["wmh-synthseg"][0]).exists()
+
+
+def test_recon_all_selection_lists_complete_model_inventory_once():
+    names = weights.MODEL_FILES["recon-all"]
+    assert len(names) == len(set(names)) == 13
+    assert set(weights.MODEL_FILES["synthseg"]) <= set(names)
+    assert {"synthstrip.1.pt", "synthmorph.affine.2.h5",
+            "synthmorph.deform.3.h5", "entowm.ctab", "mca-dura.ctab",
+            "sclimbic.volstats.csv"} <= set(names)
+    assert set(names) <= weights.WEIGHT_FILES.keys()
 
 
 def test_fast_vbm_uses_official_pipeline_checkpoints():

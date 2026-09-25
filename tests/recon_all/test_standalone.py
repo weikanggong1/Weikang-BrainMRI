@@ -45,6 +45,27 @@ def bundle_fixture(tmp_path):
     return bundle
 
 
+def external_fixture(tmp_path):
+    bundle = bundle_fixture(tmp_path)
+    models = tmp_path / "weights"
+    models.mkdir()
+    manifest_file = bundle / "manifest.json"
+    manifest = json.loads(manifest_file.read_text())
+    rows = []
+    for name in standalone.MODEL_FILES:
+        relative = f"models/{name}"
+        original = bundle / relative
+        content = original.read_bytes() if original.is_file() else name.encode()
+        (models / name).write_bytes(content)
+        rows.append({"path": relative, "bytes": len(content),
+                     "sha256": hashlib.sha256(content).hexdigest()})
+        manifest["files"] = [row for row in manifest["files"] if row["path"] != relative]
+        original.unlink(missing_ok=True)
+    manifest["external_models"] = rows
+    manifest_file.write_text(json.dumps(manifest))
+    return bundle, models
+
+
 def test_manifest_rejects_truthy_string_and_missing_inventory(tmp_path):
     bundle = bundle_fixture(tmp_path)
     manifest_path = bundle / "manifest.json"
@@ -120,6 +141,57 @@ def test_runner_uses_bundle_environment_and_fresh_subjects_dir(tmp_path, monkeyp
     assert "LD_PRELOAD" not in captured
     with pytest.raises(FileExistsError, match="fresh, empty"):
         standalone.run_recon_all(t1, "sub02", subjects, bundle, license_file=license_file)
+
+
+def test_external_models_are_verified_and_passed_to_recon_all(tmp_path, monkeypatch):
+    bundle, models = external_fixture(tmp_path)
+    manifest_file = bundle / "manifest.json"
+    original_manifest = manifest_file.read_text()
+    malformed = json.loads(original_manifest)
+    malformed["external_models"] = []
+    manifest_file.write_text(json.dumps(malformed))
+    with pytest.raises(ValueError, match="invalid external model inventory"):
+        standalone._check_bundle(bundle, development=False, models_dir=models)
+    malformed = json.loads(original_manifest)
+    malformed["fs_home"] = str(models.parent)
+    manifest_file.write_text(json.dumps(malformed))
+    with pytest.raises(ValueError, match="source FreeSurfer installation"):
+        standalone._check_bundle(bundle, development=False, models_dir=models)
+    manifest_file.write_text(original_manifest)
+    from freesurfer_torch import weights
+    monkeypatch.setattr(weights, "configured_dir", lambda: None)
+    monkeypatch.delenv("FREESURFER_TORCH_WEIGHTS", raising=False)
+    with pytest.raises(ValueError, match="Configure weights"):
+        standalone._check_bundle(bundle, development=False)
+    assert standalone._check_bundle(bundle, development=False,
+                                    models_dir=models)["_resolved_models_dir"] == str(models)
+    changed = models / "synthseg_2.0.h5"
+    changed.write_bytes(b"wrong")
+    with pytest.raises(ValueError, match="missing or changed"):
+        standalone._check_bundle(bundle, development=False, models_dir=models)
+    changed.write_bytes(b"models/synthseg_2.0.h5")
+
+    t1 = tmp_path / "t1.nii.gz"
+    t1.write_bytes(b"t1")
+    license_file = tmp_path / "license.txt"
+    license_file.write_text("license")
+    subjects = tmp_path / "subjects"
+    captured = {}
+
+    def fake_run(command, *, env, stdout, stderr, check):
+        captured.update(env)
+        config = subjects / "sub01/scripts/recon-config.yaml"
+        config.parent.mkdir(parents=True)
+        config.write_bytes((bundle / "etc/scoped-reference-recon-config.yaml").read_bytes())
+        return type("Result", (), {"returncode": 0})()
+
+    monkeypatch.setattr(standalone.subprocess, "run", fake_run)
+    monkeypatch.setattr(standalone, "REQUIRED_OUTPUTS", ())
+    report = standalone.run_recon_all(t1, "sub01", subjects, bundle,
+                                      models_dir=models, license_file=license_file)
+    assert captured["FS_TORCH_MODEL_DIR"] == str(models)
+    assert report["models_dir"] == str(models)
+    assert len(report["external_models"]) == len(standalone.MODEL_FILES)
 
 
 def test_profile_rejects_unreviewed_thread_count_and_config(tmp_path, monkeypatch):

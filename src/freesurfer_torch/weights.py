@@ -38,6 +38,36 @@ WEIGHT_FILES = {
     "synthsr_v10_210712.h5": (
         "https://raw.githubusercontent.com/freesurfer/freesurfer/dev/mri_synthsr/synthsr_v10_210712.h5",
         53075984, "2fd59e96196388360eba95254fb6dfc9eb9eb8638018b590575e47e0a387f255"),
+    "synthseg_2.0.h5": (
+        "https://surfer.nmr.mgh.harvard.edu/pub/dist/freesurfer/repo/annex.git/annex/objects/bee/241/SHA256E-s53079152--f190bfd742f450ef3ca2c9df9ed4d2e0232b3a74471da5e51b7770bacdf80c3e.0.h5/SHA256E-s53079152--f190bfd742f450ef3ca2c9df9ed4d2e0232b3a74471da5e51b7770bacdf80c3e.0.h5",
+        53079152, "f190bfd742f450ef3ca2c9df9ed4d2e0232b3a74471da5e51b7770bacdf80c3e"),
+    "synthseg_segmentation_labels_2.0.npy": (
+        "https://raw.githubusercontent.com/freesurfer/freesurfer/v8.2.0/mri_synthseg/synthseg_segmentation_labels_2.0.npy",
+        348, "5ef25ec33fe917ac99f30b8f2185b2d77121136ee411b9c4970c0b59be615ed8"),
+    "synthseg_segmentation_names_2.0.npy": (
+        "https://raw.githubusercontent.com/freesurfer/freesurfer/v8.2.0/mri_synthseg/synthseg_segmentation_names_2.0.npy",
+        7168, "234eb6d514e10d6ebd748a8b30a1d12d9426fd874c607e37852406fae8f290fc"),
+    "synthseg_topological_classes_2.0.npy": (
+        "https://raw.githubusercontent.com/freesurfer/freesurfer/v8.2.0/mri_synthseg/synthseg_topological_classes_2.0.npy",
+        348, "650b4b96834485c1e6d7421de4af74da80d861e6b2a39ef1164389bde3a5e14a"),
+    "entowm.fsm31.t1.nstd00-30.nstd21-108.h5": (
+        "https://raw.githubusercontent.com/freesurfer/freesurfer/v8.2.0/mri_sclimbic_seg/entowm.fsm31.t1.nstd00-30.nstd21-108.h5",
+        3296904, "9be55798498331f655acd75d4f0cd5036463e0f497bbb239be0167d6a9129a07"),
+    "entowm.ctab": (
+        "https://raw.githubusercontent.com/freesurfer/freesurfer/v8.2.0/mri_sclimbic_seg/entowm.ctab",
+        318, "fa46a74e7c5385b6e474553acbb34f536dac640c52586ec4193a0ea9739948f1"),
+    "mca-dura.both-lh.nstd21.fhs.h5": (
+        "https://raw.githubusercontent.com/freesurfer/freesurfer/v8.2.0/mri_sclimbic_seg/mca-dura.both-lh.nstd21.fhs.h5",
+        3294856, "da6a7b994e3e804cc3dc0e98e965c28a802ddcd38fd9b5c680d75cef285657b0"),
+    "mca-dura.ctab": (
+        "https://raw.githubusercontent.com/freesurfer/freesurfer/v8.2.0/mri_sclimbic_seg/mca-dura.ctab",
+        116, "77faedc95badab7b01ab8ef71889724c5eda33a0862fefa845b5ba33b8bc3e13"),
+    "vsinus.no-sp.m.all.nstd10-070.h5": (
+        "https://raw.githubusercontent.com/freesurfer/freesurfer/v8.2.0/mri_sclimbic_seg/vsinus.no-sp.m.all.nstd10-070.h5",
+        3296904, "3d78948741306a31337468c86be55821913edb73855116fcb063b61135b90f12"),
+    "sclimbic.volstats.csv": (
+        "https://raw.githubusercontent.com/freesurfer/freesurfer/v8.2.0/mri_sclimbic_seg/sclimbic.volstats.csv",
+        500, "691b8e1a1d74668b65a0571e2854a4a83c484438107693d71eef5a081d17380b"),
 }
 
 MODEL_FILES = {
@@ -49,6 +79,16 @@ MODEL_FILES = {
     "synthmorph-deform": ("synthmorph.deform.3.h5",),
     "synthmorph-joint": ("synthmorph.affine.2.h5", "synthmorph.deform.3.h5"),
     "wmh-synthseg": ("WMH-SynthSeg_v10_231110.pth",),
+    "synthseg": (
+        "synthseg_2.0.h5", "synthseg_segmentation_labels_2.0.npy",
+        "synthseg_segmentation_names_2.0.npy", "synthseg_topological_classes_2.0.npy"),
+    "recon-all": (
+        "synthstrip.1.pt", "synthmorph.affine.2.h5", "synthmorph.deform.3.h5",
+        "synthseg_2.0.h5", "synthseg_segmentation_labels_2.0.npy",
+        "synthseg_segmentation_names_2.0.npy", "synthseg_topological_classes_2.0.npy",
+        "entowm.fsm31.t1.nstd00-30.nstd21-108.h5", "entowm.ctab",
+        "mca-dura.both-lh.nstd21.fhs.h5", "mca-dura.ctab",
+        "vsinus.no-sp.m.all.nstd10-070.h5", "sclimbic.volstats.csv"),
     "synthsr": ("synthsr_v20_230130.h5",),
     "synthsr-lowfield": ("synthsr_lowfield_v20_230130.h5",),
     "synthsr-v1": ("synthsr_v10_210712.h5",),
@@ -124,23 +164,29 @@ def download_file(filename, directory, verify_only=False):
         part.unlink()
 
     for attempt in range(2):
-        offset = part.stat().st_size if part.exists() else 0
-        if offset < size:
-            headers = {"Range": f"bytes={offset}-"} if offset else {}
-            with urlopen(Request(url, headers=headers), timeout=60) as response:
-                if offset and response.status == 206:
-                    match = re.fullmatch(r"bytes (\d+)-(\d+)/(\d+)",
-                                         response.headers.get("Content-Range", ""))
-                    if not match or int(match[1]) != offset or int(match[3]) != size:
-                        raise ValueError(f"Unexpected HTTP Content-Range for {filename}")
-                    mode = "ab"
-                elif response.status == 200:
-                    mode = "wb"  # A server that ignores Range sends the whole file.
-                else:
-                    raise ValueError(f"Unexpected HTTP status {response.status} for {filename}")
-                with part.open(mode) as stream:
-                    for block in iter(lambda: response.read(8 * 1024 * 1024), b""):
-                        stream.write(block)
+        for transient in range(3):
+            offset = part.stat().st_size if part.exists() else 0
+            try:
+                if offset < size:
+                    headers = {"Range": f"bytes={offset}-"} if offset else {}
+                    with urlopen(Request(url, headers=headers), timeout=60) as response:
+                        if offset and response.status == 206:
+                            match = re.fullmatch(r"bytes (\d+)-(\d+)/(\d+)",
+                                                 response.headers.get("Content-Range", ""))
+                            if not match or int(match[1]) != offset or int(match[3]) != size:
+                                raise ValueError(f"Unexpected HTTP Content-Range for {filename}")
+                            mode = "ab"
+                        elif response.status == 200:
+                            mode = "wb"  # A server that ignores Range sends the whole file.
+                        else:
+                            raise ValueError(f"Unexpected HTTP status {response.status} for {filename}")
+                        with part.open(mode) as stream:
+                            for block in iter(lambda: response.read(8 * 1024 * 1024), b""):
+                                stream.write(block)
+                break
+            except (TimeoutError, ConnectionError):
+                if transient == 2:
+                    raise
         if verify_file(part, size, sha256):
             part.replace(final)
             return final

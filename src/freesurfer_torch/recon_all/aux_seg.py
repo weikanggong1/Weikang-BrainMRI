@@ -36,6 +36,10 @@ def _assets_root(path: str | Path) -> Path:
     return root.parent if root.name == "models" else root
 
 
+def _models_root(root: Path) -> Path:
+    return Path(os.environ.get("FS_TORCH_MODEL_DIR") or root / "models")
+
+
 def _lta_matrix(path: str | Path) -> np.ndarray:
     lines = Path(path).read_text().splitlines()
     kind = next(line.split("#")[0].split("=")[1].strip()
@@ -155,7 +159,7 @@ def mri_mcadura_seg(input_path: str | Path, output_path: str | Path,
         crop = _extract(image, start, 80)
         if hemi == "rh":
             crop = crop[::-1].copy()
-        seg = _infer_crop(crop, native, start, root / "models" / MCA_MODEL,
+        seg = _infer_crop(crop, native, start, _models_root(root) / MCA_MODEL,
                           ((0, "Unknown"), (6101, "Left-Dura-MCA")), 72, device)
         if hemi == "rh":
             seg = seg[::-1].copy()
@@ -202,7 +206,7 @@ def mri_vsinus_seg(input_path: str | Path, output_path: str | Path,
     prior = nib.load(str(root / "average" / "vsinus.no-sp.prior.mni152.1.0mm.mgz"))
     start = _crop_start(_resample_prior(prior, native, lta, device), 144, "vsinus")
     crop = _extract(image, start, 144)
-    seg = _infer_crop(crop, native, start, root / "models" / VSINUS_MODEL,
+    seg = _infer_crop(crop, native, start, _models_root(root) / VSINUS_MODEL,
                       VSINUS_ROWS, 144, device)
     output = np.zeros(native.shape[:3], dtype=np.int32)
     _paste(output, seg, start)

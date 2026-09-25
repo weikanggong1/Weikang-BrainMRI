@@ -104,3 +104,16 @@ def test_recon_all_subject_cli_writes_entowm_seg_and_stats(tmp_path, monkeypatch
     assert "case,wm-lh-entorhinal" in summary
     assert "fs_sub01,1.0000" in summary
     assert "eTIV" not in summary
+
+
+def test_entowm_launcher_assets_follow_external_model_directory(tmp_path, monkeypatch):
+    import freesurfer_torch.recon_all.sclimbic as sclimbic
+    external = tmp_path / "weights"
+    external.mkdir()
+    selected = []
+    monkeypatch.setenv("FS_TORCH_MODEL_DIR", str(external))
+    monkeypatch.setattr(sclimbic, "mri_entowm_seg",
+                        lambda input_path, output_path, asset_dir, **kwargs: selected.append(asset_dir))
+    assert main(["--i", "input.mgz", "--o", "output.mgz", "--assets", "bundle/models",
+                 "--device", "cpu"]) == 0
+    assert selected == [str(external)]

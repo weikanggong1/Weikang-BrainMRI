@@ -10,6 +10,7 @@ import pytest
     ("synthstrip", ("SynthStrip", "StripResult")),
     ("synthmorph", ("SynthMorph", "RegistrationResult", "apply_transform")),
     ("wmh_synthseg", ("WMHSynthSeg", "WMHResult")),
+    ("synthseg_parc", ("SynthSeg", "SynthSegResult")),
     ("synthsr", ("SynthSR", "SynthSRResult", "SynthSRImage")),
     ("fast", ("TorchFAST", "FASTResult", "FASTConfig", "FASTTensorResult", "segment_t1")),
     ("fast_vbm", ("FastVBM", "FastVBMResult", "LinearRegistrationResult",

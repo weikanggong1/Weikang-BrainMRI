@@ -2,5 +2,7 @@
 
 from .pipeline import SynthSegParc
 from .segment import SynthSegParcResult, SynthSegSegmenter, run_synthseg_parc_t1
+from .synthseg import SynthSeg, SynthSegResult
 
-__all__ = ["SynthSegParc", "SynthSegParcResult", "SynthSegSegmenter", "run_synthseg_parc_t1"]
+__all__ = ["SynthSegParc", "SynthSegParcResult", "SynthSegSegmenter", "run_synthseg_parc_t1",
+           "SynthSeg", "SynthSegResult"]
