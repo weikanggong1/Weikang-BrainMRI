@@ -86,10 +86,10 @@ def _synthetic_tree(tmp_path, monkeypatch, case_count=2):
 
 
 def _install_fake_runners(monkeypatch, template_data, affine):
-    calls = {"fsl": 0, "torch": 0, "expand": 0}
+    calls = {"fsl": 0, "torch": 0, "expand": 0, "order": []}
 
     def write_primary(outputs, offset):
-        coefficients = np.zeros((3, 3, 3, 3), dtype=np.float32)
+        coefficients = np.full((3, 3, 3, 3), offset, dtype=np.float32)
         _save(outputs["cout"], coefficients, np.eye(4))
         iout = template_data + offset + 0.03 * np.indices(template_data.shape)[0]
         jout = 0.8 + template_data / 10 + offset / 10
@@ -98,11 +98,13 @@ def _install_fake_runners(monkeypatch, template_data, affine):
 
     def fake_fsl(case, inputs, outputs, environment, log_path):
         calls["fsl"] += 1
+        calls["order"].append((case.case_id, "fsl"))
         write_primary(outputs, 0.0)
         return 2.0
 
     def fake_torch(args, case, inputs, outputs):
         calls["torch"] += 1
+        calls["order"].append((case.case_id, "torch"))
         write_primary(outputs, 0.01)
         return 1.0
 
@@ -143,16 +145,25 @@ def test_run_cache_summary_and_public_privacy(tmp_path, monkeypatch, capsys):
     inputs = MODULE.validate_inputs(args, check_device=True)
     calls = _install_fake_runners(monkeypatch, template_data, affine)
 
-    for case in inputs["cases"]:
-        record, cached = MODULE.run_case(args, inputs, case)
-        assert record["status"] == "success"
-        assert not cached
-    assert calls == {"fsl": 2, "torch": 2, "expand": 4}
+    assert MODULE.run(args) == 0
+    assert calls == {
+        "fsl": 2,
+        "torch": 2,
+        "expand": 4,
+        "order": [
+            ("case01", "fsl"),
+            ("case01", "torch"),
+            ("case02", "torch"),
+            ("case02", "fsl"),
+        ],
+    }
 
     cached_record, cached = MODULE.run_case(args, inputs, inputs["cases"][0])
     assert cached
     assert cached_record["status"] == "success"
-    assert calls == {"fsl": 2, "torch": 2, "expand": 4}
+    assert calls["fsl"] == 2
+    assert calls["torch"] == 2
+    assert calls["expand"] == 4
 
     assert MODULE.summarize(args) == 0
     public = json.loads(args.public_json.read_text())
@@ -166,6 +177,9 @@ def test_run_cache_summary_and_public_privacy(tmp_path, monkeypatch, capsys):
         "torch_fnirt_synchronized_wall"
     ]["median"] == 1.0
     assert public["metrics"]["results"]["iout"]["mae"]["count"] == 2
+    assert public["metrics"]["results"]["coefficients"]["mae"]["count"] == 2
+    for output in MODULE.OUTPUT_KEYS:
+        assert public["output_contract"][output]["all_fields_equal"]["all_cases"]
     assert len(private["cases"]) == 2
     assert "case01" in args.private_json.read_text()
     assert "case01" not in public_text
@@ -173,6 +187,15 @@ def test_run_cache_summary_and_public_privacy(tmp_path, monkeypatch, capsys):
     assert str(args.work_dir.resolve()) not in public_text
     assert "run_signature" not in public_text
     assert "/cwStorage/" not in public_text
+
+    manifest_path = args.work_dir / "private" / "run.private.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["threads"] = 2
+    manifest_path.write_text(json.dumps(manifest))
+    with pytest.raises(RuntimeError, match="run manifest does not match"):
+        MODULE.summarize(args)
+    manifest["threads"] = 1
+    manifest_path.write_text(json.dumps(manifest))
 
     first_case = inputs["cases"][0]
     image = nib.load(first_case.gm)

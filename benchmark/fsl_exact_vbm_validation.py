@@ -47,6 +47,7 @@ Create the private and aggregate-only reports::
     python benchmark/fsl_exact_vbm_validation.py summarize \
       --study-root work/ukb_vbm_gpu \
       --reference-mask "$FSLDIR/data/standard/MNI152_T1_2mm_brain_mask_dil.nii.gz" \
+      --weights weights \
       --work-dir work/ukb_vbm_gpu/fsl_exact_v09
 """
 
@@ -198,6 +199,10 @@ def package_source_digest() -> str:
     return digest.hexdigest()
 
 
+def script_digest() -> str:
+    return sha256(Path(__file__).resolve())
+
+
 def array_fingerprint(value: np.ndarray) -> str:
     """Use the same array hash contract as ``pre_nonlinear_signature``."""
     array = np.ascontiguousarray(value)
@@ -219,6 +224,26 @@ def timed(device: torch.device, function):
     value = function()
     synchronize(device)
     return value, time.perf_counter() - started
+
+
+def tf32_state(device: torch.device) -> dict[str, Any]:
+    return {
+        "cuda_execution": device.type == "cuda",
+        "matmul": bool(torch.backends.cuda.matmul.allow_tf32),
+        "cudnn": bool(torch.backends.cudnn.allow_tf32),
+        "reduced_precision_tensor_dtype": False,
+    }
+
+
+def execution_environment(device: torch.device) -> dict[str, Any]:
+    return {
+        "platform": platform.system(),
+        "torch": torch.__version__,
+        "cuda_runtime": torch.version.cuda,
+        "device_name": (
+            torch.cuda.get_device_name(device) if device.type == "cuda" else "CPU"
+        ),
+    }
 
 
 def affine_rmsdiff_mm(first: np.ndarray, second: np.ndarray, radius=80.0) -> float:
@@ -260,7 +285,7 @@ def case_paths(root: Path, case_id: str) -> CasePaths:
     return CasePaths(
         case_id=case_id,
         root=case_root,
-        raw_t1=t1 / "T1.nii.gz",
+        raw_t1=t1 / "T1_orig.nii.gz",
         fsl_gm=t1 / "T1_fast" / "T1_brain_pve_1.nii.gz",
         fsl_matrix=reference / "T1_GM_to_template_GM.mat",
         fsl_warped_gm=reference / OUTPUT_FILENAMES["warped_gm"],
@@ -388,7 +413,70 @@ def signature(payload: dict[str, Any]) -> str:
     return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
 
 
-def completed_record(path: Path, expected_signature: str, outputs: Iterable[Path]):
+def case_input_hashes(case: CasePaths) -> dict[str, str]:
+    return {
+        name: sha256(path) for name, path in required_case_files(case).items()
+    }
+
+
+def validation_context(
+    args,
+    inputs: dict[str, Any],
+    *,
+    source_digest: str,
+    harness_digest: str,
+    tf32: dict[str, Any],
+    environment: dict[str, Any],
+) -> dict[str, Any]:
+    return {
+        "schema": SCHEMA_VERSION,
+        "script_sha256": harness_digest,
+        "package_source_sha256": source_digest,
+        "package_version": freesurfer_torch.__version__,
+        "template_sha256": sha256(inputs["template"]),
+        "official_reference_mask_sha256": sha256(inputs["reference_mask"]),
+        "official_reference_mask_array_sha256": inputs["mask_array_sha256"],
+        "weights_sha256": {
+            name: metadata["sha256"]
+            for name, metadata in inputs["weight_files"].items()
+        },
+        "device": args.device,
+        "threads": args.threads,
+        "tf32": tf32,
+        "execution_environment": environment,
+    }
+
+
+def flirt_provenance(
+    context: dict[str, Any], case_hashes: dict[str, str]
+) -> dict[str, Any]:
+    return {
+        **context,
+        "case_inputs_sha256": case_hashes,
+        "algorithm": "FSLFLIRT exact-target default 12-DOF correlation-ratio path",
+    }
+
+
+def run_manifest_provenance(
+    context: dict[str, Any],
+    cases: list[CasePaths],
+    case_hashes: dict[str, dict[str, str]],
+    layers: Iterable[str],
+    backends: Iterable[str],
+) -> dict[str, Any]:
+    return {
+        **context,
+        "case_inputs_sha256": {
+            case.case_id: case_hashes[case.case_id] for case in cases
+        },
+        "layers": list(layers),
+        "backends": list(backends),
+    }
+
+
+def completed_record(
+    path: Path, expected_signature: str, outputs: dict[str, Path]
+):
     if not Path(path).is_file():
         return None
     record = json.loads(Path(path).read_text())
@@ -399,8 +487,16 @@ def completed_record(path: Path, expected_signature: str, outputs: Iterable[Path
             f"stale successful record has a different signature: {path}; "
             "use --overwrite after reviewing the changed provenance"
         )
-    if not all(Path(value).is_file() for value in outputs):
-        return None
+    expected_hashes = record.get("output_sha256")
+    if not isinstance(expected_hashes, dict) or set(expected_hashes) != set(outputs):
+        raise RuntimeError(f"cached output manifest is incomplete: {path}")
+    for name, value in outputs.items():
+        if not Path(value).is_file():
+            return None
+        if sha256(value) != expected_hashes[name]:
+            raise RuntimeError(
+                f"cached output hash mismatch for {value}; use --overwrite"
+            )
     return record
 
 
@@ -408,24 +504,20 @@ def run_flirt(
     args,
     case: CasePaths,
     template: sf.Volume,
-    source_digest: str,
-    template_hash: str,
+    context: dict[str, Any],
+    case_hashes: dict[str, str],
 ):
     paths = flirt_paths(args.work_dir, case.case_id)
-    provenance = {
-        "package_source_sha256": source_digest,
-        "moving_gm_sha256": sha256(case.fsl_gm),
-        "template_sha256": template_hash,
-        "device": args.device,
-        "algorithm": "FSLFLIRT exact-target default 12-DOF correlation-ratio path",
-    }
+    provenance = flirt_provenance(context, case_hashes)
     run_signature = signature(provenance)
     if not args.overwrite:
         cached = completed_record(
-            paths["record"], run_signature, (paths["matrix"], paths["moved"])
+            paths["record"],
+            run_signature,
+            {"matrix": paths["matrix"], "moved": paths["moved"]},
         )
         if cached is not None:
-            return cached
+            return cached, True
     paths["directory"].mkdir(parents=True, exist_ok=True)
     if args.overwrite:
         for name in ("record", "matrix", "moved"):
@@ -443,10 +535,13 @@ def run_flirt(
     }
     atomic_json(paths["record"], record)
     try:
-        moving = sf.load_volume(str(case.fsl_gm))
+        def compute():
+            moving = sf.load_volume(str(case.fsl_gm))
+            return ExactTargetFLIRT(device=args.device)(moving, template)
+
         result, compute_sec = timed(
             torch.device(args.device),
-            lambda: ExactTargetFLIRT(device=args.device)(moving, template),
+            compute,
         )
         save_started = time.perf_counter()
         np.savetxt(paths["matrix"], np.asarray(result.matrix), fmt="%.12g")
@@ -459,6 +554,10 @@ def run_flirt(
             output_save_sec=float(save_sec),
             matrix_rmsdiff_mm=affine_rmsdiff_mm(result.matrix, official),
             qc=_jsonable(result.qc),
+            output_sha256={
+                "matrix": sha256(paths["matrix"]),
+                "moved": sha256(paths["moved"]),
+            },
             finished_at=time.time(),
         )
     except Exception as error:
@@ -470,7 +569,7 @@ def run_flirt(
         atomic_json(paths["record"], record)
         raise
     atomic_json(paths["record"], record)
-    return record
+    return record, False
 
 
 def build_deform_model(backend: str, args):
@@ -528,10 +627,8 @@ def candidate_provenance(
     case: CasePaths,
     layer: str,
     backend: str,
-    template_hash: str,
-    reference_mask_hash: str,
-    source_digest: str,
-    weight_hashes: dict[str, str],
+    context: dict[str, Any],
+    case_hashes: dict[str, str],
 ) -> dict[str, Any]:
     moving_path = case.raw_t1 if layer == "end_to_end" else case.fsl_gm
     affine = "estimated-inside-end-to-end"
@@ -540,17 +637,12 @@ def candidate_provenance(
     elif layer == "matched_gm":
         affine = sha256(flirt_paths(args.work_dir, case.case_id)["matrix"])
     return {
-        "package_source_sha256": source_digest,
-        "package_version": freesurfer_torch.__version__,
+        **context,
+        "case_inputs_sha256": case_hashes,
         "layer": layer,
         "backend": backend,
-        "device": args.device,
-        "threads": args.threads,
         "moving_input_sha256": sha256(moving_path),
-        "template_sha256": template_hash,
-        "official_reference_mask_sha256": reference_mask_hash,
         "affine_input_sha256_or_role": affine,
-        "weights_sha256": weight_hashes,
     }
 
 
@@ -563,10 +655,8 @@ def run_candidate(
     reference_mask: sf.Volume,
     deform_model,
     pipeline,
-    source_digest: str,
-    template_hash: str,
-    reference_mask_hash: str,
-    weight_hashes: dict[str, str],
+    context: dict[str, Any],
+    case_hashes: dict[str, str],
 ):
     paths = candidate_paths(args.work_dir, layer, backend, case.case_id)
     provenance = candidate_provenance(
@@ -574,20 +664,18 @@ def run_candidate(
         case,
         layer,
         backend,
-        template_hash,
-        reference_mask_hash,
-        source_digest,
-        weight_hashes,
+        context,
+        case_hashes,
     )
     run_signature = signature(provenance)
     if not args.overwrite:
         cached = completed_record(
             paths["record"],
             run_signature,
-            (paths["warped_gm"], paths["jacobian"], paths["modulated_gm"]),
+            {name: paths[name] for name in OUTPUT_FILENAMES},
         )
         if cached is not None:
-            return cached
+            return cached, True
     paths["directory"].mkdir(parents=True, exist_ok=True)
     for name in (*OUTPUT_FILENAMES, "record"):
         if args.overwrite and name in paths:
@@ -624,18 +712,17 @@ def run_candidate(
             registration = result.registration
             substage_timing = result.timing_sec
         else:
-            moving = sf.load_volume(str(case.fsl_gm))
-            if layer == "matched_affine":
-                matrix = np.loadtxt(case.fsl_matrix, dtype=np.float64)
-            else:
-                matrix = np.loadtxt(
-                    flirt_paths(args.work_dir, case.case_id)["matrix"],
-                    dtype=np.float64,
-                )
-            initial_pull = initial_pull_from_flirt(matrix, moving, template)
-            registration, compute_sec = timed(
-                device,
-                lambda: register_gm(
+            def compute():
+                moving = sf.load_volume(str(case.fsl_gm))
+                if layer == "matched_affine":
+                    matrix = np.loadtxt(case.fsl_matrix, dtype=np.float64)
+                else:
+                    matrix = np.loadtxt(
+                        flirt_paths(args.work_dir, case.case_id)["matrix"],
+                        dtype=np.float64,
+                    )
+                initial_pull = initial_pull_from_flirt(matrix, moving, template)
+                return register_gm(
                     moving,
                     template,
                     device=args.device,
@@ -645,7 +732,11 @@ def run_candidate(
                     synthmorph_weights=args.weights,
                     registration_backend=backend,
                     deform_model=deform_model,
-                ),
+                )
+
+            registration, compute_sec = timed(
+                device,
+                compute,
             )
             result = registration
             substage_timing = None
@@ -664,6 +755,9 @@ def run_candidate(
             total_compute_and_save_sec=float(compute_sec + save_sec),
             pipeline_substage_timing_sec=_jsonable(substage_timing),
             registration=_jsonable(metadata),
+            output_sha256={
+                name: sha256(paths[name]) for name in OUTPUT_FILENAMES
+            },
             finished_at=time.time(),
         )
     except Exception as error:
@@ -675,7 +769,7 @@ def run_candidate(
         atomic_json(paths["record"], record)
         raise
     atomic_json(paths["record"], record)
-    return record
+    return record, False
 
 
 def dry_run(args) -> int:
@@ -689,7 +783,12 @@ def dry_run(args) -> int:
         "reference_mask_private": str(inputs["reference_mask"].resolve()),
         "reference_mask_voxels": inputs["mask_voxels"],
         "reference_mask_sha256": sha256(inputs["reference_mask"]),
+        "script_sha256": script_digest(),
+        "package_source_sha256": package_source_digest(),
         "weights_private": inputs["weight_files"],
+        "case_inputs_sha256_private": {
+            case.case_id: case_input_hashes(case) for case in inputs["cases"]
+        },
         "layers": list(args.layers),
         "backends": list(args.backends),
         "device": args.device,
@@ -713,12 +812,7 @@ def run(args) -> int:
     template = sf.load_volume(str(inputs["template"]))
     reference_mask = sf.load_volume(str(inputs["reference_mask"]))
     source_digest = package_source_digest()
-    template_hash = sha256(inputs["template"])
-    reference_mask_hash = sha256(inputs["reference_mask"])
-    weight_hashes = {
-        name: metadata["sha256"]
-        for name, metadata in inputs["weight_files"].items()
-    }
+    harness_digest = script_digest()
     setup = []
     deform_models = {}
     pipelines = {}
@@ -747,9 +841,30 @@ def run(args) -> int:
             # Both layers use the same already-loaded nonlinear implementation.
             # The estimator is stateless between subjects.
             pipelines[backend].deform_model = deform_models[backend]
+    actual_tf32 = tf32_state(device)
+    if device.type == "cuda" and not (
+        actual_tf32["matmul"] and actual_tf32["cudnn"]
+    ):
+        raise RuntimeError("CUDA validation requires TF32 matmul and cuDNN enabled")
+    environment = execution_environment(device)
+    context = validation_context(
+        args,
+        inputs,
+        source_digest=source_digest,
+        harness_digest=harness_digest,
+        tf32=actual_tf32,
+        environment=environment,
+    )
+    hashes_by_case = {
+        case.case_id: case_input_hashes(case) for case in inputs["cases"]
+    }
+    cache_hits = {"flirt": 0, "candidate": 0}
     started = time.perf_counter()
     for case in inputs["cases"]:
-        flirt = run_flirt(args, case, template, source_digest, template_hash)
+        flirt, cached = run_flirt(
+            args, case, template, context, hashes_by_case[case.case_id]
+        )
+        cache_hits["flirt"] += int(cached)
         print(
             f"flirt {case.case_id}: {flirt['matrix_rmsdiff_mm']:.6g} mm, "
             f"{flirt['synchronized_compute_sec']:.3f}s",
@@ -757,7 +872,7 @@ def run(args) -> int:
         )
         for layer in args.layers:
             for backend in args.backends:
-                record = run_candidate(
+                record, cached = run_candidate(
                     args,
                     case,
                     layer,
@@ -766,11 +881,10 @@ def run(args) -> int:
                     reference_mask,
                     deform_models[backend],
                     pipelines.get(backend),
-                    source_digest,
-                    template_hash,
-                    reference_mask_hash,
-                    weight_hashes,
+                    context,
+                    hashes_by_case[case.case_id],
                 )
+                cache_hits["candidate"] += int(cached)
                 print(
                     f"{layer} {backend} {case.case_id}: "
                     f"{record['synchronized_compute_sec']:.3f}s compute, "
@@ -780,22 +894,46 @@ def run(args) -> int:
         if device.type == "cuda":
             torch.cuda.empty_cache()
     synchronize(device)
+    invocation_wall_sec = time.perf_counter() - started
+    planned_records = len(inputs["cases"]) * (
+        1 + len(args.layers) * len(args.backends)
+    )
+    total_cache_hits = cache_hits["flirt"] + cache_hits["candidate"]
+    all_records_fresh = total_cache_hits == 0
+    manifest_provenance = run_manifest_provenance(
+        context,
+        inputs["cases"],
+        hashes_by_case,
+        args.layers,
+        args.backends,
+    )
     manifest = {
         "status": "success",
         "schema": SCHEMA_VERSION,
         "package_version": freesurfer_torch.__version__,
         "package_source_sha256": source_digest,
+        "script_sha256": harness_digest,
+        "run_signature": signature(manifest_provenance),
+        "provenance_private": manifest_provenance,
         "case_count": len(inputs["cases"]),
         "case_ids_private": [case.case_id for case in inputs["cases"]],
         "layers": list(args.layers),
         "backends": list(args.backends),
         "device": args.device,
         "threads": args.threads,
+        "tf32": actual_tf32,
+        "execution_environment": environment,
         "constructor_setup_sec": setup,
-        "batch_wall_sec": time.perf_counter() - started,
+        "planned_record_count": planned_records,
+        "cache_hits": {**cache_hits, "total": total_cache_hits},
+        "fresh_record_count": planned_records - total_cache_hits,
+        "all_records_fresh": all_records_fresh,
+        "invocation_wall_sec": invocation_wall_sec,
+        "batch_wall_sec": invocation_wall_sec if all_records_fresh else None,
         "timing_contract": (
             "CUDA is synchronized immediately before and after each compute call; "
-            "NIfTI and matrix writes are measured separately"
+            "NIfTI and matrix writes are measured separately; batch_wall_sec is "
+            "reported only when every record was computed in this invocation"
         ),
     }
     atomic_json(Path(args.work_dir) / "private" / "run.private.json", manifest)
@@ -1126,8 +1264,91 @@ def privacy_check(public_json: Path, public_csv: Path, private_roots: Iterable[P
         raise RuntimeError("public report contains a caseNN identifier")
 
 
+def validated_run_manifest(args, inputs: dict[str, Any]):
+    path = Path(args.work_dir) / "private" / "run.private.json"
+    if not path.is_file():
+        raise FileNotFoundError(path)
+    manifest = json.loads(path.read_text())
+    if manifest.get("status") != "success":
+        raise RuntimeError(f"incomplete validation run manifest: {path}")
+    cases = inputs["cases"]
+    expected_case_ids = [case.case_id for case in cases]
+    for key, expected in (
+        ("case_ids_private", expected_case_ids),
+        ("layers", list(args.layers)),
+        ("backends", list(args.backends)),
+        ("device", args.device),
+        ("threads", args.threads),
+    ):
+        if manifest.get(key) != expected:
+            raise RuntimeError(f"run manifest {key} does not match summary request")
+    recorded = manifest.get("provenance_private")
+    if not isinstance(recorded, dict):
+        raise RuntimeError("run manifest is missing provenance_private")
+    recorded_tf32 = recorded.get("tf32")
+    recorded_environment = recorded.get("execution_environment")
+    if not isinstance(recorded_tf32, dict) or not isinstance(
+        recorded_environment, dict
+    ):
+        raise RuntimeError("run manifest is missing execution TF32 or hardware")
+    if torch.device(args.device).type == "cuda" and not (
+        recorded_tf32.get("matmul") and recorded_tf32.get("cudnn")
+    ):
+        raise RuntimeError("recorded CUDA run did not enable required TF32 defaults")
+    context = validation_context(
+        args,
+        inputs,
+        source_digest=package_source_digest(),
+        harness_digest=script_digest(),
+        tf32=recorded_tf32,
+        environment=recorded_environment,
+    )
+    hashes_by_case = {case.case_id: case_input_hashes(case) for case in cases}
+    expected = run_manifest_provenance(
+        context,
+        cases,
+        hashes_by_case,
+        args.layers,
+        args.backends,
+    )
+    if recorded != expected or manifest.get("run_signature") != signature(expected):
+        raise RuntimeError("run manifest provenance does not match current inputs")
+    if manifest.get("tf32") != recorded_tf32 or manifest.get(
+        "execution_environment"
+    ) != recorded_environment:
+        raise RuntimeError("run manifest execution metadata is internally inconsistent")
+    cache_hits = manifest.get("cache_hits")
+    if not isinstance(cache_hits, dict):
+        raise RuntimeError("run manifest is missing cache accounting")
+    try:
+        flirt_hits = int(cache_hits["flirt"])
+        candidate_hits = int(cache_hits["candidate"])
+        total_hits = int(cache_hits["total"])
+        planned = int(manifest["planned_record_count"])
+        fresh = int(manifest["fresh_record_count"])
+    except (KeyError, TypeError, ValueError) as error:
+        raise RuntimeError("run manifest cache accounting is incomplete") from error
+    expected_planned = len(cases) * (1 + len(args.layers) * len(args.backends))
+    if (
+        min(flirt_hits, candidate_hits, total_hits, planned, fresh) < 0
+        or total_hits != flirt_hits + candidate_hits
+        or planned != expected_planned
+        or fresh != planned - total_hits
+    ):
+        raise RuntimeError("run manifest cache accounting is inconsistent")
+    all_fresh = manifest.get("all_records_fresh") is True
+    if all_fresh != (total_hits == 0):
+        raise RuntimeError("run manifest cache accounting is inconsistent")
+    if not all_fresh and manifest.get("batch_wall_sec") is not None:
+        raise RuntimeError("resumed runs cannot report a complete cohort batch wall")
+    if all_fresh and not isinstance(manifest.get("batch_wall_sec"), (int, float)):
+        raise RuntimeError("fresh runs must report the complete cohort batch wall")
+    return manifest, context, hashes_by_case
+
+
 def summarize(args) -> int:
-    inputs = validate_inputs(args, require_weights=False, check_device=False)
+    inputs = validate_inputs(args, require_weights=True, check_device=False)
+    run_manifest, context, hashes_by_case = validated_run_manifest(args, inputs)
     template_image, _ = load_image(inputs["template"])
     _, mask_values = load_image(inputs["reference_mask"], template_image)
     evaluation_mask = mask_values > 0
@@ -1156,11 +1377,18 @@ def summarize(args) -> int:
         raw_fsl_timings.append(fsl_times)
 
         fpaths = flirt_paths(args.work_dir, case.case_id)
-        if not fpaths["record"].is_file() or not fpaths["matrix"].is_file():
-            raise FileNotFoundError(fpaths["record"])
-        flirt_record = json.loads(fpaths["record"].read_text())
-        if flirt_record.get("status") != "success":
-            raise RuntimeError(f"incomplete FLIRT record: {fpaths['record']}")
+        expected_flirt_signature = signature(
+            flirt_provenance(context, hashes_by_case[case.case_id])
+        )
+        flirt_record = completed_record(
+            fpaths["record"],
+            expected_flirt_signature,
+            {"matrix": fpaths["matrix"], "moved": fpaths["moved"]},
+        )
+        if flirt_record is None:
+            raise FileNotFoundError(
+                f"no complete current-signature FLIRT result: {fpaths['record']}"
+            )
         candidate_matrix = np.loadtxt(fpaths["matrix"], dtype=np.float64)
         official_matrix = np.loadtxt(case.fsl_matrix, dtype=np.float64)
         rmsdiff = affine_rmsdiff_mm(candidate_matrix, official_matrix)
@@ -1189,11 +1417,26 @@ def summarize(args) -> int:
         for layer in args.layers:
             for backend in args.backends:
                 paths = candidate_paths(args.work_dir, layer, backend, case.case_id)
-                if not paths["record"].is_file():
-                    raise FileNotFoundError(paths["record"])
-                record = json.loads(paths["record"].read_text())
-                if record.get("status") != "success":
-                    raise RuntimeError(f"incomplete candidate: {paths['record']}")
+                expected_candidate_signature = signature(
+                    candidate_provenance(
+                        args,
+                        case,
+                        layer,
+                        backend,
+                        context,
+                        hashes_by_case[case.case_id],
+                    )
+                )
+                record = completed_record(
+                    paths["record"],
+                    expected_candidate_signature,
+                    {name: paths[name] for name in OUTPUT_FILENAMES},
+                )
+                if record is None:
+                    raise FileNotFoundError(
+                        "no complete current-signature candidate result: "
+                        f"{paths['record']}"
+                    )
                 execution_source_digests.add(
                     record["provenance_private"]["package_source_sha256"]
                 )
@@ -1316,21 +1559,47 @@ def summarize(args) -> int:
         paired_speed[layer] = {}
         reference_values = [value[reference_key] for value in raw_fsl_timings]
         for backend in args.backends:
-            candidate_values = [
+            compute_values = [
                 value["comparable_compute_sec"]
                 for value in raw_timings[layer][backend]
             ]
-            ratios = [
-                reference / candidate
-                for reference, candidate in zip(reference_values, candidate_values)
+            compute_and_save_values = [
+                value["compute_and_save_sec"]
+                for value in raw_timings[layer][backend]
             ]
-            differences = [
+            primary_ratios = [
+                reference / candidate
+                for reference, candidate in zip(
+                    reference_values, compute_and_save_values
+                )
+            ]
+            primary_differences = [
                 reference - candidate
-                for reference, candidate in zip(reference_values, candidate_values)
+                for reference, candidate in zip(
+                    reference_values, compute_and_save_values
+                )
+            ]
+            compute_only_ratios = [
+                reference / candidate
+                for reference, candidate in zip(reference_values, compute_values)
+            ]
+            compute_only_differences = [
+                reference - candidate
+                for reference, candidate in zip(reference_values, compute_values)
             ]
             paired_speed[layer][backend] = {
-                "fsl_cpu_over_candidate_compute": distribution(ratios),
-                "fsl_cpu_minus_candidate_compute_sec": distribution(differences),
+                "fsl_observed_wall_over_candidate_compute_and_save": distribution(
+                    primary_ratios
+                ),
+                "fsl_observed_wall_minus_candidate_compute_and_save_sec": distribution(
+                    primary_differences
+                ),
+                "fsl_observed_wall_over_candidate_compute_only": distribution(
+                    compute_only_ratios
+                ),
+                "fsl_observed_wall_minus_candidate_compute_only_sec": distribution(
+                    compute_only_differences
+                ),
             }
             append_distributions(
                 rows,
@@ -1365,29 +1634,11 @@ def summarize(args) -> int:
             }
         )
 
-    run_manifest_path = Path(args.work_dir) / "private" / "run.private.json"
-    run_manifest = (
-        json.loads(run_manifest_path.read_text())
-        if run_manifest_path.is_file()
-        else None
-    )
-    summary_device = torch.device(args.device)
     hardware = {
-        "platform": platform.system(),
-        "torch": torch.__version__,
-        "cuda_runtime": torch.version.cuda,
-        "device": args.device,
-        "device_name": (
-            torch.cuda.get_device_name(summary_device)
-            if summary_device.type == "cuda" and torch.cuda.is_available()
-            else "unavailable during summary" if summary_device.type == "cuda" else "CPU"
-        ),
-        "tf32": {
-            "matmul": bool(torch.backends.cuda.matmul.allow_tf32),
-            "cudnn": bool(torch.backends.cudnn.allow_tf32),
-            "reduced_precision_tensor_dtype": False,
-        },
-        "threads": args.threads,
+        **context["execution_environment"],
+        "device": context["device"],
+        "tf32": context["tf32"],
+        "threads": context["threads"],
     }
     public = {
         "schema": SCHEMA_VERSION,
@@ -1400,7 +1651,8 @@ def summarize(args) -> int:
             "identifiers_published": False,
         },
         "provenance": {
-            "reference_pipeline": "UKB v1.5-method VBM using FSL 6.0.7.4 CPU",
+            "reference_pipeline": "UKB v1.5-method VBM reference outputs",
+            "reference_software_context": "FSL 6.0.7.4 project environment",
             "template_sha256": sha256(inputs["template"]),
             "official_reference_mask_sha256": sha256(inputs["reference_mask"]),
             "candidate_execution_package_source_sha256": execution_source_digest,
@@ -1453,14 +1705,18 @@ def summarize(args) -> int:
             "hardware": hardware,
             "timing_contract": (
                 "candidate compute calls synchronize CUDA at both boundaries; model "
-                "construction and output writes are separate; FSL reference timings "
-                "come from the existing per-case timings.private.json files"
+                "construction is separate and output writes are reported separately. "
+                "Primary paired values use candidate compute plus the three selected "
+                "VBM output saves"
             ),
-            "batch_wall_sec": (
-                float(run_manifest["batch_wall_sec"]) if run_manifest else None
-            ),
+            "constructor_setup_sec": run_manifest["constructor_setup_sec"],
+            "invocation_wall_sec": float(run_manifest["invocation_wall_sec"]),
+            "batch_wall_sec": run_manifest["batch_wall_sec"],
+            "all_records_fresh": run_manifest["all_records_fresh"],
+            "cache_hits": run_manifest["cache_hits"],
             "first_call_boundary": (
-                "end-to-end first calls include lazy SynthStrip and nonlinear weight loading"
+                "end-to-end first calls include lazy SynthStrip loading; nonlinear "
+                "models are constructed in the separately reported setup"
             ),
         },
         "flirt": {
@@ -1469,8 +1725,24 @@ def summarize(args) -> int:
             "matrix_rmsdiff_mm": flirt_distribution,
         },
         "reference_fsl_timing": fsl_timing_distribution,
+        "reference_fsl_timing_provenance": {
+            "source": "existing per-case timings.private.json files",
+            "original_hardware_recorded": False,
+            "original_thread_count_recorded": False,
+            "fsl_version_recorded_per_case": False,
+            "controlled_speed_claim_allowed": False,
+            "interpretation": (
+                "Observed historical wall times only; they are not a controlled "
+                "CPU-versus-GPU speed benchmark"
+            ),
+        },
         "results": aggregate_results,
         "paired_timing": paired_speed,
+        "paired_timing_interpretation": (
+            "Descriptive ratios against historical FSL wall times with unrecorded "
+            "original hardware and thread count and different intermediate-output I/O; "
+            "no controlled speed claim"
+        ),
         "shared_chain_audit": {
             "pre_nonlinear_signature_equal_count": {
                 layer: int(sum(values)) for layer, values in paired_signatures.items()
@@ -1595,7 +1867,7 @@ def parse_args(argv=None):
     summary_parser = subparsers.add_parser(
         "summarize", help="write private detail and aggregate-only public reports"
     )
-    add_common(summary_parser, include_weights=False)
+    add_common(summary_parser, include_weights=True)
     summary_parser.add_argument("--private-json", type=Path)
     summary_parser.add_argument("--public-json", type=Path)
     summary_parser.add_argument("--public-csv", type=Path)

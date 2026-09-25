@@ -60,11 +60,19 @@ SCHEMA_VERSION = 1
 EXPECTED_FSL_VERSION = "6.0.7.4"
 CASE_PATTERN = re.compile(r"case[0-9]+")
 OUTPUT_KEYS = (
+    "coefficients",
     "nonlinear_residual",
     "iout",
     "jout",
     "modulated_gm",
 )
+OUTPUT_PATH_KEYS = {
+    "coefficients": "cout",
+    "nonlinear_residual": "nonlinear_residual",
+    "iout": "iout",
+    "jout": "jout",
+    "modulated_gm": "modulated_gm",
+}
 METRIC_KEYS = ("pearson", "mae", "rmse", "maxabs")
 
 
@@ -135,6 +143,36 @@ def package_source_digest() -> str:
 def signature(value: dict[str, Any]) -> str:
     encoded = json.dumps(_jsonable(value), sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+
+
+def tf32_policy(device: str | torch.device) -> dict[str, bool]:
+    """Return the package execution policy without sampling a summary process."""
+    enabled = torch.device(device).type == "cuda"
+    return {
+        "matmul": enabled,
+        "cudnn": enabled,
+        "reduced_precision_tensor_dtype": False,
+    }
+
+
+def apply_tf32_policy(device: str | torch.device) -> dict[str, bool]:
+    policy = tf32_policy(device)
+    if torch.device(device).type == "cuda":
+        torch.backends.cuda.matmul.allow_tf32 = True
+        torch.backends.cudnn.allow_tf32 = True
+    actual = {
+        "matmul": bool(torch.backends.cuda.matmul.allow_tf32),
+        "cudnn": bool(torch.backends.cudnn.allow_tf32),
+        "reduced_precision_tensor_dtype": False,
+    }
+    if torch.device(device).type == "cuda" and actual != policy:
+        raise RuntimeError(f"failed to apply CUDA TF32 policy: {actual}")
+    return policy
+
+
+def execution_order(case: CaseInputs) -> tuple[str, str]:
+    index = int(case.case_id.removeprefix("case"))
+    return ("fsl", "torch") if index % 2 else ("torch", "fsl")
 
 
 def resolve_template(args) -> Path:
@@ -289,8 +327,9 @@ def case_provenance(args, inputs: dict[str, Any], case: CaseInputs) -> dict[str,
         "torch_version": torch.__version__,
         "cuda_runtime": torch.version.cuda,
         "device": args.device,
-        "tf32_requested_for_cuda": torch.device(args.device).type == "cuda",
+        "tf32": tf32_policy(args.device),
         "threads": args.threads,
+        "execution_order": list(execution_order(case)),
         "fsl_version": inputs["tools"].version,
         "fsl_fnirt_sha256": inputs["fnirt_sha256"],
         "fsl_fnirtfileutils_sha256": inputs["fnirtfileutils_sha256"],
@@ -331,7 +370,7 @@ def _result_files(paths: dict[str, Any]) -> dict[str, Path]:
     return {
         f"{arm}_{name}": paths[arm][name]
         for arm in ("fsl", "torch")
-        for name in ("cout", *OUTPUT_KEYS)
+        for name in ("cout", "nonlinear_residual", "iout", "jout", "modulated_gm")
     }
 
 
@@ -508,7 +547,7 @@ def load_output(
     template: nib.spatialimages.SpatialImage,
     *,
     vector: bool,
-) -> np.ndarray:
+) -> tuple[nib.spatialimages.SpatialImage, np.ndarray]:
     image = nib.load(str(path))
     data = np.asarray(image.dataobj, dtype=np.float64)
     expected_shape = (*template.shape[:3], 3) if vector else template.shape[:3]
@@ -516,7 +555,80 @@ def load_output(
         raise ValueError(f"unexpected output shape or non-finite values: {path}")
     if not np.allclose(image.affine, template.affine, atol=1e-5, rtol=0):
         raise ValueError(f"output is not on the template grid: {path}")
-    return data
+    return image, data
+
+
+def load_coefficients(
+    path: Path,
+) -> tuple[nib.spatialimages.SpatialImage, np.ndarray]:
+    image = nib.load(str(path))
+    data = np.asarray(image.dataobj, dtype=np.float64)
+    if data.ndim != 4 or data.shape[-1] != 3 or not np.isfinite(data).all():
+        raise ValueError(f"unexpected coefficient shape or non-finite values: {path}")
+    return image, data
+
+
+def _same_optional_matrix(first, second, *, atol=1e-5) -> bool:
+    if first is None or second is None:
+        return first is None and second is None
+    return bool(np.allclose(first, second, atol=atol, rtol=0))
+
+
+def nifti_contract(
+    reference: nib.spatialimages.SpatialImage,
+    candidate: nib.spatialimages.SpatialImage,
+) -> dict[str, bool]:
+    reference_qform, reference_qcode = reference.get_qform(coded=True)
+    candidate_qform, candidate_qcode = candidate.get_qform(coded=True)
+    reference_sform, reference_scode = reference.get_sform(coded=True)
+    candidate_sform, candidate_scode = candidate.get_sform(coded=True)
+    fields = {
+        "shape_equal": tuple(reference.shape) == tuple(candidate.shape),
+        "affine_equal": bool(
+            np.allclose(reference.affine, candidate.affine, atol=1e-5, rtol=0)
+        ),
+        "voxel_sizes_equal": bool(
+            np.allclose(
+                reference.header.get_zooms(),
+                candidate.header.get_zooms(),
+                atol=1e-6,
+                rtol=0,
+            )
+        ),
+        "dtype_equal": (
+            reference.header.get_data_dtype() == candidate.header.get_data_dtype()
+        ),
+        "qform_code_equal": int(reference_qcode) == int(candidate_qcode),
+        "qform_matrix_equal": _same_optional_matrix(
+            reference_qform, candidate_qform
+        ),
+        "sform_code_equal": int(reference_scode) == int(candidate_scode),
+        "sform_matrix_equal": _same_optional_matrix(
+            reference_sform, candidate_sform
+        ),
+        "intent_code_equal": int(reference.header["intent_code"])
+        == int(candidate.header["intent_code"]),
+        "intent_parameters_equal": bool(
+            np.allclose(
+                [
+                    reference.header["intent_p1"],
+                    reference.header["intent_p2"],
+                    reference.header["intent_p3"],
+                ],
+                [
+                    candidate.header["intent_p1"],
+                    candidate.header["intent_p2"],
+                    candidate.header["intent_p3"],
+                ],
+                atol=1e-6,
+                rtol=0,
+            )
+        ),
+        "intent_name_equal": bytes(reference.header["intent_name"])
+        == bytes(candidate.header["intent_name"]),
+    }
+    fields["all_fields_equal"] = all(fields.values())
+    return fields
 
 
 def comparison_metrics(reference: np.ndarray, candidate: np.ndarray) -> dict[str, Any]:
@@ -543,15 +655,32 @@ def comparison_metrics(reference: np.ndarray, candidate: np.ndarray) -> dict[str
     }
 
 
-def compare_outputs(paths: dict[str, Any], template_path: Path) -> dict[str, Any]:
+def compare_outputs(
+    paths: dict[str, Any], template_path: Path
+) -> tuple[dict[str, Any], dict[str, bool]]:
     template = nib.load(str(template_path))
     metrics = {}
+    contracts = {}
     for name in OUTPUT_KEYS:
+        path_key = OUTPUT_PATH_KEYS[name]
+        if name == "coefficients":
+            reference_image, reference = load_coefficients(paths["fsl"][path_key])
+            candidate_image, candidate = load_coefficients(paths["torch"][path_key])
+            if reference.shape != candidate.shape:
+                raise ValueError("FSL and Torch coefficient arrays have different shapes")
+            metrics[name] = comparison_metrics(reference, candidate)
+            contracts[name] = nifti_contract(reference_image, candidate_image)
+            continue
         vector = name == "nonlinear_residual"
-        reference = load_output(paths["fsl"][name], template, vector=vector)
-        candidate = load_output(paths["torch"][name], template, vector=vector)
+        reference_image, reference = load_output(
+            paths["fsl"][path_key], template, vector=vector
+        )
+        candidate_image, candidate = load_output(
+            paths["torch"][path_key], template, vector=vector
+        )
         metrics[name] = comparison_metrics(reference, candidate)
-    return metrics
+        contracts[name] = nifti_contract(reference_image, candidate_image)
+    return metrics, contracts
 
 
 def run_case(args, inputs: dict[str, Any], case: CaseInputs) -> tuple[dict[str, Any], bool]:
@@ -610,13 +739,20 @@ def run_case(args, inputs: dict[str, Any], case: CaseInputs) -> tuple[dict[str, 
     atomic_json(paths["record"], record)
     environment = _fsl_environment(inputs["tools"], args.threads)
     try:
-        fsl_seconds = run_fsl_fnirt(
-            case,
-            inputs,
-            paths["fsl"],
-            environment,
-            paths["log"],
-        )
+        primary_seconds = {}
+        for arm in execution_order(case):
+            if arm == "fsl":
+                primary_seconds[arm] = run_fsl_fnirt(
+                    case,
+                    inputs,
+                    paths["fsl"],
+                    environment,
+                    paths["log"],
+                )
+            else:
+                primary_seconds[arm] = run_torch_fnirt(
+                    args, case, inputs, paths["torch"]
+                )
         fsl_expand_seconds = expand_coefficients(
             inputs,
             paths["fsl"]["cout"],
@@ -629,7 +765,6 @@ def run_case(args, inputs: dict[str, Any], case: CaseInputs) -> tuple[dict[str, 
             paths["fsl"]["jout"],
             paths["fsl"]["modulated_gm"],
         )
-        torch_seconds = run_torch_fnirt(args, case, inputs, paths["torch"])
         torch_expand_seconds = expand_coefficients(
             inputs,
             paths["torch"]["cout"],
@@ -642,10 +777,13 @@ def run_case(args, inputs: dict[str, Any], case: CaseInputs) -> tuple[dict[str, 
             paths["torch"]["jout"],
             paths["torch"]["modulated_gm"],
         )
-        metrics = compare_outputs(paths, inputs["template"])
+        metrics, output_contracts = compare_outputs(paths, inputs["template"])
         output_hashes = {name: sha256(path) for name, path in outputs.items()}
+        fsl_seconds = primary_seconds["fsl"]
+        torch_seconds = primary_seconds["torch"]
         record.update(
             status="success",
+            execution_order=list(execution_order(case)),
             timing_seconds={
                 "fsl_cpu_fnirt_wall": float(fsl_seconds),
                 "torch_fnirt_synchronized_wall": float(torch_seconds),
@@ -654,6 +792,7 @@ def run_case(args, inputs: dict[str, Any], case: CaseInputs) -> tuple[dict[str, 
                 "torch_residual_expansion_wall": float(torch_expand_seconds),
             },
             metrics=metrics,
+            output_contracts=output_contracts,
             output_sha256=output_hashes,
             finished_at_unix=time.time(),
         )
@@ -727,6 +866,7 @@ def run(args) -> int:
     inputs = validate_inputs(args, check_device=True)
     torch.set_num_threads(args.threads)
     device = torch.device(args.device)
+    tf32 = apply_tf32_policy(device)
     setup_started = time.perf_counter()
     if device.type == "cuda":
         torch.empty(1, device=device)
@@ -757,11 +897,7 @@ def run(args) -> int:
         "device_name": (
             torch.cuda.get_device_name(device) if device.type == "cuda" else "CPU"
         ),
-        "tf32": {
-            "matmul": bool(torch.backends.cuda.matmul.allow_tf32),
-            "cudnn": bool(torch.backends.cudnn.allow_tf32),
-            "reduced_precision_tensor_dtype": False,
-        },
+        "tf32": tf32,
         "threads": args.threads,
         "device_setup_seconds": setup_seconds,
         "batch_wall_seconds": time.perf_counter() - started,
@@ -772,6 +908,9 @@ def run(args) -> int:
             "Torch CUDA is synchronized immediately before and after run_fnirt; "
             "both FNIRT timings include cout/iout/jout writes and exclude residual "
             "expansion and modulation"
+        ),
+        "execution_order_policy": (
+            "odd case slots run FSL then Torch; even case slots run Torch then FSL"
         ),
     }
     atomic_json(
@@ -841,10 +980,48 @@ def privacy_check(public: dict[str, Any], forbidden: Iterable[Path | str]) -> No
             raise ValueError(f"public report contains private key {forbidden_key}")
 
 
+def validated_run_manifest(args, inputs: dict[str, Any]) -> dict[str, Any]:
+    path = Path(args.work_dir) / "private" / "run.private.json"
+    if not path.is_file():
+        raise FileNotFoundError(path)
+    manifest = json.loads(path.read_text())
+    expected = {
+        "status": "success",
+        "case_count": len(inputs["cases"]),
+        "case_ids": [case.case_id for case in inputs["cases"]],
+        "device": args.device,
+        "tf32": tf32_policy(args.device),
+        "threads": args.threads,
+        "package_source_sha256": inputs["package_source_sha256"],
+        "script_sha256": inputs["script_sha256"],
+    }
+    mismatches = {
+        key: {"expected": value, "observed": manifest.get(key)}
+        for key, value in expected.items()
+        if manifest.get(key) != value
+    }
+    if mismatches:
+        raise RuntimeError(f"run manifest does not match summary inputs: {mismatches}")
+    try:
+        cache_hits = int(manifest["cache_hits"])
+    except (KeyError, TypeError, ValueError) as error:
+        raise RuntimeError("run manifest cache accounting is incomplete") from error
+    if not 0 <= cache_hits <= len(inputs["cases"]):
+        raise RuntimeError("run manifest cache accounting is inconsistent")
+    expected_order_policy = (
+        "odd case slots run FSL then Torch; even case slots run Torch then FSL"
+    )
+    if manifest.get("execution_order_policy") != expected_order_policy:
+        raise RuntimeError("run manifest execution-order policy is inconsistent")
+    return manifest
+
+
 def summarize(args) -> int:
     inputs = validate_inputs(args, check_device=False)
+    run_manifest = validated_run_manifest(args, inputs)
     private_cases = []
     metric_records = []
+    output_contract_records = []
     timing_records = []
     execution_digests = set()
     for case in inputs["cases"]:
@@ -858,8 +1035,9 @@ def summarize(args) -> int:
             raise FileNotFoundError(
                 f"no successful current-signature result for {case.case_id}"
             )
-        metrics = compare_outputs(paths, inputs["template"])
+        metrics, output_contracts = compare_outputs(paths, inputs["template"])
         metric_records.append(metrics)
+        output_contract_records.append(output_contracts)
         timing_records.append(record["timing_seconds"])
         execution_digests.add(
             record["provenance_private"]["package_source_sha256"]
@@ -869,6 +1047,7 @@ def summarize(args) -> int:
             "run_signature": expected_signature,
             "record_private": str(paths["record"].resolve()),
             "metrics": metrics,
+            "output_contracts": output_contracts,
             "timing_seconds": record["timing_seconds"],
             "output_sha256": record["output_sha256"],
         }
@@ -892,12 +1071,20 @@ def summarize(args) -> int:
             "fsl_cpu_over_torch",
         )
     }
-    run_manifest_path = Path(args.work_dir) / "private" / "run.private.json"
-    run_manifest = (
-        json.loads(run_manifest_path.read_text())
-        if run_manifest_path.is_file()
-        else None
-    )
+    output_contract_summary = {
+        output: {
+            key: {
+                "true_count": int(
+                    sum(record[output][key] for record in output_contract_records)
+                ),
+                "case_count": len(output_contract_records),
+                "all_cases": bool(output_contract_records)
+                and all(record[output][key] for record in output_contract_records),
+            }
+            for key in output_contract_records[0][output]
+        }
+        for output in OUTPUT_KEYS
+    }
     public = {
         "schema": SCHEMA_VERSION,
         "status": "measured",
@@ -933,6 +1120,7 @@ def summarize(args) -> int:
             "reference_mask": "same official dilated MNI152 2-mm binary mask",
         },
         "outputs": {
+            "coefficients": "native cout cubic B-spline control coefficients",
             "nonlinear_residual": (
                 "cout expanded by the same FSL fnirtfileutils without --withaff"
             ),
@@ -941,10 +1129,14 @@ def summarize(args) -> int:
             "modulated_gm": "float32 iout multiplied by jout with common code",
         },
         "metrics": {
-            "scope": "all finite values on the complete reference grid",
+            "scope": (
+                "all finite coefficient values on the native control grid; all "
+                "finite values for other outputs on the complete reference grid"
+            ),
             "names": ["Pearson", "MAE", "RMSE", "maximum absolute error"],
             "results": aggregate_metrics(metric_records),
         },
+        "output_contract": output_contract_summary,
         "timing": {
             "device": args.device,
             "threads": args.threads,
@@ -954,8 +1146,9 @@ def summarize(args) -> int:
                 "writes and exclude fnirtfileutils expansion and modulation."
             ),
             "distributions_seconds_or_ratio": timing,
-            "device_name": run_manifest.get("device_name") if run_manifest else None,
-            "tf32": run_manifest.get("tf32") if run_manifest else None,
+            "device_name": run_manifest["device_name"],
+            "tf32": run_manifest["tf32"],
+            "execution_order_policy": run_manifest["execution_order_policy"],
         },
         "interpretation": {
             "equivalence_decision": "not made by this tool",
