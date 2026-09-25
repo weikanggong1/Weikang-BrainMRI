@@ -126,6 +126,11 @@ PRIVATE_ID = re.compile(r"case[0-9]+")
 # Keep these engineering gates fixed during a validation run. Passing them is
 # evidence of functional agreement, not mathematical or bitwise identity.
 FLIRT_RMSDIFF_MAX_MM = 0.05
+# The formal 0.9 execution started with this wording inside private record
+# signatures. Keep that exact value only when validating those signed records.
+LEGACY_EXACT_TARGET_HARNESS_SHA256 = (
+    "8e117010611373e7ff2ef5507c0ec0bc7e5d71e05fb39e84f4f9c6dc4f346879"
+)
 FNIRT_FUNCTIONAL_OUTPUT_GATES = {
     "warped_gm": {
         "pearson": (">=", 0.99),
@@ -518,12 +523,14 @@ def validation_context(
 def flirt_provenance(
     context: dict[str, Any], case_hashes: dict[str, str]
 ) -> dict[str, Any]:
+    if context["script_sha256"] == LEGACY_EXACT_TARGET_HARNESS_SHA256:
+        algorithm = "FSLFLIRT exact-target default 12-DOF correlation-ratio path"
+    else:
+        algorithm = "source-derived FSLFLIRT default 12-DOF correlation-ratio path"
     return {
         **context,
         "case_inputs_sha256": case_hashes,
-        "algorithm": (
-            "source-derived FSLFLIRT default 12-DOF correlation-ratio path"
-        ),
+        "algorithm": algorithm,
     }
 
 

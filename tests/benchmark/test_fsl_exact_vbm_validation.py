@@ -97,7 +97,7 @@ def test_summarize_keeps_case_details_private(tmp_path):
         "cuda_multiprocessor_count": None,
     }
     source_digest = MODULE.package_source_digest()
-    execution_harness_digest = "a" * 64
+    execution_harness_digest = MODULE.LEGACY_EXACT_TARGET_HARNESS_SHA256
     context = MODULE.validation_context(
         args,
         inputs,
@@ -272,6 +272,19 @@ def test_affine_rmsdiff_and_image_metrics_identity():
     assert metrics["mae"] == 0.0
     assert metrics["rmse"] == 0.0
     assert metrics["dice"] == 1.0
+
+
+def test_flirt_provenance_preserves_formal_execution_signature_wording():
+    context = {
+        "script_sha256": MODULE.LEGACY_EXACT_TARGET_HARNESS_SHA256,
+    }
+    legacy = MODULE.flirt_provenance(context, {"gm": "digest"})
+    assert legacy["algorithm"].startswith("FSLFLIRT exact-target")
+
+    current = MODULE.flirt_provenance(
+        {"script_sha256": "a" * 64}, {"gm": "digest"}
+    )
+    assert current["algorithm"].startswith("source-derived FSLFLIRT")
 
 
 def test_backend_execution_order_alternates_by_case_slot(tmp_path):
