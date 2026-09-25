@@ -73,8 +73,8 @@ not establish a stage speed ratio. The focused conversion/API tests passed
 ## Remaining boundary
 
 GPU execution of the new wrapper and TF32 numerical behavior have not been
-checked because gpucw1 was not available in this validation. The existing
-SynthMorph constructor disables TF32 for checkpoint parity; this stage does
-not change that shared model setting. The independent unmodified official
-TensorFlow registration, downstream consumers of the new XFM, and an
-end-to-end Python recon-all call remain unvalidated.
+checked because gpucw1 was not available in this validation. The SynthMorph
+constructor enables TF32 for CUDA matmul and cuDNN; this CPU replay does not
+exercise that path. The independent unmodified official TensorFlow
+registration, downstream consumers of the new XFM, and an end-to-end Python
+recon-all call remain unvalidated.
