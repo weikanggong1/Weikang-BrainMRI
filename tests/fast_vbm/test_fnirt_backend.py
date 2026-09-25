@@ -286,8 +286,8 @@ def test_register_gm_fnirt_branch_returns_fsl_vbm_output_roles():
         fnirt_jacobian_penalty=0,
     )
 
-    assert result.qc["nonlinear_backend"] == "pytorch-fnirt-style-cubic-bspline"
-    assert result.qc["fnirt_style"] is True
+    assert result.qc["nonlinear_backend"] == "pytorch-fnirt-gm-config"
+    assert result.qc["fnirt_style"] is False
     assert result.qc["fsl_fnirt_numerically_equivalent"] is False
     for output in (result.warped_gm, result.jacobian, result.modulated_gm):
         assert output.data.dtype == np.float32

@@ -1,0 +1,106 @@
+#!/usr/bin/env python
+
+import               os
+import               sys
+import               shlex
+import               platform
+import os.path    as op
+import subprocess as sp
+import contextlib as ctxlib
+
+import numpy      as np
+
+from pyfeeds.evaluate import cmpArrays
+
+
+def sprun(cmd, *args, **kwargs):
+    cmd = shlex.split(cmd)
+    sp.run(cmd, *args, check=True, **kwargs)
+
+
+@ctxlib.contextmanager
+def indir(path):
+    cwd = os.getcwd()
+    try:
+        os.chdir(path)
+        yield
+    finally:
+        os.chdir(cwd)
+
+
+def identify_platform():
+    platforms = {
+        ('linux',  'x86_64') : 'linux-64',
+        ('darwin', 'x86_64') : 'macos-64',
+        ('darwin', 'arm64')  : 'macos-M1',
+    }
+
+    system = platform.system().lower()
+    cpu    = platform.machine()
+    key    = (system, cpu)
+
+    return platforms[key]
+
+
+def run_test(testdir, outdir, seed):
+    with indir(testdir):
+        sprun('make')
+    with indir(outdir):
+        sprun(f'{testdir}/test_splinefield {seed}')
+
+
+def evaluate_results(testdir, outdir, seed):
+    plat         = identify_platform()
+    benchmarkdir = op.join(os.getcwd(), 'benchmarks', plat, str(seed))
+
+    # (output_file, benchmark_file)
+    checks = [
+        ('Bend_energy_hess_single_thread.txt', 'Bend_energy_hess.txt.bz2'),
+        ('Bend_energy_hess_multi_thread.txt',  'Bend_energy_hess.txt.bz2'),
+        ('Mem_energy_hess_single_thread.txt',  'Mem_energy_hess.txt.bz2'),
+        ('Mem_energy_hess_multi_thread.txt',   'Mem_energy_hess.txt.bz2'),
+        ('jte1.txt',                           'jte1.txt.bz2'),
+        ('jte2.txt',                           'jte2.txt.bz2'),
+        ('jte3.txt',                           'jte3.txt.bz2'),
+        ('jte4.txt',                           'jte4.txt.bz2'),
+        ('pjte1.txt',                          'jte1.txt.bz2'),
+        ('pjte2.txt',                          'jte2.txt.bz2'),
+        ('pjte3.txt',                          'jte3.txt.bz2'),
+        ('pjte4.txt',                          'jte4.txt.bz2'),
+        ('matrix_asym_single_thread.txt',      'matrix_asym.txt.bz2'),
+        ('matrix_asym_4_thread.txt',           'matrix_asym.txt.bz2'),
+        ('matrix_asym_8_thread.txt',           'matrix_asym.txt.bz2'),
+        ('matrix_asym_16_thread.txt',          'matrix_asym.txt.bz2'),
+        ('matrix_sym_single_thread.txt',       'matrix_sym.txt.bz2'),
+        ('matrix_sym_multi_thread_4.txt',      'matrix_sym.txt.bz2'),
+        ('matrix_sym_multi_thread_8.txt',      'matrix_sym.txt.bz2'),
+        ('matrix_sym_multi_thread_16.txt',     'matrix_sym.txt.bz2'),
+        ('prod.txt',                           'prod.txt.bz2'),
+        ('prod2.txt',                          'prod.txt.bz2'),
+        ('prod4.txt',                          'prod.txt.bz2'),
+        ('prod7.txt',                          'prod.txt.bz2'),
+        ('x1.txt',                             'x1.txt.bz2'),
+        ('x2.txt',                             'x1.txt.bz2'),
+        ('x3.txt',                             'x3.txt.bz2'),
+        ('x4.txt',                             'x3.txt.bz2'),
+        ('x5.txt',                             'x3.txt.bz2'),
+        ('x6.txt',                             'x3.txt.bz2'),
+        ('x7.txt',                             'x7.txt.bz2'),
+        ('x8.txt',                             'x7.txt.bz2'),
+        ('x9.txt',                             'x7.txt.bz2'),
+        ('x10.txt',                            'x7.txt.bz2')]
+
+    for output, benchmark in checks:
+        out   = np.loadtxt(op.join(outdir,       output))
+        bench = np.loadtxt(op.join(benchmarkdir, benchmark))
+        diff   = cmpArrays(out, bench)
+        print(f'{output} <-> {benchmark}: {diff}')
+        assert diff <= 0.01
+
+
+if __name__ == '__main__':
+    seed    = 1238549
+    testdir = os.getcwd()
+    outdir  = sys.argv[1]
+    run_test(        testdir, outdir, seed)
+    evaluate_results(testdir, outdir, seed)

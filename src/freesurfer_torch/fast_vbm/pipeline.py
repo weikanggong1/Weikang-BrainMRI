@@ -12,7 +12,6 @@ import surfa as sf
 import torch
 
 from ..fast import FASTResult, TorchFAST
-from .fnirt_backend import PyTorchFNIRTRegistration
 from .registration import VBMRegistrationResult, register_gm
 from .synthmorph_backend import SynthMorphDeformRegistration
 
@@ -122,15 +121,10 @@ class FastVBMResult:
         nonlinear_label = (
             "PyTorch SynthMorph deform"
             if nonlinear_backend == "synthmorph"
-            else "PyTorch FNIRT-style cubic B-spline"
+            else "PyTorch FNIRT GM-config cubic B-spline"
         )
         jacobian_convention = (
-            "FSL FNIRT nonlinear-only: det(I + d residual_fsl / d fixed_fsl)"
-            if nonlinear_backend == "fnirt"
-            else (
-                "nonlinear-only: full pull determinant divided by affine "
-                "determinant"
-            )
+            "FSL nonlinear-only: det(I + d residual_fsl / d fixed_fsl)"
         )
         registration_timing = (
             "linear registration, selected nonlinear backend, Jacobian, "
@@ -140,14 +134,23 @@ class FastVBMResult:
             registration_timing += (
                 "; the first call includes lazy checkpoint loading"
             )
+        linear_qc = self.registration.qc.get("linear", {})
+        flirt_equivalent = linear_qc.get("validated_fsl_equivalent")
+        fnirt_equivalent = (
+            self.registration.qc.get("fsl_fnirt_numerically_equivalent", False)
+            if nonlinear_backend == "fnirt"
+            else None
+        )
         return {
             "status": "experimental",
             "method": (
-                "TorchFAST GM; independent PyTorch FLIRT-compatible 12-DOF "
-                f"affine; {nonlinear_label}"
+                "TorchFAST GM; FSL-default correlation-ratio/Brent FLIRT; "
+                f"{nonlinear_label}; common FSL warp conversion, GPU "
+                "applywarp, nonlinear Jacobian, and modulation"
             ),
-            "fnirt_equivalent": False,
-            "fsl_flirt_equivalent": False,
+            "fnirt_equivalent": fnirt_equivalent,
+            "fsl_fnirt_numerically_equivalent": fnirt_equivalent,
+            "fsl_flirt_equivalent": flirt_equivalent,
             "settings": self.settings,
             "timing_sec": self.timing_sec,
             "timing_definition": {
@@ -221,9 +224,9 @@ class FastVBM:
     """Reusable raw-T1 to VBM pipeline using SynthStrip and TorchFAST.
 
     SynthStrip is loaded lazily and is not required when ``brain_mask`` is
-    supplied. Linear registration is a PyTorch FLIRT-compatible 12-DOF fit.
-    Nonlinear registration uses either this package's PyTorch SynthMorph
-    implementation or its FNIRT-style cubic B-spline optimizer.
+    supplied. Linear registration uses this package's FSL-default FLIRT port.
+    Nonlinear registration uses either PyTorch SynthMorph or PyTorch FNIRT.
+    Both branches share every VBM stage except nonlinear pull-field estimation.
     """
 
     def __init__(
@@ -242,7 +245,7 @@ class FastVBM:
         synthmorph_steps=7,
         registration_backend="synthmorph",
         fnirt_strides=(4, 2, 1, 1),
-        fnirt_steps=(20, 20, 30, 20),
+        fnirt_steps=(5, 5, 10, 5),
         fnirt_learning_rates=(0.5, 0.25, 0.1, 0.05),
         fnirt_input_fwhm_mm=(6.0, 4.0, 2.0, 2.0),
         fnirt_reference_fwhm_mm=(4.0, 2.0, 0.0, 0.0),
@@ -311,16 +314,34 @@ class FastVBM:
                     steps=self.synthmorph_steps,
                 )
             else:
-                self.deform_model = PyTorchFNIRTRegistration(
-                    device=self.device,
-                    strides=self.fnirt_strides,
-                    steps=self.fnirt_steps,
-                    learning_rates=self.fnirt_learning_rates,
+                from ..fnirt.registration import GMFNIRTConfig, TorchFNIRT
+
+                if np.isscalar(self.fnirt_warp_resolution_mm):
+                    warp_resolution = (
+                        float(self.fnirt_warp_resolution_mm),
+                    ) * 3
+                else:
+                    warp_resolution = tuple(self.fnirt_warp_resolution_mm)
+                level_count = len(self.fnirt_strides)
+                config = GMFNIRTConfig(
+                    subsampling=self.fnirt_strides,
+                    maximum_iterations=self.fnirt_steps,
                     input_fwhm_mm=self.fnirt_input_fwhm_mm,
                     reference_fwhm_mm=self.fnirt_reference_fwhm_mm,
-                    warp_resolution_mm=self.fnirt_warp_resolution_mm,
+                    warp_resolution_mm=warp_resolution,
                     regularization=self.fnirt_regularization,
-                    jacobian_penalty=self.fnirt_jacobian_penalty,
+                    estimate_intensity=tuple(
+                        index < level_count - 1
+                        for index in range(level_count)
+                    ),
+                    apply_reference_mask=tuple(
+                        index == level_count - 1
+                        for index in range(level_count)
+                    ),
+                )
+                self.deform_model = TorchFNIRT(
+                    device=self.device,
+                    config=config,
                 )
         return self.deform_model
 
@@ -330,6 +351,7 @@ class FastVBM:
         template,
         *,
         brain_mask=None,
+        reference_mask=None,
         initial_pull=None,
         initial_pull_convention=None,
     ):
@@ -377,6 +399,7 @@ class FastVBM:
             device=self.device,
             initial_pull=initial_pull,
             initial_pull_convention=initial_pull_convention,
+            reference_mask=reference_mask,
             linear_strides=self.linear_strides,
             linear_steps=self.linear_steps,
             linear_learning_rates=self.linear_learning_rates,
@@ -406,24 +429,28 @@ class FastVBM:
             "device": str(self.device),
             "mask_source": mask_source,
             "bias_correction": self.bias_correction,
-            "linear_backend": "independent-pytorch-flirt-compatible",
-            "linear_cost": "normalized correlation",
-            "linear_optimizer": "Adam",
+            "linear_backend": "pytorch-fsl-flirt-default",
+            "linear_cost": "FSL correlation ratio",
+            "linear_optimizer": "MISCMATHS Brent coordinate search",
+            "linear_schedule": "FSL default 8/4/2/1 mm",
             "linear_forward_convention": "moving-to-fixed-world-ras",
             "linear_pull_convention": "fixed-to-moving-world-ras",
             "linear_strides": list(self.linear_strides),
             "linear_steps": list(self.linear_steps),
             "linear_learning_rates": list(self.linear_learning_rates),
             "registration_backend": self.registration_backend,
+            "registration_reference_mask_source": registration.qc.get(
+                "reference_mask_source", "unreported"
+            ),
             "nonlinear_backend": (
                 "pytorch-synthmorph-deform"
                 if self.registration_backend == "synthmorph"
-                else "pytorch-fnirt-style-cubic-bspline"
+                else "pytorch-fnirt-gm-config"
             ),
             "nonlinear_implementation": (
                 "freesurfer_torch.synthmorph.SynthMorph"
                 if self.registration_backend == "synthmorph"
-                else "freesurfer_torch.fast_vbm.PyTorchFNIRTRegistration"
+                else "freesurfer_torch.fnirt.TorchFNIRT"
             ),
             "synthmorph_implementation": (
                 "freesurfer_torch.synthmorph.SynthMorph"
@@ -453,9 +480,26 @@ class FastVBM:
                 if self.registration_backend == "synthmorph"
                 else None
             ),
-            "warp_convention": "fixed-grid-target-to-source-world-ras",
-            "fnirt_style": self.registration_backend == "fnirt",
-            "fsl_fnirt_numerically_equivalent": False,
+            "warp_convention": (
+                "fixed-grid FSL scaled-mm relative displacement after common "
+                "RAS-pull conversion"
+            ),
+            "shared_registration_chain": (
+                "FAST GM -> FSL FLIRT -> nonlinear estimator -> FSL warp "
+                "conversion -> GPU applywarp -> nonlinear Jacobian -> modulation"
+            ),
+            "only_backend_specific_stage": (
+                "nonlinear pull-field estimation, including estimator-specific "
+                "objective and mask use"
+            ),
+            "reference_mask_role": (
+                "recorded for both backends and consumed by the FNIRT "
+                "estimator; SynthMorph has no mask input"
+            ),
+            "fnirt_style": False,
+            "fsl_fnirt_numerically_equivalent": registration.qc.get(
+                "fsl_fnirt_numerically_equivalent", False
+            ) if self.registration_backend == "fnirt" else None,
             "fnirt_strides": (
                 list(self.fnirt_strides)
                 if self.registration_backend == "fnirt"
@@ -515,6 +559,7 @@ class FastVBM:
         output_dir,
         *,
         brain_mask=None,
+        reference_mask=None,
         initial_pull=None,
         initial_pull_convention=None,
         overwrite=False,
@@ -524,6 +569,7 @@ class FastVBM:
             image,
             template,
             brain_mask=brain_mask,
+            reference_mask=reference_mask,
             initial_pull=initial_pull,
             initial_pull_convention=initial_pull_convention,
         )

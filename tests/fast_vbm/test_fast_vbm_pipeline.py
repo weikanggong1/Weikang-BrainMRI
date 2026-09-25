@@ -67,6 +67,8 @@ def _pipeline(monkeypatch):
             fit_score=1.0,
             maximum_displacement_mm=0.0,
             qc={
+                "linear": {"validated_fsl_equivalent": False},
+                "fsl_fnirt_numerically_equivalent": False,
                 "jacobian_min": 1.0,
                 "jacobian_max": 1.0,
                 "nonpositive_jacobian_voxels": 0,
@@ -121,12 +123,13 @@ def test_explicit_mask_pipeline_returns_input_and_template_grid_outputs(
                for name in OUTPUT_FILENAMES.values())
     report = json.loads((tmp_path / "result" / "fast_vbm_report.json").read_text())
     assert report["status"] == "experimental"
-    assert report["fnirt_equivalent"] is False
+    assert report["fnirt_equivalent"] is None
+    assert report["fsl_fnirt_numerically_equivalent"] is None
     assert report["fsl_flirt_equivalent"] is False
-    assert "FLIRT-compatible 12-DOF" in report["method"]
+    assert "FSL-default correlation-ratio/Brent FLIRT" in report["method"]
     assert "SynthMorph deform" in report["method"]
     assert report["registration"]["jacobian_convention"].startswith(
-        "nonlinear-only")
+        "FSL nonlinear-only")
     assert report["fast"]["bias_range_inside_mask"] == [1.0, 1.0]
 
 
@@ -186,7 +189,12 @@ def test_fnirt_backend_is_reported_without_synthmorph_settings(monkeypatch):
             pull_world_affine=np.eye(4),
             fit_score=1.0,
             maximum_displacement_mm=0.0,
-            qc={"jacobian_min": 1.0, "jacobian_max": 1.0},
+            qc={
+                "linear": {"validated_fsl_equivalent": False},
+                "fsl_fnirt_numerically_equivalent": False,
+                "jacobian_min": 1.0,
+                "jacobian_max": 1.0,
+            },
         )
 
     monkeypatch.setattr(pipeline_module, "register_gm", fake_registration)
@@ -212,14 +220,17 @@ def test_fnirt_backend_is_reported_without_synthmorph_settings(monkeypatch):
 
     assert result.settings["registration_backend"] == "fnirt"
     assert result.settings["nonlinear_backend"] == (
-        "pytorch-fnirt-style-cubic-bspline"
+        "pytorch-fnirt-gm-config"
     )
     assert result.settings["synthmorph_implementation"] is None
     assert result.settings["synthmorph_mid_space"] is None
     assert result.settings["fnirt_steps"] == [0]
-    assert "FNIRT-style cubic B-spline" in report["method"]
+    assert "FNIRT GM-config cubic B-spline" in report["method"]
+    assert report["fnirt_equivalent"] is False
+    assert report["fsl_fnirt_numerically_equivalent"] is False
+    assert report["fsl_flirt_equivalent"] is False
     assert report["registration"]["jacobian_convention"].startswith(
-        "FSL FNIRT nonlinear-only"
+        "FSL nonlinear-only"
     )
 
 

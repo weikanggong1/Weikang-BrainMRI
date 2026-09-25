@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "case": "real_case_01",
+  "oracle": {
+    "fsl_version": "6.0.7.4",
+    "fnirt_package": "2203.0",
+    "basisfield_package": "2203.1",
+    "miscmaths_package": "2203.2",
+    "newimage_package": "2203.11",
+    "warpfns_package": "2203.0",
+    "config": "GM_2_MNI152GM_2mm.cnf",
+    "precision": "double coefficients and normal equations; float images and dense fields"
+  },
+  "implementation": {
+    "backend": "pytorch-fnirt-matrix-free-lm",
+    "device": "cuda",
+    "optimizer": "Gauss-Newton/Levenberg-Marquardt with diagonal-preconditioned CG",
+    "hessian": "analytic matrix-free cubic B-spline JtJ plus bending Hessian",
+    "global_intensity_model": "one multiplicative reference scale",
+    "ssd_weighted_lambda": true,
+    "numerically_equivalent_to_fsl": false
+  },
+  "component_oracles": {
+    "coefficient_to_dense_field": {
+      "correlation": 0.9999999999999885,
+      "maximum_absolute_error": 1e-07
+    },
+    "bending_energy_and_gradient": {
+      "maximum_absolute_error": 1e-16
+    },
+    "zoomfield_real_pyramid_geometry": {
+      "correlation": 1.0,
+      "mean_absolute_error": 4.51e-15,
+      "maximum_absolute_error": 8.12e-14
+    },
+    "analytic_nonlinear_jacobian": {
+      "correlation": 0.99999999985,
+      "mean_absolute_error": 4.25e-08,
+      "maximum_absolute_error": 2.33e-07
+    },
+    "topology_small_and_random_fields": {
+      "minimum_correlation": 0.999999999998,
+      "maximum_absolute_error": 4.86e-05
+    },
+    "dense_to_coefficient_refit": {
+      "maximum_absolute_error": 1.14e-07
+    }
+  },
+  "first_level_optimizer_oracle": {
+    "robj_mean_absolute_error_by_state": [
+      1.4367720458938248e-06,
+      1.4277049862670631e-06,
+      1.5144160385549455e-06
+    ],
+    "gradient_mean_absolute_error_by_state": [
+      1.3861147423687617e-07,
+      3.86684434573054e-08,
+      1.810877755936502e-08
+    ],
+    "hessian_vector_minimum_correlation": 0.9999999999999997,
+    "pcg_second_update": {
+      "fsl_iterations": 32,
+      "pytorch_iterations": 32,
+      "fsl_relative_residual": 0.0004720452311088955,
+      "pytorch_relative_residual": 0.00047206735190458875,
+      "step_correlation": 0.9999999999992173,
+      "step_mean_absolute_error": 1.8757370405994935e-06,
+      "step_maximum_absolute_error": 2.021816061792414e-05
+    },
+    "coefficient_mean_absolute_error_by_accepted_update": [
+      5.453015364298282e-07,
+      2.0482188902052164e-06,
+      0.08128908539700191
+    ],
+    "first_material_divergence": "The third accepted update diverges because FSL SpMat accumulates sparse columns in a fixed order while the PyTorch backend applies the same Hessian matrix-free. The 1e-3 truncated PCG path is sensitive to those floating-point reduction differences."
+  },
+  "end_to_end": {
+    "coefficients": {
+      "correlation": 0.9994164131549866,
+      "mean_absolute_error": 0.028559799460340936,
+      "root_mean_square_error": 0.06396281818061143,
+      "maximum_absolute_error": 2.1019527465105057
+    },
+    "warped_gm_all_voxels": {
+      "correlation": 0.9990888735329668,
+      "mean_absolute_error": 0.0024527502467668136,
+      "root_mean_square_error": 0.011100189884463008,
+      "maximum_absolute_error": 0.671849463135004
+    },
+    "warped_gm_reference_mask": {
+      "correlation": 0.9986654394483417,
+      "mean_absolute_error": 0.00757959615552038,
+      "root_mean_square_error": 0.0195147169240786,
+      "maximum_absolute_error": 0.671849463135004
+    },
+    "nonlinear_jacobian_all_voxels": {
+      "correlation": 0.9996690855484951,
+      "mean_absolute_error": 0.0028398418560524065,
+      "root_mean_square_error": 0.005655725740418796,
+      "maximum_absolute_error": 0.11435675621032715
+    },
+    "nonlinear_jacobian_reference_mask": {
+      "correlation": 0.9996816591580325,
+      "mean_absolute_error": 0.006113004553551079,
+      "root_mean_square_error": 0.009502619397399659,
+      "maximum_absolute_error": 0.11435675621032715
+    },
+    "modulated_gm_all_voxels": {
+      "correlation": 0.9992055622530871,
+      "mean_absolute_error": 0.0028181718736876387,
+      "root_mean_square_error": 0.012854780839277971,
+      "maximum_absolute_error": 0.7535977177321911
+    },
+    "modulated_gm_reference_mask": {
+      "correlation": 0.9989533045881682,
+      "mean_absolute_error": 0.008708843254648359,
+      "root_mean_square_error": 0.022599442933981154,
+      "maximum_absolute_error": 0.7535977177321911
+    }
+  },
+  "timing_seconds": {
+    "pytorch_cuda_synchronized_wall": 69.32272086385638,
+    "topology_projection": 62.572249171324074,
+    "topology_call_count": 16,
+    "topology_backend": "triton-cuda-serial-order"
+  },
+  "gates": {
+    "component_oracles_passed": true,
+    "jacobian_range_projection_succeeded_at_all_levels": true,
+    "end_to_end_only_floating_point_error": false,
+    "validated_fsl_equivalent": false
+  }
+}

@@ -1,0 +1,301 @@
+{
+  "case10_diagnostic": {
+    "deterministic_repeat": {
+      "bitwise_identical_matrices": true,
+      "cost_evaluations": [
+        7753,
+        7753,
+        7753
+      ],
+      "matrix_rmsdiff_mm_between_repeats": 8.66788e-15,
+      "wall_seconds": [
+        21.292526085861027,
+        20.083620418794453,
+        19.844501009210944
+      ]
+    },
+    "first_stage_with_material_endpoint_difference": "2_mm_UD",
+    "fsl_cost_evaluator": {
+      "fsl_matrix": 0.420431,
+      "pytorch_cuda_matrix": 0.42045
+    },
+    "interpretation": "The deterministic endpoint is repeatable but remains above the fixed 0.05 mm matrix gate. The first material endpoint difference occurs in the 2 mm seven-parameter optimization.",
+    "pytorch_cpu_cost_evaluator": {
+      "fsl_matrix": 0.4204322397708893,
+      "pytorch_cuda_matrix": 0.42045027017593384
+    },
+    "reduction_ablation_matrix_rmsdiff_mm_vs_fsl": {
+      "selected_stable_float32_segment": 0.0541455,
+      "stable_float32_segment_approximate_x_recurrence": 0.0633904,
+      "stable_float32_segment_double_affine_math": 0.0636445,
+      "stable_float32_segment_explicit_coordinates": 0.0629377,
+      "stable_float64_segment": 0.063651
+    },
+    "stage_costs": {
+      "1_mm_final": {
+        "fsl": 0.420432,
+        "pytorch_cuda": 0.4204506278038025
+      },
+      "2_mm_UD": {
+        "fsl": 0.312242,
+        "pytorch_cuda": 0.3123042583465576
+      },
+      "2_mm_UF": {
+        "fsl": 0.29937,
+        "pytorch_cuda": 0.29939407110214233
+      }
+    }
+  },
+  "cases": [
+    {
+      "case": "case01",
+      "matrix_rmsdiff_mm_vs_fsl": 0.00451678,
+      "moved_vs_fsl_matrix_output": {
+        "correlation": 0.9999996249739187,
+        "maximum_absolute_error": 0.002757728099822998,
+        "mean_absolute_error": 7.006204396020621e-05
+      },
+      "same_matrix_resampling_vs_fsl_applyxfm": {
+        "correlation": 0.9999999970290213,
+        "maximum_absolute_error": 0.00021857023239135742,
+        "mean_absolute_error": 6.1304062910494395e-06
+      },
+      "torch_cuda_cost_evaluations": 7973,
+      "torch_cuda_final_cost": 0.48817014694213867,
+      "torch_cuda_wall_seconds": 25.69068531692028
+    },
+    {
+      "case": "case02",
+      "matrix_rmsdiff_mm_vs_fsl": 0.001821,
+      "moved_vs_fsl_matrix_output": {
+        "correlation": 0.9999999427560512,
+        "maximum_absolute_error": 0.0011003613471984863,
+        "mean_absolute_error": 2.862078144971747e-05
+      },
+      "same_matrix_resampling_vs_fsl_applyxfm": {
+        "correlation": 0.9999999967103685,
+        "maximum_absolute_error": 0.0002802908420562744,
+        "mean_absolute_error": 6.500254585262155e-06
+      },
+      "torch_cuda_cost_evaluations": 7857,
+      "torch_cuda_final_cost": 0.4206620752811432,
+      "torch_cuda_wall_seconds": 20.116003261879086
+    },
+    {
+      "case": "case03",
+      "matrix_rmsdiff_mm_vs_fsl": 0.0220982,
+      "moved_vs_fsl_matrix_output": {
+        "correlation": 0.999992612419134,
+        "maximum_absolute_error": 0.013209998607635498,
+        "mean_absolute_error": 0.00032220507273450494
+      },
+      "same_matrix_resampling_vs_fsl_applyxfm": {
+        "correlation": 0.9999999992787436,
+        "maximum_absolute_error": 0.00011640787124633789,
+        "mean_absolute_error": 3.1526956263405737e-06
+      },
+      "torch_cuda_cost_evaluations": 7811,
+      "torch_cuda_final_cost": 0.4012301564216614,
+      "torch_cuda_wall_seconds": 20.37389676598832
+    },
+    {
+      "case": "case04",
+      "matrix_rmsdiff_mm_vs_fsl": 0.010199,
+      "moved_vs_fsl_matrix_output": {
+        "correlation": 0.9999986295994556,
+        "maximum_absolute_error": 0.006479740142822266,
+        "mean_absolute_error": 0.00013426407531369478
+      },
+      "same_matrix_resampling_vs_fsl_applyxfm": {
+        "correlation": 0.9999999989213628,
+        "maximum_absolute_error": 0.0001359879970550537,
+        "mean_absolute_error": 3.8006041904736776e-06
+      },
+      "torch_cuda_cost_evaluations": 8242,
+      "torch_cuda_final_cost": 0.4595876932144165,
+      "torch_cuda_wall_seconds": 21.73392094997689
+    },
+    {
+      "case": "case05",
+      "matrix_rmsdiff_mm_vs_fsl": 0.026819,
+      "moved_vs_fsl_matrix_output": {
+        "correlation": 0.9999855829158307,
+        "maximum_absolute_error": 0.017291158437728882,
+        "mean_absolute_error": 0.000449898187071085
+      },
+      "same_matrix_resampling_vs_fsl_applyxfm": {
+        "correlation": 0.9999999990302965,
+        "maximum_absolute_error": 0.00018906593322753906,
+        "mean_absolute_error": 3.2396089864050737e-06
+      },
+      "torch_cuda_cost_evaluations": 8740,
+      "torch_cuda_final_cost": 0.401761919260025,
+      "torch_cuda_wall_seconds": 24.89563519321382
+    },
+    {
+      "case": "case06",
+      "matrix_rmsdiff_mm_vs_fsl": 0.00690684,
+      "moved_vs_fsl_matrix_output": {
+        "correlation": 0.9999991907031122,
+        "maximum_absolute_error": 0.00396728515625,
+        "mean_absolute_error": 0.00010238526738248765
+      },
+      "same_matrix_resampling_vs_fsl_applyxfm": {
+        "correlation": 0.9999999988276344,
+        "maximum_absolute_error": 0.00015538930892944336,
+        "mean_absolute_error": 4.012774752482073e-06
+      },
+      "torch_cuda_cost_evaluations": 8092,
+      "torch_cuda_final_cost": 0.4067898392677307,
+      "torch_cuda_wall_seconds": 21.705136757344007
+    },
+    {
+      "case": "case07",
+      "matrix_rmsdiff_mm_vs_fsl": 0.00688096,
+      "moved_vs_fsl_matrix_output": {
+        "correlation": 0.9999993162157893,
+        "maximum_absolute_error": 0.003737121820449829,
+        "mean_absolute_error": 9.49119494180195e-05
+      },
+      "same_matrix_resampling_vs_fsl_applyxfm": {
+        "correlation": 0.999999998785999,
+        "maximum_absolute_error": 0.00016939640045166016,
+        "mean_absolute_error": 3.868137355311774e-06
+      },
+      "torch_cuda_cost_evaluations": 8166,
+      "torch_cuda_final_cost": 0.41349902749061584,
+      "torch_cuda_wall_seconds": 23.931094857864082
+    },
+    {
+      "case": "case08",
+      "matrix_rmsdiff_mm_vs_fsl": 0.00731706,
+      "moved_vs_fsl_matrix_output": {
+        "correlation": 0.9999993067838534,
+        "maximum_absolute_error": 0.003761082887649536,
+        "mean_absolute_error": 9.826333553064615e-05
+      },
+      "same_matrix_resampling_vs_fsl_applyxfm": {
+        "correlation": 0.9999999986535825,
+        "maximum_absolute_error": 0.00017216801643371582,
+        "mean_absolute_error": 4.133108632231597e-06
+      },
+      "torch_cuda_cost_evaluations": 7667,
+      "torch_cuda_final_cost": 0.383133202791214,
+      "torch_cuda_wall_seconds": 20.386080811265856
+    },
+    {
+      "case": "case09",
+      "matrix_rmsdiff_mm_vs_fsl": 0.0260146,
+      "moved_vs_fsl_matrix_output": {
+        "correlation": 0.9999892439771277,
+        "maximum_absolute_error": 0.01563209295272827,
+        "mean_absolute_error": 0.0003725539718288928
+      },
+      "same_matrix_resampling_vs_fsl_applyxfm": {
+        "correlation": 0.9999999982677829,
+        "maximum_absolute_error": 0.00020647048950195312,
+        "mean_absolute_error": 4.166367943980731e-06
+      },
+      "torch_cuda_cost_evaluations": 7999,
+      "torch_cuda_final_cost": 0.38856789469718933,
+      "torch_cuda_wall_seconds": 21.481632519047707
+    },
+    {
+      "case": "case10",
+      "matrix_rmsdiff_mm_vs_fsl": 0.0541455,
+      "moved_vs_fsl_matrix_output": {
+        "correlation": 0.9999623601135748,
+        "maximum_absolute_error": 0.03058767318725586,
+        "mean_absolute_error": 0.0007820753380656242
+      },
+      "same_matrix_resampling_vs_fsl_applyxfm": {
+        "correlation": 0.9999999966422619,
+        "maximum_absolute_error": 0.00022479891777038574,
+        "mean_absolute_error": 7.4936201599484775e-06
+      },
+      "torch_cuda_cost_evaluations": 7753,
+      "torch_cuda_final_cost": 0.4204506278038025,
+      "torch_cuda_wall_seconds": 20.59495483711362
+    }
+  ],
+  "cohort": {
+    "case_labels": "sequential public aliases; source identifiers omitted",
+    "input": "FSL FAST gray-matter partial-volume maps",
+    "n": 10,
+    "reference": "UKB VBM group gray-matter template"
+  },
+  "gates": {
+    "matrix_all_cases_passed": false,
+    "matrix_cases_passed": 9,
+    "matrix_rmsdiff_mm": 0.05,
+    "same_matrix_output_all_cases_passed": true,
+    "same_matrix_output_maximum_absolute_error": 0.0005,
+    "validated_fsl_equivalent": false
+  },
+  "oracle": {
+    "command_contract": "flirt -in INPUT -ref REFERENCE -out OUTPUT -omat MATRIX",
+    "cost": "corratio",
+    "degrees_of_freedom": 12,
+    "fsl_flirt_commit": "5036b4620ea97db0050f2dc132fbb331dbba060c",
+    "fsl_flirt_package": "2111.2",
+    "fsl_version": "6.0.7.4",
+    "matrix_coordinate_system": "FSL scaled-mm input-to-reference",
+    "output_comparison": "FSL flirt -applyxfm -interp trilinear",
+    "schedule": "default 8/4/2/1 mm with full angular search"
+  },
+  "schema_version": 1,
+  "summary": {
+    "matrix_rmsdiff_mm_vs_fsl": {
+      "maximum": 0.0541455,
+      "mean": 0.016671894,
+      "median": 0.00875803,
+      "minimum": 0.001821
+    },
+    "moved_vs_fsl_matrix_output": {
+      "correlation": {
+        "maximum": 0.9999999427560512,
+        "mean": 0.9999925810457848,
+        "median": 0.9999989101512838,
+        "minimum": 0.9999623601135748
+      },
+      "maximum_absolute_error": {
+        "maximum": 0.03058767318725586,
+        "mean": 0.009852424263954163,
+        "median": 0.005223512649536133,
+        "minimum": 0.0011003613471984863
+      },
+      "mean_absolute_error": {
+        "maximum": 0.0007820753380656242,
+        "mean": 0.00024552400227548785,
+        "median": 0.00011832467134809121,
+        "minimum": 2.862078144971747e-05
+      }
+    },
+    "same_matrix_resampling_vs_fsl_applyxfm": {
+      "correlation": {
+        "maximum": 0.9999999992787436,
+        "mean": 0.9999999982147053,
+        "median": 0.9999999987197907,
+        "minimum": 0.9999999966422619
+      },
+      "maximum_absolute_error": {
+        "maximum": 0.0002802908420562744,
+        "mean": 0.00018685460090637208,
+        "median": 0.00018061697483062744,
+        "minimum": 0.00011640787124633789
+      },
+      "mean_absolute_error": {
+        "maximum": 7.4936201599484775e-06,
+        "mean": 4.649757852348557e-06,
+        "median": 4.072941692356835e-06,
+        "minimum": 3.1526956263405737e-06
+      }
+    },
+    "torch_cuda_wall_seconds": {
+      "maximum": 25.69068531692028,
+      "mean": 22.090904127061368,
+      "median": 21.593384638195857,
+      "minimum": 20.116003261879086
+    }
+  }
+}

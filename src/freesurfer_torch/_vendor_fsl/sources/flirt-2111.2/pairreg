@@ -1,0 +1,35 @@
+#!/bin/sh
+
+#   pairreg - perform registration of pairs keeping skull scaling const
+#
+#   Stephen Smith and Mark Jenkinson, FMRIB Image Analysis Group
+#
+#   Copyright (C) 1999-2004 University of Oxford
+#
+#   SHCOPYRIGHT
+
+
+if [ $# -lt 5 ] ; then
+ echo "Usage: $0 brain1 brain2 skull1 skull2 outputmatrix [extra flirt args]"
+ echo
+ echo "  NB: brain1 and skull1 are used as -ref arguments internally"
+ exit 1
+fi
+
+bref=$1; export bref
+bin=$2; export bin
+sref=$3; export sref
+sin=$4; export sin
+matf=$5; export matf
+shift 5
+args=$* ; export args
+
+flirt=${FSLDIR}/bin/flirt ; export flirt
+
+$flirt -in $bin -ref $bref -schedule ${FSLDIR}/etc/flirtsch/pairreg1.sch -omat $matf.1.$$ $args
+$flirt -in $sin -ref $sref -init $matf.1.$$ -schedule ${FSLDIR}/etc/flirtsch/pairreg2.sch -omat $matf.2.$$ $args
+${FSLDIR}/bin/convert_xfm -fixscaleskew $matf.2.$$ $matf.1.$$ -omat $matf.3.$$
+$flirt -in $bin -ref $bref -init $matf.3.$$ -schedule ${FSLDIR}/etc/flirtsch/pairreg3.sch -omat $matf $args
+# tidy up the temporary matrices
+rm -f $matf.1.$$ $matf.2.$$ $matf.3.$$
+

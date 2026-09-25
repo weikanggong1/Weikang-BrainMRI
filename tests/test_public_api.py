@@ -13,6 +13,8 @@ import pytest
     ("synthseg_parc", ("SynthSeg", "SynthSegResult")),
     ("synthsr", ("SynthSR", "SynthSRResult", "SynthSRImage")),
     ("fast", ("TorchFAST", "FASTResult", "FASTConfig", "FASTTensorResult", "segment_t1")),
+    ("flirt", ("FLIRTResult", "TorchFLIRT", "FSLFLIRT", "LegacyTorchFLIRT")),
+    ("fnirt", ("TorchFNIRT", "TorchFNIRTResult", "GMFNIRTConfig")),
     ("fast_vbm", ("FastVBM", "FastVBMResult", "LinearRegistrationResult",
                   "FLIRTResult", "TorchFLIRT", "FNIRTVBMResult",
                   "PyTorchFNIRTRegistration", "VBMRegistrationResult",

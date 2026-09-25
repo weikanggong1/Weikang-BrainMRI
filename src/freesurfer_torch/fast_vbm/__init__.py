@@ -9,7 +9,7 @@ from .linear import (
     voxel_to_fsl_scaled_mm,
     world_to_flirt_affine,
 )
-from .flirt import FLIRTResult, TorchFLIRT
+from ..flirt import FLIRTResult, FSLFLIRT, LegacyTorchFLIRT, TorchFLIRT
 from .fnirt_backend import FNIRTVBMResult, PyTorchFNIRTRegistration
 from .registration import VBMRegistrationResult, register_gm
 
@@ -21,6 +21,8 @@ __all__ = [
     "LinearRegistrationResult",
     "FLIRTResult",
     "TorchFLIRT",
+    "FSLFLIRT",
+    "LegacyTorchFLIRT",
     "FNIRTVBMResult",
     "PyTorchFNIRTRegistration",
     "VBMRegistrationResult",

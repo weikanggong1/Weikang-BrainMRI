@@ -1,0 +1,90 @@
+{
+  "case": "real_case_01",
+  "component_oracles": {
+    "identity_corratio_by_scale": {
+      "1_mm": {"fsl": 0.118574, "pytorch_cpu": 0.11857382},
+      "2_mm": {"fsl": 0.118574, "pytorch_cpu": 0.11857428},
+      "4_mm": {"fsl": 0.111078, "pytorch_cpu": 0.11107751},
+      "8_mm": {"fsl": 0.446353, "pytorch_cpu": 0.44635278}
+    },
+    "nonidentity_2_mm_corratio": {
+      "fsl": 0.356834,
+      "pytorch_cpu": 0.35683438,
+      "pytorch_cuda": 0.35683435
+    },
+    "schedule_stage_corratio": {
+      "1_mm_final": {"fsl": 0.491745, "pytorch_cpu": 0.491745561},
+      "2_mm_UC": {"fsl": 0.387517, "pytorch_cpu": 0.387518793},
+      "2_mm_UD": {"fsl": 0.386333, "pytorch_cpu": 0.386331975},
+      "2_mm_UE": {"fsl": 0.365758, "pytorch_cpu": 0.365758389},
+      "2_mm_UF": {"fsl": 0.359807, "pytorch_cpu": 0.359808654},
+      "4_mm_UA": {"fsl": 0.313282, "pytorch_cpu": 0.313282162},
+      "4_mm_UB": {"fsl": 0.312912, "pytorch_cpu": 0.312912613}
+    }
+  },
+  "cpu_cuda_consistency": {
+    "matrix_rmsdiff_mm": 0.00949178,
+    "moved": {
+      "correlation": 0.9999984318671226,
+      "maximum_absolute_error": 0.005419045686721802,
+      "mean_absolute_error": 0.00013180790119804442
+    }
+  },
+  "gates": {
+    "component_cost_absolute_tolerance": 3e-06,
+    "component_cost_passed": true,
+    "real_matrix_cpu_passed": true,
+    "real_matrix_cuda_passed": true,
+    "real_matrix_rmsdiff_mm": 0.05,
+    "same_matrix_output_maximum_absolute_error": 0.0005,
+    "same_matrix_output_passed": true,
+    "validated_fsl_equivalent": false
+  },
+  "interpretation": "The component and case01 end-to-end gates pass. The deterministic 10-case matrix gate passes 9 of 10 cases, so the public backend remains an exact-equivalence target.",
+  "oracle": {
+    "command_contract": "flirt -in INPUT -ref REFERENCE -out OUTPUT -omat MATRIX",
+    "cost": "corratio",
+    "degrees_of_freedom": 12,
+    "fsl_flirt_commit": "5036b4620ea97db0050f2dc132fbb331dbba060c",
+    "fsl_flirt_package": "2111.2",
+    "fsl_version": "6.0.7.4",
+    "schedule": "default 8/4/2/1 mm with full angular search",
+    "wall_seconds": 33.52
+  },
+  "runs": {
+    "pytorch_cpu": {
+      "cost_evaluations": 7955,
+      "final_cost": 0.4917451739311218,
+      "matrix_rmsdiff_mm_vs_fsl": 0.00399667,
+      "moved_vs_fsl_final": {
+        "correlation": 0.9999996777958093,
+        "maximum_absolute_error": 0.0025916695594787598,
+        "mean_absolute_error": 0.0000619216516497545
+      },
+      "same_matrix_resampling_vs_fsl_applyxfm": {
+        "correlation": 0.9999999993592313,
+        "maximum_absolute_error": 0.00014251470565795898,
+        "mean_absolute_error": 2.652794591995189e-06
+      },
+      "wall_seconds": 90.70959186786786,
+      "wall_time_context": "gpucw1 shared CPU load"
+    },
+    "pytorch_cuda": {
+      "cost_evaluations": 7953,
+      "final_cost": 0.49175024032592773,
+      "matrix_rmsdiff_mm_vs_fsl": 0.0103038,
+      "moved_vs_fsl_final": {
+        "correlation": 0.9999982167900624,
+        "maximum_absolute_error": 0.005685031414031982,
+        "mean_absolute_error": 0.00014676820137538016
+      },
+      "same_matrix_resampling_vs_fsl_applyxfm": {
+        "correlation": 0.9999999990540653,
+        "maximum_absolute_error": 0.0001468360424041748,
+        "mean_absolute_error": 3.293261215731036e-06
+      },
+      "wall_seconds": 22.224825019948184
+    }
+  },
+  "schema_version": 2
+}

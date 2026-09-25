@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+
+import numpy      as np
+import nibabel    as nib
+import subprocess as sp
+import os.path    as op
+import               shlex
+import               sys
+import               traceback
+
+from fsl.utils.tempdir import tempdir
+from fsl.data.image    import addExt
+
+
+def sprun(cmd):
+    print(f'RUN {cmd}')
+    sp.run(shlex.split(cmd), check=True)
+
+
+# radio=[True|False] -> whether or not
+# to add a flip on the affine X axis
+def create_test_input_data(seed=1):
+
+    np.random.seed(seed)
+
+    rneuro = np.random.randint(0, 100, (10, 10, 10)).astype(np.float32)
+    ineuro = np.random.randint(0, 100, (10, 10, 10)).astype(np.float32)
+    rradio = np.flip(rneuro, 0)
+    iradio = np.flip(ineuro, 0)
+
+    # test_complexvolume.cc has these
+    # same values hard-coded, so if
+    # you change one, you must change
+    # the other.
+    affneuro        = np.diag([ 3, 3, 3, 1])
+    affradio        = np.diag([-3, 3, 3, 1])
+    affneuro[:3, 3] = [10, 20, 30]
+    affradio[:3, 3] = [37, 20, 30]
+
+    cneuro = rneuro + ineuro * 1j
+    cradio = rradio + iradio * 1j
+
+    cneuro = nib.Nifti1Image(cneuro, affneuro)
+    cradio = nib.Nifti1Image(cradio, affradio)
+
+    cneuro.set_qform(*cneuro.get_sform(coded=True))
+    cradio.set_qform(*cradio.get_sform(coded=True))
+
+    cneuro.to_filename(f'complex_neuro.nii.gz')
+    cradio.to_filename(f'complex_radio.nii.gz')
+
+
+if __name__ == '__main__':
+    create_test_input_data()
+    sprun('make clean')
+    sprun('make')
+    sprun('./test-newimage -l test_suite')

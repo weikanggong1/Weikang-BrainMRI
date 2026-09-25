@@ -150,47 +150,63 @@ def _run_fast(args):
 
 
 def _run_flirt(args):
-    import numpy as np
     import torch
 
-    from .fast_vbm import TorchFLIRT
+    from .flirt import run_flirt
 
-    if args.output is None and args.omat is None:
-        raise ValueError("provide -out and/or -omat")
-    destinations = [Path(value) for value in (args.output, args.omat) if value]
-    if (
-        len(destinations) == 2
-        and destinations[0].resolve() == destinations[1].resolve()
-    ):
-        raise ValueError("-out and -omat must use different paths")
-    existing = [path for path in destinations if path.exists()]
-    if existing and not args.overwrite:
-        raise FileExistsError(f"output exists: {existing[0]}; use --overwrite")
     torch.set_num_threads(args.threads)
-    model = TorchFLIRT(
-        device=args.device,
-        strides=tuple(args.strides),
-        steps=tuple(args.steps),
-        learning_rates=tuple(args.learning_rates),
+    return run_flirt(
+        args.input,
+        args.reference,
+        output=args.output,
+        omat=args.omat,
+        init=args.init,
+        dof=args.dof,
         cost=args.cost,
+        device=args.device,
+        overwrite=args.overwrite,
     )
-    result = model(args.input, args.reference)
-    if args.output:
-        Path(args.output).parent.mkdir(parents=True, exist_ok=True)
-        _atomic_save(result.moved, args.output)
-        print(args.output)
-    if args.omat:
-        matrix_path = Path(args.omat)
-        matrix_path.parent.mkdir(parents=True, exist_ok=True)
-        temporary = matrix_path.with_name(
-            f".{matrix_path.name}.tmp-{os.getpid()}-{uuid.uuid4().hex}"
-        )
-        try:
-            np.savetxt(temporary, result.matrix, fmt="%.12g")
-            os.replace(temporary, matrix_path)
-        finally:
-            temporary.unlink(missing_ok=True)
-        print(matrix_path)
+
+
+def _run_fnirt(args):
+    from .fnirt.standalone import run_fnirt
+
+    return run_fnirt(
+        args.input,
+        args.reference,
+        args.affine,
+        cout=args.cout,
+        iout=args.iout,
+        jout=args.jout,
+        refmask=args.reference_mask,
+        config=args.config,
+        device=args.device,
+        overwrite=args.overwrite,
+    )
+
+
+def _run_applywarp(args):
+    from .applywarp import TorchApplyWarp
+
+    output = Path(args.output)
+    if output.exists() and not args.overwrite:
+        raise FileExistsError(f"output exists: {output}; use --overwrite")
+    convention = "absolute" if args.absolute else (
+        "relative" if args.relative else "auto"
+    )
+    model = TorchApplyWarp(device=args.device)
+    model.run(
+        args.input,
+        args.reference,
+        output,
+        warp=args.warp,
+        premat=args.premat,
+        postmat=args.postmat,
+        interpolation=args.interpolation,
+        warp_convention=convention,
+        output_dtype=args.datatype,
+    )
+    print(output)
 
 
 def _run_fast_vbm(args):
@@ -225,7 +241,12 @@ def _run_fast_vbm(args):
         fnirt_regularization=tuple(args.fnirt_regularization),
         fnirt_jacobian_penalty=args.fnirt_jacobian_penalty,
     )
-    result = model(args.image, args.template, brain_mask=args.brain_mask)
+    result = model(
+        args.image,
+        args.template,
+        brain_mask=args.brain_mask,
+        reference_mask=args.reference_mask,
+    )
     paths = result.save(output_dir, overwrite=args.overwrite)
     for name in OUTPUT_FILENAMES:
         print(paths[name])
@@ -328,22 +349,60 @@ def main(argv=None):
     fast.add_argument('-B', '--save-restored', action='store_true')
     fast.add_argument('--overwrite', action='store_true')
     flirt = commands.add_parser(
-        'flirt', help='PyTorch 12-DOF affine with FSL FLIRT file contracts')
+        'flirt', help='PyTorch exact-target FLIRT 12-DOF correlation-ratio path',
+        allow_abbrev=False)
     flirt.add_argument('-in', '--in', dest='input', required=True,
                        help='moving/input image')
     flirt.add_argument('-ref', '--ref', dest='reference', required=True,
                        help='fixed/reference image defining the output grid')
     flirt.add_argument('-out', '--out', dest='output')
     flirt.add_argument('-omat', '--omat')
+    flirt.add_argument('-init', '--init')
     flirt.add_argument('-dof', type=int, choices=(12,), default=12)
-    flirt.add_argument('-cost', choices=('normcorr',), default='normcorr')
-    flirt.add_argument('--device', default='cpu')
+    flirt.add_argument('-cost', choices=('corratio',), default='corratio')
+    flirt.add_argument('--device')
     flirt.add_argument('--threads', type=int, default=1)
-    flirt.add_argument('--strides', type=int, nargs=3, default=(4, 2, 1))
-    flirt.add_argument('--steps', type=int, nargs=3, default=(80, 60, 50))
-    flirt.add_argument('--learning-rates', type=float, nargs=3,
-                       default=(0.05, 0.025, 0.0125))
     flirt.add_argument('--overwrite', action='store_true')
+    fnirt = commands.add_parser(
+        'fnirt', help='PyTorch FNIRT GM_2_MNI152GM_2mm path',
+        allow_abbrev=False)
+    fnirt.add_argument('--in', dest='input', required=True,
+                       help='moving/input GM image')
+    fnirt.add_argument('--ref', dest='reference', required=True,
+                       help='fixed/reference GM template')
+    fnirt.add_argument('--aff', dest='affine',
+                       help='input-to-reference FLIRT scaled-mm matrix')
+    fnirt.add_argument('--cout', help='intent-2007 cubic coefficient output')
+    fnirt.add_argument('--iout', help='warped input on the reference grid')
+    fnirt.add_argument('--jout', help='nonlinear-only Jacobian determinant')
+    fnirt.add_argument('--refmask', dest='reference_mask',
+                       help='binary mask on the reference grid')
+    fnirt.add_argument('--config', default='GM_2_MNI152GM_2mm.cnf')
+    fnirt.add_argument('--device')
+    fnirt.add_argument('--overwrite', action='store_true')
+    applywarp = commands.add_parser(
+        'applywarp', help='apply an FSL warp field with PyTorch')
+    applywarp.add_argument('-i', '--in', dest='input', required=True,
+                           help='input image to resample')
+    applywarp.add_argument('-r', '--ref', dest='reference', required=True,
+                           help='reference image defining the output grid')
+    applywarp.add_argument(
+        '-w', '--warp',
+        help='FSL dense displacement field or FNIRT cubic coefficient file')
+    applywarp.add_argument('-o', '--out', dest='output', required=True)
+    applywarp.add_argument('--premat', help='input-to-warp-source FLIRT matrix')
+    applywarp.add_argument('--postmat', help='warp-reference-to-output FLIRT matrix')
+    convention = applywarp.add_mutually_exclusive_group()
+    convention.add_argument('--abs', dest='absolute', action='store_true',
+                            help='treat an untyped dense field as absolute coordinates')
+    convention.add_argument('--rel', dest='relative', action='store_true',
+                            help='treat an untyped dense field as relative displacements')
+    applywarp.add_argument('--interp', dest='interpolation',
+                           choices=('trilinear', 'nearest', 'nn'), default='trilinear')
+    applywarp.add_argument('--datatype',
+                           choices=('char', 'short', 'int', 'float', 'double'))
+    applywarp.add_argument('--device', default='cpu')
+    applywarp.add_argument('--overwrite', action='store_true')
     fast_vbm = commands.add_parser(
         'fast-vbm', help='raw T1 to bias-corrected FAST VBM maps')
     fast_vbm.add_argument('-i', '--image', required=True,
@@ -353,6 +412,13 @@ def main(argv=None):
     fast_vbm.add_argument('-o', '--output-dir', required=True)
     fast_vbm.add_argument('--brain-mask',
                           help='optional input-grid mask; skips SynthStrip')
+    fast_vbm.add_argument(
+        '--reference-mask',
+        help=(
+            'optional template-grid mask used by nonlinear registration; '
+            'pass the FSL dilated MNI mask for UKB/FSL parity'
+        ),
+    )
     fast_vbm.add_argument('--synthstrip-weights',
                           help='official SynthStrip checkpoint or containing directory')
     fast_vbm.add_argument('--synthmorph-weights',
@@ -377,7 +443,7 @@ def main(argv=None):
                           default=(4, 2, 1, 1),
                           metavar=('LEVEL1', 'LEVEL2', 'LEVEL3', 'LEVEL4'))
     fast_vbm.add_argument('--fnirt-steps', type=int, nargs=4,
-                          default=(20, 20, 30, 20),
+                          default=(5, 5, 10, 5),
                           metavar=('LEVEL1', 'LEVEL2', 'LEVEL3', 'LEVEL4'))
     fast_vbm.add_argument('--fnirt-learning-rates', type=float, nargs=4,
                           default=(0.5, 0.25, 0.1, 0.05),
@@ -411,6 +477,12 @@ def main(argv=None):
         return
     if args.command == 'flirt':
         _run_flirt(args)
+        return
+    if args.command == 'fnirt':
+        _run_fnirt(args)
+        return
+    if args.command == 'applywarp':
+        _run_applywarp(args)
         return
     if args.command == 'fast-vbm':
         _run_fast_vbm(args)

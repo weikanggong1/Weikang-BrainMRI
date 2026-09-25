@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+#   flirt_average - align more than one raw images to each other and average to improve SNR etc.
+#
+#   Stephen Smith, FMRIB Image Analysis Group
+#
+#   Copyright (C) 2007 University of Oxford
+#
+#   SHCOPYRIGHT
+
+Usage() {
+    echo ""
+    echo "Usage: flirt_average <Ninputs> <input1> <input2> ...... <output> [options] [flirt-options]"
+    echo ""
+    echo "Options:"
+    echo " -FAref <ref_image> : reference image to use instead of first input"
+    echo ""
+    echo "e.g.  flirt_average 3 rawT1_1 rawT1_2 rawT1_3 averageT1"
+    echo "e.g.  flirt_average 2 rawT1_1 rawT1_2 averageT1 -FAref /usr/local/fsl/data/standard/MNI152_T1_2mm -FAdim 1 -cost normcorr"
+    echo ""
+    exit 1
+}
+
+[ _$4 = _ ] && Usage
+
+N=$1
+shift
+
+reference=`${FSLDIR}/bin/remove_ext $1`
+
+i=1
+while [ $i -le $N ] ; do
+    imagelist="$imagelist `${FSLDIR}/bin/remove_ext $1`"
+    shift
+    i=`echo "$i 1 + p" | dc`
+done
+
+output=$1
+shift
+
+while [ _$1 != _ ] ; do
+
+    if [ $1 = -FAref ] ; then
+        reference=`${FSLDIR}/bin/remove_ext $2`
+        shift 2
+
+    else
+	flirtoptions="$flirtoptions $1"
+	shift
+    fi
+done
+
+for input in $imagelist ; do
+    if [ $input = $reference ] ; then
+	outlist=$input
+    else
+	${FSLDIR}/bin/flirt -in $input -ref $reference -out ${input}_2ref -omat ${input}_2ref.mat -nosearch -interp sinc $flirtoptions
+	outlist="$outlist ${input}_2ref"
+    fi
+done
+
+fslmerge -t $output $outlist
+fslmaths $output -Tmean $output
+
+/bin/rm *_2ref*

@@ -6,20 +6,29 @@
 raw T1w
   → SynthStrip
   → TorchFAST 三组织 PVE + bias-field correction
-  → PyTorch 12-DOF affine
-  → PyTorch SynthMorph deform 或 PyTorch FNIRT-style cubic B-spline
-  → nonlinear-only Jacobian
+  → FSL-default PyTorch FLIRT
+  → PyTorch SynthMorph deform 或 PyTorch FNIRT GM-config
+  → common FSL warp conversion + GPU applywarp
+  → common nonlinear-only Jacobian
   → warped GM × Jacobian
 ```
 
-线性阶段使用 FLIRT 的 input/reference 角色和 12 参数类别，但优化器是 NCC + Adam。独立 `TorchFLIRT` 接口输出 reference-grid image 和 input → reference 的 FSL scaled-mm 4×4 matrix。它不复现 FSL FLIRT 的 cost、搜索、优化器或插值细节。
+线性阶段固定使用 FSL default correlation-ratio/Brent FLIRT 实现。
+旧 NCC + Adam 仿射仍保留为显式 legacy 实现，不再被这两个
+FastVBM 分支调用。
 
 非线性阶段由 `registration_backend` 选择：
 
 - `"synthmorph"` 调用本包 `SynthMorph(model="deform")`，读取官方 `synthmorph.deform.3.h5`；
-- `"fnirt"` 使用 PyTorch cubic B-spline、SSD、bending energy 和 Jacobian 约束，不读取非线性 checkpoint。
+- `"fnirt"` 使用 `freesurfer_torch.fnirt.TorchFNIRT` 的 GM config，不读取非线性 checkpoint。
 
-FNIRT-style 分支在内部使用 FSL scaled-mm residual displacement，并按 FSL nonlinear-only 约定计算 `det(I + ∂d_nl/∂x_fixed_fsl)`。它使用 PyTorch Adam，不读写 FSL coefficient/dense-warp 文件，也不与 FSL FNIRT 数值等价。两个后端对外都返回 fixed-grid `surfa.Warp(format=disp_ras)` 和相同的 FastVBM 文件名。
+两分支的 full RAS pull 都转为
+`u=source_fsl-inv(FLIRT)@target_fsl`，然后由同一 GPU applywarp、
+`det(I + ∂u/∂q)` 和 modulation 代码处理。FNIRT 与 FSL 配对比较时必须向
+`FastVBM.run(..., reference_mask=...)` 传入官方 FNIRT 使用的同一
+reference mask；默认 `template > 0` 会在 QC 中标为非 FSL-exact。
+该 mask 记录在两个分支的共同上下文中，但 SynthMorph 网络没有 mask 输入；
+mask 使用属于两个 nonlinear estimator 之间的算法差异。
 
 ## 单被试 Python
 

@@ -1,0 +1,147 @@
+{
+  "fsl_version": "6.0.7.4",
+  "torch_version": "2.5.1",
+  "cuda_version": "11.8",
+  "gpu": "NVIDIA H100 PCIe",
+  "device": "cuda:0",
+  "scope": "dense relative and cubic coefficient fields; coordinate ramp; trilinear and nearest; with and without one premat and postmat",
+  "fnirt_coefficients_tested": true,
+  "cases": [
+    {
+      "case": "trilinear-warp-only",
+      "maximum_absolute_error": 0.00048828125,
+      "mean_absolute_error": 4.2876309039545996e-05,
+      "different_voxels": 2198,
+      "tolerance": 0.0005,
+      "passed": true
+    },
+    {
+      "case": "trilinear-matrices",
+      "maximum_absolute_error": 0.0003662109375,
+      "mean_absolute_error": 5.346069148942536e-05,
+      "different_voxels": 2362,
+      "tolerance": 0.0005,
+      "passed": true
+    },
+    {
+      "case": "nn-warp-only",
+      "maximum_absolute_error": 0.0,
+      "mean_absolute_error": 0.0,
+      "different_voxels": 0,
+      "tolerance": 0.0,
+      "passed": true
+    },
+    {
+      "case": "nn-matrices",
+      "maximum_absolute_error": 0.0,
+      "mean_absolute_error": 0.0,
+      "different_voxels": 0,
+      "tolerance": 0.0,
+      "passed": true
+    },
+    {
+      "case": "reference-header-and-explicit-short-dtype",
+      "maximum_absolute_error": 0,
+      "mean_absolute_error": 0.0,
+      "different_voxels": 0,
+      "tolerance": 0,
+      "header_matches": true,
+      "passed": true
+    },
+    {
+      "case": "cubic-expansion-vs-fnirtfileutils-out",
+      "maximum_absolute_error": 2.9802322387695312e-08,
+      "mean_absolute_error": 3.652175228907595e-09,
+      "different_voxels": 11239,
+      "tolerance": 1e-06,
+      "passed": true
+    },
+    {
+      "case": "cubic-embedded-affine-vs-fnirtfileutils-withaff",
+      "maximum_absolute_error": 3.698862321988017e-08,
+      "mean_absolute_error": 6.367410097544473e-09,
+      "different_voxels": 12240,
+      "tolerance": 1e-06,
+      "passed": true
+    },
+    {
+      "case": "cubic-trilinear-warp-only",
+      "maximum_absolute_error": 0.0003662109375,
+      "mean_absolute_error": 4.52427303089815e-05,
+      "different_voxels": 2259,
+      "tolerance": 0.0005,
+      "passed": true
+    },
+    {
+      "case": "cubic-trilinear-matrices",
+      "maximum_absolute_error": 0.00048828125,
+      "mean_absolute_error": 5.435733234181124e-05,
+      "different_voxels": 2331,
+      "tolerance": 0.0005,
+      "passed": true
+    },
+    {
+      "case": "cubic-nn-warp-only",
+      "maximum_absolute_error": 0.0,
+      "mean_absolute_error": 0.0,
+      "different_voxels": 0,
+      "tolerance": 0.0,
+      "passed": true
+    },
+    {
+      "case": "cubic-nn-matrices",
+      "maximum_absolute_error": 0.0,
+      "mean_absolute_error": 0.0,
+      "different_voxels": 0,
+      "tolerance": 0.0,
+      "passed": true
+    }
+  ],
+  "timing": {
+    "fixture": {
+      "shape": [
+        91,
+        109,
+        91
+      ],
+      "voxel_size_mm": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "warp": "dense relative",
+      "interpolation": "trilinear",
+      "scope": "end-to-end process/API call including NIfTI read and write",
+      "warmup_excluded": true,
+      "repeats": 3
+    },
+    "fsl_applywarp_cpu": {
+      "samples_seconds": [
+        0.6608031550422311,
+        0.5550375669263303,
+        0.6291733551770449
+      ],
+      "median_seconds": 0.6291733551770449,
+      "minimum_seconds": 0.5550375669263303
+    },
+    "torch_cpu": {
+      "samples_seconds": [
+        0.4315994419157505,
+        0.44002185855060816,
+        0.45534826861694455
+      ],
+      "median_seconds": 0.44002185855060816,
+      "minimum_seconds": 0.4315994419157505
+    },
+    "torch_gpu": {
+      "samples_seconds": [
+        0.28612199472263455,
+        0.3048492232337594,
+        0.2967147892341018
+      ],
+      "median_seconds": 0.2967147892341018,
+      "minimum_seconds": 0.28612199472263455
+    }
+  },
+  "passed": true
+}

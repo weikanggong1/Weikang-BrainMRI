@@ -22,8 +22,21 @@ def __getattr__(name):
                 'segment_t1'):
         from . import fast
         return getattr(fast, name)
+    if name in ('TorchApplyWarp', 'ApplyWarpResult'):
+        from importlib import import_module
+        module = import_module('.applywarp', __name__)
+        return getattr(module, name)
+    if name in ('FLIRTResult', 'TorchFLIRT', 'FSLFLIRT',
+                'LegacyTorchFLIRT'):
+        from importlib import import_module
+        module = import_module('.flirt', __name__)
+        return getattr(module, name)
+    if name in ('TorchFNIRT', 'TorchFNIRTResult', 'GMFNIRTConfig'):
+        from importlib import import_module
+        module = import_module('.fnirt', __name__)
+        return getattr(module, name)
     if name in ('FastVBM', 'FastVBMResult', 'FASTVBMResult', 'VBMRegistrationResult',
-                'LinearRegistrationResult', 'FLIRTResult', 'TorchFLIRT',
+                'LinearRegistrationResult',
                 'FNIRTVBMResult', 'PyTorchFNIRTRegistration',
                 'register_affine', 'register_gm', 'world_to_flirt_affine'):
         from . import fast_vbm

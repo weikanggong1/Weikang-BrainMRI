@@ -5,7 +5,7 @@ import pytest
 import surfa as sf
 
 import freesurfer_torch
-from freesurfer_torch.fast_vbm import FLIRTResult, TorchFLIRT
+from freesurfer_torch.flirt import FLIRTResult, LegacyTorchFLIRT, TorchFLIRT
 from freesurfer_torch.fast_vbm.linear import (
     flirt_to_world_affine,
     world_to_flirt_affine,
@@ -51,7 +51,7 @@ def test_world_and_flirt_matrix_conversions_are_exact_inverses():
     np.testing.assert_allclose(recovered, world, atol=1e-12, rtol=1e-12)
 
 
-def test_torch_flirt_returns_reference_grid_and_fsl_matrix():
+def test_legacy_torch_flirt_returns_reference_grid_and_fsl_matrix():
     moving = _volume()
     fixed_affine = np.array(
         [[0, -1.2, 0, 20], [1.0, 0, 0, -10],
@@ -59,11 +59,12 @@ def test_torch_flirt_returns_reference_grid_and_fsl_matrix():
         dtype=float,
     )
     fixed = _volume((8, 9, 10), fixed_affine)
-    result = TorchFLIRT(
+    result = LegacyTorchFLIRT(
         device="cpu", strides=(1,), steps=(0,), learning_rates=(0.01,)
     )(moving, fixed)
 
     assert isinstance(result, FLIRTResult)
+    assert freesurfer_torch.LegacyTorchFLIRT is LegacyTorchFLIRT
     assert freesurfer_torch.TorchFLIRT is TorchFLIRT
     assert freesurfer_torch.FLIRTResult is FLIRTResult
     assert freesurfer_torch.world_to_flirt_affine is world_to_flirt_affine
@@ -99,7 +100,7 @@ def test_run_accepts_paths_and_saves_flirt_style_outputs(tmp_path):
     moving.save(moving_path)
     fixed.save(fixed_path)
 
-    result = TorchFLIRT(
+    result = LegacyTorchFLIRT(
         device="cpu", strides=(1,), steps=(0,), learning_rates=(0.01,)
     ).run(
         moving_path,
@@ -117,8 +118,8 @@ def test_run_accepts_paths_and_saves_flirt_style_outputs(tmp_path):
     np.testing.assert_allclose(saved_matrix, result.matrix, atol=1e-11, rtol=1e-11)
 
 
-def test_torch_flirt_rejects_non_volume_inputs():
-    model = TorchFLIRT(
+def test_legacy_torch_flirt_rejects_non_volume_inputs():
+    model = LegacyTorchFLIRT(
         device="cpu", strides=(1,), steps=(0,), learning_rates=(0.01,)
     )
 

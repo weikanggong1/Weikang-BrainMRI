@@ -7,20 +7,30 @@
 非线性配准由 `registration_backend` 选择：
 
 - `"synthmorph"`：本包 PyTorch SynthMorph `deform`，默认分支；
-- `"fnirt"`：本包 CUDA/CPU PyTorch cubic B-spline FNIRT-style 优化器。
+- `"fnirt"`：本包 CUDA/CPU PyTorch FNIRT GM-config 优化器。
+
+两个分支只在“估计 nonlinear pull field”这一步分开；各自的目标函数、正则化和
+mask 使用属于该估计器。FAST GM、FSL 默认
+correlation-ratio/Brent FLIRT、template grid、RAS pull 到 FSL scaled-mm
+residual 的转换、GPU `TorchApplyWarp`、nonlinear-only Jacobian 和 modulation
+均使用同一段代码。每次运行的 `pre_nonlinear_signature` 会记录 moving GM、
+template、reference mask、几何和 FLIRT matrix 的 SHA-256；两后端使用相同配准
+上下文时，该签名必须完全一致。FNIRT estimator 消费 reference mask；官方
+SynthMorph deform 网络没有 mask 输入，因此该 mask 在 SynthMorph 分支用于共同
+上下文记录和配对验证，不送入网络。
 
 ```mermaid
 flowchart LR
   A[raw T1w] --> B[SynthStrip]
   B --> C[TorchFAST<br/>CSF / GM / WM PVE + bias]
   C --> D[GM PVE]
-  D --> E[PyTorch 12-DOF affine<br/>NCC + Adam]
+  D --> E[FSL-default PyTorch FLIRT<br/>correlation ratio + Brent]
   E --> F1[SynthMorph deform]
-  E --> F2[FNIRT-style cubic B-spline]
-  F1 --> G[warped GM]
-  F2 --> G
-  F1 --> H[nonlinear-only Jacobian]
-  F2 --> H
+  E --> F2[PyTorch FNIRT GM config]
+  F1 --> W[RAS pull → FSL residual/full dense warp]
+  F2 --> W
+  W --> G[GPU TorchApplyWarp]
+  W --> H[common nonlinear-only Jacobian]
   G --> I[warped GM × Jacobian]
   H --> I
   I --> J[modulated GM]
@@ -30,16 +40,29 @@ flowchart LR
 
 | 项目 | `registration_backend="synthmorph"` | `registration_backend="fnirt"` |
 |---|---|---|
-| 实现 | 本包 `freesurfer_torch.synthmorph.SynthMorph(model="deform")` | 本包 `PyTorchFNIRTRegistration` |
+| 实现 | 本包 `freesurfer_torch.synthmorph.SynthMorph(model="deform")` | 本包 `freesurfer_torch.fnirt.TorchFNIRT` |
 | 形变模型 | 官方 SynthMorph 网络；外部仿射作为 `init`；`mid_space=False` | 固定网格上的 cubic B-spline residual displacement |
 | 优化坐标 | SynthMorph/Surfa world-RAS pull | 内部为 FSL scaled-mm；输出转换为 world-RAS pull |
 | 图像目标 | 由官方 SynthMorph checkpoint 定义 | 全局线性强度拟合后的 SSD |
-| 正则化与优化 | SynthMorph stationary velocity field | bending energy、Jacobian penalty、Adam |
-| nonlinear-only Jacobian | full pull determinant ÷ affine pull determinant | `det(I + ∂d_nl/∂x_fixed_fsl)`，仿射不计入调制 |
+| 正则化与优化 | SynthMorph stationary velocity field | FSL GM schedule、bending energy、Gauss–Newton/LM + PCG |
+| reference mask | 网络无 mask 输入；记录在共同上下文 | 最后一层优化实际使用 |
+| nonlinear-only Jacobian | 两分支统一使用 `det(I + ∂u/∂q)`；`u=source_fsl-inv(FLIRT)@target_fsl` | 相同 |
+| 重采样 | 两分支统一把 full relative FSL field 交给 GPU `TorchApplyWarp` | 相同 |
 | 额外权重 | `synthmorph.deform.3.h5` | 无 |
 | FastVBM 文件名与输出网格 | 下列 13 个稳定文件名；后三项在模板网格 | 相同 |
 
-FNIRT 分支沿用 UKB GM 配置中的四层下采样、输入/参考平滑、10 mm 控制点间距、bending-energy 权重和 0.2–5 Jacobian 范围。它使用 PyTorch autograd 和 Adam，并在模板前景内拟合；官方配置关闭 implicit input/reference masks，并按自己的 reference-mask schedule 处理有效区域。FSL FNIRT 还使用自己的强度模型、Levenberg–Marquardt/Gauss–Newton 优化和系数文件格式。因此该分支是 **FNIRT-style 实现**，不是 FSL FNIRT 的源码移植或数值等价实现。
+FNIRT 分支沿用 UKB GM 配置的四层下采样、输入/参考平滑、10 mm 控制点
+间距、bending-energy 权重和 0.2–5 Jacobian 范围。FastVBM 的 common
+Jacobian 对 dense residual 使用 FSL 的中心有限差分（边界单侧差分）；独立
+`TorchFNIRT` 仍保留 spline analytic Jacobian。case01 官方 intent-2007
+coefficient 的对照中，common dense 与 `fnirtfileutils --jout` analytic 的全图
+相关为 0.999916，MAE 0.001555，最大绝对差 0.07110；这属于 FastVBM common
+postprocessing 的离散化差异，不能写成逐体素相同。
+
+FNIRT 与 FSL 的配对比较必须传入官方 FNIRT 使用的同一 reference mask。已核对的 UKB 日志使用
+`MNI152_T1_2mm_brain_mask_dil`。未提供 `reference_mask` 时，代码退化为
+`template > 0`，并在 QC 标为 `derived-fixed-positive-non-fsl-exact`；该默认值不能
+用于宣称 FNIRT 与 FSL 数值等价。SynthMorph 不消费该 mask。
 
 ## 单被试：Python
 
@@ -64,6 +87,7 @@ result = pipeline.run(
     "subject_T1w.nii.gz",
     "template_GM.nii.gz",
     "results/sub-01",
+    reference_mask="MNI152_T1_2mm_brain_mask_dil.nii.gz",
     overwrite=False,
 )
 ```
@@ -73,9 +97,10 @@ result = pipeline.run(
 1. `from freesurfer_torch import FastVBM` 导入完整 raw-T1-to-VBM pipeline。
 2. `device="cuda:0"` 让 SynthStrip、TorchFAST、仿射、非线性配准和 Jacobian 计算使用第一张可见 GPU。
 3. `threads=4` 设置当前进程的 PyTorch CPU 线程数。
-4. `registration_backend="synthmorph"` 选择 PyTorch SynthMorph；改为 `"fnirt"` 即选择 PyTorch FNIRT-style 分支。
+4. `registration_backend="synthmorph"` 选择 PyTorch SynthMorph；改为 `"fnirt"` 即选择本包 PyTorch FNIRT 分支。
 5. `.run()` 的前三个参数依次是单帧 3D raw T1w、fixed GM template 和输出目录。模板的 shape 与 voxel-to-world affine 决定后三幅 VBM 图的网格。
-6. `overwrite=False` 在任一同名结果存在时停止。成功后写出 13 幅影像和 `fast_vbm_report.json`，并返回 `FastVBMResult`。
+6. `reference_mask` 是与 template 同网格的 FNIRT reference mask。比较 UKB/FSL 的 FNIRT 路径时必须传原 pipeline 使用的同一 mask；它进入两个分支的共同上下文签名，但 SynthMorph 网络不消费它。
+7. `overwrite=False` 在任一同名结果存在时停止。成功后写出 13 幅影像和 `fast_vbm_report.json`，并返回 `FastVBMResult`。
 
 只运行 FNIRT 分支时不需要 SynthMorph 权重：
 
@@ -93,6 +118,7 @@ result = pipeline.run(
     "subject_T1w.nii.gz",
     "template_GM.nii.gz",
     "results/sub-01-fnirt",
+    reference_mask="MNI152_T1_2mm_brain_mask_dil.nii.gz",
 )
 ```
 
@@ -116,7 +142,9 @@ result.jacobian.save("jacobian_nonlinear.nii.gz")
 result.modulated_gm.save("modulated_gm.nii.gz")
 ```
 
-`image`、`template` 和 `brain_mask` 可传路径或 `surfa.Volume`。输入必须是有限值单帧 3D 影像；显式 mask 必须与 T1w 的 shape 和 affine 一致；模板必须包含正 GM 值。
+`image`、`template`、`brain_mask` 和 `reference_mask` 可传路径或
+`surfa.Volume`。输入必须是有限值单帧 3D 影像；`brain_mask` 必须与 T1w
+同网格，`reference_mask` 必须与 template 同网格；模板必须包含正 GM 值。
 
 ### 构造参数
 
@@ -133,7 +161,7 @@ FastVBM(
     synthmorph_hyper=0.5,
     synthmorph_steps=7,
     fnirt_strides=(4, 2, 1, 1),
-    fnirt_steps=(20, 20, 30, 20),
+    fnirt_steps=(5, 5, 10, 5),
     fnirt_learning_rates=(0.5, 0.25, 0.1, 0.05),
     fnirt_input_fwhm_mm=(6, 4, 2, 2),
     fnirt_reference_fwhm_mm=(4, 2, 0, 0),
@@ -150,16 +178,16 @@ FastVBM(
 | `synthstrip_weights` | `synthstrip.1.pt` 或其目录；有显式 `brain_mask` 时不读取 |
 | `synthmorph_weights` | `synthmorph.deform.3.h5` 或其目录；仅 SynthMorph 分支读取 |
 | `bias_correction` | 默认 `True`；TorchFAST 同时估计平滑乘性 bias field |
-| `linear_*` | PyTorch 12-DOF affine 的 coarse-to-fine 步长、Adam 次数和学习率 |
+| `linear_*` | 旧 NCC/Adam API 的兼容参数；公开 FastVBM 两分支固定调用 FSL-default FLIRT，不再用这些参数选择旧优化器 |
 | `registration_backend` | `"synthmorph"` 或 `"fnirt"` |
 | `synthmorph_*` | 仅 SynthMorph 分支使用的网络空间、正则化超参数和积分次数 |
 | `fnirt_strides` | FNIRT-style 四层 fixed-grid 下采样步长 |
-| `fnirt_steps` | 各层 Adam 次数；这些次数不同于 FSL `miter` |
-| `fnirt_learning_rates` | 各层 Adam 学习率 |
+| `fnirt_steps` | FNIRT 四层 `miter`，默认 `(5, 5, 10, 5)` |
+| `fnirt_learning_rates` | 旧 FNIRT-style Adam API 的兼容参数；exact-target 分支不使用 |
 | `fnirt_input_fwhm_mm`、`fnirt_reference_fwhm_mm` | 各层 moving/reference Gaussian FWHM，单位 mm |
 | `fnirt_warp_resolution_mm` | cubic B-spline 控制点目标间距，单位 mm |
 | `fnirt_regularization` | 各层 bending-energy 权重 |
-| `fnirt_jacobian_penalty` | 超出完整 pull Jacobian 允许范围时的损失权重 |
+| `fnirt_jacobian_penalty` | 旧 FNIRT-style Adam API 的兼容参数；exact-target 分支不使用 |
 
 已有 fixed/template-world → moving-world 的 4×4 RAS pull affine 时，可跳过线性估计：
 

@@ -1,0 +1,1544 @@
+{
+  "schema_version": 1,
+  "license": {
+    "name": "FSL Software Licence, Release 6.0",
+    "path": "licenses/FSL-6.0.txt",
+    "sha256": "137735ac0d0f075d58e85642972692b92073711752b273e7de7ed38c6147a8eb",
+    "redistribution_scope": "non-commercial only; pass the licence conditions to recipients and include original and amended source code"
+  },
+  "validation_baseline": {
+    "fsl_release": "6.0.7.4",
+    "manifest_source": "fsl-6.0.7.4_linux-64.yml",
+    "note": "Only entries with role validation_target define the FSL 6.0.7.4 comparison baseline."
+  },
+  "components": [
+    {
+      "directory": "sources/flirt-2111.2",
+      "repository": "https://git.fmrib.ox.ac.uk/fsl/flirt.git",
+      "tag": "2111.2",
+      "commit": "5036b4620ea97db0050f2dc132fbb331dbba060c",
+      "git_tree": "2e61f74cf42e0572a9c06d1e52c2d147a9006222",
+      "git_archive_sha256": "fb292398b898ad2bb8637e55ecfea852642d25364da66dfa8a7a5d06dae670d9",
+      "fsl_6_0_7_4_package": "fsl-flirt 2111.2",
+      "role": "validation_target",
+      "file_count": 47,
+      "content_bytes": 324466,
+      "files": {
+        "Makefile": {
+          "sha256": "95f19bbb424b04cee0143ccea7feea758a70cbf47d5df3e3ddc2afb6b14fe199",
+          "bytes": 869,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "aff2rigid": {
+          "sha256": "8869c40c6d10c50af7beb3b0fa2546325ae4d6cf5307a131f2e524ac069a3c8a",
+          "bytes": 1959,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "applyxfm.tcl": {
+          "sha256": "b5d967105668df60a9f2d2dbf6706a5fb3089f7d8e534c132d18f8c2229dee2f",
+          "bytes": 11336,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "applyxfm4D.cc": {
+          "sha256": "fa377dcda20fc8d4e7f9677272670fc00d69ae6984972595b2ad9255d4792c21",
+          "bytes": 5246,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "avscale.cc": {
+          "sha256": "399d729ae4544c33e853fbb63bb9237f518ba6258d3bd8dce8f1ac176be8f45f",
+          "bytes": 3983,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "concatxfm.tcl": {
+          "sha256": "91b33685a2e628c033a0f716bc6d71b39763436da5b18c58ab979e5eba6613a6",
+          "bytes": 2818,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "convert_xfm.cc": {
+          "sha256": "3e072f38d9ce7a4b53b51603a47d914df883b0cad5248d8257155209a07b521b",
+          "bytes": 6282,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "defaultschedule.h": {
+          "sha256": "e9336c2b1d7bc6b1acd104eed5d48519e244fbb788041834f5d470604f640842",
+          "bytes": 8557,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "epi_reg": {
+          "sha256": "da7769051dc605e8fa052a649b116805b6bed4cfeb94e394cadf26de00b7ba83",
+          "bytes": 11809,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "extractschedule.sh": {
+          "sha256": "1e2ec78f65389f6b52bca77d1ab926af279a7add23747bd935d9ee8dcdbfad93",
+          "bytes": 94,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "extracttxt": {
+          "sha256": "53b520f4107180dee5dd3ca70dabed843c162e3a239fea4e3c31084032720bf0",
+          "bytes": 723,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "flirt.cc": {
+          "sha256": "b99322c50c28d19dbbe8f2d7cf05de1791b4300828645b5f30a852960265d1a4",
+          "bytes": 98501,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "flirt.tcl": {
+          "sha256": "acc52bbc6195eda94e5e9467a9eaeb7050d9cc751f0798af4aaeeaed49d9b430",
+          "bytes": 15256,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "flirt_average": {
+          "sha256": "5fefeed3b6c48d05831c065055e7ae67af4901d937981034d4ee4d3dde6ae720",
+          "bytes": 1454,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "flirt_proc.tcl": {
+          "sha256": "36f090eaf3c2e3547c0e0faf418c5efbba50c9ac20066a20fddec18b1431637d",
+          "bytes": 3007,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "flirtsch/bbr.sch": {
+          "sha256": "c594b45e992b50d61d006b385854052b8ff133a93eeab942da46c8db663e8cab",
+          "bytes": 1536,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "flirtsch/ident.mat": {
+          "sha256": "c8fd36bfe88ef26697077842abe6f2cb73f31074b2cb73476d0e5bc20442b8da",
+          "bytes": 32,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "flirtsch/measurecost1.sch": {
+          "sha256": "a85493dc0886a6e12d11fd845f732f667a67a99c43c28247a1e1d99603bcc6fe",
+          "bytes": 170,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "flirtsch/pairreg1.sch": {
+          "sha256": "a36e83a600a8d7909f019cd9b54985a7720de7904191eca2d27d839764891029",
+          "bytes": 1972,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "flirtsch/pairreg2.sch": {
+          "sha256": "60887271dde0f8fc43f55aba05f60772603353529b6bbb0b6ce5754538bb2ee4",
+          "bytes": 446,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "flirtsch/pairreg3.sch": {
+          "sha256": "0c1ded6b3c5126fe43a86730c8f386ca64f679a9d91210da99b80621325ca252",
+          "bytes": 928,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "flirtsch/sch2D_3dof": {
+          "sha256": "7c0efc59354453cdd94276f2bee478084cf2080367afeb1a945d622ebcfad3d7",
+          "bytes": 2069,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "flirtsch/sch2D_4dof": {
+          "sha256": "3fb7ffb84a5b320f038a5ae05e381794f3b2e1a0bd9688d032b6d412767b21e8",
+          "bytes": 2441,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "flirtsch/sch2D_5dof": {
+          "sha256": "bb803b3e7b050e9bc96a8e64b641d34a04fa2bddd3df102cb6e12743be157f2a",
+          "bytes": 2537,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "flirtsch/sch2D_6dof": {
+          "sha256": "6ce1ced685347028a03b0ff61e9962cfd55231e221674ddd1356fb18a43ca56e",
+          "bytes": 2638,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "flirtsch/sch3Dtrans_3dof": {
+          "sha256": "1e612273da5ee3c7ec2ffc057ece8dbe9f6fe615ad774610875dc17391d94c2c",
+          "bytes": 14348,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "flirtsch/simple3D.sch": {
+          "sha256": "d662aa070a014fca02d05975e5ca76de28df49fb366eef65783532f18f9c64d4",
+          "bytes": 1173,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "flirtsch/xyztrans.sch": {
+          "sha256": "1e612273da5ee3c7ec2ffc057ece8dbe9f6fe615ad774610875dc17391d94c2c",
+          "bytes": 14348,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "flirtsch/ytransonly.sch": {
+          "sha256": "c6eb2b2952a0fb90d63af977a8869cc6632583959bc0550fb19758b95723683e",
+          "bytes": 4227,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "flirtsch/ztransonly.sch": {
+          "sha256": "834b78cad99705ab4759f500d392ed79b844955dcdd2b9e28bf0ff3a7e6e9b8e",
+          "bytes": 4165,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "globaloptions.cc": {
+          "sha256": "1312700873a3f235fcfdd5a4b49500162c78fcd6ad1342d5a192e7562f5d026f",
+          "bytes": 14632,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "globaloptions.h": {
+          "sha256": "5d876839eb9f47f42d03311310e111ffb4f087016faaba715f097ea698d27fe8",
+          "bytes": 5274,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "imapper.cc": {
+          "sha256": "8426c991b1bcd326054e7c4eb02d00bfde3d0e70f4cca655b775968103c0d4fe",
+          "bytes": 4023,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "img2imgcoord.cc": {
+          "sha256": "02dcdfcc0fc8173f149d4e9f61928f42b729bd6a8cf57987983b1736009f7cc1",
+          "bytes": 8438,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "img2stdcoord.cc": {
+          "sha256": "f918e7a464e5a6d9e4a800ec7e546130dfb4e3c9d1079cf1510cae75d725474f",
+          "bytes": 9519,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "invertxfm.tcl": {
+          "sha256": "e665a81e053a8409c1171a1441772b858f0eb4e949553bd409ff4e01eed5863a",
+          "bytes": 2529,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "makerot.cc": {
+          "sha256": "15b0ea38d40c4b6aeb798e704ea85acbabf8655a5f9928534da1646af24957c2",
+          "bytes": 4152,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "manualrot": {
+          "sha256": "8ea16e8e14007578d4ff257e7792b8d1bd48122fd0d4434119f8558af3f5a439",
+          "bytes": 2689,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "midtrans.cc": {
+          "sha256": "8a8f898684ad4e8db7490fee5c7d64f5887bf70f6f8902ebdac62990a57402ab",
+          "bytes": 13753,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "nudge.tcl": {
+          "sha256": "aff4abd63bd9197bbb973dbc1f56a21d4c75fec238b9cbf71cc10dfc4647cf8e",
+          "bytes": 7636,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "pairreg": {
+          "sha256": "382368049266efb0f7631fcbbc656962c85ecfe754fdbeec14907d96a0dbe202",
+          "bytes": 1053,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "pointflirt.cc": {
+          "sha256": "ae6f396bdd700d162134c5a4948cbee0bc08c42dcad70729c860876a803524d7",
+          "bytes": 5220,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "rmsdiff.cc": {
+          "sha256": "93a8c03a61cc9520d8afae51cc4d741932f7fa22bfd0cde4925ff2c55e1275df",
+          "bytes": 2339,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "scheduleheader.sh": {
+          "sha256": "78d5fddb148c1a225d27653f4e3b937412fc856ea7c773954a4290a06b588f82",
+          "bytes": 273,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "standard_space_roi": {
+          "sha256": "f7403f685e71b8844146f41270c1484ebcf299289c2561de66f621bb68423d89",
+          "bytes": 5211,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "std2imgcoord.cc": {
+          "sha256": "baa5a9063043235171828c52dd011b8859a01dccfb7767b6fdaf0d4a836deacd",
+          "bytes": 9836,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "testcode.cc": {
+          "sha256": "ca3f07335ca7b9c63767c9aa8068e95ad28cd93148ff5ff21f26f90d611b0ad5",
+          "bytes": 2965,
+          "executable": false,
+          "git_mode": "100644"
+        }
+      }
+    },
+    {
+      "directory": "sources/fnirt-2203.0",
+      "repository": "https://git.fmrib.ox.ac.uk/fsl/fnirt.git",
+      "tag": "2203.0",
+      "commit": "27f514a182b5972094e30d8ea79f4fad89cbf03d",
+      "git_tree": "a8773c53a4f4b78817d0ffdd26a61db0f25ecc82",
+      "git_archive_sha256": "77f955cb90f77edf8754d729c066463fc461146370e04e487032c40e7a3b1f27",
+      "fsl_6_0_7_4_package": "fsl-fnirt 2203.0",
+      "role": "validation_target",
+      "file_count": 19,
+      "content_bytes": 268441,
+      "files": {
+        "Makefile": {
+          "sha256": "8dd592a82441a0e25bb52aa26bb36e791cb7ec117ecde44f0e5353b4965812c4",
+          "bytes": 1039,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "dilator.h": {
+          "sha256": "b47b7705f921297792b2c7353ef6cf2f21186903e350cda6969ee520ace6db63",
+          "bytes": 1650,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "fnirt.cpp": {
+          "sha256": "7ac61da274c30a93bbd0c5e36cb56e6044d53000c0e301aa916ba2f7d7cc2c0e",
+          "bytes": 10312,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "fnirt_costfunctions.cpp": {
+          "sha256": "4767617a2904477c3887a1c6ecacd7704360a510bbfb137da3f8f013b7db9558",
+          "bytes": 42248,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "fnirt_costfunctions.h": {
+          "sha256": "ef32d4734c7b2dd2705e61494e13b8e9cb326e51fe059097e881491e6af2df08",
+          "bytes": 25057,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "fnirtcnf/FA_2_FMRIB58_1mm.cnf": {
+          "sha256": "b6777b34d4fbe3b3ba5ee97efdad14b7ee27eb76d0e9645a6420f5d69176c02a",
+          "bytes": 1463,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "fnirtcnf/GM_2_MNI152GM_2mm.cnf": {
+          "sha256": "3bc82d0ff4d8f53d89a741bd853a427607a5cb108e170b44d8835c4b542a4980",
+          "bytes": 2154,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "fnirtcnf/T1_2_MNI152_2mm.cnf": {
+          "sha256": "49df13ca10b8f95700fedb100d0abacf5ff98f1cbfc10cdbcb4bbb4c8d155acd",
+          "bytes": 2049,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "fnirtfns.cpp": {
+          "sha256": "fffb1eba75b4ac420ad1efe38b80f403cfd6a1ce64a5d558550681b79e58ed2e",
+          "bytes": 60862,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "fnirtfns.h": {
+          "sha256": "c1224254901c676707c7d0cca9a5ff344164701355f37a964c3a2d6017b88876",
+          "bytes": 17326,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "intensity_mappers.cpp": {
+          "sha256": "7a2c3a9fffce40a288c3d55ab058f438cab5bb95889c0e1291879b4ce9147eb4",
+          "bytes": 34832,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "intensity_mappers.h": {
+          "sha256": "84c27f9101a69eda5b4192de69c328af6db1c8f4e46ed706c18f465efea8601c",
+          "bytes": 15815,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "invwarp.cc": {
+          "sha256": "46a7e7c36204cf8c35917fd60dbdbec0b52266512f99a3785258de2817b89d4b",
+          "bytes": 9697,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "make_fnirt_field.cpp": {
+          "sha256": "91dacab13ae2f98641a5a80e074c55fac3751eeda42c5f1274f7dbef50eaf303",
+          "bytes": 5080,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "matching_points.cpp": {
+          "sha256": "dddb760dce0aeddd650dcbe2d57f60f12a7e4eb4f0e455f7bed39e6e89725047",
+          "bytes": 5683,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "matching_points.h": {
+          "sha256": "e79ca3b0444b75987849e23c2afeaf4b522048205d736e93404dd8cf21b70071",
+          "bytes": 2430,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "phase.cc": {
+          "sha256": "53c5301ab766a645595e402d9b0ca171af5c95690fcdbade69e6fab578e3b6b2",
+          "bytes": 10089,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "phase.h": {
+          "sha256": "a7dea885b2c60169113a48715bed127f626a01bceec4f7e4c8f5486815c19c4c",
+          "bytes": 1222,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tetrahedron.h": {
+          "sha256": "95c9914c62351cdea0571c1c2fc6eaa747b4222a52c19f8768ffdae751c4e7cb",
+          "bytes": 19433,
+          "executable": false,
+          "git_mode": "100644"
+        }
+      }
+    },
+    {
+      "directory": "sources/basisfield-2203.1",
+      "repository": "https://git.fmrib.ox.ac.uk/fsl/basisfield.git",
+      "tag": "2203.1",
+      "commit": "9588bbe8eb8aa0939ddefd00df756aeb80d2305b",
+      "git_tree": "724c6ba1d90c5c0892d7a7fd53c7b85ad81bea3e",
+      "git_archive_sha256": "4f6548ddc8e0108d9de9b7b756821aef42fc41d27bd87f247baaaf91a4f6c2f6",
+      "fsl_6_0_7_4_package": "fsl-basisfield 2203.1",
+      "role": "validation_target",
+      "file_count": 53,
+      "content_bytes": 373169,
+      "files": {
+        ".gitattributes": {
+          "sha256": "8cbc659d08380bc2f1e832abf8c26692fad1ab77f8379196c95a669c9370acba",
+          "bytes": 42,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "Makefile": {
+          "sha256": "ce0bcbc7a6ec21eb014425ac364cd6dfcdb3355c545b96e7728265febf75b680",
+          "bytes": 289,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "basisfield.cpp": {
+          "sha256": "44639e947022fdde8d9de0b08f71db106dd2c623a61b049ff2093e3619dddb8f",
+          "bytes": 8357,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "basisfield.h": {
+          "sha256": "ee766e40b3b5f211784d69f7a1c85788aedf7065a7220a0bcfb2d69cc0ae7d4c",
+          "bytes": 13024,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "dctfield.cpp": {
+          "sha256": "29c74d3e28bba1b635e282f5da937dbb4aa25d38255e0914ad9afbcbccb1cdb2",
+          "bytes": 21564,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "dctfield.h": {
+          "sha256": "4dac89d1dfa0c5204fe29399a1674d08cc457d264f45a0e51d17650b23930974",
+          "bytes": 10940,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "fsl_splines.h": {
+          "sha256": "167be1bb4f37c34749fc796baf6022bd2edcae4d8f211ffe85a0b5183ec0a1fb",
+          "bytes": 52046,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "splinefield.cpp": {
+          "sha256": "23a6295a122d153c302c3ef6e50784f92953d9d6d409ead333f40d092fc6cfad",
+          "bytes": 130297,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "splinefield.h": {
+          "sha256": "6d936faccf9c5f698697297469d3faadb04166f9dbcacd5541627eb78c030ad8",
+          "bytes": 38082,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "splines.c": {
+          "sha256": "488cf27ffe5e66e39b35857c8a7684cdbbb962e152de3d608aca5b196c3311a7",
+          "bytes": 53757,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "splines.h": {
+          "sha256": "1aa6ae940096635a435c3d2b192c6547726e058623a6082223db63ba2f4a70f4",
+          "bytes": 12215,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/Makefile": {
+          "sha256": "6c77b1df67e1c388de304b89915b38d5e93f6b906007428c3baf74f96694dfe8",
+          "bytes": 900,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/linux-64/1238549/Bend_energy_hess.txt.bz2": {
+          "sha256": "99b266562ecd2d384672c61acc1bd8acff31be719bba50aad5169774fbeb5703",
+          "bytes": 132,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/linux-64/1238549/Mem_energy_hess.txt.bz2": {
+          "sha256": "23cb632a71530d636dbc3bd1d745b79e7018657c4981002f2f136aa6c214a046",
+          "bytes": 132,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/linux-64/1238549/jte1.txt.bz2": {
+          "sha256": "ae97c86293008bcb177f1493222f919599a85b0a14c732aebed46264a82e24e7",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/linux-64/1238549/jte2.txt.bz2": {
+          "sha256": "110ae5fadb5859370f04f6faf5134c4e49162856db9d6c9bda4c90bf004b7d2d",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/linux-64/1238549/jte3.txt.bz2": {
+          "sha256": "257a0ad9c5bfe166e22184677386b180c38b7abc443507ffff80de4a659670ec",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/linux-64/1238549/jte4.txt.bz2": {
+          "sha256": "6b8c9207614fae43571d93466c2ecac0f23455f0f1c4104f094f924d8e2b16f1",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/linux-64/1238549/matrix_asym.txt.bz2": {
+          "sha256": "92b16d05684bb4e096195359d42d20aea8e46280413f85d3170a7723b13a9045",
+          "bytes": 132,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/linux-64/1238549/matrix_sym.txt.bz2": {
+          "sha256": "cd55514f6dfede38b348a55658a220f0b8d8ca1b00c972fd5b6d9d76a1158b74",
+          "bytes": 132,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/linux-64/1238549/prod.txt.bz2": {
+          "sha256": "cf5d51f5291011ee8b712bb3d983113654939bd43da7d01fac2abad192928aa3",
+          "bytes": 133,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/linux-64/1238549/x1.txt.bz2": {
+          "sha256": "3da68761477005e69b035205a219ee9c2b579eeefa6f581c81853e79fc49fe17",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/linux-64/1238549/x3.txt.bz2": {
+          "sha256": "b919226a7d4c6bd7e479f450a8c7101b25fbb254b26f378c7027727926823062",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/linux-64/1238549/x7.txt.bz2": {
+          "sha256": "b919226a7d4c6bd7e479f450a8c7101b25fbb254b26f378c7027727926823062",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/linux-64/1238549/xdata.txt.bz2": {
+          "sha256": "413e0e26dbea22c66f55ba9d182cf56ef7f1f1b8d159e6af216cb2331788ee26",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-64/1238549/Bend_energy_hess.txt.bz2": {
+          "sha256": "99b266562ecd2d384672c61acc1bd8acff31be719bba50aad5169774fbeb5703",
+          "bytes": 132,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-64/1238549/Mem_energy_hess.txt.bz2": {
+          "sha256": "23cb632a71530d636dbc3bd1d745b79e7018657c4981002f2f136aa6c214a046",
+          "bytes": 132,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-64/1238549/jte1.txt.bz2": {
+          "sha256": "ae97c86293008bcb177f1493222f919599a85b0a14c732aebed46264a82e24e7",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-64/1238549/jte2.txt.bz2": {
+          "sha256": "110ae5fadb5859370f04f6faf5134c4e49162856db9d6c9bda4c90bf004b7d2d",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-64/1238549/jte3.txt.bz2": {
+          "sha256": "257a0ad9c5bfe166e22184677386b180c38b7abc443507ffff80de4a659670ec",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-64/1238549/jte4.txt.bz2": {
+          "sha256": "6b8c9207614fae43571d93466c2ecac0f23455f0f1c4104f094f924d8e2b16f1",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-64/1238549/matrix_asym.txt.bz2": {
+          "sha256": "92b16d05684bb4e096195359d42d20aea8e46280413f85d3170a7723b13a9045",
+          "bytes": 132,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-64/1238549/matrix_sym.txt.bz2": {
+          "sha256": "cd55514f6dfede38b348a55658a220f0b8d8ca1b00c972fd5b6d9d76a1158b74",
+          "bytes": 132,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-64/1238549/prod.txt.bz2": {
+          "sha256": "cf5d51f5291011ee8b712bb3d983113654939bd43da7d01fac2abad192928aa3",
+          "bytes": 133,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-64/1238549/x1.txt.bz2": {
+          "sha256": "5737b6575acd2f6ea7428de1f2dc8fcd57a75878d2907160b986b0f0aad87639",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-64/1238549/x3.txt.bz2": {
+          "sha256": "ea4e41c04a5054b53b5fe8e284a923e7c341d5a326a57c2111fb67f4cd474a2c",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-64/1238549/x7.txt.bz2": {
+          "sha256": "ea4e41c04a5054b53b5fe8e284a923e7c341d5a326a57c2111fb67f4cd474a2c",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-64/1238549/xdata.txt.bz2": {
+          "sha256": "503aa0453d3240d257a10538f0631fee7e05540f2938fc9c62f47bd727a2c067",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-M1/1238549/Bend_energy_hess.txt.bz2": {
+          "sha256": "99b266562ecd2d384672c61acc1bd8acff31be719bba50aad5169774fbeb5703",
+          "bytes": 132,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-M1/1238549/Mem_energy_hess.txt.bz2": {
+          "sha256": "23cb632a71530d636dbc3bd1d745b79e7018657c4981002f2f136aa6c214a046",
+          "bytes": 132,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-M1/1238549/jte1.txt.bz2": {
+          "sha256": "ae97c86293008bcb177f1493222f919599a85b0a14c732aebed46264a82e24e7",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-M1/1238549/jte2.txt.bz2": {
+          "sha256": "110ae5fadb5859370f04f6faf5134c4e49162856db9d6c9bda4c90bf004b7d2d",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-M1/1238549/jte3.txt.bz2": {
+          "sha256": "257a0ad9c5bfe166e22184677386b180c38b7abc443507ffff80de4a659670ec",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-M1/1238549/jte4.txt.bz2": {
+          "sha256": "6b8c9207614fae43571d93466c2ecac0f23455f0f1c4104f094f924d8e2b16f1",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-M1/1238549/matrix_asym.txt.bz2": {
+          "sha256": "92b16d05684bb4e096195359d42d20aea8e46280413f85d3170a7723b13a9045",
+          "bytes": 132,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-M1/1238549/matrix_sym.txt.bz2": {
+          "sha256": "cd55514f6dfede38b348a55658a220f0b8d8ca1b00c972fd5b6d9d76a1158b74",
+          "bytes": 132,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-M1/1238549/prod.txt.bz2": {
+          "sha256": "cf5d51f5291011ee8b712bb3d983113654939bd43da7d01fac2abad192928aa3",
+          "bytes": 133,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-M1/1238549/x1.txt.bz2": {
+          "sha256": "5737b6575acd2f6ea7428de1f2dc8fcd57a75878d2907160b986b0f0aad87639",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-M1/1238549/x3.txt.bz2": {
+          "sha256": "ea4e41c04a5054b53b5fe8e284a923e7c341d5a326a57c2111fb67f4cd474a2c",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-M1/1238549/x7.txt.bz2": {
+          "sha256": "ea4e41c04a5054b53b5fe8e284a923e7c341d5a326a57c2111fb67f4cd474a2c",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/benchmarks/macos-M1/1238549/xdata.txt.bz2": {
+          "sha256": "503aa0453d3240d257a10538f0631fee7e05540f2938fc9c62f47bd727a2c067",
+          "bytes": 130,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "tests/feedsRun.test_splinefield": {
+          "sha256": "9c1b7bc46f6fc18cb59f194ca0ea27ce4161b779349e8b65aeacf9a6ca7ef2fd",
+          "bytes": 3919,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "tests/test_splinefield.cpp": {
+          "sha256": "6f775bdffbd2a59a68a15fd27543771a983d87598a3d81e2cdaa7052e1aca975",
+          "bytes": 22634,
+          "executable": false,
+          "git_mode": "100644"
+        }
+      }
+    },
+    {
+      "directory": "sources/miscmaths-2203.2",
+      "repository": "https://git.fmrib.ox.ac.uk/fsl/miscmaths.git",
+      "tag": "2203.2",
+      "commit": "7824d74cdfa9fb65de178f642c3c05e57c8c8868",
+      "git_tree": "fbbf3b510b72663e85bf7a06331d2b3c28edcd7b",
+      "git_archive_sha256": "f919465fed011a797dd8b71e27b902fd144388842d6b28c857c7ea7ca46e5f15",
+      "fsl_6_0_7_4_package": "fsl-miscmaths 2203.2",
+      "role": "validation_target",
+      "file_count": 46,
+      "content_bytes": 452005,
+      "files": {
+        "CMakeLists.txt": {
+          "sha256": "7a03926785411977e5490a689d7d1453612f9b90fe8e87560e1602fd478bde38",
+          "bytes": 427,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "Makefile": {
+          "sha256": "4f4cb69cf4a1dc552a221131ae50f03f04c7096972468fee02ee92c75a51d8ad",
+          "bytes": 511,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "Simplex.cpp": {
+          "sha256": "d06f625c88430ba90e0e38bf725df521f1c4fe3318c67b195e44a10a9af05bd6",
+          "bytes": 5743,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "Simplex.h": {
+          "sha256": "d75e6b25a67854ef3d2e8552b2bf1c8bd9b882676710e0250647c04acaa75bad",
+          "bytes": 4176,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "SpMat.h": {
+          "sha256": "4a35ca9dd9120cb04be90022a0587039a95c2ea8882afb4c0f50120331285d2a",
+          "bytes": 58457,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "SpMatMatrices.cpp": {
+          "sha256": "d1da933236f2a8d04c1555286a405fca899f4845c04875feac64f70a21fc2e2a",
+          "bytes": 8692,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "SpMatMatrices.h": {
+          "sha256": "52ad350b2284c2489d40aa701827657c53c76c123ec8c3f60cfbe33a6bacb949",
+          "bytes": 1010,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "base2z.cc": {
+          "sha256": "7948f610bd25930ab98ba1cb37eadb467d87e1ced4ba611400558a6437e8acb1",
+          "bytes": 1860,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "base2z.h": {
+          "sha256": "99eb05b34c43bdc0f781c92fc3de617bf06ecaccabd3c999733230ccad0e8bb2",
+          "bytes": 682,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "bfmatrix.cpp": {
+          "sha256": "754a844aed3a49e72e1ac64db8855d80837b31e9b426a5a78869c28778b6d35b",
+          "bytes": 8985,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "bfmatrix.h": {
+          "sha256": "58b5a1d73f9532942abfbe7ccd126f596c42857133393e742656feda96fcedaa",
+          "bytes": 23239,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "bicg.h": {
+          "sha256": "e03857efd5e8d80d8f8d9299d5ee37eb37e6a281e3113cc56ff04f44d7161068",
+          "bytes": 2365,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "bicgstab.h": {
+          "sha256": "44d1bfb07877d76fd3ae52248bd7926b37055b42d8b137df41eeee6659b6c7c7",
+          "bytes": 2603,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "cg.h": {
+          "sha256": "0eeaba64c31992c5f6eefcc38b493fbde8c3262bf48af24f15e07ea331661a73",
+          "bytes": 1956,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "cgs.h": {
+          "sha256": "49616661f51583f2dcb0dfa90c4976faea65a70352c8eee92c750264b039b92a",
+          "bytes": 2236,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "cheby.h": {
+          "sha256": "386c7a8bed8141d2bee062a44f68adb0aa1bbff89af4777e93d1dbdf4effb3dc",
+          "bytes": 2332,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "cspline.cc": {
+          "sha256": "b3efa79acde2daffa2b1a4d409a8779198f9ccbeb741dda437e3758599a6ee62",
+          "bytes": 5825,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "cspline.h": {
+          "sha256": "5c32a7fbd33dada245fc5a2b6819c9bb7515b6e1286021ba07400f01ff988c37",
+          "bytes": 1558,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "f2z.cc": {
+          "sha256": "53589677b833638f6eef3ab8e3e803a705b00636e911823a00d2f0185dce9c1b",
+          "bytes": 3952,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "f2z.h": {
+          "sha256": "a94b1b5cce5bcdbd422d9303a1310d695e55f3443e26c5bb19bdbddd251a02b4",
+          "bytes": 1301,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "histogram.cc": {
+          "sha256": "ffb8a074a55a3112cfd24695319f0695c36e2f7bf311bab77284a2c4633e0fcb",
+          "bytes": 5499,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "histogram.h": {
+          "sha256": "7eeb95ef1925769db9779f099850ae00ce88f5af158196a1fc0361f6cd0e411e",
+          "bytes": 3608,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "ir.h": {
+          "sha256": "63f7acd744fe234f7f83ce7eaf3d6bcbde0bbe3ba4ee78fb4d24f1aa9b2f1f22",
+          "bytes": 1610,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "kernel.cc": {
+          "sha256": "9e1bffad6f15ffa55054ad343a45e40ddf87dd11a20cb96d2bcc4d134726a926",
+          "bytes": 6767,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "kernel.h": {
+          "sha256": "22fad2884ef54ccfab7f218712bc9b9a7dadf8ed75b7112f4e37953525bc1ce6",
+          "bytes": 5186,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "kertest.cc": {
+          "sha256": "026aeed0ff329ea4f4384e1d29c6e943f3bb0d6fe086af999dfd3cb918d00f1a",
+          "bytes": 620,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "minimize.cc": {
+          "sha256": "da36a162df382e280ad69b70c046f85fa59011ee4ec0f5d0b741c192ce4318ac",
+          "bytes": 13131,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "minimize.h": {
+          "sha256": "9b18aa266846a0ba1794587bcf0599d8d2b9276777a9ab87b95f008f4852bd25",
+          "bytes": 3057,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "miscmaths.cc": {
+          "sha256": "b57000c0e618b7e22c93a584fb93e3d119f213300c05a7ab8992e362f5d2f4b2",
+          "bytes": 68481,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "miscmaths.h": {
+          "sha256": "f81cac11d046ac273c2d9bc21ecb17611720a25e94a670362721ba74e71bc176",
+          "bytes": 16330,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "miscprob.cc": {
+          "sha256": "38d7a1dc9f613f5229f70390eed427eeeb594a601b806b619a00f4147a75cc25",
+          "bytes": 6507,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "miscprob.h": {
+          "sha256": "ae7503c98807e8aff5c8f74f46da8eb1f399689f4f449553adf66c0df359223e",
+          "bytes": 3227,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "nonlin.cpp": {
+          "sha256": "660f35ea140cc97cf82fafced9c94d16cf2a4187186b7ca8942aefda77435709",
+          "bytes": 47303,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "nonlin.h": {
+          "sha256": "30f4e351783677f7002b74b4b69d53304413a1bd966782bbd13d2aa213a26ef4",
+          "bytes": 18550,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "optimise.cc": {
+          "sha256": "7e8d90050a953d8f0eee0ca646a5926ef176bea2eb2d1b4caad19a61be6c891d",
+          "bytes": 9286,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "optimise.h": {
+          "sha256": "85d8608911104b69f27831e8977538371512b1ccaa4ba03c0d81d1a57f6da08c",
+          "bytes": 812,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "qmr.h": {
+          "sha256": "7af29c89a5029e1a1abf4ed82b6861160153ae5f03e51d7cbdefe2d3f9a180a8",
+          "bytes": 4377,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "rungekutta.cc": {
+          "sha256": "fd4363761e63406b66af1ffa2529207492c0c3d990e0db663472d9f5669a8475",
+          "bytes": 3183,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "rungekutta.h": {
+          "sha256": "60c24e497e28f364511861cafdbff40c71f60a47fe9e9b1991267e9ef75f4ab1",
+          "bytes": 1374,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "sparse_matrix.cc": {
+          "sha256": "0c523ac559900abc1381589b8c6903bd6d3052b8b59659608f101f939f412c6a",
+          "bytes": 10474,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "sparse_matrix.h": {
+          "sha256": "95f8aed8af25188f0370ea3ad26d0d74e2b169b3f5ebec56bb8f5175a4d1955c",
+          "bytes": 3288,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "sparsefn.cc": {
+          "sha256": "18779fdef8c759be30053eba83a408d3ea5a71e59e53f97d68c5486a01a11e0a",
+          "bytes": 12770,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "sparsefn.h": {
+          "sha256": "3ca0c82badc66e9f29dece686d60bc5bcb4c059b19bccba8be956d708da7fed9",
+          "bytes": 1708,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "splinterpolator.h": {
+          "sha256": "b7548cd18947f194530e621fbb1c22ba7fe9d515f3f6132859edc8bae679f303",
+          "bytes": 58845,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "t2z.cc": {
+          "sha256": "cdcb5289a497f2da91afbb1b1f42f64b7b5f9cb2e358aa8366c2607fe8e9af23",
+          "bytes": 6391,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "t2z.h": {
+          "sha256": "ee3caf8f54155c087f130b5f4f138a2c70c224dc1556a329818e6f6933b886c1",
+          "bytes": 1711,
+          "executable": false,
+          "git_mode": "100644"
+        }
+      }
+    },
+    {
+      "directory": "sources/newimage-2203.11",
+      "repository": "https://git.fmrib.ox.ac.uk/fsl/newimage.git",
+      "tag": "2203.11",
+      "commit": "19e3ddd10138d8ea1394fd522fb0770435c61ddd",
+      "git_tree": "9d4eb20e376dd1bb3b15533646eb24e22705ad9e",
+      "git_archive_sha256": "2a3ec7192d933b7014bac86ada0838985e0b3b3810664a7b368c09518ae9ba13",
+      "fsl_6_0_7_4_package": "fsl-newimage 2203.11",
+      "role": "validation_target",
+      "file_count": 32,
+      "content_bytes": 492007,
+      "files": {
+        ".gitignore": {
+          "sha256": "c55f44a1c31d20ff7fd35849626d208f984dd083c136eaca1b650405461b14ad",
+          "bytes": 30,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        ".gitlab-ci.yml": {
+          "sha256": "99bef5eee71f62ac849fcb6aa86d0dd3b4117666a272ffa2606cb5721824eb28",
+          "bytes": 575,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "Makefile": {
+          "sha256": "97b0fcd6344f07b0a03f71ccd67a78d973bb9daeb438b2bf7091fdb8c194fca5",
+          "bytes": 734,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "complexvolume.cc": {
+          "sha256": "e77a8014ca4e752b7f2538a07b4b5605bea6493adc7e1176fe0ff6a0363cfb27",
+          "bytes": 7266,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "complexvolume.h": {
+          "sha256": "d1f0ccbc9fbdd61e2d2a04866c99c9195db4ea3ecee018bcb592c9d70fbe200d",
+          "bytes": 4651,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "costfns.cc": {
+          "sha256": "68b9b3c7b4a19afa22ae53c2480d3a940f8cdb1670de03ecba74fc4b72dbd8ea",
+          "bytes": 131187,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "costfns.h": {
+          "sha256": "4e81597e96665734b7ec318c84d9541197712d34bea19a198f48960e69921a0c",
+          "bytes": 8035,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "edt.cc": {
+          "sha256": "79791d84441299ac78f4f72914134ffc7dd3e0f64cb0347abb930762f2afc10b",
+          "bytes": 5504,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "edt.h": {
+          "sha256": "49db641651908007828235fcb8853fe097647c3c552b72758c0a6b91d6d0a382",
+          "bytes": 1194,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "fmribmain.h": {
+          "sha256": "506e3cf3293ae3eca3be42b1654ae5eb7e2b26a7af69875dc88ca07f63995ee8",
+          "bytes": 920,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "fmribmain2.h": {
+          "sha256": "2e9720e5c12eae25ecdda15501ee8d60ff37e0fda39298135c7580665d6e07de",
+          "bytes": 1579,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "generalio.cc": {
+          "sha256": "ac81a1069bfcccd49e5a05f065dbaca7b4365af6a5f731797d34891f870d5c06",
+          "bytes": 26313,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "imfft.cc": {
+          "sha256": "b62cf853d78e031f1305dd058c11a768b3842956f1c0e095daaa3043298a66b5",
+          "bytes": 8804,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "imfft.h": {
+          "sha256": "6ad43d2d43121f7080f6e41b13fa1f9407d7c3aa8c0576a249e68169b9a1fae1",
+          "bytes": 2733,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "lazy.cc": {
+          "sha256": "abe46be6b240c5b54422a9c81e5132490470ca16a3155b2c87deeb56fca70515",
+          "bytes": 773,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "lazy.h": {
+          "sha256": "4763090eeded81d64b1ef968b974933f9d183980f63d73bfc1515518cc942395",
+          "bytes": 3558,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "lazyiterators.h": {
+          "sha256": "19abe7632b8842a2ae7bd48b4c05cdb3f4c3400744e92c6bc984e15f5360e7dd",
+          "bytes": 6239,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "newimage.cc": {
+          "sha256": "e6029e1e6676fa5261cfce617a10fc725b0a22a4c85a63070ee4b2563b872bba",
+          "bytes": 82322,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "newimage.h": {
+          "sha256": "ec53aa63eeb7008903037091bb2613f9d50444841fb771abc1bd2b79468fe501",
+          "bytes": 42297,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "newimageall.h": {
+          "sha256": "8d38eb6dca873eca71b2e78c5e09bf3c869d7e9c0e343ae8499239c37cf9d75f",
+          "bytes": 362,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "newimagefns.cc": {
+          "sha256": "c145936881f5a3cf7f2b0121eac16ae51690918377d401806c2ecf128271cd65",
+          "bytes": 29573,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "newimagefns.h": {
+          "sha256": "0c993a86d5e7ac3c9d231faa0eabcdb3c32fe96d3f459434bc5f330b06792caf",
+          "bytes": 91253,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "newimageio.h": {
+          "sha256": "da69405c57f31de500cd96058a311b4b3dc1ec1dc32753c8f8bae2f423e3e4ba",
+          "bytes": 14416,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "positerators.h": {
+          "sha256": "1b6aa2b827bc17c67788b6aa278c1225410c857c5adbd88d81aa9709b27414e6",
+          "bytes": 5108,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "skeletonapp.cc": {
+          "sha256": "0da48aac8a312bee9f0ac812cb67f675ae725a3f9237f1d71fbadd34c3e90960",
+          "bytes": 3016,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "test/Makefile": {
+          "sha256": "fc5fd7911bb102303f5d9a256e084a6f8e715635d831f632ccaaf2d1155bbd06",
+          "bytes": 1051,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "test/feedsRun": {
+          "sha256": "7858ede6f8e761c0dc8d841b8dbb9998e541a70417935ef5a2bcde39f08029a8",
+          "bytes": 1510,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "test/test_complexvolume.cc": {
+          "sha256": "f741204f70aae24d9a823d638f4c73f60284407bca37b670d4588f75125b3a03",
+          "bytes": 3952,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "test/test_fileformats.cc": {
+          "sha256": "a9521e105a8179537b29f279f2f07cec206bab27b8cc75c368f7baf712adbd7b",
+          "bytes": 1525,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "test/test_main.cc": {
+          "sha256": "5b20761de235a94f7a9ae762614dbf9fbad439b9d18759019a93083c01dd10e2",
+          "bytes": 225,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "test/test_volume_constructor.cc": {
+          "sha256": "83f45d1e0889fe950e45e64433c029c4dc3e19100c37cb4d1d641dde6ce77f99",
+          "bytes": 2241,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "test/test_volume_masked_operations.cc": {
+          "sha256": "04868b60577975a51bfc4a78b39414edc50b5181bf586eb5bed769084d27a97c",
+          "bytes": 3061,
+          "executable": false,
+          "git_mode": "100644"
+        }
+      }
+    },
+    {
+      "directory": "sources/warpfns-2203.0",
+      "repository": "https://git.fmrib.ox.ac.uk/fsl/warpfns.git",
+      "tag": "2203.0",
+      "commit": "50ea45cb0b9661adba7844444cb38649ae44892b",
+      "git_tree": "37f2cb964efa3b028513089308bcb58b4a682722",
+      "git_archive_sha256": "bc3669ed64167191284d33f8d5202f2651eacb3a93b695116039a1f895536121",
+      "fsl_6_0_7_4_package": "fsl-warpfns 2203.0",
+      "role": "validation_target",
+      "file_count": 9,
+      "content_bytes": 166301,
+      "files": {
+        "Makefile": {
+          "sha256": "443d3d896a7a07cd18090a470a92a345f80bf279a3125d72caf4cab000b3e744",
+          "bytes": 462,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "fnirt_file_reader.cpp": {
+          "sha256": "ef4f4d0026754c2bebba10f421f7b173f61266b0dd1f2d9b0b71d558730749e8",
+          "bytes": 34848,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "fnirt_file_reader.h": {
+          "sha256": "fae101998ce6293c0ddbe2bc103a538ae6769056fd6b5285fd1918ca6e6d1a34",
+          "bytes": 7531,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "fnirt_file_writer.cpp": {
+          "sha256": "cc632bb750bf767a88819393ff0fa2d509a8686811c1fbdb278eb06cb7a7f7d6",
+          "bytes": 10199,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "fnirt_file_writer.h": {
+          "sha256": "83589e086a19e336330f45440543900d1f365936d8fed4d7c20badbeb10262b6",
+          "bytes": 3861,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "point_list.cpp": {
+          "sha256": "c83cdbebbba78af146e667c3aeb732574c0349dfb86c2832d92628c0aeec3fd5",
+          "bytes": 5378,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "point_list.h": {
+          "sha256": "c15e328fa724839913eead30be0b2346639a66834c0db83484034d96df3423ba",
+          "bytes": 2393,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "warpfns.cc": {
+          "sha256": "94521545b2623410385fbb13d4535d0aeef8625c27ac6cf211c7b175fc6fff13",
+          "bytes": 30809,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "warpfns.h": {
+          "sha256": "2487613da994382685f0e3d394890791b569499e7ea48207faa26f0166a04d2e",
+          "bytes": 70820,
+          "executable": false,
+          "git_mode": "100644"
+        }
+      }
+    },
+    {
+      "directory": "sources/fugue-2201.3",
+      "repository": "https://git.fmrib.ox.ac.uk/fsl/fugue.git",
+      "tag": "2201.3",
+      "commit": "9d815181a19c4fe1aebac74e9fa6601cde4e1ded",
+      "git_tree": "df90525b206a3fd4892e8a1a67e8fd7c5b840ecb",
+      "git_archive_sha256": "940796c4265c52160deb463dcd2b64a277fd80541044fb2a125d0a2e663ef017",
+      "fsl_6_0_7_4_package": "fsl-fugue 2201.3",
+      "role": "validation_target",
+      "file_count": 15,
+      "content_bytes": 164150,
+      "files": {
+        "Makefile": {
+          "sha256": "0cf22796a7484f96cd6b4bec42dfd670eff9791701f14c2d57acfa7826156904",
+          "bytes": 887,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "applywarp.cc": {
+          "sha256": "1f926cf65a7abd47c224cc843cb505ce49bd156b6d226bb1554230f4d8ce7271",
+          "bytes": 20205,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "convertwarp.cc": {
+          "sha256": "6909ece9b17147d7da2acb91d06e1348c256465edc536e8ace88b27ed240b681",
+          "bytes": 9474,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "dwifit.cc": {
+          "sha256": "d6df5292a66b99da6aad24442816850221406910e9832da70f8941d9abb57ecc",
+          "bytes": 6611,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "extractfidparams": {
+          "sha256": "322188e128e33cfd7a404c8198205b51212214c8b3676089aa5949b0c1eba4d2",
+          "bytes": 1742,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "fix_OCMR_fieldmaps": {
+          "sha256": "5f6d2e81362e3dc8e8d1d2707d92b5f4763e2746232c62b85f45988cb2980ba0",
+          "bytes": 3183,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "fixpiramps.sh": {
+          "sha256": "e85ce8d3df2bd1c12fa9d0f4d9d6af1928a88ac8884632c16b1299da1e08ac14",
+          "bytes": 2740,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "fnirtfileutils.cpp": {
+          "sha256": "28d745472e28a8770189643730b8f2b39e680af3cadefcd7275ccfc3a85d17fa",
+          "bytes": 13554,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "fsl_prepare_fieldmap": {
+          "sha256": "1606150b1fecfdc5454c9ff0f18aa64cf63aed2f1b137a135d5e60128e3e7fe3",
+          "bytes": 13402,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "fsl_prepare_fieldmap.tcl": {
+          "sha256": "24604e1fa08d2f45cbd1cab038c9398744992a63ac973c675e2ffafcb0caba59",
+          "bytes": 4882,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "fugue.cc": {
+          "sha256": "b4a54f722d5186a1bac9d94d59fd22bf7aecf6f5685c952782ac98247dd91e55",
+          "bytes": 31802,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "prelude.cc": {
+          "sha256": "12c09f6af45359f914c2c0a4d76d8c083970b1ce144de3661f8757fb7d501a9e",
+          "bytes": 9734,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "sigloss.cc": {
+          "sha256": "0a0785e45ced17edf971b7c8cffc4c922d9a82773b8a0b98ed0bf431e4372612",
+          "bytes": 4042,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "unwarpfns.cc": {
+          "sha256": "cc539c4f7e149df4b7a03bbe3aa594a8dbfc301db00d43f7291f2c105904f9b3",
+          "bytes": 33692,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "unwarpfns.h": {
+          "sha256": "57eca7f17124dbe1bc2582d14f8758f783569a5b0c5fd64ebc76ff901e218783",
+          "bytes": 8200,
+          "executable": false,
+          "git_mode": "100644"
+        }
+      }
+    },
+    {
+      "directory": "sources/fugue-2603.0",
+      "repository": "https://git.fmrib.ox.ac.uk/fsl/fugue.git",
+      "tag": "2603.0",
+      "commit": "1c15c49f632dfa4b1e51acd651efc3c795c4acf1",
+      "git_tree": "0931aacaee668d81e6ff676c44b220b86833150d",
+      "git_archive_sha256": "efe0f49c9b4ee3199b09bf468d7c2760e5473b1a562f96d5e24151697ad9f058",
+      "fsl_6_0_7_4_package": null,
+      "role": "inspected_only",
+      "file_count": 15,
+      "content_bytes": 165187,
+      "files": {
+        "Makefile": {
+          "sha256": "0cf22796a7484f96cd6b4bec42dfd670eff9791701f14c2d57acfa7826156904",
+          "bytes": 887,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "applywarp.cc": {
+          "sha256": "185f6eba70b0b7f14793564837c6f558ad9846a75c0fd2bd7c72371c079ea8fc",
+          "bytes": 21326,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "convertwarp.cc": {
+          "sha256": "6909ece9b17147d7da2acb91d06e1348c256465edc536e8ace88b27ed240b681",
+          "bytes": 9474,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "dwifit.cc": {
+          "sha256": "d6df5292a66b99da6aad24442816850221406910e9832da70f8941d9abb57ecc",
+          "bytes": 6611,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "extractfidparams": {
+          "sha256": "322188e128e33cfd7a404c8198205b51212214c8b3676089aa5949b0c1eba4d2",
+          "bytes": 1742,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "fix_OCMR_fieldmaps": {
+          "sha256": "5f6d2e81362e3dc8e8d1d2707d92b5f4763e2746232c62b85f45988cb2980ba0",
+          "bytes": 3183,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "fixpiramps.sh": {
+          "sha256": "e85ce8d3df2bd1c12fa9d0f4d9d6af1928a88ac8884632c16b1299da1e08ac14",
+          "bytes": 2740,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "fnirtfileutils.cpp": {
+          "sha256": "28d745472e28a8770189643730b8f2b39e680af3cadefcd7275ccfc3a85d17fa",
+          "bytes": 13554,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "fsl_prepare_fieldmap": {
+          "sha256": "97b65fb3e663c73033b1cb046edb20fbe8d34597f0b204a9f2ccbe6ceb748316",
+          "bytes": 13300,
+          "executable": true,
+          "git_mode": "100755"
+        },
+        "fsl_prepare_fieldmap.tcl": {
+          "sha256": "0ff3e6f2e6569ea4986a1c896e840f19ae5c6a405eb1b2beba6bf682282742f3",
+          "bytes": 4900,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "fugue.cc": {
+          "sha256": "b4a54f722d5186a1bac9d94d59fd22bf7aecf6f5685c952782ac98247dd91e55",
+          "bytes": 31802,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "prelude.cc": {
+          "sha256": "12c09f6af45359f914c2c0a4d76d8c083970b1ce144de3661f8757fb7d501a9e",
+          "bytes": 9734,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "sigloss.cc": {
+          "sha256": "0a0785e45ced17edf971b7c8cffc4c922d9a82773b8a0b98ed0bf431e4372612",
+          "bytes": 4042,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "unwarpfns.cc": {
+          "sha256": "cc539c4f7e149df4b7a03bbe3aa594a8dbfc301db00d43f7291f2c105904f9b3",
+          "bytes": 33692,
+          "executable": false,
+          "git_mode": "100644"
+        },
+        "unwarpfns.h": {
+          "sha256": "57eca7f17124dbe1bc2582d14f8758f783569a5b0c5fd64ebc76ff901e218783",
+          "bytes": 8200,
+          "executable": false,
+          "git_mode": "100644"
+        }
+      }
+    }
+  ]
+}

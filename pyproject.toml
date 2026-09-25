@@ -23,6 +23,9 @@ dependencies = [
 fs-torch = "freesurfer_torch.cli:main"
 fs-torch-setup-weights = "freesurfer_torch.weights:main"
 fs-torch-recon-all = "freesurfer_torch.recon_all.standalone:main"
+fs-torch-applywarp = "freesurfer_torch.applywarp.cli:main"
+fs-torch-flirt = "freesurfer_torch.flirt.cli:main"
+fs-torch-fnirt = "freesurfer_torch.fnirt.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -32,6 +35,13 @@ license-files = ["licenses/*.txt", "THIRD_PARTY_NOTICES.md"]
 
 [tool.setuptools.package-data]
 freesurfer_torch = [
+  "_vendor_fsl/*.md",
+  "_vendor_fsl/*.json",
+  "_vendor_fsl/sources/**/*",
+  "_vendor_fsl/sources/**/.*",
+  "applywarp/*.md",
+  "flirt/*.md",
+  "fnirt/*.md",
   "synthstrip/*.md",
   "synthmorph/*.md",
   "wmh_synthseg/*.md",

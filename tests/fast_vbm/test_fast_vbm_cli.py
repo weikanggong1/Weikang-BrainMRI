@@ -26,8 +26,12 @@ def _fake_pipeline(captured):
         def __init__(self, **options):
             captured["options"] = options
 
-        def __call__(self, image, template, brain_mask=None):
-            captured["call"] = (image, template, brain_mask)
+        def __call__(
+            self, image, template, brain_mask=None, reference_mask=None
+        ):
+            captured["call"] = (
+                image, template, brain_mask, reference_mask
+            )
             return Result()
 
     return Pipeline
@@ -42,6 +46,7 @@ def test_fast_vbm_cli_runs_one_subject_and_prints_all_outputs(
     cli.main([
         "fast-vbm", "-i", "T1w.nii.gz", "--template", "template.nii.gz",
         "-o", str(output), "--brain-mask", "mask.nii.gz",
+        "--reference-mask", "reference-mask.nii.gz",
         "--synthstrip-weights", "strip.pt", "--synthmorph-weights", "morph.h5",
         "--device", "cuda:2", "--threads", "3",
         "--linear-strides", "8", "4", "2",
@@ -62,7 +67,7 @@ def test_fast_vbm_cli_runs_one_subject_and_prints_all_outputs(
             "synthmorph_extent": 192, "synthmorph_hyper": 0.4,
             "synthmorph_steps": 6,
             "fnirt_strides": (4, 2, 1, 1),
-            "fnirt_steps": (20, 20, 30, 20),
+            "fnirt_steps": (5, 5, 10, 5),
             "fnirt_learning_rates": (0.5, 0.25, 0.1, 0.05),
             "fnirt_input_fwhm_mm": (6.0, 4.0, 2.0, 2.0),
             "fnirt_reference_fwhm_mm": (4.0, 2.0, 0.0, 0.0),
@@ -70,7 +75,10 @@ def test_fast_vbm_cli_runs_one_subject_and_prints_all_outputs(
             "fnirt_regularization": (150.0, 75.0, 50.0, 30.0),
             "fnirt_jacobian_penalty": 1.0,
         },
-        "call": ("T1w.nii.gz", "template.nii.gz", "mask.nii.gz"),
+        "call": (
+            "T1w.nii.gz", "template.nii.gz", "mask.nii.gz",
+            "reference-mask.nii.gz",
+        ),
         "save": (output, True),
     }
     expected = [output / name for name in fast_vbm_module.OUTPUT_FILENAMES.values()]
