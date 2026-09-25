@@ -1,0 +1,28 @@
+{
+  "device": "cpu",
+  "vertices": 106622,
+  "ordered_edges": 639720,
+  "exact_current_arc_edges": 639720,
+  "exact_original_chord_edges": 639720,
+  "exact_distance_gradient_vectors": 106622,
+  "max_abs_gradient_error": 0.0,
+  "seconds_excluding_io": {
+    "adjacency": 1.1414388082921505,
+    "edge_distances": 0.028817592188715935,
+    "distance_force": 0.013222816400229931
+  },
+  "sha256": {
+    "sphere": "d28a3d49a26984a8044a6b44bd7666059bf434c764b97adbd776e4f93804c6ed",
+    "current_positions": "9c35b8ab0037d79df0af70869fbdf75e092f62d51e31be0ef83641376b6de8a1",
+    "original_positions": "3ba66546acdfb7b7de9ae03dbc5ec88fb92e507433d914245ff76c5b25f38474",
+    "normals": "945b3c47d5d0b1945497fdbf635be8e512aaede4133f9b753767e33e775f85a4",
+    "native_current_distances": "823eff89fc7f8d731a18e0d62cdd3aa3a206d8a140a3779da38d7a2b2c124316",
+    "native_original_distances": "cc1365225c950b16ba6927722bb6f20290404134c57af27c8d60b5833bebb323",
+    "native_gradient": "ae1cb41537a9478a7e9e658d2927ed744c71f51c2923d735aa3c3769c5a6725f"
+  },
+  "predicted_sha256": {
+    "current_distances": "823eff89fc7f8d731a18e0d62cdd3aa3a206d8a140a3779da38d7a2b2c124316",
+    "original_distances": "cc1365225c950b16ba6927722bb6f20290404134c57af27c8d60b5833bebb323",
+    "gradient": "ae1cb41537a9478a7e9e658d2927ed744c71f51c2923d735aa3c3769c5a6725f"
+  }
+}

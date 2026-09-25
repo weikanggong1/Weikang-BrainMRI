@@ -1,0 +1,266 @@
+{
+  "reference": "installed FreeSurfer RAM first-outer checkpoints versus copied-source diagnostic geometry; selected fixed 16-ring, not full causal lineage through all earlier steps",
+  "vertex": 81282,
+  "radius": 16,
+  "support_vertices": 1004,
+  "ordered_neighbors": [
+    80901,
+    80902,
+    81283,
+    81290,
+    81291,
+    103079
+  ],
+  "shell_sizes": [
+    1,
+    6,
+    11,
+    17,
+    23,
+    29,
+    41,
+    47,
+    58,
+    70,
+    79,
+    86,
+    93,
+    101,
+    106,
+    115,
+    121
+  ],
+  "checkpoints": [
+    {
+      "step": 1,
+      "center_distance_mm": 0.0,
+      "support_exact_vertices": 1000,
+      "support_max_mm": 3.814697265625e-06,
+      "support_p99_mm": 0.0,
+      "support_above_1e-4_mm": 0,
+      "support_first_different_vertex": 79330,
+      "support_top_errors": [
+        {
+          "vertex": 97803,
+          "distance_mm": 3.814697265625e-06
+        },
+        {
+          "vertex": 79330,
+          "distance_mm": 3.814697265625e-06
+        },
+        {
+          "vertex": 80852,
+          "distance_mm": 3.814697265625e-06
+        },
+        {
+          "vertex": 84480,
+          "distance_mm": 1.9073486328125e-06
+        }
+      ]
+    },
+    {
+      "step": 5,
+      "center_distance_mm": 0.0,
+      "support_exact_vertices": 954,
+      "support_max_mm": 4.264961199760036e-06,
+      "support_p99_mm": 3.814697265625e-06,
+      "support_above_1e-4_mm": 0,
+      "support_first_different_vertex": 78419,
+      "support_top_errors": [
+        {
+          "vertex": 95124,
+          "distance_mm": 4.264961199760036e-06
+        },
+        {
+          "vertex": 79330,
+          "distance_mm": 3.814697265625e-06
+        },
+        {
+          "vertex": 80870,
+          "distance_mm": 3.814697265625e-06
+        },
+        {
+          "vertex": 81247,
+          "distance_mm": 3.814697265625e-06
+        },
+        {
+          "vertex": 81248,
+          "distance_mm": 3.814697265625e-06
+        },
+        {
+          "vertex": 80095,
+          "distance_mm": 3.814697265625e-06
+        },
+        {
+          "vertex": 79327,
+          "distance_mm": 3.814697265625e-06
+        },
+        {
+          "vertex": 79753,
+          "distance_mm": 3.814697265625e-06
+        },
+        {
+          "vertex": 82080,
+          "distance_mm": 3.814697265625e-06
+        },
+        {
+          "vertex": 102307,
+          "distance_mm": 3.814697265625e-06
+        }
+      ]
+    },
+    {
+      "step": 10,
+      "center_distance_mm": 0.0,
+      "support_exact_vertices": 684,
+      "support_max_mm": 8.529922399520072e-06,
+      "support_p99_mm": 5.7220458984375e-06,
+      "support_above_1e-4_mm": 0,
+      "support_first_different_vertex": 77397,
+      "support_top_errors": [
+        {
+          "vertex": 84234,
+          "distance_mm": 8.529922399520072e-06
+        },
+        {
+          "vertex": 80133,
+          "distance_mm": 8.529922399520072e-06
+        },
+        {
+          "vertex": 80140,
+          "distance_mm": 7.62939453125e-06
+        },
+        {
+          "vertex": 83067,
+          "distance_mm": 6.607249479556569e-06
+        },
+        {
+          "vertex": 104245,
+          "distance_mm": 6.607249479556569e-06
+        },
+        {
+          "vertex": 81635,
+          "distance_mm": 6.607249479556569e-06
+        },
+        {
+          "vertex": 83675,
+          "distance_mm": 6.607249479556569e-06
+        },
+        {
+          "vertex": 81278,
+          "distance_mm": 6.607249479556569e-06
+        },
+        {
+          "vertex": 84209,
+          "distance_mm": 5.7220458984375e-06
+        },
+        {
+          "vertex": 79326,
+          "distance_mm": 5.7220458984375e-06
+        }
+      ]
+    },
+    {
+      "step": 12,
+      "center_distance_mm": 1.9073486328125e-06,
+      "support_exact_vertices": 519,
+      "support_max_mm": 1.2651919518872833e-05,
+      "support_p99_mm": 7.864199877963372e-06,
+      "support_above_1e-4_mm": 0,
+      "support_first_different_vertex": 77397,
+      "support_top_errors": [
+        {
+          "vertex": 83078,
+          "distance_mm": 1.2651919518872833e-05
+        },
+        {
+          "vertex": 80133,
+          "distance_mm": 1.1444091796875e-05
+        },
+        {
+          "vertex": 99655,
+          "distance_mm": 1.1444091796875e-05
+        },
+        {
+          "vertex": 80140,
+          "distance_mm": 9.344061823971473e-06
+        },
+        {
+          "vertex": 84462,
+          "distance_mm": 8.529922399520072e-06
+        },
+        {
+          "vertex": 83077,
+          "distance_mm": 8.529922399520072e-06
+        },
+        {
+          "vertex": 103970,
+          "distance_mm": 8.529922399520072e-06
+        },
+        {
+          "vertex": 83675,
+          "distance_mm": 8.529922399520072e-06
+        },
+        {
+          "vertex": 80498,
+          "distance_mm": 8.529922399520072e-06
+        },
+        {
+          "vertex": 79342,
+          "distance_mm": 7.864199877963372e-06
+        }
+      ]
+    },
+    {
+      "step": 13,
+      "center_distance_mm": 4.264961199760036e-06,
+      "support_exact_vertices": 417,
+      "support_max_mm": 1.9073486328125e-05,
+      "support_p99_mm": 8.529922399520072e-06,
+      "support_above_1e-4_mm": 0,
+      "support_first_different_vertex": 77388,
+      "support_top_errors": [
+        {
+          "vertex": 83387,
+          "distance_mm": 1.9073486328125e-05
+        },
+        {
+          "vertex": 80140,
+          "distance_mm": 1.4273290202232137e-05
+        },
+        {
+          "vertex": 83078,
+          "distance_mm": 1.2651919518872833e-05
+        },
+        {
+          "vertex": 83077,
+          "distance_mm": 9.5367431640625e-06
+        },
+        {
+          "vertex": 80498,
+          "distance_mm": 9.5367431640625e-06
+        },
+        {
+          "vertex": 85294,
+          "distance_mm": 9.344061823971473e-06
+        },
+        {
+          "vertex": 80484,
+          "distance_mm": 8.740569486533813e-06
+        },
+        {
+          "vertex": 83368,
+          "distance_mm": 8.529922399520072e-06
+        },
+        {
+          "vertex": 79329,
+          "distance_mm": 8.529922399520072e-06
+        },
+        {
+          "vertex": 83675,
+          "distance_mm": 8.529922399520072e-06
+        }
+      ]
+    }
+  ]
+}

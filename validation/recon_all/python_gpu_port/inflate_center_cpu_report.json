@@ -1,0 +1,83 @@
+{
+  "host": "headcw",
+  "native_binary": "/public/software/apps/Freesurfer/8.2.0-1/bin/mris_inflate",
+  "input_sha256": {
+    "lh": "983341188a8dd04d83dc9c9a100b794e85068c0fc1bf9dc1409986c215c5303b",
+    "rh": "3e321bb94eaa1e4187f65924e2967a50734800b611989d17033408fc2f43262c"
+  },
+  "repeats": 3,
+  "timing_scope": "same-host file I/O; native process startup included; Python imports excluded",
+  "scope": "zero-iteration diagnostic, not full inflation",
+  "rows": [
+    {
+      "hemi": "lh",
+      "comparison": {
+        "left": "inflate_center_benchmark/lh.native.2.surf",
+        "right": "inflate_center_benchmark/lh.python.2.surf",
+        "left_sha256": "e80d7b3820e752c3284c784da3e41792b5e31f69ab83ffd98ad194952ae83f6a",
+        "right_sha256": "a9d93b8c6dc666ba1e6cdd94e67aa35072915d1d42b6862593fdcedcd506aa34",
+        "vertices": 102764,
+        "faces": 205560,
+        "identical_vertex_count": 102764,
+        "identical_face_count": 205560,
+        "first_different_vertex": null,
+        "first_left_xyz": null,
+        "first_right_xyz": null,
+        "median_vertex_distance_mm": 0.0,
+        "max_vertex_distance_mm": 0.0,
+        "rms_vertex_distance_mm": 0.0
+      },
+      "wall_seconds": {
+        "native": [
+          0.4467518860474229,
+          0.3824548525735736,
+          0.3828437877818942
+        ],
+        "python": [
+          0.027444060891866684,
+          0.016540142707526684,
+          0.018592996522784233
+        ]
+      },
+      "median_seconds": {
+        "native": 0.3828437877818942,
+        "python": 0.018592996522784233
+      }
+    },
+    {
+      "hemi": "rh",
+      "comparison": {
+        "left": "inflate_center_benchmark/rh.native.2.surf",
+        "right": "inflate_center_benchmark/rh.python.2.surf",
+        "left_sha256": "3cf8629a8f4e5c951f69876dee1e51b57f9fa6f8969273f066cedc42d714fb76",
+        "right_sha256": "bcaeede8dfc90733f0ef897b640334c8af9eed48da6101ce0c1b781011cc9743",
+        "vertices": 101454,
+        "faces": 202936,
+        "identical_vertex_count": 101454,
+        "identical_face_count": 202936,
+        "first_different_vertex": null,
+        "first_left_xyz": null,
+        "first_right_xyz": null,
+        "median_vertex_distance_mm": 0.0,
+        "max_vertex_distance_mm": 0.0,
+        "rms_vertex_distance_mm": 0.0
+      },
+      "wall_seconds": {
+        "native": [
+          0.44872776977717876,
+          0.4103372981771827,
+          0.3823228618130088
+        ],
+        "python": [
+          0.023381732404232025,
+          0.019458768889307976,
+          0.018746699206531048
+        ]
+      },
+      "median_seconds": {
+        "native": 0.4103372981771827,
+        "python": 0.019458768889307976
+      }
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "hemi": "lh",
+  "atlas": "aparc",
+  "surface": "white",
+  "reference_rows": 34,
+  "candidate_rows": 34,
+  "missing": [],
+  "extra": [],
+  "max_error": {
+    "NumVert": 0.0,
+    "SurfArea": 0.47009648755192757,
+    "ThickAvg": 0.0004992211266192648,
+    "ThickStd": 0.0004950798563757575,
+    "GrayVol": 0.4293683447431249
+  },
+  "mismatched_numvert": [],
+  "area_outliers": [],
+  "thickness_outliers": [],
+  "volume_outliers": [],
+  "volume_examples": {
+    "bankssts": [
+      1887.8348627829698,
+      1888.0
+    ],
+    "caudalanteriorcingulate": [
+      1028.3853867809385,
+      1028.0
+    ],
+    "caudalmiddlefrontal": [
+      4087.1849843092077,
+      4087.0
+    ],
+    "cuneus": [
+      2715.336652791262,
+      2715.0
+    ],
+    "entorhinal": [
+      1441.982906038372,
+      1442.0
+    ]
+  },
+  "formatted_differences": []
+}

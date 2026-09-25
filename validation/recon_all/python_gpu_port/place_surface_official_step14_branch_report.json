@@ -1,0 +1,72 @@
+{
+  "reference_class": "source-order Python candidate and collision trace from pinned-source gradient; installed candidate gradient is not captured, only installed accepted RAM coordinates",
+  "step": 14,
+  "dt": 0.5,
+  "vertices": [
+    {
+      "vertex": 81282,
+      "source_order_position": 63394,
+      "source_subvolume": 47,
+      "source_start_xyz": [
+        -22.70184898376465,
+        42.99468231201172,
+        50.241031646728516
+      ],
+      "source_gradient": [
+        -0.03024587407708168,
+        -0.07578948885202408,
+        -0.006323135457932949
+      ],
+      "source_clipped_offset": [
+        -0.01512293703854084,
+        -0.03789474442601204,
+        -0.0031615677289664745
+      ],
+      "source_clipped_endpoint": [
+        -22.71697235107422,
+        42.956787109375,
+        50.23786926269531
+      ],
+      "source_close_neighbors_mm": [],
+      "source_projection_valid": true,
+      "source_projected_offset": [
+        -0.01512293703854084,
+        -0.03789474442601204,
+        -0.0031615677289664745
+      ],
+      "source_projected_endpoint": [
+        -22.71697235107422,
+        42.956787109375,
+        50.23786926269531
+      ],
+      "source_broadphase_faces_visited": 1205,
+      "source_first_triangle_collision": null,
+      "source_predicted_accept": true,
+      "source_prediction_matches_native_checkpoint": true,
+      "source_accepted_delta_mm": [
+        -0.015123367309570312,
+        -0.03789520263671875,
+        -0.003162384033203125
+      ],
+      "source_moved": true,
+      "installed_previous_xyz": [
+        -22.70185089111328,
+        42.99467849731445,
+        50.241031646728516
+      ],
+      "installed_current_xyz": [
+        -22.711740493774414,
+        43.09547805786133,
+        50.27437210083008
+      ],
+      "installed_accepted_delta_mm": [
+        -0.009889602661132812,
+        0.100799560546875,
+        0.0333404541015625
+      ],
+      "installed_moved": true,
+      "pre_step_source_installed_distance_mm": 4.264961199760036e-06,
+      "post_step_source_installed_distance_mm": 0.14350961192455278
+    }
+  ]
+}

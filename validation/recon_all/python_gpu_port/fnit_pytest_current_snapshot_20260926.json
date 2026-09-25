@@ -1,0 +1,15 @@
+{
+  "scope": "fnit recon_all unit tests on a source snapshot; no full reconstruction",
+  "host": "headcw",
+  "command": "PYTHONPATH=src:. python -m pytest -q tests/recon_all --disable-warnings --maxfail=1",
+  "result": {
+    "passed": 173,
+    "skipped": 1,
+    "failed": 0,
+    "seconds": 30.56
+  },
+  "skip_reason": "test_n4_sitk.py:9 could not import SimpleITK in the test venv",
+  "source_archive_sha256": "60672bbc7babc331708c528354e441e49779a20fa79f675e10cbd3c2a6fc2359",
+  "validation_archive_sha256": "c17472a42f7cffefb16fed8656f153d1108a55d9718a3e227a62aa3a4e8d2f6b",
+  "notes": "The source snapshot predates later edits by the surface and topology agents. Run the suite again after final synchronization."
+}

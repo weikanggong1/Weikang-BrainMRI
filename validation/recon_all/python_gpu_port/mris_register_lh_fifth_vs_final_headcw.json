@@ -1,0 +1,10 @@
+{
+  "fifth_surface_sha256": "b1a3c4b2226cdf7efa48dd09b825cda5d2f0c85e135be382d7524b99fc198f2e",
+  "final_surface_sha256": "801d345eb11c4b02e64aa453bc388f18e8cd47e8bb0beed7d75868d92276b8f8",
+  "vertices": 106622,
+  "faces_equal": true,
+  "exact_vertices": 0,
+  "max_abs_coordinate_error_mm": 10.647804260253906,
+  "median_vertex_distance_mm": 2.383290048534401,
+  "p95_vertex_distance_mm": 5.058252185518502
+}

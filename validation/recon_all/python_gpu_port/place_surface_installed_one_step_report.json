@@ -1,0 +1,28 @@
+{
+  "reference": "installed FreeSurfer 8.2 binary; child RAM niterations=1; no pin; cleanup skipped",
+  "vertices": 106622,
+  "ordered_faces": 213240,
+  "ordered_faces_exact": true,
+  "installed_vs_recompiled_source_first_step": {
+    "exact_vertices": 105195,
+    "vertices": 106622,
+    "median_mm": 0.0,
+    "p99_mm": 2.9802322387695312e-08,
+    "max_mm": 7.62939453125e-06
+  },
+  "installed_vs_initial": {
+    "exact_vertices": 5797,
+    "vertices": 106622,
+    "median_mm": 0.29999996553114927,
+    "p99_mm": 0.30000216258779777,
+    "max_mm": 0.30000394445889617
+  },
+  "installed_cleanup_skipped_vs_run": {
+    "exact_vertices": 106622,
+    "vertices": 106622,
+    "median_mm": 0.0,
+    "p99_mm": 0.0,
+    "max_mm": 0.0
+  },
+  "native_internal_time_line": "#ET# mris_place_surface  0.08 minutes"
+}

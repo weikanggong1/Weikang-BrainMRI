@@ -1,0 +1,50 @@
+{
+  "scope": "connected T1 input through orig.mgz, CPU",
+  "run": {
+    "subject_dir": "/tmp/fnit-reconall-input-chain-sub01-20260926",
+    "original": "/tmp/fnit-reconall-input-chain-sub01-20260926/mri/orig/001.mgz",
+    "rawavg": "/tmp/fnit-reconall-input-chain-sub01-20260926/mri/rawavg.mgz",
+    "conformed": "/tmp/fnit-reconall-input-chain-sub01-20260926/mri/orig.mgz",
+    "talairach_xfm_path": "/tmp/fnit-reconall-input-chain-sub01-20260926/mri/transforms/talairach.xfm",
+    "device": "cpu",
+    "import_seconds": 0.42922185361385345,
+    "single_run_copy_seconds": 0.0015280982479453087,
+    "conform_and_xform_tag_seconds": 1.7297634053975344
+  },
+  "comparisons": {
+    "mri/orig/001.mgz": {
+      "reference_sha256": "2d9fb24d64cbcd9183489ad2ea1e4e93da9d3970e52e645c5280229b98a44e19",
+      "candidate_sha256": "1f3c18b79203cc72dd387bbb5bd0607c145b8f811f8262476d7f7b87c61857db",
+      "shape_equal": true,
+      "dtype_equal": true,
+      "voxel_mismatch_count": 0,
+      "affine_max_abs_error": 0.0,
+      "mgh_header_equal": true,
+      "header_and_voxel_payload_equal": true,
+      "footer_equal": false
+    },
+    "mri/rawavg.mgz": {
+      "reference_sha256": "2d9fb24d64cbcd9183489ad2ea1e4e93da9d3970e52e645c5280229b98a44e19",
+      "candidate_sha256": "1f3c18b79203cc72dd387bbb5bd0607c145b8f811f8262476d7f7b87c61857db",
+      "shape_equal": true,
+      "dtype_equal": true,
+      "voxel_mismatch_count": 0,
+      "affine_max_abs_error": 0.0,
+      "mgh_header_equal": true,
+      "header_and_voxel_payload_equal": true,
+      "footer_equal": false
+    },
+    "mri/orig.mgz": {
+      "reference_sha256": "7dde820d02968c9fe18056a9cc5cc776c1a6395c48dc4d3a47eb6ba9c399f518",
+      "candidate_sha256": "f658e9e89495d090c7cfe275f26627ac1cda734d37de297f7fa8c2e2c68a9f4d",
+      "shape_equal": true,
+      "dtype_equal": true,
+      "voxel_mismatch_count": 0,
+      "affine_max_abs_error": 0.0,
+      "mgh_header_equal": true,
+      "header_and_voxel_payload_equal": true,
+      "footer_equal": false
+    }
+  },
+  "passed": true
+}

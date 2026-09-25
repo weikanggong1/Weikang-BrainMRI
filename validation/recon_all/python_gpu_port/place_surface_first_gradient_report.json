@@ -1,0 +1,37 @@
+{
+  "reference": "copied pinned FreeSurfer 8.2 source probe, fixed first LH pial optimizer step",
+  "inputs": "original fs_sub01 MRI, WM, aseg, LH white, label, frozen autodet stats",
+  "comparisons": {
+    "intensity": {
+      "exact_elements": 319866,
+      "total_elements": 319866,
+      "max_abs_error": 0.0
+    },
+    "surface_repulsion": {
+      "exact_elements": 319866,
+      "total_elements": 319866,
+      "max_abs_error": 0.0
+    },
+    "pre_normal_spring": {
+      "exact_elements": 319866,
+      "total_elements": 319866,
+      "max_abs_error": 0.0
+    },
+    "normal_spring": {
+      "exact_elements": 319866,
+      "total_elements": 319866,
+      "max_abs_error": 0.0
+    },
+    "curvature": {
+      "exact_elements": 319866,
+      "total_elements": 319866,
+      "max_abs_error": 0.0
+    },
+    "tangential_spring": {
+      "exact_elements": 319866,
+      "total_elements": 319866,
+      "max_abs_error": 0.0
+    }
+  },
+  "seconds_including_io_and_jit_before_comparison": 32.051447017118335
+}

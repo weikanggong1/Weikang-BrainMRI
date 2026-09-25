@@ -1,0 +1,155 @@
+{
+  "reference": "installed FreeSurfer 8.2.0-1 LH pial first outer pass, n_averages=16, sigma=2, dt=0.5 at steps 13 and 14",
+  "method": "GDB limits first outer iteration count and skips later outer passes/final cleanup; --debug-vertex prints pre-move aggregate gradient; RAM meshes are compared independently",
+  "gradient_precision": "native %g text output, approximately six significant decimal digits, not exact float32 bits",
+  "gradient_lines_per_vertex": "final N lines in each run contain exactly N pre-move gradients for accepted step N",
+  "vertices": [
+    {
+      "vertex": 53114,
+      "step": 13,
+      "installed_debug_gradient_line": "vno=53114  xyz=[-42.174,-3.47751,38.577]; nxyz=[-0.568812,-0.0298815,-0.821924]; dxyz=[-0.163972,0.19452,-0.0332371];",
+      "installed_debug_gradient": [
+        -0.163972,
+        0.19452,
+        -0.0332371
+      ],
+      "source_probe_gradient": [
+        -0.1631363481283188,
+        0.19366028904914856,
+        -0.03262966871261597
+      ],
+      "installed_minus_source_gradient": [
+        -0.00083565187168122,
+        0.0008597109508514389,
+        -0.0006074312873840318
+      ],
+      "installed_accepted_delta_mm": [
+        -0.0819854736328125,
+        0.0972602367401123,
+        -0.0166168212890625
+      ],
+      "installed_motion_gradient_estimate_from_delta": [
+        -0.163970947265625,
+        0.1945204734802246,
+        -0.033233642578125
+      ],
+      "installed_debug_vs_motion_gradient_max_abs": 3.4574218749985897e-06,
+      "source_candidate_delta_mm": [
+        -0.08156967163085938,
+        0.09683012962341309,
+        -0.016315460205078125
+      ],
+      "source_prediction_matches_native_checkpoint": true,
+      "source_first_triangle_collision": {
+        "moving_face": 123585,
+        "other_face": 123550
+      },
+      "source_moved": false,
+      "installed_moved": true,
+      "pre_step_source_installed_distance_mm": 4.76837158203125e-07,
+      "post_step_source_installed_distance_mm": 0.1282856092199336,
+      "debug_mesh_matches_installed_RAM_baseline_all_vertices_and_faces": true,
+      "debug_accepted_objective_lines_match_baseline": true,
+      "debug_mesh_sha256": "e5a913c41ef5d7dc194ed62d378e0525ff93faa3a4d96baf10daf90d8965b925",
+      "baseline_mesh_sha256": "88985da7fcadf61f1f08569b9702f29dc968ad1676174a9f7211b154b6a8f285",
+      "debug_capture_report": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_debug_v53114_step13/installed_ram_report.json",
+      "source_branch_report": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/place_surface_official_step13_branch_report.json"
+    },
+    {
+      "vertex": 55276,
+      "step": 13,
+      "installed_debug_gradient_line": "vno=55276  xyz=[-40.2616,-1.08379,37.2009]; nxyz=[-0.390727,0.579027,0.715584]; dxyz=[-0.112047,0.256725,0.225397];",
+      "installed_debug_gradient": [
+        -0.112047,
+        0.256725,
+        0.225397
+      ],
+      "source_probe_gradient": [
+        -0.10762101411819458,
+        0.25692006945610046,
+        0.23468133807182312
+      ],
+      "installed_minus_source_gradient": [
+        -0.004425985881805414,
+        -0.00019506945610048287,
+        -0.009284338071823134
+      ],
+      "installed_accepted_delta_mm": [
+        -0.05602264404296875,
+        0.12836235761642456,
+        0.11269760131835938
+      ],
+      "installed_motion_gradient_estimate_from_delta": [
+        -0.1120452880859375,
+        0.2567247152328491,
+        0.22539520263671875
+      ],
+      "installed_debug_vs_motion_gradient_max_abs": 1.7973632812362528e-06,
+      "source_candidate_delta_mm": [
+        -0.05381011962890625,
+        0.12846004962921143,
+        0.117340087890625
+      ],
+      "source_prediction_matches_native_checkpoint": true,
+      "source_first_triangle_collision": null,
+      "source_moved": true,
+      "installed_moved": true,
+      "pre_step_source_installed_distance_mm": 3.0036956306502575e-05,
+      "post_step_source_installed_distance_mm": 0.0051277386080496356,
+      "debug_mesh_matches_installed_RAM_baseline_all_vertices_and_faces": true,
+      "debug_accepted_objective_lines_match_baseline": true,
+      "debug_mesh_sha256": "331601d49bb3936032cdb9c1f4e53bfaeb0950408bf051159916f446bf05f589",
+      "baseline_mesh_sha256": "88985da7fcadf61f1f08569b9702f29dc968ad1676174a9f7211b154b6a8f285",
+      "debug_capture_report": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_debug_v55276_step13/installed_ram_report.json",
+      "source_branch_report": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/place_surface_official_step13_branch_report.json"
+    },
+    {
+      "vertex": 81282,
+      "step": 14,
+      "installed_debug_gradient_line": "vno=81282  xyz=[-22.7019,42.9947,50.241]; nxyz=[-0.230059,0.942058,0.244129]; dxyz=[-0.0197776,0.201596,0.0666822];",
+      "installed_debug_gradient": [
+        -0.0197776,
+        0.201596,
+        0.0666822
+      ],
+      "source_probe_gradient": [
+        -0.03024587407708168,
+        -0.07578948885202408,
+        -0.006323135457932949
+      ],
+      "installed_minus_source_gradient": [
+        0.010468274077081681,
+        0.2773854888520241,
+        0.07300533545793295
+      ],
+      "installed_accepted_delta_mm": [
+        -0.009889602661132812,
+        0.100799560546875,
+        0.0333404541015625
+      ],
+      "installed_motion_gradient_estimate_from_delta": [
+        -0.019779205322265625,
+        0.20159912109375,
+        0.066680908203125
+      ],
+      "installed_debug_vs_motion_gradient_max_abs": 3.1210937500025793e-06,
+      "source_candidate_delta_mm": [
+        -0.015123367309570312,
+        -0.03789520263671875,
+        -0.003162384033203125
+      ],
+      "source_prediction_matches_native_checkpoint": true,
+      "source_first_triangle_collision": null,
+      "source_moved": true,
+      "installed_moved": true,
+      "pre_step_source_installed_distance_mm": 4.264961199760036e-06,
+      "post_step_source_installed_distance_mm": 0.14350961192455278,
+      "debug_mesh_matches_installed_RAM_baseline_all_vertices_and_faces": true,
+      "debug_accepted_objective_lines_match_baseline": true,
+      "debug_mesh_sha256": "607ca80521a745eae147e4ebc81bd71153ede6509e0c3674effb033ca6b0fb99",
+      "baseline_mesh_sha256": "5ef258dcb67d61bc459e2f30a1badf94312d4e93cdfe350a83322d81230be098",
+      "debug_capture_report": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_debug_v81282_step14/installed_ram_report.json",
+      "source_branch_report": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/place_surface_official_step14_branch_report.json"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "vertex": 0,
+  "seed": 1234,
+  "python_seconds_including_prior_vertices": 4.428231202065945,
+  "native_neighbor_count": 79,
+  "python_neighbor_count": 79,
+  "ordered_neighbor_ids_exact": true,
+  "exact_neighbor_ids": 79,
+  "pre_symmetry_distance_error_max_mm": 0.10830579132080098
+}

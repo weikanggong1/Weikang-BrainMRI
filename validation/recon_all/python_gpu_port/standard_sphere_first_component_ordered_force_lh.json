@@ -1,0 +1,197 @@
+{
+  "source_sha256": "2046109533afd30c5e98d4f67f2f24b9808176dbc98053f39aa2192497bcd0ee",
+  "input_sha256": {
+    "inflated": "a8ff9644b5ef8183d08daaedff69c6ae74ef3270f0b54d9db88aaf788a9e52ed",
+    "smoothwm": "36e199e4d971a39457a4ad1d0b8eed3a84feb236ada29c05e297ffdd865a5002",
+    "native_before": "55bb1d7365151b4415f441c94facb31f5714f4e0638606eb4624bf7fe76b0382",
+    "native_after": "5efb3a7ec06ac244230f80037cb64e5e62fafffa9832602c7bb351b7b35c4ab4"
+  },
+  "selected_dt": 0.9675227403640747,
+  "variants": {
+    "minus_ulp_vector_projection": {
+      "exact_components": 319863,
+      "vertices_le_1e-5_mm": 106622,
+      "max_error_mm": 3.814697265625e-06,
+      "mismatched_components": [
+        {
+          "vertex": 18709,
+          "component": 2,
+          "predicted": -39.17835235595703,
+          "native": -39.1783561706543
+        },
+        {
+          "vertex": 87623,
+          "component": 0,
+          "predicted": -24.055923461914062,
+          "native": -24.05592155456543
+        },
+        {
+          "vertex": 88297,
+          "component": 2,
+          "predicted": -19.2412166595459,
+          "native": -19.241214752197266
+        }
+      ]
+    },
+    "minus_ulp_scalar_projection": {
+      "exact_components": 319863,
+      "vertices_le_1e-5_mm": 106622,
+      "max_error_mm": 3.814697265625e-06,
+      "mismatched_components": [
+        {
+          "vertex": 18709,
+          "component": 2,
+          "predicted": -39.17835235595703,
+          "native": -39.1783561706543
+        },
+        {
+          "vertex": 87623,
+          "component": 0,
+          "predicted": -24.055923461914062,
+          "native": -24.05592155456543
+        },
+        {
+          "vertex": 88297,
+          "component": 2,
+          "predicted": -19.2412166595459,
+          "native": -19.241214752197266
+        }
+      ]
+    },
+    "selected_vector_projection": {
+      "exact_components": 319866,
+      "vertices_le_1e-5_mm": 106622,
+      "max_error_mm": 0.0,
+      "mismatched_components": []
+    },
+    "selected_scalar_projection": {
+      "exact_components": 319866,
+      "vertices_le_1e-5_mm": 106622,
+      "max_error_mm": 0.0,
+      "mismatched_components": []
+    },
+    "plus_ulp_vector_projection": {
+      "exact_components": 319859,
+      "vertices_le_1e-5_mm": 106622,
+      "max_error_mm": 9.344061823971473e-06,
+      "mismatched_components": [
+        {
+          "vertex": 16302,
+          "component": 2,
+          "predicted": -19.784406661987305,
+          "native": -19.784408569335938
+        },
+        {
+          "vertex": 17195,
+          "component": 0,
+          "predicted": 41.593910217285156,
+          "native": 41.59391403198242
+        },
+        {
+          "vertex": 17270,
+          "component": 0,
+          "predicted": 39.95344161987305,
+          "native": 39.95343780517578
+        },
+        {
+          "vertex": 17270,
+          "component": 1,
+          "predicted": -81.11492919921875,
+          "native": -81.11493682861328
+        },
+        {
+          "vertex": 17270,
+          "component": 2,
+          "predicted": -42.70936965942383,
+          "native": -42.70936584472656
+        },
+        {
+          "vertex": 19552,
+          "component": 0,
+          "predicted": 41.33235168457031,
+          "native": 41.33235549926758
+        },
+        {
+          "vertex": 87966,
+          "component": 0,
+          "predicted": -24.09836769104004,
+          "native": -24.098365783691406
+        }
+      ]
+    },
+    "plus_ulp_scalar_projection": {
+      "exact_components": 319859,
+      "vertices_le_1e-5_mm": 106622,
+      "max_error_mm": 9.344061823971473e-06,
+      "mismatched_components": [
+        {
+          "vertex": 16302,
+          "component": 2,
+          "predicted": -19.784406661987305,
+          "native": -19.784408569335938
+        },
+        {
+          "vertex": 17195,
+          "component": 0,
+          "predicted": 41.593910217285156,
+          "native": 41.59391403198242
+        },
+        {
+          "vertex": 17270,
+          "component": 0,
+          "predicted": 39.95344161987305,
+          "native": 39.95343780517578
+        },
+        {
+          "vertex": 17270,
+          "component": 1,
+          "predicted": -81.11492919921875,
+          "native": -81.11493682861328
+        },
+        {
+          "vertex": 17270,
+          "component": 2,
+          "predicted": -42.70936965942383,
+          "native": -42.70936584472656
+        },
+        {
+          "vertex": 19552,
+          "component": 0,
+          "predicted": 41.33235168457031,
+          "native": 41.33235549926758
+        },
+        {
+          "vertex": 87966,
+          "component": 0,
+          "predicted": -24.09836769104004,
+          "native": -24.098365783691406
+        }
+      ]
+    },
+    "selected_float_multiply_add": {
+      "exact_components": 319863,
+      "vertices_le_1e-5_mm": 106622,
+      "max_error_mm": 3.814697265625e-06,
+      "mismatched_components": [
+        {
+          "vertex": 17195,
+          "component": 0,
+          "predicted": 41.593910217285156,
+          "native": 41.59391403198242
+        },
+        {
+          "vertex": 87623,
+          "component": 0,
+          "predicted": -24.055923461914062,
+          "native": -24.05592155456543
+        },
+        {
+          "vertex": 87966,
+          "component": 0,
+          "predicted": -24.09836769104004,
+          "native": -24.098365783691406
+        }
+      ]
+    }
+  }
+}

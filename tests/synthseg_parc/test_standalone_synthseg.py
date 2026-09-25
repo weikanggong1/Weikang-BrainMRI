@@ -54,6 +54,7 @@ def test_independent_api_uses_one_weight_directory_and_recon_soft_volumes(tmp_pa
     result = SynthSeg(weights=model, device="cpu")("t1.nii.gz")
     assert observed == [(model, tmp_path / "synthseg_segmentation_labels_2.0.npy", "cpu")]
     assert int(result.segmentation.data[0, 0, 0]) == 1
+    assert result.segmentation.data.dtype == np.float32
     assert result.near_tie_voxels == 1
     assert result.volumes_mm3[1] == 15.0
     assert result.volumes_mm3[2] == 1.0

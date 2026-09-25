@@ -1,0 +1,101 @@
+{
+  "hemisphere": "lh",
+  "native_binary_build_id": "a7727d3bbfa92bd11932ea9981c2399344c217a2",
+  "source_commit": "d932c45b7941662ea380a05efef580568b98d41a",
+  "first_iteration_force_checkpoints": [
+    {
+      "checkpoint": "gradient_before_distance",
+      "vertices": 106622,
+      "first_gradient": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "sha256": "1c56820112d2a667dab113e7054a0f80e0eea7aabf5adcfa5f8c472b4279cf47"
+    },
+    {
+      "checkpoint": "gradient_after_distance",
+      "vertices": 106622,
+      "first_gradient": [
+        -0.009316910058259964,
+        0.0003126569790765643,
+        -0.007429228164255619
+      ],
+      "sha256": "ae1cb41537a9478a7e9e658d2927ed744c71f51c2923d735aa3c3769c5a6725f"
+    },
+    {
+      "checkpoint": "gradient_after_area",
+      "vertices": 106622,
+      "first_gradient": [
+        -0.010284182615578175,
+        -0.0005295341834425926,
+        0.0005928240716457367
+      ],
+      "sha256": "b80f924f61e6b80e1a245c72b17d3069ce49085c9c0e1e319f32393b6baec761"
+    },
+    {
+      "checkpoint": "gradient_after_correlation",
+      "vertices": 106622,
+      "first_gradient": [
+        -0.006766490638256073,
+        -0.0002935762458946556,
+        0.001911331550218165
+      ],
+      "sha256": "6d26291ee71423747b186fe46d8eb53204c441c8989c88f2f98db4b86d352622"
+    },
+    {
+      "checkpoint": "gradient_after_polar_correlation",
+      "vertices": 106622,
+      "first_gradient": [
+        -0.006766490638256073,
+        -0.0002935762458946556,
+        0.001911331550218165
+      ],
+      "sha256": "6d26291ee71423747b186fe46d8eb53204c441c8989c88f2f98db4b86d352622"
+    },
+    {
+      "checkpoint": "gradient_before_average_staged",
+      "vertices": 106622,
+      "first_gradient": [
+        -0.006766490638256073,
+        -0.0002935762458946556,
+        0.001911331550218165
+      ],
+      "sha256": "6d26291ee71423747b186fe46d8eb53204c441c8989c88f2f98db4b86d352622"
+    }
+  ],
+  "distance_input_scalars_and_sha256": {
+    "avg_nbrs": 37.553768157958984,
+    "total_area": 125663.703125,
+    "orig_area": 125659.5,
+    "status": 5,
+    "patch": 0,
+    "l_dist": 5.0,
+    "positions_sha256": "9c35b8ab0037d79df0af70869fbdf75e092f62d51e31be0ef83641376b6de8a1",
+    "original_positions_sha256": "3ba66546acdfb7b7de9ae03dbc5ec88fb92e507433d914245ff76c5b25f38474",
+    "normals_sha256": "945b3c47d5d0b1945497fdbf635be8e512aaede4133f9b753767e33e775f85a4",
+    "current_distances_sha256": "823eff89fc7f8d731a18e0d62cdd3aa3a206d8a140a3779da38d7a2b2c124316",
+    "original_distances_sha256": "cc1365225c950b16ba6927722bb6f20290404134c57af27c8d60b5833bebb323",
+    "vertices": 106622,
+    "neighbor_entries": 639720,
+    "first_position": [
+      15.062183380126953,
+      -96.16141510009766,
+      -22.937156677246094
+    ],
+    "first_original_position": [
+      -2.765225887298584,
+      -84.8307113647461,
+      3.0257906913757324
+    ],
+    "first_normal": [
+      0.15035922825336456,
+      -0.9617347121238708,
+      -0.22903811931610107
+    ],
+    "first_current_distance": 1.02597177028656,
+    "first_original_distance": 0.835530161857605
+  },
+  "native_force_probe_real_seconds": 8.66,
+  "native_distance_input_probe_real_seconds": 7.32
+}

@@ -1,0 +1,176 @@
+{
+  "reference_class": "installed FreeSurfer 8.2.0-1 RAM first-outer-pass snapshot versus copied-source instrumented snapshot; normal CLI final surface is separate",
+  "source_step": 13,
+  "installed_ram_mesh": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_ram_official_step13/surf/lh.pial.ram",
+  "source_snapshot_mesh": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_official_pass0_run/surf/lh.probe0013",
+  "ordered_faces_equal": true,
+  "ordered_face_count": 213240,
+  "vertex_count": 106622,
+  "exact_vertices": 40282,
+  "first_different_vertex": 0,
+  "first_different_installed_xyz": [
+    -2.401578664779663,
+    -87.88819122314453,
+    3.0856950283050537
+  ],
+  "first_different_source_xyz": [
+    -2.4015791416168213,
+    -87.88819122314453,
+    3.0856950283050537
+  ],
+  "first_difference_mm": 4.76837158203125e-07,
+  "median_mm": 9.5367431640625e-07,
+  "p99_mm": 8.646971245775205e-06,
+  "max_mm": 0.1282856092199336,
+  "largest_distance_vertices": [
+    {
+      "vertex": 53114,
+      "distance_mm": 0.1282856092199336,
+      "installed_xyz": [
+        -42.25598907470703,
+        -3.3802506923675537,
+        38.560333251953125
+      ],
+      "source_xyz": [
+        -42.17400360107422,
+        -3.477510452270508,
+        38.57695007324219
+      ]
+    },
+    {
+      "vertex": 55278,
+      "distance_mm": 0.006702495018651037,
+      "installed_xyz": [
+        -41.448184967041016,
+        -1.4405782222747803,
+        37.708946228027344
+      ],
+      "source_xyz": [
+        -41.44529342651367,
+        -1.4406471252441406,
+        37.71499252319336
+      ]
+    },
+    {
+      "vertex": 55277,
+      "distance_mm": 0.006179983333115731,
+      "installed_xyz": [
+        -40.650028228759766,
+        -1.3523261547088623,
+        37.542694091796875
+      ],
+      "source_xyz": [
+        -40.64735794067383,
+        -1.3523458242416382,
+        37.54826736450195
+      ]
+    },
+    {
+      "vertex": 54549,
+      "distance_mm": 0.0051730187655281085,
+      "installed_xyz": [
+        -41.08690643310547,
+        -1.7597830295562744,
+        37.87995910644531
+      ],
+      "source_xyz": [
+        -41.08464813232422,
+        -1.7598166465759277,
+        37.884613037109375
+      ]
+    },
+    {
+      "vertex": 55276,
+      "distance_mm": 0.0051277386080496356,
+      "installed_xyz": [
+        -40.317649841308594,
+        -0.9554310441017151,
+        37.31364440917969
+      ],
+      "source_xyz": [
+        -40.315433502197266,
+        -0.955356240272522,
+        37.318267822265625
+      ]
+    },
+    {
+      "vertex": 55268,
+      "distance_mm": 0.00439240356991182,
+      "installed_xyz": [
+        -40.65222930908203,
+        -1.4636707305908203,
+        37.648338317871094
+      ],
+      "source_xyz": [
+        -40.65032196044922,
+        -1.4635897874832153,
+        37.65229415893555
+      ]
+    },
+    {
+      "vertex": 54539,
+      "distance_mm": 0.003244905170370443,
+      "installed_xyz": [
+        -41.47209548950195,
+        -2.2717769145965576,
+        38.21973419189453
+      ],
+      "source_xyz": [
+        -41.47066879272461,
+        -2.2717697620391846,
+        38.22264862060547
+      ]
+    },
+    {
+      "vertex": 94054,
+      "distance_mm": 0.0031894938894277904,
+      "installed_xyz": [
+        -43.31103515625,
+        -4.013678073883057,
+        38.884986877441406
+      ],
+      "source_xyz": [
+        -43.312286376953125,
+        -4.013721466064453,
+        38.88205337524414
+      ]
+    },
+    {
+      "vertex": 53094,
+      "distance_mm": 0.0029314502737499046,
+      "installed_xyz": [
+        -43.18252182006836,
+        -3.6345837116241455,
+        38.93854522705078
+      ],
+      "source_xyz": [
+        -43.183502197265625,
+        -3.6352474689483643,
+        38.93586349487305
+      ]
+    },
+    {
+      "vertex": 91873,
+      "distance_mm": 0.002827024150590807,
+      "installed_xyz": [
+        -43.73114013671875,
+        -3.921586036682129,
+        38.94232177734375
+      ],
+      "source_xyz": [
+        -43.73231506347656,
+        -3.921957015991211,
+        38.93977737426758
+      ]
+    }
+  ],
+  "vertices_over_tolerance_mm": {
+    "1e-05": 723,
+    "0.0001": 98,
+    "0.001": 34,
+    "0.01": 1,
+    "0.1": 1
+  },
+  "installed_objective_line": "013: dt: 0.5000, sse=939610.7, rms=6.113 (6.186%)",
+  "source_objective_line": "013: dt: 0.5000, sse=939611.5, rms=6.113 (6.185%)"
+}

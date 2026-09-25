@@ -1,0 +1,24 @@
+{
+  "device": "cpu",
+  "vertices": 105541,
+  "faces": 211078,
+  "native_original_num_averages": 16384,
+  "debugger_num_averages_for_this_isolated_kernel": 1,
+  "exact_ordered_neighbor_offsets": true,
+  "exact_ordered_neighbor_entries": 633234,
+  "ordered_neighbor_entries": 633234,
+  "exact_ordered_gradient_vectors": 105541,
+  "max_abs_gradient_error": 0.0,
+  "seconds_excluding_io": {
+    "ordered_adjacency": 1.2184044690802693,
+    "one_average": 0.030864874832332134
+  },
+  "sha256": {
+    "sphere": "744e8d937f942a3a8d5f0ee739342762288e6824386aaa8a558065c92de84efc",
+    "native_offsets": "119c332709b117abe65e7dc4ce68e1d858281fd4c9bc393ca704875a6d5b499e",
+    "native_neighbors": "aedd298de55a45b1872fef26f7974149bc065cac187fb9e0a76cea6612a89f79",
+    "gradient_before": "373bae6caa23f0f5df85fa6825188e1563a17028c3a65789163a17116074fb26",
+    "native_gradient_after": "1550a1b4972486d1f10d702f0b243d692c57fb4ac9b9d7413deb716bce336e79"
+  },
+  "predicted_gradient_sha256": "1550a1b4972486d1f10d702f0b243d692c57fb4ac9b9d7413deb716bce336e79"
+}

@@ -1,0 +1,15 @@
+{
+  "scope": "connected Python T1 input through SynthStrip; CPU inference",
+  "input_sha256": "f658e9e89495d090c7cfe275f26627ac1cda734d37de297f7fa8c2e2c68a9f4d",
+  "reference_sha256": "3152962e99b326e960bce57c728c3f249e51821ffd7895b711746e3e98005ad9",
+  "candidate_sha256": "cd02a18e37d26ef71ffc15c922a228a6c8431976c772a50eafc580921b2b7bed",
+  "device": "cpu",
+  "seconds": 6.448808318004012,
+  "shape_equal": true,
+  "dtype_equal": true,
+  "voxel_mismatch_count": 0,
+  "max_abs_voxel_error": 0.0,
+  "affine_max_abs_error": 0.0,
+  "mgh_header_equal": true,
+  "header_and_voxel_payload_equal": true
+}

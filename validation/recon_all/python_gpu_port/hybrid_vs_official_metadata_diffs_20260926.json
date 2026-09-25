@@ -1,0 +1,550 @@
+{
+  "mri/aseg.auto.mgz": {
+    "type": [
+      3,
+      1
+    ]
+  },
+  "mri/aseg.presurf.hypos.mgz": {
+    "type": [
+      3,
+      1
+    ]
+  },
+  "mri/aseg.presurf.mgz": {
+    "type": [
+      3,
+      1
+    ]
+  },
+  "mri/entowm.mgz": {
+    "dof": [
+      1,
+      0
+    ],
+    "delta": [
+      [
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        0.9999999403953552,
+        0.9999998807907104,
+        0.9999999403953552
+      ]
+    ],
+    "Mdc": [
+      [
+        [
+          -0.9999999403953552,
+          -3.026798367500305e-09,
+          9.313225746154785e-10
+        ],
+        [
+          -9.313225746154785e-10,
+          7.450580596923828e-09,
+          -0.9999998807907104
+        ],
+        [
+          -1.3969838619232178e-09,
+          0.9999999403953552,
+          7.450580596923828e-09
+        ]
+      ],
+      [
+        [
+          -1.0,
+          -3.02679858954491e-09,
+          9.31322685637781e-10
+        ],
+        [
+          -9.31322685637781e-10,
+          7.450581485102248e-09,
+          -1.0
+        ],
+        [
+          -1.3969839729455202e-09,
+          1.0,
+          7.450581485102248e-09
+        ]
+      ]
+    ],
+    "Pxyz_c": [
+      [
+        0.1995697021484375,
+        20.304336547851562,
+        -41.288330078125
+      ],
+      [
+        0.19957703351974487,
+        20.304336547851562,
+        -41.288330078125
+      ]
+    ],
+    "tr": [
+      9.668000221252441,
+      0.0
+    ],
+    "fov": [
+      256.0,
+      0.0
+    ]
+  },
+  "mri/mca-dura.mgz": {
+    "type": [
+      3,
+      1
+    ],
+    "dof": [
+      1,
+      0
+    ],
+    "delta": [
+      [
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        0.9999999403953552,
+        0.9999998807907104,
+        0.9999999403953552
+      ]
+    ],
+    "Mdc": [
+      [
+        [
+          -0.9999999403953552,
+          -3.026798367500305e-09,
+          9.313225746154785e-10
+        ],
+        [
+          -9.313225746154785e-10,
+          7.450580596923828e-09,
+          -0.9999998807907104
+        ],
+        [
+          -1.3969838619232178e-09,
+          0.9999999403953552,
+          7.450580596923828e-09
+        ]
+      ],
+      [
+        [
+          -1.0,
+          -3.02679858954491e-09,
+          9.31322685637781e-10
+        ],
+        [
+          -9.31322685637781e-10,
+          7.450581485102248e-09,
+          -1.0
+        ],
+        [
+          -1.3969839729455202e-09,
+          1.0,
+          7.450581485102248e-09
+        ]
+      ]
+    ],
+    "Pxyz_c": [
+      [
+        0.1995697021484375,
+        20.304336547851562,
+        -41.288330078125
+      ],
+      [
+        0.19957703351974487,
+        20.304336547851562,
+        -41.288330078125
+      ]
+    ],
+    "tr": [
+      9.668000221252441,
+      0.0
+    ],
+    "fov": [
+      256.0,
+      0.0
+    ]
+  },
+  "mri/synthseg.rca.mgz": {
+    "type": [
+      3,
+      1
+    ]
+  },
+  "mri/vsinus.mgz": {
+    "type": [
+      3,
+      1
+    ],
+    "dof": [
+      1,
+      0
+    ],
+    "delta": [
+      [
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        0.9999999403953552,
+        0.9999998807907104,
+        0.9999999403953552
+      ]
+    ],
+    "Mdc": [
+      [
+        [
+          -0.9999999403953552,
+          -3.026798367500305e-09,
+          9.313225746154785e-10
+        ],
+        [
+          -9.313225746154785e-10,
+          7.450580596923828e-09,
+          -0.9999998807907104
+        ],
+        [
+          -1.3969838619232178e-09,
+          0.9999999403953552,
+          7.450580596923828e-09
+        ]
+      ],
+      [
+        [
+          -1.0,
+          -3.02679858954491e-09,
+          9.31322685637781e-10
+        ],
+        [
+          -9.31322685637781e-10,
+          7.450581485102248e-09,
+          -1.0
+        ],
+        [
+          -1.3969839729455202e-09,
+          1.0,
+          7.450581485102248e-09
+        ]
+      ]
+    ],
+    "Pxyz_c": [
+      [
+        0.1995697021484375,
+        20.304336547851562,
+        -41.288330078125
+      ],
+      [
+        0.19957703351974487,
+        20.304336547851562,
+        -41.288330078125
+      ]
+    ],
+    "tr": [
+      9.668000221252441,
+      0.0
+    ],
+    "fov": [
+      256.0,
+      0.0
+    ]
+  },
+  "surf/lh.orig": {
+    "filename": [
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_benchmark_pair_ac_20260924/official_subjects/a_official/mri/wm.mgz",
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz"
+    ]
+  },
+  "surf/lh.smoothwm": {
+    "filename": [
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_benchmark_pair_ac_20260924/official_subjects/a_official/mri/wm.mgz",
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz"
+    ]
+  },
+  "surf/lh.inflated": {
+    "filename": [
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_benchmark_pair_ac_20260924/official_subjects/a_official/mri/wm.mgz",
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz"
+    ]
+  },
+  "surf/lh.white": {
+    "filename": [
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_benchmark_pair_ac_20260924/official_subjects/a_official/mri/wm.mgz",
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz"
+    ]
+  },
+  "surf/lh.white.preaparc": {
+    "filename": [
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_benchmark_pair_ac_20260924/official_subjects/a_official/mri/wm.mgz",
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz"
+    ]
+  },
+  "surf/lh.pial": {
+    "filename": [
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_benchmark_pair_ac_20260924/official_subjects/a_official/mri/wm.mgz",
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz"
+    ]
+  },
+  "surf/lh.pial.T1": {
+    "filename": [
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_benchmark_pair_ac_20260924/official_subjects/a_official/mri/wm.mgz",
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz"
+    ]
+  },
+  "surf/lh.sphere": {
+    "filename": [
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_benchmark_pair_ac_20260924/official_subjects/a_official/mri/wm.mgz",
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz"
+    ]
+  },
+  "surf/lh.sphere.reg": {
+    "filename": [
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_benchmark_pair_ac_20260924/official_subjects/a_official/mri/wm.mgz",
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz"
+    ]
+  },
+  "surf/rh.orig": {
+    "filename": [
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_benchmark_pair_ac_20260924/official_subjects/a_official/mri/wm.mgz",
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz"
+    ]
+  },
+  "surf/rh.smoothwm": {
+    "filename": [
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_benchmark_pair_ac_20260924/official_subjects/a_official/mri/wm.mgz",
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz"
+    ]
+  },
+  "surf/rh.inflated": {
+    "filename": [
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_benchmark_pair_ac_20260924/official_subjects/a_official/mri/wm.mgz",
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz"
+    ]
+  },
+  "surf/rh.white": {
+    "filename": [
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_benchmark_pair_ac_20260924/official_subjects/a_official/mri/wm.mgz",
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz"
+    ]
+  },
+  "surf/rh.white.preaparc": {
+    "filename": [
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_benchmark_pair_ac_20260924/official_subjects/a_official/mri/wm.mgz",
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz"
+    ]
+  },
+  "surf/rh.pial": {
+    "filename": [
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_benchmark_pair_ac_20260924/official_subjects/a_official/mri/wm.mgz",
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz"
+    ]
+  },
+  "surf/rh.pial.T1": {
+    "filename": [
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_benchmark_pair_ac_20260924/official_subjects/a_official/mri/wm.mgz",
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz"
+    ]
+  },
+  "surf/rh.sphere": {
+    "filename": [
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_benchmark_pair_ac_20260924/official_subjects/a_official/mri/wm.mgz",
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz"
+    ]
+  },
+  "surf/rh.sphere.reg": {
+    "filename": [
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_benchmark_pair_ac_20260924/official_subjects/a_official/mri/wm.mgz",
+      "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz"
+    ]
+  },
+  "stats/lh.aparc.stats": [
+    {
+      "row": 9,
+      "reference": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.467668, mm^3",
+      "candidate": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.152503, mm^3"
+    }
+  ],
+  "stats/lh.aparc.a2009s.stats": [
+    {
+      "row": 9,
+      "reference": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.467668, mm^3",
+      "candidate": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.152503, mm^3"
+    }
+  ],
+  "stats/lh.aparc.DKTatlas.stats": [
+    {
+      "row": 9,
+      "reference": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.467668, mm^3",
+      "candidate": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.152503, mm^3"
+    }
+  ],
+  "stats/lh.aparc.pial.stats": [
+    {
+      "row": 9,
+      "reference": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.467668, mm^3",
+      "candidate": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.152503, mm^3"
+    }
+  ],
+  "stats/lh.BA_exvivo.stats": [
+    {
+      "row": 8,
+      "reference": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.467668, mm^3",
+      "candidate": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.152503, mm^3"
+    }
+  ],
+  "stats/lh.BA_exvivo.thresh.stats": [
+    {
+      "row": 8,
+      "reference": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.467668, mm^3",
+      "candidate": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.152503, mm^3"
+    }
+  ],
+  "stats/rh.aparc.stats": [
+    {
+      "row": 9,
+      "reference": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.467668, mm^3",
+      "candidate": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.152503, mm^3"
+    }
+  ],
+  "stats/rh.aparc.a2009s.stats": [
+    {
+      "row": 9,
+      "reference": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.467668, mm^3",
+      "candidate": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.152503, mm^3"
+    }
+  ],
+  "stats/rh.aparc.DKTatlas.stats": [
+    {
+      "row": 9,
+      "reference": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.467668, mm^3",
+      "candidate": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.152503, mm^3"
+    }
+  ],
+  "stats/rh.aparc.pial.stats": [
+    {
+      "row": 9,
+      "reference": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.467668, mm^3",
+      "candidate": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.152503, mm^3"
+    }
+  ],
+  "stats/rh.BA_exvivo.stats": [
+    {
+      "row": 8,
+      "reference": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.467668, mm^3",
+      "candidate": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.152503, mm^3"
+    }
+  ],
+  "stats/rh.BA_exvivo.thresh.stats": [
+    {
+      "row": 8,
+      "reference": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.467668, mm^3",
+      "candidate": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.152503, mm^3"
+    }
+  ],
+  "stats/aseg.stats": [
+    {
+      "row": 14,
+      "reference": "# Measure BrainSegVol-to-eTIV, BrainSegVol-to-eTIV, Ratio of BrainSegVol to eTIV, 0.921252, unitless",
+      "candidate": "# Measure BrainSegVol-to-eTIV, BrainSegVol-to-eTIV, Ratio of BrainSegVol to eTIV, 0.921253, unitless"
+    },
+    {
+      "row": 19,
+      "reference": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.467668, mm^3",
+      "candidate": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.152503, mm^3"
+    },
+    {
+      "row": 20,
+      "reference": "# Measure SegmentedTotalIntraCranialVol, sTIV, Segmented Total Intracranial Volume, 1280294.200000, mm^3",
+      "candidate": "# Measure SegmentedTotalIntraCranialVol, sTIV, Segmented Total Intracranial Volume, 1280759.000000, mm^3"
+    }
+  ],
+  "stats/wmparc.stats": [
+    {
+      "row": 5,
+      "reference": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.467668, mm^3",
+      "candidate": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.152503, mm^3"
+    },
+    {
+      "row": 6,
+      "reference": "# Measure SegmentedTotalIntraCranialVol, sTIV, Segmented Total Intracranial Volume, 1280294.200000, mm^3",
+      "candidate": "# Measure SegmentedTotalIntraCranialVol, sTIV, Segmented Total Intracranial Volume, 1280759.000000, mm^3"
+    }
+  ],
+  "stats/entowm.stats": [
+    {
+      "row": 0,
+      "reference": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.552537, mm^3",
+      "candidate": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310265.798320, mm^3"
+    },
+    {
+      "row": 1,
+      "reference": "1      3006   620    648.0613    wm-lh-entorhinal",
+      "candidate": "1      3006   620    648.0602    wm-lh-entorhinal"
+    },
+    {
+      "row": 2,
+      "reference": "2      3201   177    185.2398    wm-lh-gyrus-ambiens",
+      "candidate": "2      3201   177    185.2396    wm-lh-gyrus-ambiens"
+    },
+    {
+      "row": 3,
+      "reference": "3      4006   505    542.1218    wm-rh-entorhinal",
+      "candidate": "3      4006   505    542.1208    wm-rh-entorhinal"
+    },
+    {
+      "row": 4,
+      "reference": "4      4201   151    160.8523    wm-rh-gyrus-ambiens",
+      "candidate": "4      4201   151    160.8519    wm-rh-gyrus-ambiens"
+    }
+  ],
+  "stats/vsinus.stats": [
+    {
+      "row": 0,
+      "reference": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310266.467668, mm^3",
+      "candidate": "# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1310265.798320, mm^3"
+    },
+    {
+      "row": 1,
+      "reference": "1 6111      2218     2218.0  Left-Transverse-Sinus             47.3688    10.2269    24.0000    99.0000    75.0000",
+      "candidate": "1  6111      2218     2218.0 Left-Transverse-Sinus            47.3688   10.2269   24.0000   99.0000   75.0000"
+    },
+    {
+      "row": 2,
+      "reference": "2 6112      1140     1140.0  Right-Transverse-Sinus            44.6325     8.2273    24.0000    73.0000    49.0000",
+      "candidate": "2  6112      1140     1140.0 Right-Transverse-Sinus           44.6325    8.2273   24.0000   73.0000   49.0000"
+    },
+    {
+      "row": 3,
+      "reference": "3 6115       187      187.0  Straight-Sinus                    48.4171     8.5350    27.0000    69.0000    42.0000",
+      "candidate": "3  6115       187      187.0 Straight-Sinus                   48.4171    8.5350   27.0000   69.0000   42.0000"
+    },
+    {
+      "row": 4,
+      "reference": "4 6116      1085     1085.0  Superior-Sinus-P                  62.5134    11.0651    36.0000   101.0000    65.0000",
+      "candidate": "4  6116      1085     1085.0 Superior-Sinus-P                 62.5134   11.0651   36.0000  101.0000   65.0000"
+    },
+    {
+      "row": 5,
+      "reference": "5 6117      1788     1788.0  Superior-Sinus-D                  52.0587    10.6729    29.0000    96.0000    67.0000",
+      "candidate": "5  6117      1788     1788.0 Superior-Sinus-D                 52.0587   10.6729   29.0000   96.0000   67.0000"
+    }
+  ],
+  "stats/synthseg.tiv.dat": [
+    {
+      "row": 0,
+      "reference": "1280294.2",
+      "candidate": "1280759.0"
+    }
+  ],
+  "stats/synthseg.vol.csv": [
+    {
+      "row": 1,
+      "reference": "orig.mgz,1280294.2,176618.66,188723.61,9425.01,646.426,14189.765,40219.887,5483.218,3291.105,4249.776,1364.662,1066.305,1497.181,16700.074,3723.981,1441.72,346910.94,568.508,3013.397,180470.39,192556.17,8845.799,611.715,14457.709,40978.336,5396.774,3492.768,4267.663,1347.579,3827.973,1469.336,457.457,2980.347",
+      "candidate": "orig.mgz,1280759.0,176678.953125,188753.296875,9440.6796875,647.218994140625,14189.7548828125,40219.90625,5483.18115234375,3291.093017578125,4249.7548828125,1364.6590576171875,1066.303955078125,1497.177978515625,16699.740234375,3723.965087890625,1441.717041015625,347196.6875,568.5070190429688,3013.389892578125,180492.734375,192602.234375,8849.25390625,612.4860229492188,14457.599609375,40978.89453125,5396.7421875,3492.763916015625,4267.6298828125,1347.5760498046875,3827.9541015625,1469.333984375,457.4580078125,2980.337890625"
+    }
+  ]
+}

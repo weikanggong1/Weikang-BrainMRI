@@ -1,0 +1,832 @@
+{
+  "input_sha256": {
+    "inflated": "a8ff9644b5ef8183d08daaedff69c6ae74ef3270f0b54d9db88aaf788a9e52ed",
+    "smoothwm": "36e199e4d971a39457a4ad1d0b8eed3a84feb236ada29c05e297ffdd865a5002",
+    "native_verbose": "52bc8129afead5b0dad046502cda26523e1c2c15a325fa0c60dce79fb9bb411b"
+  },
+  "reference_commit": "d932c45",
+  "requested_step_specs": [
+    "0:1e-6",
+    "1:1e-5",
+    "2:1e-3",
+    "3:1e-2",
+    "4:1e-1",
+    "5:1e-1",
+    "6:1.0"
+  ],
+  "requested_step_specs_sha256": "782105e1145ef639b943a87232ae71435f3731651b020103c1cc716075e394a2",
+  "implementation_sha256": {
+    "metric": "04a10a70277301cbf337b97513e6cfe9957845e89ca6a0c4045eea2dce70fb1d",
+    "unfold": "d537d451f946984781bfaf76d386c45d1817809355721e46729ea733e3887a9e",
+    "line_search": "f422b70c937304234b8d2f7ec14b825bc24aa8eb889089124ca9bc914474b215",
+    "probe": "12e5b4241a136b4825b20dd4e6ff87f3090c9d565c4b02d377bdb95837c57eb9"
+  },
+  "decision": {
+    "negative_faces": 2185,
+    "negative_area_mm2": 27.7925291071233,
+    "negative_area_pct": 0.02211170211834069,
+    "native_threshold_pct": 0.005,
+    "repair_required": true
+  },
+  "matrix_seconds_including_jit": 16.07030864339322,
+  "steps": [
+    {
+      "index": 0,
+      "distance_weight": 1e-06,
+      "before_sha256": "55bb1d7365151b4415f441c94facb31f5714f4e0638606eb4624bf7fe76b0382",
+      "after_sha256": "5efb3a7ec06ac244230f80037cb64e5e62fafffa9832602c7bb351b7b35c4ab4",
+      "geometry": {
+        "negative_faces": 2185,
+        "original_area_mm2": 67085.6484375,
+        "current_positive_face_area_mm2": 125682.265625,
+        "sphere_metric_total_area_mm2": 125663.703125,
+        "distance_scale": 0.7306508421897888,
+        "area_scale": 0.5338506698608398,
+        "distance_weight": 1e-06
+      },
+      "gradient_seconds_including_jit": 2.347214129753411,
+      "line_search_seconds_including_jit": 1.058239297941327,
+      "gradient": {
+        "l2": 5.840254678137546,
+        "max": 0.9987953249590386,
+        "mean": 0.0012640883357102808
+      },
+      "native": {
+        "gradient_l2_printed": 5.84,
+        "gradient_max_printed": 0.999,
+        "gradient_mean_printed": 0.001,
+        "candidate_sse_printed": [
+          243.12,
+          228.07,
+          228.95,
+          302.69,
+          227.91
+        ],
+        "selected_index": 4,
+        "selected_dt_printed": 0.968
+      },
+      "line_search": {
+        "mean_delta": 0.001264088335433357,
+        "max_delta": 0.9987953201534155,
+        "min_dt": 0.7910839551075979,
+        "max_dt": 9651.224252312693,
+        "starting_sse": {
+          "total": 302.6891692776149,
+          "weighted_distance": 26.85504009735177,
+          "negative_area": 275.8341291802631,
+          "negative_faces": 2185,
+          "metric_negative_area_mm2": 27.792530059814453,
+          "distance_scale": 0.730731651608263,
+          "area_scale": 0.5338506698608398
+        },
+        "initial_candidates": [
+          {
+            "dt": 0.7910839551075979,
+            "sse": 228.07072125239912
+          },
+          {
+            "dt": 7.910839551075979,
+            "sse": 517.7522077713616
+          },
+          {
+            "dt": 79.10839551075979,
+            "sse": 80708.39479757617
+          },
+          {
+            "dt": 791.083955107598,
+            "sse": 489540044.9289692
+          },
+          {
+            "dt": 7910.839551075979,
+            "sse": 3293381764.8847146
+          }
+        ],
+        "quadratic": {
+          "a": 50.876953125,
+          "b": -49.224609375,
+          "c": 274.109375,
+          "predicted_dt": 0.9675227403640747
+        },
+        "candidates": [
+          {
+            "dt": 0.39554197755379894,
+            "sse": 243.11787891977238
+          },
+          {
+            "dt": 0.7910839551075979,
+            "sse": 228.07072125239912
+          },
+          {
+            "dt": 1.1866259326613968,
+            "sse": 228.95010254120217
+          },
+          {
+            "dt": 0.0,
+            "sse": 302.6891692776149
+          },
+          {
+            "dt": 0.9675227403640747,
+            "sse": 227.90949241368682
+          }
+        ],
+        "selected_index": 4,
+        "selected_dt": 0.9675227403640747
+      },
+      "update": {
+        "exact_components": 319856,
+        "total_components": 319866,
+        "vertices_le_1e-5_mm": 106622,
+        "vertices": 106622,
+        "max_error_mm": 7.62939453125e-06,
+        "rms_error_mm": 3.553100829860518e-08,
+        "worst_vertex": 14193
+      },
+      "decision_matches_native": true,
+      "coordinates_within_1e-5_mm": true
+    },
+    {
+      "index": 1,
+      "distance_weight": 1e-05,
+      "before_sha256": "5efb3a7ec06ac244230f80037cb64e5e62fafffa9832602c7bb351b7b35c4ab4",
+      "after_sha256": "b1909ea1bb15f5334eb012a1cb16eac16542a5c4caaa0664b00c61734d6cc77a",
+      "geometry": {
+        "negative_faces": 1695,
+        "original_area_mm2": 67085.6484375,
+        "current_positive_face_area_mm2": 125733.2734375,
+        "sphere_metric_total_area_mm2": 125663.703125,
+        "distance_scale": 0.7306508421897888,
+        "area_scale": 0.5338506698608398,
+        "distance_weight": 1e-05
+      },
+      "gradient_seconds_including_jit": 1.3485357407480478,
+      "line_search_seconds_including_jit": 0.8341609379276633,
+      "gradient": {
+        "l2": 14.96725035601899,
+        "max": 1.8205666769425277,
+        "mean": 0.0038404689395173173
+      },
+      "native": {
+        "gradient_l2_printed": 14.967,
+        "gradient_max_printed": 1.821,
+        "gradient_mean_printed": 0.004,
+        "candidate_sse_printed": [
+          468.63,
+          475.92,
+          482.08,
+          469.66,
+          493.61
+        ],
+        "selected_index": 0,
+        "selected_dt_printed": 0.013
+      },
+      "line_search": {
+        "mean_delta": 0.003840468940307535,
+        "max_delta": 1.8205667080830414,
+        "min_dt": 0.2603848684999188,
+        "max_dt": 3176.695395699009,
+        "starting_sse": {
+          "total": 469.65816520111684,
+          "weighted_distance": 268.60963661617296,
+          "negative_area": 201.04852858494385,
+          "negative_faces": 1695,
+          "metric_negative_area_mm2": 78.79620361328125,
+          "distance_scale": 0.7308800095500169,
+          "area_scale": 0.5338506698608398
+        },
+        "initial_candidates": [
+          {
+            "dt": 0.2603848684999188,
+            "sse": 493.0348319778561
+          },
+          {
+            "dt": 2.603848684999188,
+            "sse": 927.51407393198
+          },
+          {
+            "dt": 26.038486849991884,
+            "sse": 575461.2335116258
+          },
+          {
+            "dt": 260.38486849991887,
+            "sse": 887533312.9918296
+          },
+          {
+            "dt": 2603.8486849991887,
+            "sse": 6015338307.722418
+          }
+        ],
+        "quadratic": {
+          "a": -3360.0,
+          "b": 345.625,
+          "c": 460.212890625,
+          "predicted_dt": 0.1028645858168602
+        },
+        "candidates": [
+          {
+            "dt": 0.013019243424995941,
+            "sse": 468.6265749346043
+          },
+          {
+            "dt": 0.026038486849991882,
+            "sse": 475.92302993429456
+          },
+          {
+            "dt": 0.03905773027498782,
+            "sse": 482.08148668400185
+          },
+          {
+            "dt": 0.0,
+            "sse": 469.65816520111684
+          },
+          {
+            "dt": 0.1028645858168602,
+            "sse": 493.6073433237435
+          }
+        ],
+        "selected_index": 0,
+        "selected_dt": 0.013019243424995941
+      },
+      "update": {
+        "exact_components": 319866,
+        "total_components": 319866,
+        "vertices_le_1e-5_mm": 106622,
+        "vertices": 106622,
+        "max_error_mm": 0.0,
+        "rms_error_mm": 0.0,
+        "worst_vertex": 0
+      },
+      "decision_matches_native": true,
+      "coordinates_within_1e-5_mm": true
+    },
+    {
+      "index": 2,
+      "distance_weight": 0.001,
+      "before_sha256": "b1909ea1bb15f5334eb012a1cb16eac16542a5c4caaa0664b00c61734d6cc77a",
+      "after_sha256": "6f8d4cbda540edc8f52931ca278475b57d789d38b4bf1b68c2ceddef12f1ea94",
+      "geometry": {
+        "negative_faces": 1711,
+        "original_area_mm2": 67085.6484375,
+        "current_positive_face_area_mm2": 125729.9296875,
+        "sphere_metric_total_area_mm2": 125663.703125,
+        "distance_scale": 0.7306508421897888,
+        "area_scale": 0.5338506698608398,
+        "distance_weight": 0.001
+      },
+      "gradient_seconds_including_jit": 1.4261171128600836,
+      "line_search_seconds_including_jit": 0.8206464517861605,
+      "gradient": {
+        "l2": 14.42052989207678,
+        "max": 1.7772184410992458,
+        "mean": 0.003899226546201225
+      },
+      "native": {
+        "gradient_l2_printed": 14.421,
+        "gradient_max_printed": 1.777,
+        "gradient_mean_printed": 0.004,
+        "candidate_sse_printed": [
+          27065.41,
+          27072.86,
+          27077.56,
+          27060.61,
+          27078.74
+        ],
+        "selected_index": 3,
+        "selected_dt_printed": 0.0
+      },
+      "line_search": {
+        "mean_delta": 0.003899226545908731,
+        "max_delta": 1.7772184558343695,
+        "min_dt": 0.2564611181797712,
+        "max_dt": 3128.825641793208,
+        "starting_sse": {
+          "total": 27060.611050126405,
+          "weighted_distance": 26860.59038756698,
+          "negative_area": 200.0206625594247,
+          "negative_faces": 1711,
+          "metric_negative_area_mm2": 75.45097351074219,
+          "distance_scale": 0.7308703048108989,
+          "area_scale": 0.5338506698608398
+        },
+        "initial_candidates": [
+          {
+            "dt": 0.2564611181797712,
+            "sse": 27084.12492617281
+          },
+          {
+            "dt": 2.5646111817977117,
+            "sse": 27481.652934569345
+          },
+          {
+            "dt": 25.64611181797712,
+            "sse": 505963.6359938647
+          },
+          {
+            "dt": 256.4611181797712,
+            "sse": 768687015.5626504
+          },
+          {
+            "dt": 2564.6111817977117,
+            "sse": 6157541479.247661
+          }
+        ],
+        "quadratic": {
+          "a": -10240.0,
+          "b": 452.0,
+          "c": 27055.375,
+          "predicted_dt": 0.04414062574505806
+        },
+        "candidates": [
+          {
+            "dt": 0.01282305590898856,
+            "sse": 27065.412648379348
+          },
+          {
+            "dt": 0.02564611181797712,
+            "sse": 27072.855766845438
+          },
+          {
+            "dt": 0.03846916772696568,
+            "sse": 27077.555052461757
+          },
+          {
+            "dt": 0.0,
+            "sse": 27060.611050126405
+          },
+          {
+            "dt": 0.04414062574505806,
+            "sse": 27079.10108164212
+          }
+        ],
+        "selected_index": 3,
+        "selected_dt": 0.0
+      },
+      "update": {
+        "exact_components": 319866,
+        "total_components": 319866,
+        "vertices_le_1e-5_mm": 106622,
+        "vertices": 106622,
+        "max_error_mm": 0.0,
+        "rms_error_mm": 0.0,
+        "worst_vertex": 0
+      },
+      "decision_matches_native": true,
+      "coordinates_within_1e-5_mm": true
+    },
+    {
+      "index": 3,
+      "distance_weight": 0.01,
+      "before_sha256": "6f8d4cbda540edc8f52931ca278475b57d789d38b4bf1b68c2ceddef12f1ea94",
+      "after_sha256": "c28b3c8c3fa8da412eee502a22039dabae886a4684f65f47fb36f6d185f91422",
+      "geometry": {
+        "negative_faces": 1711,
+        "original_area_mm2": 67085.6484375,
+        "current_positive_face_area_mm2": 125729.9296875,
+        "sphere_metric_total_area_mm2": 125663.703125,
+        "distance_scale": 0.7306508421897888,
+        "area_scale": 0.5338506698608398,
+        "distance_weight": 0.01
+      },
+      "gradient_seconds_including_jit": 1.4975863322615623,
+      "line_search_seconds_including_jit": 0.7964747361838818,
+      "gradient": {
+        "l2": 14.398219103707412,
+        "max": 1.7752013034433167,
+        "mean": 0.005992785473835934
+      },
+      "native": {
+        "gradient_l2_printed": 14.398,
+        "gradient_max_printed": 1.775,
+        "gradient_mean_printed": 0.006,
+        "candidate_sse_printed": [
+          268802.21,
+          268789.3,
+          268783.67,
+          268805.92,
+          268796.96
+        ],
+        "selected_index": 2,
+        "selected_dt_printed": 0.25
+      },
+      "line_search": {
+        "mean_delta": 0.005992785476946394,
+        "max_delta": 1.7752013320644515,
+        "min_dt": 0.16686731134409755,
+        "max_dt": 2035.7811983979898,
+        "starting_sse": {
+          "total": 268805.9247542356,
+          "weighted_distance": 268605.90409206576,
+          "negative_area": 200.02066216981646,
+          "negative_faces": 1711,
+          "metric_negative_area_mm2": 75.45096588134766,
+          "distance_scale": 0.7308703048108989,
+          "area_scale": 0.5338506698608398
+        },
+        "initial_candidates": [
+          {
+            "dt": 0.16686731134409755,
+            "sse": 268789.301225233
+          },
+          {
+            "dt": 1.6686731134409754,
+            "sse": 268895.42321603844
+          },
+          {
+            "dt": 16.686731134409754,
+            "sse": 389257.2807030289
+          },
+          {
+            "dt": 166.86731134409754,
+            "sse": 290789076.8522119
+          },
+          {
+            "dt": 1668.6731134409754,
+            "sse": 5254047967.6143465
+          }
+        ],
+        "quadratic": {
+          "a": 640.0,
+          "b": -72.0,
+          "c": 268824.0,
+          "predicted_dt": 0.11249999701976776
+        },
+        "candidates": [
+          {
+            "dt": 0.08343365567204877,
+            "sse": 268802.2182992451
+          },
+          {
+            "dt": 0.16686731134409755,
+            "sse": 268789.301225233
+          },
+          {
+            "dt": 0.25030096701614635,
+            "sse": 268783.6725100997
+          },
+          {
+            "dt": 0.0,
+            "sse": 268805.9247542356
+          },
+          {
+            "dt": 0.11249999701976776,
+            "sse": 268796.57806332776
+          }
+        ],
+        "selected_index": 2,
+        "selected_dt": 0.25030096701614635
+      },
+      "update": {
+        "exact_components": 319861,
+        "total_components": 319866,
+        "vertices_le_1e-5_mm": 106622,
+        "vertices": 106622,
+        "max_error_mm": 8.529922399520072e-06,
+        "rms_error_mm": 3.1456157378919045e-08,
+        "worst_vertex": 23489
+      },
+      "decision_matches_native": true,
+      "coordinates_within_1e-5_mm": true
+    },
+    {
+      "index": 4,
+      "distance_weight": 0.1,
+      "before_sha256": "c28b3c8c3fa8da412eee502a22039dabae886a4684f65f47fb36f6d185f91422",
+      "after_sha256": "2a08fa0012663fa428a7b65bc4239cc245dc985e1032eac76da0a29a8fd119de",
+      "geometry": {
+        "negative_faces": 1865,
+        "original_area_mm2": 67085.6484375,
+        "current_positive_face_area_mm2": 125711.0703125,
+        "sphere_metric_total_area_mm2": 125663.703125,
+        "distance_scale": 0.7306508421897888,
+        "area_scale": 0.5338506698608398,
+        "distance_weight": 0.1
+      },
+      "gradient_seconds_including_jit": 1.3373628593981266,
+      "line_search_seconds_including_jit": 0.7925632670521736,
+      "gradient": {
+        "l2": 17.81831602067463,
+        "max": 1.8987100819961906,
+        "mean": 0.027473483765544225
+      },
+      "native": {
+        "gradient_l2_printed": 17.818,
+        "gradient_max_printed": 1.899,
+        "gradient_mean_printed": 0.027,
+        "candidate_sse_printed": [
+          2661613.81,
+          2639586.76,
+          2627832.3,
+          2685812.45,
+          2627487.38
+        ],
+        "selected_index": 4,
+        "selected_dt_printed": 6.571
+      },
+      "line_search": {
+        "mean_delta": 0.02747348376525921,
+        "max_delta": 1.8987101292395079,
+        "min_dt": 0.03639873299448542,
+        "max_dt": 444.0645425327221,
+        "starting_sse": {
+          "total": 2685812.414444619,
+          "weighted_distance": 2685587.5541261826,
+          "negative_area": 224.8603184365067,
+          "negative_faces": 1865,
+          "metric_negative_area_mm2": 56.590206146240234,
+          "distance_scale": 0.7308154176004421,
+          "area_scale": 0.5338506698608398
+        },
+        "initial_candidates": [
+          {
+            "dt": 0.03639873299448542,
+            "sse": 2685168.9968993533
+          },
+          {
+            "dt": 0.3639873299448542,
+            "sse": 2681002.6235007206
+          },
+          {
+            "dt": 3.639873299448542,
+            "sse": 2639586.7404895416
+          },
+          {
+            "dt": 36.39873299448542,
+            "sse": 7835475.410999311
+          },
+          {
+            "dt": 363.9873299448542,
+            "sse": 1665193027.9739199
+          }
+        ],
+        "quadratic": {
+          "a": 1562.0,
+          "b": -10264.0,
+          "c": 2693952.0,
+          "predicted_dt": 6.5710625648498535
+        },
+        "candidates": [
+          {
+            "dt": 1.819936649724271,
+            "sse": 2661613.7262060186
+          },
+          {
+            "dt": 3.639873299448542,
+            "sse": 2639586.7404895416
+          },
+          {
+            "dt": 5.459809949172813,
+            "sse": 2627832.256872238
+          },
+          {
+            "dt": 0.0,
+            "sse": 2685812.414444619
+          },
+          {
+            "dt": 6.5710625648498535,
+            "sse": 2627487.3624325753
+          }
+        ],
+        "selected_index": 4,
+        "selected_dt": 6.5710625648498535
+      },
+      "update": {
+        "exact_components": 319810,
+        "total_components": 319866,
+        "vertices_le_1e-5_mm": 106622,
+        "vertices": 106622,
+        "max_error_mm": 8.740569486533813e-06,
+        "rms_error_mm": 9.895725012775792e-08,
+        "worst_vertex": 17875
+      },
+      "decision_matches_native": true,
+      "coordinates_within_1e-5_mm": true
+    },
+    {
+      "index": 5,
+      "distance_weight": 0.1,
+      "before_sha256": "2a08fa0012663fa428a7b65bc4239cc245dc985e1032eac76da0a29a8fd119de",
+      "after_sha256": "41ac4933f3e588baad34d0fbf22a715582c535123589b8f98a50d3e2232b9a47",
+      "geometry": {
+        "negative_faces": 2305,
+        "original_area_mm2": 67085.6484375,
+        "current_positive_face_area_mm2": 127576.4140625,
+        "sphere_metric_total_area_mm2": 125663.703125,
+        "distance_scale": 0.7306508421897888,
+        "area_scale": 0.5338506698608398,
+        "distance_weight": 0.1
+      },
+      "gradient_seconds_including_jit": 1.3601633664220572,
+      "line_search_seconds_including_jit": 0.7326254146173596,
+      "gradient": {
+        "l2": 449.85517110581566,
+        "max": 147.60346114165196,
+        "mean": 0.10130460732512486
+      },
+      "native": {
+        "gradient_l2_printed": 449.855,
+        "gradient_max_printed": 147.603,
+        "gradient_mean_printed": 0.101,
+        "candidate_sse_printed": [
+          2625053.06,
+          2623582.24,
+          2623155.12,
+          2627487.05,
+          2623183.21
+        ],
+        "selected_index": 2,
+        "selected_dt_printed": 0.015
+      },
+      "line_search": {
+        "mean_delta": 0.10130460736651767,
+        "max_delta": 147.60345947842822,
+        "min_dt": 0.009871219345256664,
+        "max_dt": 120.4288760121313,
+        "starting_sse": {
+          "total": 2627487.010518902,
+          "weighted_distance": 2624826.127752394,
+          "negative_area": 2660.8827665078747,
+          "negative_faces": 2305,
+          "metric_negative_area_mm2": 1910.8941650390625,
+          "distance_scale": 0.736270285037113,
+          "area_scale": 0.5338506698608398
+        },
+        "initial_candidates": [
+          {
+            "dt": 0.009871219345256664,
+            "sse": 2623582.211206758
+          },
+          {
+            "dt": 0.09871219345256664,
+            "sse": 2681580.505855911
+          },
+          {
+            "dt": 0.9871219345256664,
+            "sse": 9233402.52119185
+          },
+          {
+            "dt": 9.871219345256664,
+            "sse": 1432442967.8818312
+          },
+          {
+            "dt": 98.71219345256664,
+            "sse": 12183857823.50078
+          }
+        ],
+        "quadratic": {
+          "a": 21495808.0,
+          "b": -306176.0,
+          "c": 2627632.0,
+          "predicted_dt": 0.014243521727621555
+        },
+        "candidates": [
+          {
+            "dt": 0.004935609672628332,
+            "sse": 2625053.012899546
+          },
+          {
+            "dt": 0.009871219345256664,
+            "sse": 2623582.211206758
+          },
+          {
+            "dt": 0.014806829017884996,
+            "sse": 2623155.068984963
+          },
+          {
+            "dt": 0.0,
+            "sse": 2627487.010518902
+          },
+          {
+            "dt": 0.014243521727621555,
+            "sse": 2623183.1690453575
+          }
+        ],
+        "selected_index": 2,
+        "selected_dt": 0.014806829017884996
+      },
+      "update": {
+        "exact_components": 319863,
+        "total_components": 319866,
+        "vertices_le_1e-5_mm": 106622,
+        "vertices": 106622,
+        "max_error_mm": 3.814697265625e-06,
+        "rms_error_mm": 1.6521583267599658e-08,
+        "worst_vertex": 13429
+      },
+      "decision_matches_native": true,
+      "coordinates_within_1e-5_mm": true
+    },
+    {
+      "index": 6,
+      "distance_weight": 1.0,
+      "before_sha256": "41ac4933f3e588baad34d0fbf22a715582c535123589b8f98a50d3e2232b9a47",
+      "after_sha256": "22091bb7f47318d4891398e4f2d17161c65dee37750932fb39b0cb2c155926c6",
+      "geometry": {
+        "negative_faces": 2301,
+        "original_area_mm2": 67085.6484375,
+        "current_positive_face_area_mm2": 127415.1015625,
+        "sphere_metric_total_area_mm2": 125663.703125,
+        "distance_scale": 0.7306508421897888,
+        "area_scale": 0.5338506698608398,
+        "distance_weight": 1.0
+      },
+      "gradient_seconds_including_jit": 1.5013949563726783,
+      "line_search_seconds_including_jit": 0.791388520039618,
+      "gradient": {
+        "l2": 448.74568675455953,
+        "max": 202.1009151958837,
+        "mean": 0.25523790388043777
+      },
+      "native": {
+        "gradient_l2_printed": 448.746,
+        "gradient_max_printed": 202.101,
+        "gradient_mean_printed": 0.255,
+        "candidate_sse_printed": [
+          26201320.95,
+          26191294.5,
+          26184642.99,
+          26212020.22,
+          26177885.71
+        ],
+        "selected_index": 4,
+        "selected_dt_printed": 0.009
+      },
+      "line_search": {
+        "mean_delta": 0.2552379040011642,
+        "max_delta": 202.10091847886292,
+        "min_dt": 0.003917913383254546,
+        "max_dt": 47.79854327570545,
+        "starting_sse": {
+          "total": 26212020.218371056,
+          "weighted_distance": 26209850.51573695,
+          "negative_area": 2169.702634107849,
+          "negative_faces": 2301,
+          "metric_negative_area_mm2": 1753.4486083984375,
+          "distance_scale": 0.735802379279659,
+          "area_scale": 0.5338506698608398
+        },
+        "initial_candidates": [
+          {
+            "dt": 0.003917913383254546,
+            "sse": 26191294.50123928
+          },
+          {
+            "dt": 0.039179133832545454,
+            "sse": 26213814.052243147
+          },
+          {
+            "dt": 0.39179133832545454,
+            "sse": 29682903.09407993
+          },
+          {
+            "dt": 3.9179133832545454,
+            "sse": 290574973.09353995
+          },
+          {
+            "dt": 39.17913383254545,
+            "sse": 6336259178.421392
+          }
+        ],
+        "quadratic": {
+          "a": 461373440.0,
+          "b": -3964928.0,
+          "c": 26218240.0,
+          "predicted_dt": 0.008593750186264515
+        },
+        "candidates": [
+          {
+            "dt": 0.001958956691627273,
+            "sse": 26201320.95249616
+          },
+          {
+            "dt": 0.003917913383254546,
+            "sse": 26191294.50123928
+          },
+          {
+            "dt": 0.005876870074881819,
+            "sse": 26184642.990963385
+          },
+          {
+            "dt": 0.0,
+            "sse": 26212020.218371056
+          },
+          {
+            "dt": 0.008593750186264515,
+            "sse": 26177885.71084087
+          }
+        ],
+        "selected_index": 4,
+        "selected_dt": 0.008593750186264515
+      },
+      "update": {
+        "exact_components": 319866,
+        "total_components": 319866,
+        "vertices_le_1e-5_mm": 106622,
+        "vertices": 106622,
+        "max_error_mm": 0.0,
+        "rms_error_mm": 0.0,
+        "worst_vertex": 0
+      },
+      "decision_matches_native": true,
+      "coordinates_within_1e-5_mm": true
+    }
+  ]
+}

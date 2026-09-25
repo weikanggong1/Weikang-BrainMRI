@@ -1,0 +1,40 @@
+{
+  "hemisphere": "lh",
+  "reference": "instrumented pinned FreeSurfer 8.2 source",
+  "passes": [
+    {
+      "call": 1,
+      "seconds_including_jit": 6.973614014685154,
+      "ripped_vertices": 5567,
+      "comparisons": {
+        "ripped": {
+          "exact_elements": 106622,
+          "total_elements": 106622,
+          "first_mismatch_vertices": []
+        },
+        "value": {
+          "exact_elements": 106622,
+          "total_elements": 106622,
+          "first_mismatch_vertices": []
+        }
+      }
+    },
+    {
+      "call": 2,
+      "seconds_including_jit": 4.432718981988728,
+      "ripped_vertices": 5611,
+      "comparisons": {
+        "ripped": {
+          "exact_elements": 106622,
+          "total_elements": 106622,
+          "first_mismatch_vertices": []
+        },
+        "value": {
+          "exact_elements": 106622,
+          "total_elements": 106622,
+          "first_mismatch_vertices": []
+        }
+      }
+    }
+  ]
+}

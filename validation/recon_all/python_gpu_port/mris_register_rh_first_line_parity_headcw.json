@@ -1,0 +1,40 @@
+{
+  "hemisphere": "rh",
+  "native_selected_dt": 69.6503677368164,
+  "torch_selected_dt": 69.6503677368164,
+  "exact_ordered_vertices": 105541,
+  "vertices": 105541,
+  "max_abs_coordinate_error_mm": 0.0,
+  "native_sse_print_precision": "six decimal places",
+  "paired_line_search_samples": 9,
+  "max_abs_sse_difference": {
+    "sse_area": 8.414994135819143e-05,
+    "sse_nl_area": 5.232855357917288e-07,
+    "sse_dist": 3.677560016512871e-07,
+    "sse_corr": 4.30387444794178e-07,
+    "total": 8.401297964155674e-05
+  },
+  "selected_trial_native_sse": {
+    "sse_area": 5113.310229,
+    "sse_nl_area": 234.946905,
+    "sse_dist": 848299.510669,
+    "sse_corr": 518642.067525,
+    "total": 1372289.835327
+  },
+  "selected_trial_torch_sse": {
+    "sse_area": 5113.310152478239,
+    "sse_nl_area": 234.94690481374735,
+    "sse_dist": 848299.5106692109,
+    "sse_corr": 518642.06752469705,
+    "total": 1372289.8352512
+  },
+  "torch_seconds": {
+    "setup": 1.2326223710551858,
+    "objective": 0.3575362293049693
+  },
+  "native_fit_coefficients_float32": {
+    "a": 45.60546875,
+    "b": -3176.4375,
+    "c": 1600992.0
+  }
+}

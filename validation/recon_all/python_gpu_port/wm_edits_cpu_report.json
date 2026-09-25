@@ -1,0 +1,34 @@
+{
+  "cases": [
+    {
+      "case": "acj_mask",
+      "mismatched_voxels": 0,
+      "labeled_voxels": 598
+    },
+    {
+      "case": "ento_brain",
+      "labeled_voxels": 328,
+      "changed_from_input": 0,
+      "mismatched_voxels": 0
+    },
+    {
+      "case": "ento_wmseg",
+      "labeled_voxels": 1453,
+      "changed_from_input": 1453,
+      "mismatched_voxels": 0
+    },
+    {
+      "case": "acj_brain",
+      "labeled_voxels": 598,
+      "changed_from_input": 0,
+      "mismatched_voxels": 0
+    },
+    {
+      "case": "acj_wmseg",
+      "labeled_voxels": 598,
+      "changed_from_input": 598,
+      "mismatched_voxels": 0
+    }
+  ],
+  "volume_voxels": 16777216
+}

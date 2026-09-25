@@ -1,0 +1,52 @@
+{
+  "reference": "installed binary exact printf argument capture for selected first-step debug vertex; frozen n_averages=16/sigma2 input",
+  "format_address": "0x7076b0",
+  "method": "conditional printf breakpoint reads first eight promoted double arguments from XMM and ninth from stack; no binary mutation",
+  "capture_count": 1,
+  "capture_lines": [
+    [
+      "EXACT_GRADIENT_VNO=80852",
+      "xmm6           {v4_float = {0x0, 0xfffffffe, 0x0, 0x0}, v2_double = {0xfffffffffffffffd, 0x0}, v16_int8 = {0x0, 0x0, 0x0, 0xe0, 0xbe, 0x1f, 0x9, 0xc0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}, v8_int16 = {0x0, 0xe000, 0x1fbe, 0xc009, 0x0, 0x0, 0x0, 0x0}, v4_int32 = {0xe0000000, 0xc0091fbe, 0x0, 0x0}, v2_int64 = {0xc0091fbee0000000, 0x0}, uint128 = 0xc0091fbee0000000}",
+      "xmm7           {v4_float = {0x0, 0x1, 0x0, 0x0}, v2_double = {0x1, 0x0}, v16_int8 = {0x0, 0x0, 0x0, 0xe0, 0xd9, 0x84, 0xfd, 0x3f, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}, v8_int16 = {0x0, 0xe000, 0x84d9, 0x3ffd, 0x0, 0x0, 0x0, 0x0}, v4_int32 = {0xe0000000, 0x3ffd84d9, 0x0, 0x0}, v2_int64 = {0x3ffd84d9e0000000, 0x0}, uint128 = 0x3ffd84d9e0000000}",
+      "0x7fffffffab60:\t0x4012c9cbe0000000"
+    ]
+  ],
+  "mesh": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_exact_v80852_step1/surf/lh.pial.exact_debug",
+  "native_argv": [
+    "/public/software/apps/Freesurfer/8.2.0-1/bin/mris_place_surface",
+    "--adgws-in",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/surf/autodet.gw.stats.lh.dat",
+    "--seg",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/aseg.presurf.mgz",
+    "--threads",
+    "4",
+    "--wm",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz",
+    "--invol",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/brain.finalsurfs.mgz",
+    "--lh",
+    "--i",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_exact_v80852_step1/surf/lh.white",
+    "--o",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_exact_v80852_step1/surf/lh.pial.exact_debug",
+    "--pial",
+    "--nsmooth",
+    "0",
+    "--rip-label",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/label/lh.cortex+hipamyg.label",
+    "--pin-medial-wall",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/label/lh.cortex.label",
+    "--aparc",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/label/lh.aparc.annot",
+    "--repulse-surf",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/surf/lh.white",
+    "--white-surf",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/surf/lh.white",
+    "--restore-255",
+    "--target",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_exact_v80852_step1/surf/lh.pial.target",
+    "--no-pin-medial-wall",
+    "--debug-vertex",
+    "80852"
+  ]
+}

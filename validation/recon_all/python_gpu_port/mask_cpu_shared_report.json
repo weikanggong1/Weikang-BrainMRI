@@ -1,0 +1,123 @@
+{
+  "device": "cpu",
+  "repeats": 3,
+  "timing_scope": "Native subprocess and resident Python call on cpu, both with file I/O; import/device initialization excluded",
+  "rows": [
+    {
+      "stage": "brainmask",
+      "median_seconds": {
+        "native": 0.8939335756003857,
+        "candidate": 0.8341820277273655
+      },
+      "wall_seconds": {
+        "native": [
+          0.9143581730313599,
+          0.8623884650878608,
+          0.8939335756003857
+        ],
+        "candidate": [
+          0.9744402542710304,
+          0.6940278550609946,
+          0.8341820277273655
+        ]
+      },
+      "comparison": {
+        "shape": [
+          256,
+          256,
+          256
+        ],
+        "voxel_mismatches": 0,
+        "affine_max_error": 0.0,
+        "decompressed_mgh_identical": true
+      }
+    },
+    {
+      "stage": "finalsurfs_threshold",
+      "median_seconds": {
+        "native": 1.1677505793049932,
+        "candidate": 0.7307438938878477
+      },
+      "wall_seconds": {
+        "native": [
+          1.0539670819416642,
+          1.1935102259740233,
+          1.1677505793049932
+        ],
+        "candidate": [
+          0.7644251743331552,
+          0.7307438938878477,
+          0.717510751914233
+        ]
+      },
+      "comparison": {
+        "shape": [
+          256,
+          256,
+          256
+        ],
+        "voxel_mismatches": 0,
+        "affine_max_error": 0.0,
+        "decompressed_mgh_identical": true
+      }
+    },
+    {
+      "stage": "finalsurfs_mcadura",
+      "median_seconds": {
+        "native": 2.3763083880767226,
+        "candidate": 0.9828391652554274
+      },
+      "wall_seconds": {
+        "native": [
+          2.3763083880767226,
+          2.419220398645848,
+          2.2853461508639157
+        ],
+        "candidate": [
+          1.0286255069077015,
+          0.9828391652554274,
+          0.8665733961388469
+        ]
+      },
+      "comparison": {
+        "shape": [
+          256,
+          256,
+          256
+        ],
+        "voxel_mismatches": 0,
+        "affine_max_error": 0.0,
+        "decompressed_mgh_identical": true
+      }
+    },
+    {
+      "stage": "finalsurfs_vsinus",
+      "median_seconds": {
+        "native": 2.3146259197965264,
+        "candidate": 0.9648479372262955
+      },
+      "wall_seconds": {
+        "native": [
+          2.3146259197965264,
+          2.2643280341289937,
+          2.348589832894504
+        ],
+        "candidate": [
+          0.9648479372262955,
+          0.8768037566915154,
+          1.0080110519193113
+        ]
+      },
+      "comparison": {
+        "shape": [
+          256,
+          256,
+          256
+        ],
+        "voxel_mismatches": 0,
+        "affine_max_error": 0.0,
+        "decompressed_mgh_identical": true
+      }
+    }
+  ]
+}

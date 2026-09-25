@@ -1,0 +1,12 @@
+Processing /cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_python_gpu_20260925/fnit_reconall_snapshot_20260926c
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: fudan-neuroimaging-toolkit
+  Building wheel for fudan-neuroimaging-toolkit (pyproject.toml): started
+  Building wheel for fudan-neuroimaging-toolkit (pyproject.toml): finished with status 'done'
+  Created wheel for fudan-neuroimaging-toolkit: filename=fudan_neuroimaging_toolkit-0.9.0-py3-none-any.whl size=1076397 sha256=0d4d6a41e5394537bad1e30befe58ad9db7587d96dddf67793841a8e59629b3f
+  Stored in directory: /tmp/pip-ephem-wheel-cache-6k5ilu6o/wheels/ae/52/62/d7bff9aecf0f9b2a218d246f70cced3d253926c8a743a80622
+Successfully built fudan-neuroimaging-toolkit
+
+[notice] A new release of pip is available: 23.2.1 -> 26.2.1
+[notice] To update, run: python -m pip install --upgrade pip

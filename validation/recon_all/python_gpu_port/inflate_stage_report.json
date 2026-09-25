@@ -1,0 +1,58 @@
+{
+  "input": "lh.smoothwm.native",
+  "input_sha256": "983341188a8dd04d83dc9c9a100b794e85068c0fc1bf9dc1409986c215c5303b",
+  "native_prefix": "inflate_multistep/lh.inflated.n1a16.native",
+  "iterations_per_averaging_level": 1,
+  "averaging_levels": [
+    16,
+    8,
+    4,
+    2,
+    1,
+    0
+  ],
+  "rows": [
+    {
+      "step": 1,
+      "byte_identical_vertices": 102764,
+      "vertices": 102764,
+      "max_vertex_distance_mm": 0.0,
+      "rms_vertex_distance_mm": 0.0
+    },
+    {
+      "step": 2,
+      "byte_identical_vertices": 102565,
+      "vertices": 102764,
+      "max_vertex_distance_mm": 7.62939453125e-06,
+      "rms_vertex_distance_mm": 6.294210511758234e-08
+    },
+    {
+      "step": 3,
+      "byte_identical_vertices": 102066,
+      "vertices": 102764,
+      "max_vertex_distance_mm": 7.62939453125e-06,
+      "rms_vertex_distance_mm": 1.0189075887294413e-07
+    },
+    {
+      "step": 4,
+      "byte_identical_vertices": 101149,
+      "vertices": 102764,
+      "max_vertex_distance_mm": 7.62939453125e-06,
+      "rms_vertex_distance_mm": 1.6437076494561435e-07
+    },
+    {
+      "step": 5,
+      "byte_identical_vertices": 99665,
+      "vertices": 102764,
+      "max_vertex_distance_mm": 7.62939453125e-06,
+      "rms_vertex_distance_mm": 2.413239322316507e-07
+    },
+    {
+      "step": 6,
+      "byte_identical_vertices": 97532,
+      "vertices": 102764,
+      "max_vertex_distance_mm": 7.62945273868887e-06,
+      "rms_vertex_distance_mm": 3.408868353672256e-07
+    }
+  ]
+}

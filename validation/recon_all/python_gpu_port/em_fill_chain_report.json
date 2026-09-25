@@ -1,0 +1,59 @@
+{
+  "affine_exact": true,
+  "candidate_command_tags": 8,
+  "candidate_non_command_tags": [
+    [
+      31,
+      148,
+      "604750060e5a"
+    ],
+    [
+      41,
+      19,
+      "01b7440272e6"
+    ],
+    [
+      43,
+      16,
+      "9ba88141b5de"
+    ],
+    [
+      1,
+      255,
+      "a7e6ec94deb1"
+    ]
+  ],
+  "ctab_tag_bytes": 255,
+  "ctab_tag_exact": true,
+  "cut_log_exact": true,
+  "dtype_exact": true,
+  "mgh_header_exact": true,
+  "non_command_tags_exact": true,
+  "reference_command_tags": 8,
+  "reference_non_command_tags": [
+    [
+      31,
+      148,
+      "604750060e5a"
+    ],
+    [
+      41,
+      19,
+      "01b7440272e6"
+    ],
+    [
+      43,
+      16,
+      "9ba88141b5de"
+    ],
+    [
+      1,
+      255,
+      "a7e6ec94deb1"
+    ]
+  ],
+  "scan_parameters_exact": true,
+  "total_voxels": 16777216,
+  "voxel_mismatches": 0,
+  "voxel_sha256_fortran": "1ac2c3c86d90080b7f7c7b90dad491f8e97eba2634d97dc932993088c7de2bed"
+}

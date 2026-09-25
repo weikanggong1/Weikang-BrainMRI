@@ -1,0 +1,12 @@
+{
+  "input_sha256": "c5808d16eb02753a92d19cbd45c127b9c8e17921803be4c1f7ef5e6a29622d79",
+  "native_sha256": "e92250022c4dc2898d67be130f5dc4c6fd52cb4890d97559a95cda5fe5be2b1a",
+  "python_sha256": "4b42d5488cf85ae41dd3c4fd83bf6f7b29a363c47199b6fa5cfa67609d01a64b",
+  "vertices": 105541,
+  "faces": 211078,
+  "ordered_vertex_coordinates_exact": true,
+  "ordered_face_indices_exact": true,
+  "volume_info_exact": true,
+  "different_coordinate_values": 0,
+  "different_face_indices": 0
+}

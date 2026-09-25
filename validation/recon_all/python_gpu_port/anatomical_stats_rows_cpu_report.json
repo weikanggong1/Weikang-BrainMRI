@@ -1,0 +1,98 @@
+{
+  "host": "headcw",
+  "reference": "FreeSurfer 8.2.0 completed fs_sub01 stats on frozen official surfaces/maps/labels",
+  "scope": "exact full text comparison of the 10 numeric ROI columns, excluding metadata/global header",
+  "cases": [
+    {
+      "hemi": "lh",
+      "atlas": "aparc.DKTatlas",
+      "surface": "white",
+      "device": "cpu",
+      "reference_rows": 31,
+      "python_rows": 31,
+      "exact_line_mismatches": 0,
+      "first_mismatches": [],
+      "elapsed_seconds": 0.8588183224201202
+    },
+    {
+      "hemi": "lh",
+      "atlas": "aparc.a2009s",
+      "surface": "white",
+      "device": "cpu",
+      "reference_rows": 74,
+      "python_rows": 74,
+      "exact_line_mismatches": 0,
+      "first_mismatches": [],
+      "elapsed_seconds": 1.0047281431034207
+    },
+    {
+      "hemi": "lh",
+      "atlas": "aparc",
+      "surface": "pial",
+      "device": "cpu",
+      "reference_rows": 34,
+      "python_rows": 34,
+      "exact_line_mismatches": 0,
+      "first_mismatches": [],
+      "elapsed_seconds": 0.9539076639339328
+    },
+    {
+      "hemi": "lh",
+      "atlas": "aparc",
+      "surface": "white",
+      "device": "cpu",
+      "reference_rows": 34,
+      "python_rows": 34,
+      "exact_line_mismatches": 0,
+      "first_mismatches": [],
+      "elapsed_seconds": 0.9241270609200001
+    },
+    {
+      "hemi": "rh",
+      "atlas": "aparc.DKTatlas",
+      "surface": "white",
+      "device": "cpu",
+      "reference_rows": 31,
+      "python_rows": 31,
+      "exact_line_mismatches": 0,
+      "first_mismatches": [],
+      "elapsed_seconds": 0.8748412262648344
+    },
+    {
+      "hemi": "rh",
+      "atlas": "aparc.a2009s",
+      "surface": "white",
+      "device": "cpu",
+      "reference_rows": 74,
+      "python_rows": 74,
+      "exact_line_mismatches": 0,
+      "first_mismatches": [],
+      "elapsed_seconds": 0.8815012611448765
+    },
+    {
+      "hemi": "rh",
+      "atlas": "aparc",
+      "surface": "pial",
+      "device": "cpu",
+      "reference_rows": 34,
+      "python_rows": 34,
+      "exact_line_mismatches": 0,
+      "first_mismatches": [],
+      "elapsed_seconds": 0.8325086599215865
+    },
+    {
+      "hemi": "rh",
+      "atlas": "aparc",
+      "surface": "white",
+      "device": "cpu",
+      "reference_rows": 34,
+      "python_rows": 34,
+      "exact_line_mismatches": 0,
+      "first_mismatches": [],
+      "elapsed_seconds": 0.8528129691258073
+    }
+  ],
+  "total_reference_rows": 346,
+  "total_exact_line_mismatches": 0,
+  "timing_scope": "fresh process per table; timer starts after Python imports and includes mesh reads and computation; no same-host native timing"
+}

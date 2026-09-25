@@ -1,0 +1,637 @@
+{
+  "reference_class": "normal installed and pristine-source CLI logs, plus separately instrumented source diagnostic; frozen input provenance in companion report",
+  "first_outer_n_averages": 16,
+  "first_outer_sigma": 2,
+  "accepted_step_count": 26,
+  "rows": [
+    {
+      "accepted_step": 0,
+      "installed": {
+        "dt": 0.0,
+        "sse": 30943636.0,
+        "rms": 39.059
+      },
+      "pristine_source": {
+        "dt": 0.0,
+        "sse": 30943636.0,
+        "rms": 39.059
+      },
+      "instrumented_source": {
+        "dt": 0.0,
+        "sse": 30943636.0,
+        "rms": 39.059
+      },
+      "pristine_minus_installed_sse": 0.0,
+      "instrumented_minus_installed_sse": 0.0,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 1,
+      "installed": {
+        "dt": 0.5,
+        "sse": 22077916.0,
+        "rms": 32.957
+      },
+      "pristine_source": {
+        "dt": 0.5,
+        "sse": 22077916.0,
+        "rms": 32.957
+      },
+      "instrumented_source": {
+        "dt": 0.5,
+        "sse": 22077916.0,
+        "rms": 32.957
+      },
+      "pristine_minus_installed_sse": 0.0,
+      "instrumented_minus_installed_sse": 0.0,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 2,
+      "installed": {
+        "dt": 0.5,
+        "sse": 15462866.0,
+        "rms": 27.536
+      },
+      "pristine_source": {
+        "dt": 0.5,
+        "sse": 15462866.0,
+        "rms": 27.536
+      },
+      "instrumented_source": {
+        "dt": 0.5,
+        "sse": 15462866.0,
+        "rms": 27.536
+      },
+      "pristine_minus_installed_sse": 0.0,
+      "instrumented_minus_installed_sse": 0.0,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 3,
+      "installed": {
+        "dt": 0.5,
+        "sse": 10876687.0,
+        "rms": 23.039
+      },
+      "pristine_source": {
+        "dt": 0.5,
+        "sse": 10876687.0,
+        "rms": 23.039
+      },
+      "instrumented_source": {
+        "dt": 0.5,
+        "sse": 10876687.0,
+        "rms": 23.039
+      },
+      "pristine_minus_installed_sse": 0.0,
+      "instrumented_minus_installed_sse": 0.0,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 4,
+      "installed": {
+        "dt": 0.5,
+        "sse": 7860788.0,
+        "rms": 19.525
+      },
+      "pristine_source": {
+        "dt": 0.5,
+        "sse": 7860788.0,
+        "rms": 19.525
+      },
+      "instrumented_source": {
+        "dt": 0.5,
+        "sse": 7860788.0,
+        "rms": 19.525
+      },
+      "pristine_minus_installed_sse": 0.0,
+      "instrumented_minus_installed_sse": 0.0,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 5,
+      "installed": {
+        "dt": 0.5,
+        "sse": 5819004.0,
+        "rms": 16.731
+      },
+      "pristine_source": {
+        "dt": 0.5,
+        "sse": 5819003.5,
+        "rms": 16.731
+      },
+      "instrumented_source": {
+        "dt": 0.5,
+        "sse": 5819003.5,
+        "rms": 16.731
+      },
+      "pristine_minus_installed_sse": -0.5,
+      "instrumented_minus_installed_sse": -0.5,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 6,
+      "installed": {
+        "dt": 0.5,
+        "sse": 4321335.0,
+        "rms": 14.338
+      },
+      "pristine_source": {
+        "dt": 0.5,
+        "sse": 4321335.0,
+        "rms": 14.338
+      },
+      "instrumented_source": {
+        "dt": 0.5,
+        "sse": 4321335.0,
+        "rms": 14.338
+      },
+      "pristine_minus_installed_sse": 0.0,
+      "instrumented_minus_installed_sse": 0.0,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 7,
+      "installed": {
+        "dt": 0.5,
+        "sse": 3217285.5,
+        "rms": 12.279
+      },
+      "pristine_source": {
+        "dt": 0.5,
+        "sse": 3217285.5,
+        "rms": 12.279
+      },
+      "instrumented_source": {
+        "dt": 0.5,
+        "sse": 3217285.5,
+        "rms": 12.279
+      },
+      "pristine_minus_installed_sse": 0.0,
+      "instrumented_minus_installed_sse": 0.0,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 8,
+      "installed": {
+        "dt": 0.5,
+        "sse": 2408689.8,
+        "rms": 10.516
+      },
+      "pristine_source": {
+        "dt": 0.5,
+        "sse": 2408689.5,
+        "rms": 10.516
+      },
+      "instrumented_source": {
+        "dt": 0.5,
+        "sse": 2408689.5,
+        "rms": 10.516
+      },
+      "pristine_minus_installed_sse": -0.2999999998137355,
+      "instrumented_minus_installed_sse": -0.2999999998137355,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 9,
+      "installed": {
+        "dt": 0.5,
+        "sse": 1844635.8,
+        "rms": 9.085
+      },
+      "pristine_source": {
+        "dt": 0.5,
+        "sse": 1844635.8,
+        "rms": 9.085
+      },
+      "instrumented_source": {
+        "dt": 0.5,
+        "sse": 1844635.8,
+        "rms": 9.085
+      },
+      "pristine_minus_installed_sse": 0.0,
+      "instrumented_minus_installed_sse": 0.0,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 10,
+      "installed": {
+        "dt": 0.5,
+        "sse": 1450802.1,
+        "rms": 7.932
+      },
+      "pristine_source": {
+        "dt": 0.5,
+        "sse": 1450802.2,
+        "rms": 7.932
+      },
+      "instrumented_source": {
+        "dt": 0.5,
+        "sse": 1450802.2,
+        "rms": 7.932
+      },
+      "pristine_minus_installed_sse": 0.09999999986030161,
+      "instrumented_minus_installed_sse": 0.09999999986030161,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 11,
+      "installed": {
+        "dt": 0.5,
+        "sse": 1200215.5,
+        "rms": 7.1
+      },
+      "pristine_source": {
+        "dt": 0.5,
+        "sse": 1200215.4,
+        "rms": 7.1
+      },
+      "instrumented_source": {
+        "dt": 0.5,
+        "sse": 1200215.4,
+        "rms": 7.1
+      },
+      "pristine_minus_installed_sse": -0.10000000009313226,
+      "instrumented_minus_installed_sse": -0.10000000009313226,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 12,
+      "installed": {
+        "dt": 0.5,
+        "sse": 1041102.6,
+        "rms": 6.516
+      },
+      "pristine_source": {
+        "dt": 0.5,
+        "sse": 1041102.4,
+        "rms": 6.516
+      },
+      "instrumented_source": {
+        "dt": 0.5,
+        "sse": 1041102.4,
+        "rms": 6.516
+      },
+      "pristine_minus_installed_sse": -0.19999999995343387,
+      "instrumented_minus_installed_sse": -0.19999999995343387,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 13,
+      "installed": {
+        "dt": 0.5,
+        "sse": 939610.7,
+        "rms": 6.113
+      },
+      "pristine_source": {
+        "dt": 0.5,
+        "sse": 939611.5,
+        "rms": 6.113
+      },
+      "instrumented_source": {
+        "dt": 0.5,
+        "sse": 939611.5,
+        "rms": 6.113
+      },
+      "pristine_minus_installed_sse": 0.8000000000465661,
+      "instrumented_minus_installed_sse": 0.8000000000465661,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 14,
+      "installed": {
+        "dt": 0.5,
+        "sse": 862802.7,
+        "rms": 5.788
+      },
+      "pristine_source": {
+        "dt": 0.5,
+        "sse": 862803.9,
+        "rms": 5.788
+      },
+      "instrumented_source": {
+        "dt": 0.5,
+        "sse": 862803.9,
+        "rms": 5.788
+      },
+      "pristine_minus_installed_sse": 1.2000000000698492,
+      "instrumented_minus_installed_sse": 1.2000000000698492,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 15,
+      "installed": {
+        "dt": 0.5,
+        "sse": 808039.6,
+        "rms": 5.544
+      },
+      "pristine_source": {
+        "dt": 0.5,
+        "sse": 808041.7,
+        "rms": 5.544
+      },
+      "instrumented_source": {
+        "dt": 0.5,
+        "sse": 808041.7,
+        "rms": 5.544
+      },
+      "pristine_minus_installed_sse": 2.099999999976717,
+      "instrumented_minus_installed_sse": 2.099999999976717,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 16,
+      "installed": {
+        "dt": 0.5,
+        "sse": 762206.0,
+        "rms": 5.331
+      },
+      "pristine_source": {
+        "dt": 0.5,
+        "sse": 762214.1,
+        "rms": 5.331
+      },
+      "instrumented_source": {
+        "dt": 0.5,
+        "sse": 762214.1,
+        "rms": 5.331
+      },
+      "pristine_minus_installed_sse": 8.099999999976717,
+      "instrumented_minus_installed_sse": 8.099999999976717,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 17,
+      "installed": {
+        "dt": 0.5,
+        "sse": 731909.8,
+        "rms": 5.185
+      },
+      "pristine_source": {
+        "dt": 0.5,
+        "sse": 731907.4,
+        "rms": 5.185
+      },
+      "instrumented_source": {
+        "dt": 0.5,
+        "sse": 731907.4,
+        "rms": 5.185
+      },
+      "pristine_minus_installed_sse": -2.400000000023283,
+      "instrumented_minus_installed_sse": -2.400000000023283,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 18,
+      "installed": {
+        "dt": 0.5,
+        "sse": 706221.2,
+        "rms": 5.056
+      },
+      "pristine_source": {
+        "dt": 0.5,
+        "sse": 706244.3,
+        "rms": 5.056
+      },
+      "instrumented_source": {
+        "dt": 0.5,
+        "sse": 706244.3,
+        "rms": 5.056
+      },
+      "pristine_minus_installed_sse": 23.100000000093132,
+      "instrumented_minus_installed_sse": 23.100000000093132,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 19,
+      "installed": {
+        "dt": 0.5,
+        "sse": 694012.5,
+        "rms": 4.993
+      },
+      "pristine_source": {
+        "dt": 0.5,
+        "sse": 694036.2,
+        "rms": 4.993
+      },
+      "instrumented_source": {
+        "dt": 0.5,
+        "sse": 694036.2,
+        "rms": 4.993
+      },
+      "pristine_minus_installed_sse": 23.699999999953434,
+      "instrumented_minus_installed_sse": 23.699999999953434,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 20,
+      "installed": {
+        "dt": 0.5,
+        "sse": 679248.3,
+        "rms": 4.916
+      },
+      "pristine_source": {
+        "dt": 0.5,
+        "sse": 679305.4,
+        "rms": 4.916
+      },
+      "instrumented_source": {
+        "dt": 0.5,
+        "sse": 679305.4,
+        "rms": 4.916
+      },
+      "pristine_minus_installed_sse": 57.09999999997672,
+      "instrumented_minus_installed_sse": 57.09999999997672,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 21,
+      "installed": {
+        "dt": 0.25,
+        "sse": 551628.1,
+        "rms": 4.207
+      },
+      "pristine_source": {
+        "dt": 0.25,
+        "sse": 551651.9,
+        "rms": 4.208
+      },
+      "instrumented_source": {
+        "dt": 0.25,
+        "sse": 551651.9,
+        "rms": 4.208
+      },
+      "pristine_minus_installed_sse": 23.800000000046566,
+      "instrumented_minus_installed_sse": 23.800000000046566,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 22,
+      "installed": {
+        "dt": 0.25,
+        "sse": 513257.2,
+        "rms": 3.967
+      },
+      "pristine_source": {
+        "dt": 0.25,
+        "sse": 513316.2,
+        "rms": 3.967
+      },
+      "instrumented_source": {
+        "dt": 0.25,
+        "sse": 513316.2,
+        "rms": 3.967
+      },
+      "pristine_minus_installed_sse": 59.0,
+      "instrumented_minus_installed_sse": 59.0,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 23,
+      "installed": {
+        "dt": 0.25,
+        "sse": 502743.3,
+        "rms": 3.899
+      },
+      "pristine_source": {
+        "dt": 0.25,
+        "sse": 502786.8,
+        "rms": 3.899
+      },
+      "instrumented_source": {
+        "dt": 0.25,
+        "sse": 502786.8,
+        "rms": 3.899
+      },
+      "pristine_minus_installed_sse": 43.5,
+      "instrumented_minus_installed_sse": 43.5,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 24,
+      "installed": {
+        "dt": 0.25,
+        "sse": 498956.6,
+        "rms": 3.873
+      },
+      "pristine_source": {
+        "dt": 0.25,
+        "sse": 498805.0,
+        "rms": 3.872
+      },
+      "instrumented_source": {
+        "dt": 0.25,
+        "sse": 498805.0,
+        "rms": 3.872
+      },
+      "pristine_minus_installed_sse": -151.59999999997672,
+      "instrumented_minus_installed_sse": -151.59999999997672,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 25,
+      "installed": {
+        "dt": 0.125,
+        "sse": 479592.4,
+        "rms": 3.744
+      },
+      "pristine_source": {
+        "dt": 0.125,
+        "sse": 479685.4,
+        "rms": 3.745
+      },
+      "instrumented_source": {
+        "dt": 0.125,
+        "sse": 479685.4,
+        "rms": 3.745
+      },
+      "pristine_minus_installed_sse": 93.0,
+      "instrumented_minus_installed_sse": 93.0,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    },
+    {
+      "accepted_step": 26,
+      "installed": {
+        "dt": 0.125,
+        "sse": 474668.0,
+        "rms": 3.711
+      },
+      "pristine_source": {
+        "dt": 0.125,
+        "sse": 475080.2,
+        "rms": 3.714
+      },
+      "instrumented_source": {
+        "dt": 0.125,
+        "sse": 475080.2,
+        "rms": 3.714
+      },
+      "pristine_minus_installed_sse": 412.20000000001164,
+      "instrumented_minus_installed_sse": 412.20000000001164,
+      "instrumented_minus_pristine_sse": 0.0,
+      "all_dt_equal": true
+    }
+  ],
+  "all_dt_decisions_equal": true,
+  "first_sse_absolute_difference_over": {
+    "pristine_minus_installed_sse": {
+      "0.1": 5,
+      "1": 14,
+      "10": 18,
+      "100": 24,
+      "400": 26
+    },
+    "instrumented_minus_installed_sse": {
+      "0.1": 5,
+      "1": 14,
+      "10": 18,
+      "100": 24,
+      "400": 26
+    },
+    "instrumented_minus_pristine_sse": {
+      "0.1": null,
+      "1": null,
+      "10": null,
+      "100": null,
+      "400": null
+    }
+  },
+  "rejected_trial_lines": {
+    "installed_normal_cli": [
+      "rms = 4.9184/4.9159, sse=680296.4/679248.3, time step reduction 1 of 3 to 0.250  0 1 1\n   RMS increased, rejecting step"
+    ],
+    "pristine_source_normal_cli": [
+      "rms = 4.9181/4.9162, sse=680260.3/679305.4, time step reduction 1 of 3 to 0.250  0 1 1\n   RMS increased, rejecting step"
+    ],
+    "instrumented_source_diagnostic": [
+      "rms = 4.9181/4.9162, sse=680260.3/679305.4, time step reduction 1 of 3 to 0.250  0 1 1\n   RMS increased, rejecting step"
+    ]
+  }
+}

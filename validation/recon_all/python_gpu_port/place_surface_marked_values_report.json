@@ -1,0 +1,38 @@
+{
+  "device": "cpu",
+  "iterations": 5,
+  "checks": {
+    "lh.white": {
+      "vertices": 106622,
+      "native_changed_values": 100895,
+      "mismatched_values": 0,
+      "max_abs": 0.0,
+      "metadata_equal": true,
+      "python_seconds": 4.293008536100388
+    },
+    "lh.pial": {
+      "vertices": 106622,
+      "native_changed_values": 100879,
+      "mismatched_values": 0,
+      "max_abs": 0.0,
+      "metadata_equal": true,
+      "python_seconds": 4.26010078843683
+    },
+    "rh.white": {
+      "vertices": 105541,
+      "native_changed_values": 99847,
+      "mismatched_values": 0,
+      "max_abs": 0.0,
+      "metadata_equal": true,
+      "python_seconds": 4.198607949540019
+    },
+    "rh.pial": {
+      "vertices": 105541,
+      "native_changed_values": 99796,
+      "mismatched_values": 0,
+      "max_abs": 0.0,
+      "metadata_equal": true,
+      "python_seconds": 4.485023552551866
+    }
+  }
+}

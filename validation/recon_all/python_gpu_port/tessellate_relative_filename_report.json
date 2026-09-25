@@ -1,0 +1,15 @@
+{
+  "subject": "fs_sub01",
+  "hemisphere": "lh",
+  "input_argument": "../mri/filled-pretess255.mgz",
+  "python_sha256": "785cae6db159576f3e3666c5bd307e376e14cd8387b17865fb58153ee2ea5692",
+  "native_sha256": "2610233bad5d5c5bba61cb09b7fca91d3a48a65a8a75f2843753ea78a2e5a589",
+  "vertices": 102764,
+  "exact_vertices": 102764,
+  "faces": 205560,
+  "exact_faces": 205560,
+  "volume_geometry_bytes": 476,
+  "volume_geometry_exact": true,
+  "native_filename_line": "filename = ../mri/filled-pretess255.mgz",
+  "python_filename_line": "filename = ../mri/filled-pretess255.mgz"
+}

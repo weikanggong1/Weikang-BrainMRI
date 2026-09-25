@@ -1,0 +1,26 @@
+{
+  "source_sha256": "1b7360d069b76c8a5a63f93f3c296dddeb4db725c4e2625e11ebfc156279f401",
+  "native_sha256": "378548a3f58f74878450525a734c15ff19ce935dff913133f52aa149bb91d2ce",
+  "python_sha256": "229629fe2a479309451530c7ec2c6c14a54195c68d2b6ccd9a7302455f8f5b3c",
+  "shape": [
+    256,
+    256,
+    256
+  ],
+  "dtype": "uint8",
+  "exact_voxels": 16777216,
+  "total_voxels": 16777216,
+  "max_abs_voxel_difference": 0,
+  "affine_exact": true,
+  "uncompressed_bytes_equal": false,
+  "uncompressed_lengths": [
+    16779920,
+    16779921,
+    16779920
+  ],
+  "header_bytes_equal": true,
+  "trailing_bytes_equal": false,
+  "source_header_equals_native": true,
+  "source_trailing_equals_native": false,
+  "source_voxels_changed": 1039074
+}

@@ -1,0 +1,32 @@
+{
+  "python": "3.11.7",
+  "modules": {
+    "fnit.recon_all.initial_surface_chain": "fnit/recon_all/initial_surface_chain.py",
+    "fnit.recon_all.assets": "fnit/recon_all/assets.py",
+    "fnit.recon_all.normalization.pipeline": "fnit/recon_all/normalization/pipeline.py",
+    "fnit.recon_all.normalization.aseg_pipeline": "fnit/recon_all/normalization/aseg_pipeline.py",
+    "fnit.recon_all.sphere_standard_metric": "fnit/recon_all/sphere_standard_metric.py"
+  },
+  "console_help": {
+    "fnit-recon-all": {
+      "exit_code": 0,
+      "usage_present": true,
+      "stderr": ""
+    },
+    "fnit-normalize": {
+      "exit_code": 0,
+      "usage_present": true,
+      "stderr": ""
+    },
+    "fnit-normalize-aseg": {
+      "exit_code": 0,
+      "usage_present": true,
+      "stderr": ""
+    },
+    "fnit-setup-recon-all-assets": {
+      "exit_code": 0,
+      "usage_present": true,
+      "stderr": ""
+    }
+  }
+}

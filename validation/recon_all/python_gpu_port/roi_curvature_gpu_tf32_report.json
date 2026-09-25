@@ -1,0 +1,155 @@
+{
+  "host": "gpucw1",
+  "accelerator": "NVIDIA H100 PCIe GPU 1",
+  "precision": "float32 tensors with CUDA matmul TF32 enabled; no half types",
+  "reference": "FreeSurfer 8.2.0 completed fs_sub01 stats on frozen official surfaces/area/labels",
+  "cases": [
+    {
+      "hemi": "lh",
+      "surface": "white",
+      "atlas": "aparc.DKTatlas",
+      "device": "cuda:0",
+      "elapsed_seconds": 2.167933871038258,
+      "rows": 31,
+      "missing": [],
+      "extra": [],
+      "max_abs": [
+        0.00047998772766263964,
+        0.0004918382675887026,
+        0.4865126540868516,
+        0.04357386452957801
+      ],
+      "formatted_mismatches": [],
+      "formatted_mismatch_count": 0
+    },
+    {
+      "hemi": "lh",
+      "surface": "white",
+      "atlas": "aparc.a2009s",
+      "device": "cuda:0",
+      "elapsed_seconds": 5.010764253791422,
+      "rows": 74,
+      "missing": [],
+      "extra": [],
+      "max_abs": [
+        0.0004984442031487069,
+        0.0004892811351825815,
+        0.4966444448029783,
+        0.04975067009409917
+      ],
+      "formatted_mismatches": [],
+      "formatted_mismatch_count": 0
+    },
+    {
+      "hemi": "lh",
+      "surface": "pial",
+      "atlas": "aparc",
+      "device": "cuda:0",
+      "elapsed_seconds": 1.9461670727469027,
+      "rows": 34,
+      "missing": [],
+      "extra": [],
+      "max_abs": [
+        0.0004947182926406946,
+        0.0004990660337817684,
+        0.48822692233763476,
+        0.0498148995560852
+      ],
+      "formatted_mismatches": [],
+      "formatted_mismatch_count": 0
+    },
+    {
+      "hemi": "lh",
+      "surface": "white",
+      "atlas": "aparc",
+      "device": "cuda:0",
+      "elapsed_seconds": 2.3406569249927998,
+      "rows": 34,
+      "missing": [],
+      "extra": [],
+      "max_abs": [
+        0.00046107103361774093,
+        0.0004946319976953939,
+        0.49128042034661945,
+        0.048936613499538595
+      ],
+      "formatted_mismatches": [],
+      "formatted_mismatch_count": 0
+    },
+    {
+      "hemi": "rh",
+      "surface": "white",
+      "atlas": "aparc.DKTatlas",
+      "device": "cuda:0",
+      "elapsed_seconds": 4.451212285086513,
+      "rows": 31,
+      "missing": [],
+      "extra": [],
+      "max_abs": [
+        0.0004965145666001314,
+        0.0004824758488326947,
+        0.48680834406498263,
+        0.04867445834612383
+      ],
+      "formatted_mismatches": [],
+      "formatted_mismatch_count": 0
+    },
+    {
+      "hemi": "rh",
+      "surface": "white",
+      "atlas": "aparc.a2009s",
+      "device": "cuda:0",
+      "elapsed_seconds": 1.9229442118667066,
+      "rows": 74,
+      "missing": [],
+      "extra": [],
+      "max_abs": [
+        0.0004966932880570707,
+        0.0004981745935384377,
+        0.4948144334238833,
+        0.04958095525239958
+      ],
+      "formatted_mismatches": [],
+      "formatted_mismatch_count": 0
+    },
+    {
+      "hemi": "rh",
+      "surface": "pial",
+      "atlas": "aparc",
+      "device": "cuda:0",
+      "elapsed_seconds": 2.0289707630872726,
+      "rows": 34,
+      "missing": [],
+      "extra": [],
+      "max_abs": [
+        0.0004924018786117978,
+        0.00048652776051921753,
+        0.4849221661771921,
+        0.049143560546456744
+      ],
+      "formatted_mismatches": [],
+      "formatted_mismatch_count": 0
+    },
+    {
+      "hemi": "rh",
+      "surface": "white",
+      "atlas": "aparc",
+      "device": "cuda:0",
+      "elapsed_seconds": 1.9258375740610063,
+      "rows": 34,
+      "missing": [],
+      "extra": [],
+      "max_abs": [
+        0.0004719988192014024,
+        0.0004750391146809245,
+        0.49617393395134,
+        0.049541583059594885
+      ],
+      "formatted_mismatches": [],
+      "formatted_mismatch_count": 0
+    }
+  ],
+  "total_rows": 346,
+  "total_formatted_mismatches": 0,
+  "timing_scope": "One fresh Python process per case. Elapsed time begins after imports and includes file reads and first CUDA use/context initialization. This is not a paired native benchmark."
+}

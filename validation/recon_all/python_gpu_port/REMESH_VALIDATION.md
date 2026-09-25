@@ -1,0 +1,16 @@
+# Python `mris_remesh --remesh --iters 3` validation
+
+The isolated CPU Python stage in [`mris_remesh_python.py`](../../../src/fnit/recon_all/mris_remesh_python.py) translates the edge split, edge collapse, and in-place tangential smoothing order from FreeSurfer 8.2.0 source commit `d932c45b7941662ea380a05efef580568b98d41a`. It reads and writes FreeSurfer triangle surfaces without a native executable. This is a **fixed-T1 stage validation**, using the official `fs_sub01` `orig.premesh` surfaces as inputs. The native-free `recon-all` runner and upstream topology repair remain unfinished.
+
+A pinned source diagnostic emitted passive float64 vertex/int32 face checkpoints after each phase. Its final three-iteration geometry matched fresh installed FreeSurfer `mris_remesh` outputs on both hemispheres. Python matched **every ordered vertex coordinate and face index exactly** at all nine checkpoints (split, collapse, smoothing in each of three iterations). The Python surface writer also copied the input's FreeSurfer volume geometry and auxiliary footer tags; these matched the installed output. The file SHA-256 differs because the creation stamp is generated when writing.
+
+| Hemisphere | Frozen input SHA-256 | Final vertices/faces | Final coordinate/face mismatches | Volume info | Installed native CLI | Python stage geometry + writer |
+| --- | --- | ---: | ---: | --- | ---: | ---: |
+| LH | `06eb4b9603e21e07a59ec02e21c97d33d4e8217e6c64eb0986a07bc42abf09aa` | 106,622 / 213,240 | 0 / 0 | exact | 14.46 s | 100.87 s |
+| RH | `c5808d16eb02753a92d19cbd45c127b9c8e17921803be4c1f7ef5e6a29622d79` | 105,541 / 211,078 | 0 / 0 | exact | 19.53 s | 97.16 s |
+
+The [machine-readable timing record](remesh_benchmark_headcw.json) retains the single-run wall and RSS values. These are single, separate headcw runs. LH and RH jobs overlapped, so they are **not controlled paired speed trials**. The Python timing preceded the final footer-copy change; the footer operation was validated separately and is absent from that measurement. The Python algorithm is currently slower and runs on CPU. Source diagnostics with checkpoint writes took 21.53/18.45 s for LH/RH. Their timing is not directly comparable with the uninstrumented installed command.
+
+For this fixed input, installed FreeSurfer's final `MRISremoveIntersections` call left every output vertex coordinate and face unchanged relative to the native pre-call checkpoint. The Python stage does not implement that call, so other inputs require an independent intersection-repair gate. The stage has not been connected to the Python recon-all entry point.
+
+Run the Python stage through `remesh_surface(input_path, output_path, iterations=3)`. The machine-readable [LH](experimental/lh.remesh_installed_report.json) and [RH](experimental/rh.remesh_installed_report.json) reports compare its final surface to fresh installed-native outputs; the reusable comparator is [`validate_remesh_python.py`](experimental/validate_remesh_python.py). Earlier split-only evidence is retained in [`REMESH_SPLIT_STATUS.md`](experimental/REMESH_SPLIT_STATUS.md).

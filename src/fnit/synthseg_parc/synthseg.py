@@ -83,7 +83,7 @@ class SynthSeg:
         aligned_affine[:3, 3] += aligned_affine[:3, :3] @ np.asarray(
             [part.start for part in prepared.content_slices])
 
-        data = labels.to(torch.int32).cpu().numpy()
+        data = labels.to(torch.float32).cpu().numpy()
         segmentation = sf.Volume(
             data, geometry=sf.ImageGeometry(shape=data.shape, vox2world=aligned_affine))
         if keep_geometry:

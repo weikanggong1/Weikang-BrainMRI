@@ -1,0 +1,31 @@
+{
+  "subject": "fs_sub01",
+  "reference_freesurfer": "8.2.0-1 d932c45b7941662ea380a05efef580568b98d41a",
+  "python_command": "python -m freesurfer_torch.recon_all.inflate_python INPUT OUTPUT",
+  "rows": [
+    {
+      "hemisphere": "lh",
+      "input_smoothwm_sha256": "0e013cc26e172ae9422faa83b803b77f3dd074bd0d4dd5c4fc4da741070188cf",
+      "python_file_sha256": "3044650cee08aecb3e22bdcc0cb644361abc6484f82d81a1da7f3a0fdbf7d9d5",
+      "native_file_sha256": "75fe13f102a4ee85fb61b7449ae5a9d7df349994e3b17e07acbfa7e0d82e43f3",
+      "vertices": 102764,
+      "faces": 205560,
+      "exact_vertices": 102764,
+      "exact_faces": 205560,
+      "max_vertex_distance_mm": 0.0,
+      "metadata_equal": true
+    },
+    {
+      "hemisphere": "rh",
+      "input_smoothwm_sha256": "58aeb1195e60454af6a575d6a5e85cf6586ceed5b67e411560ff59145bbf04bf",
+      "python_file_sha256": "bf1710cde58dc25bd74f7142404e3c15e238481ff3bda40a549afef638c470f8",
+      "native_file_sha256": "c92f129aaaa6c44f94f56e7531875c4468ecb31ae3015f39c297aa6f0bcbb4f3",
+      "vertices": 101454,
+      "faces": 202936,
+      "exact_vertices": 101454,
+      "exact_faces": 202936,
+      "max_vertex_distance_mm": 0.0,
+      "metadata_equal": true
+    }
+  ]
+}

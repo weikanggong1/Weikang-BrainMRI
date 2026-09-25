@@ -3,3 +3,5 @@
 licenses/*.txt -whitespace
 # Preserve the vendored FAST4 tag byte for byte.
 src/fnit/fast/upstream_fast4/* -whitespace
+# Preserve native diagnostic log whitespace verbatim.
+validation/recon_all/python_gpu_port/*.log -whitespace

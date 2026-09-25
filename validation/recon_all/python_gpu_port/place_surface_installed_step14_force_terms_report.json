@@ -1,0 +1,2389 @@
+{
+  "reference": "source-order Python force terms on installed-binary RAM pre-step geometry; copied-source cropped counters substituted because installed counters unavailable",
+  "step": 14,
+  "vertex": 81282,
+  "installed_pre_step_mesh": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_ram_official_step13/surf/lh.pial.ram",
+  "source_cropped_counter_at_vertex": 0,
+  "installed_cropped_counter_available": false,
+  "source_probe_pre_step_normal": [
+    -0.2300611436367035,
+    0.9420574903488159,
+    0.2441301941871643
+  ],
+  "python_installed_mesh_pre_step_normal": [
+    -0.23005874454975128,
+    0.9420584440231323,
+    0.24412883818149567
+  ],
+  "installed_native_debug_pre_step_normal_text": "-0.230059,0.942058,0.244129",
+  "source_probe_stage_gradients": {
+    "intensity": [
+      2.9984523735038238e-06,
+      -1.2278103895368986e-05,
+      -3.181818328812369e-06
+    ],
+    "surface_repulsion": [
+      2.9984523735038238e-06,
+      -1.2278103895368986e-05,
+      -3.181818328812369e-06
+    ],
+    "pre_normal_spring": [
+      -0.03079596534371376,
+      -0.21125271916389465,
+      -0.05254595726728439
+    ],
+    "normal_spring": [
+      -0.04089784994721413,
+      -0.16988739371299744,
+      -0.04182630777359009
+    ],
+    "curvature": [
+      -0.06272200495004654,
+      -0.08052153885364532,
+      -0.01866752654314041
+    ],
+    "tangential_spring": [
+      -0.03024587407708168,
+      -0.07578948885202408,
+      -0.006323135457932949
+    ]
+  },
+  "python_on_installed_mesh_stage_gradients": {
+    "intensity": [
+      -5.391039849200752e-06,
+      2.20755555346841e-05,
+      5.720748504245421e-06
+    ],
+    "surface_repulsion": [
+      -5.391039849200752e-06,
+      2.20755555346841e-05,
+      5.720748504245421e-06
+    ],
+    "pre_normal_spring": [
+      -0.020327728241682053,
+      0.06612826883792877,
+      0.020458849146962166
+    ],
+    "normal_spring": [
+      -0.03042973019182682,
+      0.10749455541372299,
+      0.031178675591945648
+    ],
+    "curvature": [
+      -0.05225445702672005,
+      0.19686377048492432,
+      0.05433817207813263
+    ],
+    "tangential_spring": [
+      -0.019777633249759674,
+      0.20159600675106049,
+      0.06668219715356827
+    ]
+  },
+  "python_on_installed_mesh_component_increments": {
+    "intensity": [
+      -5.391039849200752e-06,
+      2.20755555346841e-05,
+      5.720748504245421e-06
+    ],
+    "surface_repulsion": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "signed_average_minus_preaverage": [
+      -0.020322337201832852,
+      0.06610619328239409,
+      0.02045312839845792
+    ],
+    "normal_spring": [
+      -0.010102001950144768,
+      0.04136628657579422,
+      0.010719826444983482
+    ],
+    "curvature": [
+      -0.021824726834893227,
+      0.08936920762062073,
+      0.02315949834883213
+    ],
+    "tangential_spring": [
+      0.03247682377696037,
+      0.0047322348691523075,
+      0.012344025075435638
+    ]
+  },
+  "installed_native_debug_aggregate_gradient_text": [
+    -0.0197776,
+    0.201596,
+    0.0666822
+  ],
+  "signed_average_trace": {
+    "source_final_matches_native_probe_all_components": true,
+    "installed_final_matches_direct_16_pass_python_all_components": true,
+    "first_target_inclusion_difference_pass": 1,
+    "first_target_output_y_sign_difference_pass": 1,
+    "passes": [
+      {
+        "pass": 1,
+        "source_input_y": -1.2278103895368986e-05,
+        "installed_input_y": 2.20755555346841e-05,
+        "source_output_y": -0.20695188641548157,
+        "installed_output_y": 0.04877784475684166,
+        "neighbor_contributions": [
+          {
+            "vertex": 81291,
+            "rank": 0,
+            "source": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.17034006118774414,
+              "dot": 2.2717554202245083e-06,
+              "included": true,
+              "partial_sum_y": -0.1703523392916395,
+              "count": 2
+            },
+            "installed": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.17034006118774414,
+              "dot": -4.084526153746992e-06,
+              "included": false,
+              "partial_sum_y": 2.20755555346841e-05,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 81290,
+            "rank": 1,
+            "source": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.10132057964801788,
+              "dot": 1.5767668628541287e-06,
+              "included": true,
+              "partial_sum_y": -0.2716729189396574,
+              "count": 3
+            },
+            "installed": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.10132052004337311,
+              "dot": -2.834960014297394e-06,
+              "included": false,
+              "partial_sum_y": 2.20755555346841e-05,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 103079,
+            "rank": 2,
+            "source": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.24654588103294373,
+              "dot": 3.802801984420512e-06,
+              "included": true,
+              "partial_sum_y": -0.5182187999726011,
+              "count": 4
+            },
+            "installed": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.24654558300971985,
+              "dot": -6.837274668214377e-06,
+              "included": false,
+              "partial_sum_y": 2.20755555346841e-05,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 80901,
+            "rank": 3,
+            "source": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.09753371775150299,
+              "dot": -1.3949770618637558e-06,
+              "included": false,
+              "partial_sum_y": -0.5182187999726011,
+              "count": 4
+            },
+            "installed": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.09753361344337463,
+              "dot": 2.508110355847748e-06,
+              "included": true,
+              "partial_sum_y": 0.09755568899890932,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 80902,
+            "rank": 4,
+            "source": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.47711148858070374,
+              "dot": 6.0231554925849196e-06,
+              "included": true,
+              "partial_sum_y": -0.9953302885533049,
+              "count": 5
+            },
+            "installed": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.477107971906662,
+              "dot": -1.0829303391801659e-05,
+              "included": false,
+              "partial_sum_y": 0.09755568899890932,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 81283,
+            "rank": 5,
+            "source": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.246381014585495,
+              "dot": 2.8756114716088632e-06,
+              "included": true,
+              "partial_sum_y": -1.2417113031387998,
+              "count": 6
+            },
+            "installed": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.2463807314634323,
+              "dot": -5.170225904294057e-06,
+              "included": false,
+              "partial_sum_y": 0.09755568899890932,
+              "count": 2
+            }
+          }
+        ]
+      },
+      {
+        "pass": 2,
+        "source_input_y": -0.20695188641548157,
+        "installed_input_y": 0.04877784475684166,
+        "source_output_y": -0.15171696245670319,
+        "installed_output_y": 0.05483631789684296,
+        "neighbor_contributions": [
+          {
+            "vertex": 81291,
+            "rank": 0,
+            "source": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.11834454536437988,
+              "dot": 0.026666127145290375,
+              "included": true,
+              "partial_sum_y": -0.32529643177986145,
+              "count": 2
+            },
+            "installed": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.142010897397995,
+              "dot": -0.007600088603794575,
+              "included": false,
+              "partial_sum_y": 0.04877784475684166,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 81290,
+            "rank": 1,
+            "source": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.13547325134277344,
+              "dot": 0.03265323117375374,
+              "included": true,
+              "partial_sum_y": -0.4607696831226349,
+              "count": 3
+            },
+            "installed": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.16256313025951385,
+              "dot": -0.01022887323051691,
+              "included": false,
+              "partial_sum_y": 0.04877784475684166,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 103079,
+            "rank": 2,
+            "source": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.10304601490497589,
+              "dot": 0.02500133030116558,
+              "included": true,
+              "partial_sum_y": -0.5638156980276108,
+              "count": 4
+            },
+            "installed": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.12881870567798615,
+              "dot": -0.008508159779012203,
+              "included": false,
+              "partial_sum_y": 0.04877784475684166,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 80901,
+            "rank": 3,
+            "source": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.09133120626211166,
+              "dot": -0.02087355963885784,
+              "included": false,
+              "partial_sum_y": -0.5638156980276108,
+              "count": 4
+            },
+            "installed": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.060894791036844254,
+              "dot": 0.0035567758604884148,
+              "included": true,
+              "partial_sum_y": 0.10967263579368591,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 80902,
+            "rank": 4,
+            "source": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.17826470732688904,
+              "dot": 0.0373239703476429,
+              "included": true,
+              "partial_sum_y": -0.7420804053544998,
+              "count": 5
+            },
+            "installed": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.22282685339450836,
+              "dot": -0.010404422879219055,
+              "included": false,
+              "partial_sum_y": 0.10967263579368591,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 81283,
+            "rank": 5,
+            "source": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.1682213544845581,
+              "dot": 0.034726593643426895,
+              "included": true,
+              "partial_sum_y": -0.9103017598390579,
+              "count": 6
+            },
+            "installed": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.19625551998615265,
+              "dot": -0.00862313061952591,
+              "included": false,
+              "partial_sum_y": 0.10967263579368591,
+              "count": 2
+            }
+          }
+        ]
+      },
+      {
+        "pass": 3,
+        "source_input_y": -0.15171696245670319,
+        "installed_input_y": 0.05483631789684296,
+        "source_output_y": -0.168828547000885,
+        "installed_output_y": 0.060918789356946945,
+        "neighbor_contributions": [
+          {
+            "vertex": 81291,
+            "rank": 0,
+            "source": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.14887619018554688,
+              "dot": 0.024537991732358932,
+              "included": true,
+              "partial_sum_y": -0.30059315264225006,
+              "count": 2
+            },
+            "installed": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.15301910042762756,
+              "dot": -0.009162676520645618,
+              "included": false,
+              "partial_sum_y": 0.05483631789684296,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 81290,
+            "rank": 1,
+            "source": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.1430719494819641,
+              "dot": 0.024982430040836334,
+              "included": true,
+              "partial_sum_y": -0.4436651021242142,
+              "count": 3
+            },
+            "installed": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.1456039845943451,
+              "dot": -0.010371851734817028,
+              "included": false,
+              "partial_sum_y": 0.05483631789684296,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 103079,
+            "rank": 2,
+            "source": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.19092918932437897,
+              "dot": 0.03278025984764099,
+              "included": true,
+              "partial_sum_y": -0.6345942914485931,
+              "count": 4
+            },
+            "installed": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.20014482736587524,
+              "dot": -0.0146590955555439,
+              "included": false,
+              "partial_sum_y": 0.05483631789684296,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 80901,
+            "rank": 3,
+            "source": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.09133120626211166,
+              "dot": -0.015249728225171566,
+              "included": false,
+              "partial_sum_y": -0.6345942914485931,
+              "count": 4
+            },
+            "installed": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.06700126081705093,
+              "dot": 0.004389107692986727,
+              "included": true,
+              "partial_sum_y": 0.12183757871389389,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 80902,
+            "rank": 4,
+            "source": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.20671676099300385,
+              "dot": 0.03132428973913193,
+              "included": true,
+              "partial_sum_y": -0.841311052441597,
+              "count": 5
+            },
+            "installed": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.22480516135692596,
+              "dot": -0.01026176568120718,
+              "included": false,
+              "partial_sum_y": 0.12183757871389389,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 81283,
+            "rank": 5,
+            "source": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.17166025936603546,
+              "dot": 0.026068804785609245,
+              "included": true,
+              "partial_sum_y": -1.0129713118076324,
+              "count": 6
+            },
+            "installed": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.18182142078876495,
+              "dot": -0.008356049656867981,
+              "included": false,
+              "partial_sum_y": 0.12183757871389389,
+              "count": 2
+            }
+          }
+        ]
+      },
+      {
+        "pass": 4,
+        "source_input_y": -0.168828547000885,
+        "installed_input_y": 0.060918789356946945,
+        "source_output_y": -0.1714753359556198,
+        "installed_output_y": 0.06345115602016449,
+        "neighbor_contributions": [
+          {
+            "vertex": 81291,
+            "rank": 0,
+            "source": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.14455215632915497,
+              "dot": 0.02630404196679592,
+              "included": true,
+              "partial_sum_y": -0.31338070333004,
+              "count": 2
+            },
+            "installed": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.15109223127365112,
+              "dot": -0.009689957834780216,
+              "included": false,
+              "partial_sum_y": 0.060918789356946945,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 81290,
+            "rank": 1,
+            "source": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.1571401208639145,
+              "dot": 0.029465923085808754,
+              "included": true,
+              "partial_sum_y": -0.47052082419395447,
+              "count": 3
+            },
+            "installed": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.16605588793754578,
+              "dot": -0.01299289520829916,
+              "included": false,
+              "partial_sum_y": 0.060918789356946945,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 103079,
+            "rank": 2,
+            "source": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.2004559189081192,
+              "dot": 0.0367598719894886,
+              "included": true,
+              "partial_sum_y": -0.6709767431020737,
+              "count": 4
+            },
+            "installed": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.2195129096508026,
+              "dot": -0.01756170205771923,
+              "included": false,
+              "partial_sum_y": 0.060918789356946945,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 80901,
+            "rank": 3,
+            "source": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.09133120626211166,
+              "dot": -0.016625462099909782,
+              "included": false,
+              "partial_sum_y": -0.6709767431020737,
+              "count": 4
+            },
+            "installed": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.06598351895809174,
+              "dot": 0.004791815299540758,
+              "included": true,
+              "partial_sum_y": 0.12690230831503868,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 80902,
+            "rank": 4,
+            "source": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.18946689367294312,
+              "dot": 0.032765038311481476,
+              "included": true,
+              "partial_sum_y": -0.8604436367750168,
+              "count": 5
+            },
+            "installed": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.21041513979434967,
+              "dot": -0.010141816921532154,
+              "included": false,
+              "partial_sum_y": 0.12690230831503868,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 81283,
+            "rank": 5,
+            "source": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.1684083491563797,
+              "dot": 0.029279565438628197,
+              "included": true,
+              "partial_sum_y": -1.0288519859313965,
+              "count": 6
+            },
+            "installed": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.18070773780345917,
+              "dot": -0.00894500408321619,
+              "included": false,
+              "partial_sum_y": 0.12690230831503868,
+              "count": 2
+            }
+          }
+        ]
+      },
+      {
+        "pass": 5,
+        "source_input_y": -0.1714753359556198,
+        "installed_input_y": 0.06345115602016449,
+        "source_output_y": -0.17823398113250732,
+        "installed_output_y": 0.0648021474480629,
+        "neighbor_contributions": [
+          {
+            "vertex": 81291,
+            "rank": 0,
+            "source": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.15319934487342834,
+              "dot": 0.0283148642629385,
+              "included": true,
+              "partial_sum_y": -0.32467468082904816,
+              "count": 2
+            },
+            "installed": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.15773870050907135,
+              "dot": -0.01036844216287136,
+              "included": false,
+              "partial_sum_y": 0.06345115602016449,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 81290,
+            "rank": 1,
+            "source": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.16808514297008514,
+              "dot": 0.0313858799636364,
+              "included": true,
+              "partial_sum_y": -0.4927598237991333,
+              "count": 3
+            },
+            "installed": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.17690689861774445,
+              "dot": -0.014247007668018341,
+              "included": false,
+              "partial_sum_y": 0.06345115602016449,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 103079,
+            "rank": 2,
+            "source": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.21500630676746368,
+              "dot": 0.03910161182284355,
+              "included": true,
+              "partial_sum_y": -0.707766130566597,
+              "count": 4
+            },
+            "installed": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.23616726696491241,
+              "dot": -0.019475409761071205,
+              "included": false,
+              "partial_sum_y": 0.06345115602016449,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 80901,
+            "rank": 3,
+            "source": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.09133120626211166,
+              "dot": -0.016661008819937706,
+              "included": false,
+              "partial_sum_y": -0.707766130566597,
+              "count": 4
+            },
+            "installed": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.0661531388759613,
+              "dot": 0.004999776836484671,
+              "included": true,
+              "partial_sum_y": 0.1296042948961258,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 80902,
+            "rank": 4,
+            "source": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.19182685017585754,
+              "dot": 0.034336481243371964,
+              "included": true,
+              "partial_sum_y": -0.8995929807424545,
+              "count": 5
+            },
+            "installed": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.20917031168937683,
+              "dot": -0.010403024964034557,
+              "included": false,
+              "partial_sum_y": 0.1296042948961258,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 81283,
+            "rank": 5,
+            "source": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.1698109358549118,
+              "dot": 0.030605118721723557,
+              "included": true,
+              "partial_sum_y": -1.0694039165973663,
+              "count": 6
+            },
+            "installed": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.1795825958251953,
+              "dot": -0.00906210858374834,
+              "included": false,
+              "partial_sum_y": 0.1296042948961258,
+              "count": 2
+            }
+          }
+        ]
+      },
+      {
+        "pass": 6,
+        "source_input_y": -0.17823398113250732,
+        "installed_input_y": 0.0648021474480629,
+        "source_output_y": -0.18346580862998962,
+        "installed_output_y": 0.06546351313591003,
+        "neighbor_contributions": [
+          {
+            "vertex": 81291,
+            "rank": 0,
+            "source": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.15876568853855133,
+              "dot": 0.030579224228858948,
+              "included": true,
+              "partial_sum_y": -0.33699966967105865,
+              "count": 2
+            },
+            "installed": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.16324858367443085,
+              "dot": -0.010828770697116852,
+              "included": false,
+              "partial_sum_y": 0.0648021474480629,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 81290,
+            "rank": 1,
+            "source": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.17666341364383698,
+              "dot": 0.03391682356595993,
+              "included": true,
+              "partial_sum_y": -0.5136630833148956,
+              "count": 3
+            },
+            "installed": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.187349334359169,
+              "dot": -0.015228372998535633,
+              "included": false,
+              "partial_sum_y": 0.0648021474480629,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 103079,
+            "rank": 2,
+            "source": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.2215731292963028,
+              "dot": 0.0413450226187706,
+              "included": true,
+              "partial_sum_y": -0.7352362126111984,
+              "count": 4
+            },
+            "installed": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.24521666765213013,
+              "dot": -0.020493680611252785,
+              "included": false,
+              "partial_sum_y": 0.0648021474480629,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 80901,
+            "rank": 3,
+            "source": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.09133120626211166,
+              "dot": -0.01717202737927437,
+              "included": false,
+              "partial_sum_y": -0.7352362126111984,
+              "count": 4
+            },
+            "installed": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.06612487137317657,
+              "dot": 0.005102017894387245,
+              "included": true,
+              "partial_sum_y": 0.13092701882123947,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 80902,
+            "rank": 4,
+            "source": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.19280312955379486,
+              "dot": 0.03630945831537247,
+              "included": true,
+              "partial_sum_y": -0.9280393421649933,
+              "count": 5
+            },
+            "installed": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.20857840776443481,
+              "dot": -0.01060596201568842,
+              "included": false,
+              "partial_sum_y": 0.13092701882123947,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 81283,
+            "rank": 5,
+            "source": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.17275547981262207,
+              "dot": 0.032822493463754654,
+              "included": true,
+              "partial_sum_y": -1.1007948219776154,
+              "count": 6
+            },
+            "installed": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.1815052479505539,
+              "dot": -0.009317927993834019,
+              "included": false,
+              "partial_sum_y": 0.13092701882123947,
+              "count": 2
+            }
+          }
+        ]
+      },
+      {
+        "pass": 7,
+        "source_input_y": -0.18346580862998962,
+        "installed_input_y": 0.06546351313591003,
+        "source_output_y": -0.18838228285312653,
+        "installed_output_y": 0.06579654663801193,
+        "neighbor_contributions": [
+          {
+            "vertex": 81291,
+            "rank": 0,
+            "source": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.16495344042778015,
+              "dot": 0.03280129283666611,
+              "included": true,
+              "partial_sum_y": -0.3484192490577698,
+              "count": 2
+            },
+            "installed": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.1692093461751938,
+              "dot": -0.011264890432357788,
+              "included": false,
+              "partial_sum_y": 0.06546351313591003,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 81290,
+            "rank": 1,
+            "source": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.18335364758968353,
+              "dot": 0.03604249283671379,
+              "included": true,
+              "partial_sum_y": -0.5317728966474533,
+              "count": 3
+            },
+            "installed": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.1949862688779831,
+              "dot": -0.015854038298130035,
+              "included": false,
+              "partial_sum_y": 0.06546351313591003,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 103079,
+            "rank": 2,
+            "source": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.22609542310237885,
+              "dot": 0.04311884939670563,
+              "included": true,
+              "partial_sum_y": -0.7578683197498322,
+              "count": 4
+            },
+            "installed": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.2508910000324249,
+              "dot": -0.02104898914694786,
+              "included": false,
+              "partial_sum_y": 0.06546351313591003,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 80901,
+            "rank": 3,
+            "source": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.09133120626211166,
+              "dot": -0.017573047429323196,
+              "included": false,
+              "partial_sum_y": -0.7578683197498322,
+              "count": 4
+            },
+            "installed": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.06612958014011383,
+              "dot": 0.005153474397957325,
+              "included": true,
+              "partial_sum_y": 0.13159309327602386,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 80902,
+            "rank": 4,
+            "source": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.19595949351787567,
+              "dot": 0.03827669098973274,
+              "included": true,
+              "partial_sum_y": -0.9538278132677078,
+              "count": 5
+            },
+            "installed": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.2100125402212143,
+              "dot": -0.010888466611504555,
+              "included": false,
+              "partial_sum_y": 0.13159309327602386,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 81283,
+            "rank": 5,
+            "source": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.17646588385105133,
+              "dot": 0.03484763950109482,
+              "included": true,
+              "partial_sum_y": -1.1302936971187592,
+              "count": 6
+            },
+            "installed": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.1840650737285614,
+              "dot": -0.009572557173669338,
+              "included": false,
+              "partial_sum_y": 0.13159309327602386,
+              "count": 2
+            }
+          }
+        ]
+      },
+      {
+        "pass": 8,
+        "source_input_y": -0.18838228285312653,
+        "installed_input_y": 0.06579654663801193,
+        "source_output_y": -0.19260983169078827,
+        "installed_output_y": 0.06596267223358154,
+        "neighbor_contributions": [
+          {
+            "vertex": 81291,
+            "rank": 0,
+            "source": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.17036184668540955,
+              "dot": 0.03488386422395706,
+              "included": true,
+              "partial_sum_y": -0.35874412953853607,
+              "count": 2
+            },
+            "installed": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.17458827793598175,
+              "dot": -0.011638784781098366,
+              "included": false,
+              "partial_sum_y": 0.06579654663801193,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 81290,
+            "rank": 1,
+            "source": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.18853917717933655,
+              "dot": 0.03797522932291031,
+              "included": true,
+              "partial_sum_y": -0.5472833067178726,
+              "count": 3
+            },
+            "installed": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.20091582834720612,
+              "dot": -0.01628083735704422,
+              "included": false,
+              "partial_sum_y": 0.06579654663801193,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 103079,
+            "rank": 2,
+            "source": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.22861705720424652,
+              "dot": 0.044624410569667816,
+              "included": true,
+              "partial_sum_y": -0.7759003639221191,
+              "count": 4
+            },
+            "installed": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.2539556324481964,
+              "dot": -0.021297505125403404,
+              "included": false,
+              "partial_sum_y": 0.06579654663801193,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 80901,
+            "rank": 3,
+            "source": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.09133120626211166,
+              "dot": -0.017974626272916794,
+              "included": false,
+              "partial_sum_y": -0.7759003639221191,
+              "count": 4
+            },
+            "installed": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.06612879782915115,
+              "dot": 0.005179142579436302,
+              "included": true,
+              "partial_sum_y": 0.13192534446716309,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 80902,
+            "rank": 4,
+            "source": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.1992867887020111,
+              "dot": 0.04015761986374855,
+              "included": true,
+              "partial_sum_y": -0.9751871526241302,
+              "count": 5
+            },
+            "installed": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.21204286813735962,
+              "dot": -0.011180652305483818,
+              "included": false,
+              "partial_sum_y": 0.13192534446716309,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 81283,
+            "rank": 5,
+            "source": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.18047183752059937,
+              "dot": 0.03682659566402435,
+              "included": true,
+              "partial_sum_y": -1.1556589901447296,
+              "count": 6
+            },
+            "installed": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.18724098801612854,
+              "dot": -0.009865720756351948,
+              "included": false,
+              "partial_sum_y": 0.13192534446716309,
+              "count": 2
+            }
+          }
+        ]
+      },
+      {
+        "pass": 9,
+        "source_input_y": -0.19260983169078827,
+        "installed_input_y": 0.06596267223358154,
+        "source_output_y": -0.19629310071468353,
+        "installed_output_y": 0.06604580581188202,
+        "neighbor_contributions": [
+          {
+            "vertex": 81291,
+            "rank": 0,
+            "source": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.17525248229503632,
+              "dot": 0.036781832575798035,
+              "included": true,
+              "partial_sum_y": -0.3678623139858246,
+              "count": 2
+            },
+            "installed": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.1794377863407135,
+              "dot": -0.011972447857260704,
+              "included": false,
+              "partial_sum_y": 0.06596267223358154,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 81290,
+            "rank": 1,
+            "source": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.19259490072727203,
+              "dot": 0.03965384140610695,
+              "included": true,
+              "partial_sum_y": -0.5604572147130966,
+              "count": 3
+            },
+            "installed": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.20531590282917023,
+              "dot": -0.016559265553951263,
+              "included": false,
+              "partial_sum_y": 0.06596267223358154,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 103079,
+            "rank": 2,
+            "source": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.23004403710365295,
+              "dot": 0.04587114602327347,
+              "included": true,
+              "partial_sum_y": -0.7905012518167496,
+              "count": 4
+            },
+            "installed": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.25536805391311646,
+              "dot": -0.02136196941137314,
+              "included": false,
+              "partial_sum_y": 0.06596267223358154,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 80901,
+            "rank": 3,
+            "source": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.09133120626211166,
+              "dot": -0.01832977496087551,
+              "included": false,
+              "partial_sum_y": -0.7905012518167496,
+              "count": 4
+            },
+            "installed": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.0661289319396019,
+              "dot": 0.0051919869147241116,
+              "included": true,
+              "partial_sum_y": 0.13209160417318344,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 80902,
+            "rank": 4,
+            "source": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.20279386639595032,
+              "dot": 0.04190293699502945,
+              "included": true,
+              "partial_sum_y": -0.9932951182126999,
+              "count": 5
+            },
+            "installed": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.2145083248615265,
+              "dot": -0.011486702598631382,
+              "included": false,
+              "partial_sum_y": 0.13209160417318344,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 81283,
+            "rank": 5,
+            "source": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.1844634711742401,
+              "dot": 0.03864732012152672,
+              "included": true,
+              "partial_sum_y": -1.17775858938694,
+              "count": 6
+            },
+            "installed": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.19057483971118927,
+              "dot": -0.010171287693083286,
+              "included": false,
+              "partial_sum_y": 0.13209160417318344,
+              "count": 2
+            }
+          }
+        ]
+      },
+      {
+        "pass": 10,
+        "source_input_y": -0.19629310071468353,
+        "installed_input_y": 0.06604580581188202,
+        "source_output_y": -0.19946850836277008,
+        "installed_output_y": 0.06608735769987106,
+        "neighbor_contributions": [
+          {
+            "vertex": 81291,
+            "rank": 0,
+            "source": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.17955201864242554,
+              "dot": 0.038487304002046585,
+              "included": true,
+              "partial_sum_y": -0.37584511935710907,
+              "count": 2
+            },
+            "installed": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.18368907272815704,
+              "dot": -0.012267135083675385,
+              "included": false,
+              "partial_sum_y": 0.06604580581188202,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 81290,
+            "rank": 1,
+            "source": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.19578278064727783,
+              "dot": 0.04111809283494949,
+              "included": true,
+              "partial_sum_y": -0.5716279000043869,
+              "count": 3
+            },
+            "installed": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.20856896042823792,
+              "dot": -0.016737287864089012,
+              "included": false,
+              "partial_sum_y": 0.06604580581188202,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 103079,
+            "rank": 2,
+            "source": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.23071350157260895,
+              "dot": 0.04691696912050247,
+              "included": true,
+              "partial_sum_y": -0.8023414015769958,
+              "count": 4
+            },
+            "installed": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.25563952326774597,
+              "dot": -0.021309208124876022,
+              "included": false,
+              "partial_sum_y": 0.06604580581188202,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 80901,
+            "rank": 3,
+            "source": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.09133120626211166,
+              "dot": -0.01864757016301155,
+              "included": false,
+              "partial_sum_y": -0.8023414015769958,
+              "count": 4
+            },
+            "installed": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.06612890958786011,
+              "dot": 0.005198407918214798,
+              "included": true,
+              "partial_sum_y": 0.13217471539974213,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 80902,
+            "rank": 4,
+            "source": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.20617787539958954,
+              "dot": 0.04349565505981445,
+              "included": true,
+              "partial_sum_y": -1.0085192769765854,
+              "count": 5
+            },
+            "installed": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.21710948646068573,
+              "dot": -0.011791680008172989,
+              "included": false,
+              "partial_sum_y": 0.13217471539974213,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 81283,
+            "rank": 5,
+            "source": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.1882917433977127,
+              "dot": 0.04031361639499664,
+              "included": true,
+              "partial_sum_y": -1.196811020374298,
+              "count": 6
+            },
+            "installed": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.1939205527305603,
+              "dot": -0.010482393205165863,
+              "included": false,
+              "partial_sum_y": 0.13217471539974213,
+              "count": 2
+            }
+          }
+        ]
+      },
+      {
+        "pass": 11,
+        "source_input_y": -0.19946850836277008,
+        "installed_input_y": 0.06608735769987106,
+        "source_output_y": -0.2022094577550888,
+        "installed_output_y": 0.06610813736915588,
+        "neighbor_contributions": [
+          {
+            "vertex": 81291,
+            "rank": 0,
+            "source": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.18333350121974945,
+              "dot": 0.040008462965488434,
+              "included": true,
+              "partial_sum_y": -0.38280200958251953,
+              "count": 2
+            },
+            "installed": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.1873917430639267,
+              "dot": -0.01252847258001566,
+              "included": false,
+              "partial_sum_y": 0.06608735769987106,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 81290,
+            "rank": 1,
+            "source": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.19831277430057526,
+              "dot": 0.042390257120132446,
+              "included": true,
+              "partial_sum_y": -0.5811147838830948,
+              "count": 3
+            },
+            "installed": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.2109251767396927,
+              "dot": -0.016843335703015327,
+              "included": false,
+              "partial_sum_y": 0.06608735769987106,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 103079,
+            "rank": 2,
+            "source": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.23090696334838867,
+              "dot": 0.04779694229364395,
+              "included": true,
+              "partial_sum_y": -0.8120217472314835,
+              "count": 4
+            },
+            "installed": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.25515392422676086,
+              "dot": -0.021183300763368607,
+              "included": false,
+              "partial_sum_y": 0.06608735769987106,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 80901,
+            "rank": 3,
+            "source": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.09133120626211166,
+              "dot": -0.01892739161849022,
+              "included": false,
+              "partial_sum_y": -0.8120217472314835,
+              "count": 4
+            },
+            "installed": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.0661289170384407,
+              "dot": 0.005201618652790785,
+              "included": true,
+              "partial_sum_y": 0.13221627473831177,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 80902,
+            "rank": 4,
+            "source": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.20936353504657745,
+              "dot": 0.044934436678886414,
+              "included": true,
+              "partial_sum_y": -1.021385282278061,
+              "count": 5
+            },
+            "installed": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.21971863508224487,
+              "dot": -0.012089972384274006,
+              "included": false,
+              "partial_sum_y": 0.13221627473831177,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 81283,
+            "rank": 5,
+            "source": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.19187144935131073,
+              "dot": 0.041819870471954346,
+              "included": true,
+              "partial_sum_y": -1.2132567316293716,
+              "count": 6
+            },
+            "installed": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.19715069234371185,
+              "dot": -0.010789360851049423,
+              "included": false,
+              "partial_sum_y": 0.13221627473831177,
+              "count": 2
+            }
+          }
+        ]
+      },
+      {
+        "pass": 12,
+        "source_input_y": -0.2022094577550888,
+        "installed_input_y": 0.06610813736915588,
+        "source_output_y": -0.20457497239112854,
+        "installed_output_y": 0.066118523478508,
+        "neighbor_contributions": [
+          {
+            "vertex": 81291,
+            "rank": 0,
+            "source": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.18664830923080444,
+              "dot": 0.041361112147569656,
+              "included": true,
+              "partial_sum_y": -0.38885776698589325,
+              "count": 2
+            },
+            "installed": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.19059772789478302,
+              "dot": -0.012759964913129807,
+              "included": false,
+              "partial_sum_y": 0.06610813736915588,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 81290,
+            "rank": 1,
+            "source": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.20033878087997437,
+              "dot": 0.04349886626005173,
+              "included": true,
+              "partial_sum_y": -0.5891965478658676,
+              "count": 3
+            },
+            "installed": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.21259991824626923,
+              "dot": -0.016898075118660927,
+              "included": false,
+              "partial_sum_y": 0.06610813736915588,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 103079,
+            "rank": 2,
+            "source": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.2307916134595871,
+              "dot": 0.04854366555809975,
+              "included": true,
+              "partial_sum_y": -0.8199881613254547,
+              "count": 4
+            },
+            "installed": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.25416627526283264,
+              "dot": -0.021011728793382645,
+              "included": false,
+              "partial_sum_y": 0.06610813736915588,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 80901,
+            "rank": 3,
+            "source": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.09133120626211166,
+              "dot": -0.01917361095547676,
+              "included": false,
+              "partial_sum_y": -0.8199881613254547,
+              "count": 4
+            },
+            "installed": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.0661289170384407,
+              "dot": 0.005203223787248135,
+              "included": true,
+              "partial_sum_y": 0.1322370544075966,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 80902,
+            "rank": 4,
+            "source": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.21229346096515656,
+              "dot": 0.04622591659426689,
+              "included": true,
+              "partial_sum_y": -1.0322816222906113,
+              "count": 5
+            },
+            "installed": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.22224071621894836,
+              "dot": -0.012376353144645691,
+              "included": false,
+              "partial_sum_y": 0.1322370544075966,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 81283,
+            "rank": 5,
+            "source": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.1951681673526764,
+              "dot": 0.04317570850253105,
+              "included": true,
+              "partial_sum_y": -1.2274497896432877,
+              "count": 6
+            },
+            "installed": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.20020446181297302,
+              "dot": -0.011086770333349705,
+              "included": false,
+              "partial_sum_y": 0.1322370544075966,
+              "count": 2
+            }
+          }
+        ]
+      },
+      {
+        "pass": 13,
+        "source_input_y": -0.20457497239112854,
+        "installed_input_y": 0.066118523478508,
+        "source_output_y": -0.2066194713115692,
+        "installed_output_y": 0.06612372398376465,
+        "neighbor_contributions": [
+          {
+            "vertex": 81291,
+            "rank": 0,
+            "source": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.1895560324192047,
+              "dot": 0.04256328567862511,
+              "included": true,
+              "partial_sum_y": -0.39413100481033325,
+              "count": 2
+            },
+            "installed": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.19336862862110138,
+              "dot": -0.012965092435479164,
+              "included": false,
+              "partial_sum_y": 0.066118523478508,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 81290,
+            "rank": 1,
+            "source": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.20197686553001404,
+              "dot": 0.044468220323324203,
+              "included": true,
+              "partial_sum_y": -0.5961078703403473,
+              "count": 3
+            },
+            "installed": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.21375544369220734,
+              "dot": -0.01691565476357937,
+              "included": false,
+              "partial_sum_y": 0.066118523478508,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 103079,
+            "rank": 2,
+            "source": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.2304823249578476,
+              "dot": 0.04918224364519119,
+              "included": true,
+              "partial_sum_y": -0.8265901952981949,
+              "count": 4
+            },
+            "installed": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.2528563439846039,
+              "dot": -0.020812563598155975,
+              "included": false,
+              "partial_sum_y": 0.066118523478508,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 80901,
+            "rank": 3,
+            "source": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.09133120626211166,
+              "dot": -0.01938987337052822,
+              "included": false,
+              "partial_sum_y": -0.8265901952981949,
+              "count": 4
+            },
+            "installed": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.0661289170384407,
+              "dot": 0.005204026121646166,
+              "included": true,
+              "partial_sum_y": 0.1322474405169487,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 80902,
+            "rank": 4,
+            "source": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.2149534821510315,
+              "dot": 0.04738086089491844,
+              "included": true,
+              "partial_sum_y": -1.0415436774492264,
+              "count": 5
+            },
+            "installed": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.22462470829486847,
+              "dot": -0.012648039497435093,
+              "included": false,
+              "partial_sum_y": 0.1322474405169487,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 81283,
+            "rank": 5,
+            "source": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.1981731504201889,
+              "dot": 0.0443924255669117,
+              "included": true,
+              "partial_sum_y": -1.2397168278694153,
+              "count": 6
+            },
+            "installed": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.20304757356643677,
+              "dot": -0.011370870284736156,
+              "included": false,
+              "partial_sum_y": 0.1322474405169487,
+              "count": 2
+            }
+          }
+        ]
+      },
+      {
+        "pass": 14,
+        "source_input_y": -0.2066194713115692,
+        "installed_input_y": 0.06612372398376465,
+        "source_output_y": -0.20838898420333862,
+        "installed_output_y": 0.06612631678581238,
+        "neighbor_contributions": [
+          {
+            "vertex": 81291,
+            "rank": 0,
+            "source": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.19210898876190186,
+              "dot": 0.04363277927041054,
+              "included": true,
+              "partial_sum_y": -0.39872846007347107,
+              "count": 2
+            },
+            "installed": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.19576191902160645,
+              "dot": -0.01314685307443142,
+              "included": false,
+              "partial_sum_y": 0.06612372398376465,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 81290,
+            "rank": 1,
+            "source": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.20331312716007233,
+              "dot": 0.04531976580619812,
+              "included": true,
+              "partial_sum_y": -0.6020415872335434,
+              "count": 3
+            },
+            "installed": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.21451769769191742,
+              "dot": -0.016906239092350006,
+              "included": false,
+              "partial_sum_y": 0.06612372398376465,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 103079,
+            "rank": 2,
+            "source": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.23005366325378418,
+              "dot": 0.04973291978240013,
+              "included": true,
+              "partial_sum_y": -0.8320952504873276,
+              "count": 4
+            },
+            "installed": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.25134825706481934,
+              "dot": -0.02059772238135338,
+              "included": false,
+              "partial_sum_y": 0.06612372398376465,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 80901,
+            "rank": 3,
+            "source": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.09133120626211166,
+              "dot": -0.019579924643039703,
+              "included": false,
+              "partial_sum_y": -0.8320952504873276,
+              "count": 4
+            },
+            "installed": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.0661289170384407,
+              "dot": 0.005204427987337112,
+              "included": true,
+              "partial_sum_y": 0.13225264102220535,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 80902,
+            "rank": 4,
+            "source": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.21734508872032166,
+              "dot": 0.0484115332365036,
+              "included": true,
+              "partial_sum_y": -1.0494403392076492,
+              "count": 5
+            },
+            "installed": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.22684182226657867,
+              "dot": -0.012903466820716858,
+              "included": false,
+              "partial_sum_y": 0.13225264102220535,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 81283,
+            "rank": 5,
+            "source": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.2008935660123825,
+              "dot": 0.045483168214559555,
+              "included": true,
+              "partial_sum_y": -1.2503339052200317,
+              "count": 6
+            },
+            "installed": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.20566734671592712,
+              "dot": -0.011639656499028206,
+              "included": false,
+              "partial_sum_y": 0.13225264102220535,
+              "count": 2
+            }
+          }
+        ]
+      },
+      {
+        "pass": 15,
+        "source_input_y": -0.20838898420333862,
+        "installed_input_y": 0.06612631678581238,
+        "source_output_y": -0.20992252230644226,
+        "installed_output_y": 0.06612761318683624,
+        "neighbor_contributions": [
+          {
+            "vertex": 81291,
+            "rank": 0,
+            "source": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.19435381889343262,
+              "dot": 0.044585973024368286,
+              "included": true,
+              "partial_sum_y": -0.40274280309677124,
+              "count": 2
+            },
+            "installed": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.19782966375350952,
+              "dot": -0.013307947665452957,
+              "included": false,
+              "partial_sum_y": 0.06612631678581238,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 81290,
+            "rank": 1,
+            "source": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.20441190898418427,
+              "dot": 0.04607142135500908,
+              "included": true,
+              "partial_sum_y": -0.6071547120809555,
+              "count": 3
+            },
+            "installed": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.21498222649097443,
+              "dot": -0.016877153888344765,
+              "included": false,
+              "partial_sum_y": 0.06612631678581238,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 103079,
+            "rank": 2,
+            "source": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.22955505549907684,
+              "dot": 0.050211526453495026,
+              "included": true,
+              "partial_sum_y": -0.8367097675800323,
+              "count": 4
+            },
+            "installed": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.24972830712795258,
+              "dot": -0.02037517912685871,
+              "included": false,
+              "partial_sum_y": 0.06612631678581238,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 80901,
+            "rank": 3,
+            "source": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.09133120626211166,
+              "dot": -0.019747093319892883,
+              "included": false,
+              "partial_sum_y": -0.8367097675800323,
+              "count": 4
+            },
+            "installed": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.0661289170384407,
+              "dot": 0.005204628221690655,
+              "included": true,
+              "partial_sum_y": 0.13225523382425308,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 80902,
+            "rank": 4,
+            "source": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.2194806933403015,
+              "dot": 0.04933033511042595,
+              "included": true,
+              "partial_sum_y": -1.0561904609203339,
+              "count": 5
+            },
+            "installed": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.22887954115867615,
+              "dot": -0.013142081908881664,
+              "included": false,
+              "partial_sum_y": 0.13225523382425308,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 81283,
+            "rank": 5,
+            "source": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.20334464311599731,
+              "dot": 0.04646078869700432,
+              "included": true,
+              "partial_sum_y": -1.2595351040363312,
+              "count": 6
+            },
+            "installed": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.2080630362033844,
+              "dot": -0.011892209760844707,
+              "included": false,
+              "partial_sum_y": 0.13225523382425308,
+              "count": 2
+            }
+          }
+        ]
+      },
+      {
+        "pass": 16,
+        "source_input_y": -0.20992252230644226,
+        "installed_input_y": 0.06612761318683624,
+        "source_output_y": -0.21125271916389465,
+        "installed_output_y": 0.06612826883792877,
+        "neighbor_contributions": [
+          {
+            "vertex": 81291,
+            "rank": 0,
+            "source": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.19633068144321442,
+              "dot": 0.045437391847372055,
+              "included": true,
+              "partial_sum_y": -0.4062532037496567,
+              "count": 2
+            },
+            "installed": {
+              "rank": 0,
+              "vertex": 81291,
+              "input_y": -0.1996171623468399,
+              "dot": -0.013450777158141136,
+              "included": false,
+              "partial_sum_y": 0.06612761318683624,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 81290,
+            "rank": 1,
+            "source": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.20532140135765076,
+              "dot": 0.04673808068037033,
+              "included": true,
+              "partial_sum_y": -0.6115746051073074,
+              "count": 3
+            },
+            "installed": {
+              "rank": 1,
+              "vertex": 81290,
+              "input_y": -0.21522162854671478,
+              "dot": -0.01683376356959343,
+              "included": false,
+              "partial_sum_y": 0.06612761318683624,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 103079,
+            "rank": 2,
+            "source": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.22901877760887146,
+              "dot": 0.05063055455684662,
+              "included": true,
+              "partial_sum_y": -0.8405933827161789,
+              "count": 4
+            },
+            "installed": {
+              "rank": 2,
+              "vertex": 103079,
+              "input_y": -0.24805596470832825,
+              "dot": -0.020150303840637207,
+              "included": false,
+              "partial_sum_y": 0.06612761318683624,
+              "count": 1
+            }
+          },
+          {
+            "vertex": 80901,
+            "rank": 3,
+            "source": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.09133120626211166,
+              "dot": -0.019894303753972054,
+              "included": false,
+              "partial_sum_y": -0.8405933827161789,
+              "count": 4
+            },
+            "installed": {
+              "rank": 3,
+              "vertex": 80901,
+              "input_y": 0.0661289170384407,
+              "dot": 0.005204728338867426,
+              "included": true,
+              "partial_sum_y": 0.13225653022527695,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 80902,
+            "rank": 4,
+            "source": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.22137746214866638,
+              "dot": 0.050149016082286835,
+              "included": true,
+              "partial_sum_y": -1.0619708448648453,
+              "count": 5
+            },
+            "installed": {
+              "rank": 4,
+              "vertex": 80902,
+              "input_y": -0.2307351678609848,
+              "dot": -0.013363969512283802,
+              "included": false,
+              "partial_sum_y": 0.13225653022527695,
+              "count": 2
+            }
+          },
+          {
+            "vertex": 81283,
+            "rank": 5,
+            "source": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.20554547011852264,
+              "dot": 0.0473373681306839,
+              "included": true,
+              "partial_sum_y": -1.267516314983368,
+              "count": 6
+            },
+            "installed": {
+              "rank": 5,
+              "vertex": 81283,
+              "input_y": -0.2102413773536682,
+              "dot": -0.012128373607993126,
+              "included": false,
+              "partial_sum_y": 0.13225653022527695,
+              "count": 2
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "python_on_installed_mesh_minus_installed_native_aggregate_gradient": [
+    -3.324975967472499e-08,
+    6.751060488419114e-09,
+    -2.8464317292087316e-09
+  ]
+}

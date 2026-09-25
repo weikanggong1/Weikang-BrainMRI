@@ -1,0 +1,9 @@
+{
+  "scope": "fnit recon_all and independent SynthSeg unit tests on an interim source snapshot; no full reconstruction",
+  "host": "headcw",
+  "command": "PYTHONPATH=src:. python -m pytest -q tests/recon_all tests/synthseg_parc --disable-warnings --maxfail=1",
+  "source_archive_sha256": "151ecda5228f42ba6aa05d6f6093bc6165d4cc30e5ec81f2f08b491bd1983345",
+  "result": {"passed": 186, "skipped": 5, "failed": 0, "seconds": 47.07},
+  "skip_reasons": "SimpleITK unavailable in test venv (one test module); optional SynthSeg parcellation integration assets not configured (four parameterized tests)",
+  "notes": "Interim snapshot includes the SynthSeg float32 storage change and synchronized sphere/topology/registration changes as of archive creation; later agent files require a final rerun."
+}

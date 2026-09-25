@@ -1,0 +1,261 @@
+{
+  "reference": "pinned FreeSurfer 8.2 copied-source three-iteration LH pial probe",
+  "inputs": "original T1, WM, aseg, LH white, label and frozen autodet stats",
+  "native_source_inputs_used_for_python_inference": false,
+  "steps": [
+    {
+      "iteration": 1,
+      "cropped_at_start": 0,
+      "gradient": {
+        "start_xyz": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "active_normals": {
+          "exact_elements": 303000,
+          "total_elements": 303000,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "ripped_flags": {
+          "exact_elements": 106622,
+          "total_elements": 106622,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "intensity": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "surface_repulsion": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "pre_normal_spring": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "normal_spring": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "curvature": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "tangential_spring": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        }
+      },
+      "geometry": {
+        "exact_elements": 319866,
+        "total_elements": 319866,
+        "max_abs_error": 0.0,
+        "first_mismatched_vertices": []
+      },
+      "ordered_faces_exact": true,
+      "processed_vertices": 101000,
+      "cropped_after_step": 175,
+      "python_coordinate_sha256": "8762fdd1c3db9d128dd1e138c30f4cd9126fb3343dce466196b977984eb8caf4",
+      "source_coordinate_sha256": "8762fdd1c3db9d128dd1e138c30f4cd9126fb3343dce466196b977984eb8caf4",
+      "objective": {
+        "eligible_vertices": 100881,
+        "area": 76115.171875,
+        "rms": 32.40564155460752,
+        "sse": 21350287.220679563,
+        "native_area_abs_error": 0.0,
+        "native_rms_abs_error": 0.0,
+        "native_sse_abs_error": 3.725290298461914e-09
+      },
+      "seconds_excluding_initial_prep": 81.85491524543613
+    },
+    {
+      "iteration": 2,
+      "cropped_at_start": 175,
+      "gradient": {
+        "start_xyz": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "active_normals": {
+          "exact_elements": 303000,
+          "total_elements": 303000,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "ripped_flags": {
+          "exact_elements": 106622,
+          "total_elements": 106622,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "intensity": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "surface_repulsion": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "pre_normal_spring": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "normal_spring": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "curvature": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "tangential_spring": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        }
+      },
+      "geometry": {
+        "exact_elements": 319866,
+        "total_elements": 319866,
+        "max_abs_error": 0.0,
+        "first_mismatched_vertices": []
+      },
+      "ordered_faces_exact": true,
+      "processed_vertices": 101000,
+      "cropped_after_step": 182,
+      "python_coordinate_sha256": "aca42184f75a919903e3e89089debcba1b8376c39c93c524bcceb3f28a32fd30",
+      "source_coordinate_sha256": "aca42184f75a919903e3e89089debcba1b8376c39c93c524bcceb3f28a32fd30",
+      "objective": {
+        "eligible_vertices": 100881,
+        "area": 76982.5859375,
+        "rms": 26.553467457855252,
+        "sse": 14390833.45159803,
+        "native_area_abs_error": 0.0,
+        "native_rms_abs_error": 0.0,
+        "native_sse_abs_error": 0.0
+      },
+      "seconds_excluding_initial_prep": 80.36251242179424
+    },
+    {
+      "iteration": 3,
+      "cropped_at_start": 182,
+      "gradient": {
+        "start_xyz": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "active_normals": {
+          "exact_elements": 303000,
+          "total_elements": 303000,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "ripped_flags": {
+          "exact_elements": 106622,
+          "total_elements": 106622,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "intensity": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "surface_repulsion": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "pre_normal_spring": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "normal_spring": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "curvature": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        },
+        "tangential_spring": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0,
+          "first_mismatched_vertices": []
+        }
+      },
+      "geometry": {
+        "exact_elements": 319866,
+        "total_elements": 319866,
+        "max_abs_error": 0.0,
+        "first_mismatched_vertices": []
+      },
+      "ordered_faces_exact": true,
+      "processed_vertices": 101000,
+      "cropped_after_step": 406,
+      "python_coordinate_sha256": "7c071fd9d875a6746050c6ecbb10541bb95c69a3fddd307402707a0a10900231",
+      "source_coordinate_sha256": "7c071fd9d875a6746050c6ecbb10541bb95c69a3fddd307402707a0a10900231",
+      "objective": {
+        "eligible_vertices": 100881,
+        "area": 77900.28125,
+        "rms": 21.77106790773631,
+        "sse": 9731189.165331032,
+        "native_area_abs_error": 0.0,
+        "native_rms_abs_error": 0.0,
+        "native_sse_abs_error": 0.0
+      },
+      "seconds_excluding_initial_prep": 79.71420073974878
+    }
+  ],
+  "initial_objective": {
+    "eligible_vertices": 100881,
+    "area": 75302.5,
+    "rms": 39.05922669761335,
+    "sse": 30943635.20565021,
+    "native_area_abs_error": 0.0,
+    "native_rms_abs_error": 0.0,
+    "native_sse_abs_error": 0.0
+  },
+  "total_seconds_including_io_jit": 265.5409655822441,
+  "first_failure": null
+}

@@ -1,0 +1,26 @@
+{
+  "device": "cpu",
+  "vertices": 105541,
+  "faces": 211078,
+  "exact_normal_vectors": 105541,
+  "exact_distance_gradient_vectors": 105541,
+  "max_abs_gradient_error": 0.0,
+  "source_derived_scalars": {
+    "avg_nbrs": 37.53722381591797,
+    "orig_area": 125659.390625,
+    "total_area": 125663.703125
+  },
+  "seconds_excluding_io": {
+    "first_distance_gradient": 7.7152108727023005,
+    "repeated_diagnostics": 7.176748525351286
+  },
+  "sha256": {
+    "input_sphere": "744e8d937f942a3a8d5f0ee739342762288e6824386aaa8a558065c92de84efc",
+    "smoothwm": "b67ceb95069d865bb11f6c2b20bac99eab9f19982b73d3c9c43735b7bedbe7ca",
+    "rigid_sphere": "29c30e8e4791a0e78f00560b10fd3a04764d7342d740006d89124ee7ed0f50d6",
+    "native_gradient": "ad273c7d753d5fe4bb2c4edb7582e4f72a01965dcfb133a7c731d31f3ed2fd3c",
+    "native_normals": "525fbbb4f023b5ebee4c079b74d42d26ade84dd935548c0366eef149b6f68227"
+  },
+  "predicted_gradient_sha256": "ad273c7d753d5fe4bb2c4edb7582e4f72a01965dcfb133a7c731d31f3ed2fd3c",
+  "predicted_normals_sha256": "525fbbb4f023b5ebee4c079b74d42d26ade84dd935548c0366eef149b6f68227"
+}

@@ -1,0 +1,48 @@
+{
+  "hemisphere": "lh",
+  "native_verbose_sha256": "ce7e8d3145e33813b3aa94e3bf44a106465da20c2ea5f8a3095946e643d0ca0b",
+  "native_selected_snapshot_sha256": "28b4f6f6be86f4fedbe930e78eaef6d2fdef96d1a98252e711285144b721e8a4",
+  "native_best_snapshot_sha256": "e9081a8705adb48a54dd1aeb5fae7c31c2e45f7c5f28ee90d2ed437603f832f4",
+  "scope": "first defect initial population; printed native likelihood components only; no independent component generation or GA evolution",
+  "initial_fitness": [
+    -112.294744,
+    -110.425149,
+    -108.173866,
+    -113.080883,
+    -115.054858,
+    -114.456173,
+    -114.239864,
+    -112.682223,
+    -110.250947,
+    -109.853486
+  ],
+  "source_ranks": [
+    4,
+    3,
+    0,
+    6,
+    9,
+    8,
+    7,
+    5,
+    2,
+    1
+  ],
+  "python_best_initial_index": 2,
+  "native_best_initial_index": 2,
+  "python_initial_best_snapshot_serial": 2,
+  "python_best_initial_fitness": -108.173866,
+  "native_best_initial_fitness_printed_4dp": -108.1739,
+  "composition_errors_from_4dp_components": [
+    4.399999998838666e-05,
+    -5.0999999984924216e-05
+  ],
+  "python_initial_mean": -112.0512193,
+  "native_initial_mean_printed_4dp": -112.0512,
+  "python_initial_sigma": 2.1647742582494374,
+  "native_initial_sigma_printed_4dp": 2.1648,
+  "selected_vs_best_ordered_vertices_equal": true,
+  "selected_vs_best_ordered_faces_equal": true,
+  "selected_surface_vertices": 102764,
+  "selected_surface_faces": 202477
+}

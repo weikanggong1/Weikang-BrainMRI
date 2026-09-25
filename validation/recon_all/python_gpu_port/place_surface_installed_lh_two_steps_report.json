@@ -1,0 +1,251 @@
+{
+  "reference": "installed FreeSurfer 8.2.0-1 lh pial RAM steps 1 and 2",
+  "inference_inputs": "original brain.finalsurfs, WM, aseg, white surface, label, autodet stats; no installed RAM or copied-source gradient as inference input",
+  "limits": "First two accepted iterations only; no later optimizer, final surface, or downstream vertex-metric claim.",
+  "sha256": {
+    "/public/software/apps/Freesurfer/8.2.0-1/bin/mris_place_surface": "67139c3590f961f879a4214cd01f173b42986c7b178d1851dfa3f08e8acf12aa",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/surf/lh.white": "9c88a786c4a571c07d830b83fe647461b09fdacb63ff143670771340ef50b51c",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/label/lh.cortex+hipamyg.label": "03dfc76e15857a0e2b2f4e7ae751e6f657ae511df408016abe0430e6bd8ca6c2",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/surf/autodet.gw.stats.lh.dat": "10b313e9f29a9d6572f0aef4546d307f6514eaae44896fc19b4212891719c7d9",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/brain.finalsurfs.mgz": "796e295b88343a3c3c754fa63048be8c3fe7764b443ad909f9aebd564d762947",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz": "b190b1d8f9a4bf114c8a6623fdfd37cde0950de8f991b35243bccea46498ed5e",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/aseg.presurf.mgz": "263653b66a9aacba4d0d704781c6e67e581c86a9f99374e37d7e3f28d1674ce2",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_ram_official_step1_exact/surf/lh.pial.ram": "cf4b4b37d14f7a042f22d80be5101a4013e07d94d2366f8c9fb927a3f6be1e10",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_ram_official_step2_exact/surf/lh.pial.ram": "36ee118a068d86405c5c606b7cf601ec3f88cb21be3320be4cf2e9406d6dfc12"
+  },
+  "ordered_faces_exact": true,
+  "steps": [
+    {
+      "step": 1,
+      "dt": 0.5,
+      "processed_vertices": 101000,
+      "cropped_after_step": 183,
+      "candidate_vs_installed": {
+        "exact_components": 319317,
+        "total_components": 319866,
+        "exact_vertices": 106439,
+        "max_abs_error": 0.2978515625,
+        "first_different_vertices": [
+          52,
+          65,
+          69,
+          78,
+          153,
+          1167,
+          1168,
+          1404,
+          1500,
+          1501,
+          1709,
+          1710
+        ]
+      },
+      "accepted_vs_installed": {
+        "exact_components": 319866,
+        "total_components": 319866,
+        "exact_vertices": 106622,
+        "max_abs_error": 0.0,
+        "first_different_vertices": []
+      },
+      "stage_vs_copied_source_diagnostic_only": {
+        "intensity": {
+          "exact_components": 319866,
+          "total_components": 319866,
+          "exact_vertices": 106622,
+          "max_abs_error": 0.0,
+          "first_different_vertices": []
+        },
+        "surface_repulsion": {
+          "exact_components": 319866,
+          "total_components": 319866,
+          "exact_vertices": 106622,
+          "max_abs_error": 0.0,
+          "first_different_vertices": []
+        },
+        "pre_normal_spring": {
+          "exact_components": 319866,
+          "total_components": 319866,
+          "exact_vertices": 106622,
+          "max_abs_error": 0.0,
+          "first_different_vertices": []
+        },
+        "normal_spring": {
+          "exact_components": 319866,
+          "total_components": 319866,
+          "exact_vertices": 106622,
+          "max_abs_error": 0.0,
+          "first_different_vertices": []
+        },
+        "curvature": {
+          "exact_components": 319866,
+          "total_components": 319866,
+          "exact_vertices": 106622,
+          "max_abs_error": 0.0,
+          "first_different_vertices": []
+        },
+        "tangential_spring": {
+          "exact_components": 319866,
+          "total_components": 319866,
+          "exact_vertices": 106622,
+          "max_abs_error": 0.0,
+          "first_different_vertices": []
+        }
+      }
+    },
+    {
+      "step": 2,
+      "dt": 0.5,
+      "processed_vertices": 101000,
+      "cropped_after_step": 82,
+      "candidate_vs_installed": {
+        "exact_components": 319620,
+        "total_components": 319866,
+        "exact_vertices": 106540,
+        "max_abs_error": 0.2995338439941406,
+        "first_different_vertices": [
+          153,
+          1167,
+          1487,
+          1500,
+          1501,
+          1596,
+          1710,
+          1772,
+          1773,
+          1780,
+          1794,
+          2488
+        ]
+      },
+      "accepted_vs_installed": {
+        "exact_components": 319866,
+        "total_components": 319866,
+        "exact_vertices": 106622,
+        "max_abs_error": 0.0,
+        "first_different_vertices": []
+      },
+      "stage_vs_copied_source_diagnostic_only": {
+        "intensity": {
+          "exact_components": 305771,
+          "total_components": 319866,
+          "exact_vertices": 100082,
+          "max_abs_error": 1.1324882507324219e-05,
+          "first_different_vertices": [
+            27,
+            31,
+            32,
+            33,
+            60,
+            61,
+            64,
+            74,
+            127,
+            129,
+            136,
+            152
+          ]
+        },
+        "surface_repulsion": {
+          "exact_components": 305447,
+          "total_components": 319866,
+          "exact_vertices": 100092,
+          "max_abs_error": 0.000194549560546875,
+          "first_different_vertices": [
+            27,
+            31,
+            32,
+            60,
+            61,
+            64,
+            74,
+            127,
+            129,
+            136,
+            152,
+            157
+          ]
+        },
+        "pre_normal_spring": {
+          "exact_components": 242972,
+          "total_components": 319866,
+          "exact_vertices": 60534,
+          "max_abs_error": 6.67572021484375e-06,
+          "first_different_vertices": [
+            3,
+            4,
+            5,
+            7,
+            8,
+            10,
+            11,
+            12,
+            13,
+            16,
+            17,
+            19
+          ]
+        },
+        "normal_spring": {
+          "exact_components": 243086,
+          "total_components": 319866,
+          "exact_vertices": 60640,
+          "max_abs_error": 8.106231689453125e-06,
+          "first_different_vertices": [
+            3,
+            4,
+            5,
+            7,
+            8,
+            10,
+            11,
+            12,
+            13,
+            16,
+            17,
+            19
+          ]
+        },
+        "curvature": {
+          "exact_components": 237677,
+          "total_components": 319866,
+          "exact_vertices": 59448,
+          "max_abs_error": 2.3484230041503906e-05,
+          "first_different_vertices": [
+            3,
+            4,
+            5,
+            7,
+            8,
+            10,
+            11,
+            12,
+            13,
+            16,
+            17,
+            19
+          ]
+        },
+        "tangential_spring": {
+          "exact_components": 237981,
+          "total_components": 319866,
+          "exact_vertices": 59662,
+          "max_abs_error": 2.396106719970703e-05,
+          "first_different_vertices": [
+            3,
+            4,
+            5,
+            7,
+            8,
+            10,
+            11,
+            12,
+            13,
+            16,
+            17,
+            21
+          ]
+        }
+      }
+    }
+  ]
+}

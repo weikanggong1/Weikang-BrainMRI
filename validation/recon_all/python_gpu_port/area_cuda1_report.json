@@ -1,0 +1,127 @@
+{
+  "device": "cuda:1",
+  "repeats": 3,
+  "timing_scope": "Each command/function reads surface and writes map; Python/Torch/CUDA import and first context creation are excluded",
+  "rows": [
+    {
+      "map": "lh.area",
+      "vertices": 106622,
+      "gpu_vs_reference": {
+        "max_error_mm2": 4.76837158203125e-07,
+        "mean_error_mm2": 3.8161523718827084e-08,
+        "outliers": 0
+      },
+      "native_vs_reference": {
+        "max_error_mm2": 0.0,
+        "mean_error_mm2": 0.0,
+        "outliers": 0
+      },
+      "wall_seconds": {
+        "native": [
+          0.7704402231611311,
+          0.7537531186826527,
+          0.6891663740389049
+        ],
+        "gpu": [
+          0.16249349294230342,
+          0.012319670990109444,
+          0.03339762007817626
+        ]
+      },
+      "median_seconds": {
+        "native": 0.7537531186826527,
+        "gpu": 0.03339762007817626
+      }
+    },
+    {
+      "map": "lh.area.pial",
+      "vertices": 106622,
+      "gpu_vs_reference": {
+        "max_error_mm2": 9.5367431640625e-07,
+        "mean_error_mm2": 4.7321488949592094e-08,
+        "outliers": 0
+      },
+      "native_vs_reference": {
+        "max_error_mm2": 0.0,
+        "mean_error_mm2": 0.0,
+        "outliers": 0
+      },
+      "wall_seconds": {
+        "native": [
+          0.8119678320363164,
+          0.6700667599216104,
+          0.6710487799718976
+        ],
+        "gpu": [
+          0.010961129795759916,
+          0.010853443760424852,
+          0.011532413773238659
+        ]
+      },
+      "median_seconds": {
+        "native": 0.6710487799718976,
+        "gpu": 0.010961129795759916
+      }
+    },
+    {
+      "map": "rh.area",
+      "vertices": 105541,
+      "gpu_vs_reference": {
+        "max_error_mm2": 4.76837158203125e-07,
+        "mean_error_mm2": 3.852015595384728e-08,
+        "outliers": 0
+      },
+      "native_vs_reference": {
+        "max_error_mm2": 0.0,
+        "mean_error_mm2": 0.0,
+        "outliers": 0
+      },
+      "wall_seconds": {
+        "native": [
+          0.6726956409402192,
+          0.9152575908228755,
+          0.6593665620312095
+        ],
+        "gpu": [
+          0.01195760304108262,
+          0.010762263089418411,
+          0.010465512052178383
+        ]
+      },
+      "median_seconds": {
+        "native": 0.6726956409402192,
+        "gpu": 0.010762263089418411
+      }
+    },
+    {
+      "map": "rh.area.pial",
+      "vertices": 105541,
+      "gpu_vs_reference": {
+        "max_error_mm2": 9.5367431640625e-07,
+        "mean_error_mm2": 4.7420233073580675e-08,
+        "outliers": 0
+      },
+      "native_vs_reference": {
+        "max_error_mm2": 0.0,
+        "mean_error_mm2": 0.0,
+        "outliers": 0
+      },
+      "wall_seconds": {
+        "native": [
+          0.8213935634121299,
+          0.693106995895505,
+          0.6847590240649879
+        ],
+        "gpu": [
+          0.010980403982102871,
+          0.01040513813495636,
+          0.011299517005681992
+        ]
+      },
+      "median_seconds": {
+        "native": 0.693106995895505,
+        "gpu": 0.010980403982102871
+      }
+    }
+  ]
+}

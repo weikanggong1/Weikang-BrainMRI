@@ -1,0 +1,104 @@
+{
+  "reference": "fixed native step-seven gradient and step-six mesh; diagnostic only; diagnostic n_averages=2, sigma=2",
+  "exact_components": 319866,
+  "total_components": 319866,
+  "ordered_faces_exact": true,
+  "first_different_vertices": [],
+  "max_abs_error": 0.0,
+  "vertex_9328": {
+    "before": [
+      -23.414148330688477,
+      -62.52103042602539,
+      -3.497069835662842
+    ],
+    "unconstrained": [
+      -23.415021896362305,
+      -62.711299896240234,
+      -3.371131658554077
+    ],
+    "python": [
+      -23.415164947509766,
+      -62.711265563964844,
+      -3.371082305908203
+    ],
+    "source": [
+      -23.415164947509766,
+      -62.711265563964844,
+      -3.371082305908203
+    ]
+  },
+  "source_parameters": {
+    "n_averages": 2,
+    "sigma": 2.0,
+    "target_value_averages": 5,
+    "requested_iterations": 10,
+    "subiters": 1
+  },
+  "native_reference_command": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_ten_gradient/mris_place_surface_gradient_probe --adgws-in /cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/surf/autodet.gw.stats.lh.dat --seg /cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/aseg.presurf.mgz --threads 4 --wm /cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz --invol /cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/brain.finalsurfs.mgz --lh --i /cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_ten_gradient_run/surf/lh.white --o /cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_ten_gradient_run/surf/lh.pial.objective --pial --nsmooth 0 --rip-label /cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/label/lh.cortex+hipamyg.label --pin-medial-wall /cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/label/lh.cortex.label --aparc /cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/label/lh.aparc.annot --repulse-surf /cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/surf/lh.white --white-surf /cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/surf/lh.white --restore-255 --n_averages 2 --subiters 1 --target /cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_ten_gradient_run/surf/lh.pial.target",
+  "native_reference_command_sha256": "bd15300dbd8831494ab74467a3f42d506a1d7a9007b6cb1e52d7d6243a865c73",
+  "native_source_sha256": {
+    "/tmp/fs_full_source_d932/utils/mrisurf_mri.cpp": "16740fce04268f8d4e7841592acf3ff89e394bf211e6c0ab0a7b541527a7c092",
+    "/tmp/fs_full_source_d932/mris_make_surfaces/mris_place_surface.cpp": "b57f6e18f2e3215fc99fb1a8720aa345459585e4618ed2b8fa2779c2ee0f9dcf",
+    "/tmp/fs_full_source_d932/utils/mrisurf_timeStep.cpp": "402bfd0bfdb5cf0bc59600f30592facf6a60890e78cdff3fa696f7fcec4ca553",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_ten_main/mris_place_surface_first_iteration.cpp": "8051561eb54f5859c410e9fbdcd0c4d22c5be9a649c028dde3d15a090c54b715",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_ten_gradient/mrisurf_mri_gradient_probe.cpp": "d0f0ccde53fe1def01040918e91086f510248d04e5a9c318473a8e8c1cb0d2bf"
+  },
+  "input_lh_white_sha256": "9c88a786c4a571c07d830b83fe647461b09fdacb63ff143670771340ef50b51c",
+  "native_objectives": {
+    "initial": {
+      "rms": 39.05922669761335,
+      "sse": 30943635.20565021,
+      "area": 75302.5
+    },
+    "step1": {
+      "rms": 32.40564155460752,
+      "sse": 21350287.22067956,
+      "area": 76115.171875
+    },
+    "step2": {
+      "rms": 26.553467457855252,
+      "sse": 14390833.45159803,
+      "area": 76982.5859375
+    },
+    "step3": {
+      "rms": 21.77106790773631,
+      "sse": 9731189.165331032,
+      "area": 77900.28125
+    },
+    "step4": {
+      "rms": 18.06153078600322,
+      "sse": 6754050.150878839,
+      "area": 79040.9921875
+    },
+    "step5": {
+      "rms": 15.24050084449577,
+      "sse": 4861889.09167956,
+      "area": 81664.484375
+    },
+    "step6": {
+      "rms": 12.931391911278814,
+      "sse": 3552042.454582441,
+      "area": 84988.7421875
+    },
+    "step7": {
+      "rms": 11.039023635485123,
+      "sse": 2639215.6538791046,
+      "area": 88556.890625
+    },
+    "step8": {
+      "rms": 9.507565615094855,
+      "sse": 2006400.2756247658,
+      "area": 91772.203125
+    },
+    "step9": {
+      "rms": 8.366564224860305,
+      "sse": 1596563.4390439186,
+      "area": 94623.8203125
+    },
+    "step10": {
+      "rms": 7.543103923083952,
+      "sse": 1333514.9588955909,
+      "area": 96667.4453125
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "references": {
+    "source": "copied pinned FreeSurfer 8.2 first-step source probe",
+    "installed": "installed FreeSurfer 8.2 binary with RAM-only one-iteration GDB diagnostic"
+  },
+  "source": {
+    "exact_vertices": 106622,
+    "total_vertices": 106622,
+    "ordered_faces_exact": true,
+    "max_vertex_distance_mm": 0.0,
+    "first_mismatched_vertices": [],
+    "collision_blocked_vertices": 175
+  },
+  "installed": {
+    "exact_vertices": 105195,
+    "total_vertices": 106622,
+    "p99_vertex_distance_mm": 2.9802322387695312e-08,
+    "max_vertex_distance_mm": 7.62939453125e-06
+  },
+  "processed_vertices": 101000,
+  "seconds_including_first_jit_excluding_io": 62.08886117581278
+}

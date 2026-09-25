@@ -1,0 +1,24 @@
+{
+  "device": "gpucw1 NVIDIA H100 PCIe cuda:0",
+  "reference": "FreeSurfer 8.2.0 d932c45, fs_sub01 surf/lh.volume and rh.volume",
+  "rows": [
+    {
+      "hemi": "lh",
+      "vertices": 106622,
+      "reference_sum": 179344.015625,
+      "candidate_sum": 179344.015625,
+      "max_abs_mm3": 0.0000019073486328125,
+      "mean_abs_mm3": 6.181559086826383e-8,
+      "outliers": 0
+    },
+    {
+      "hemi": "rh",
+      "vertices": 105541,
+      "reference_sum": 174980.90625,
+      "candidate_sum": 174980.90625,
+      "max_abs_mm3": 0.0000019073486328125,
+      "mean_abs_mm3": 6.050176182270661e-8,
+      "outliers": 0
+    }
+  ]
+}

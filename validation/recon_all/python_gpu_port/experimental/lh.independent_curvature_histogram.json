@@ -1,0 +1,73 @@
+{
+  "scope": "first global topology curvature histogram only; source-order normal-equation approximation",
+  "input_sha256": {
+    "orig": "ef00440f651026e4d099bd282f3e4e2cfbfffdc1e0877684fe22aa2948542b79",
+    "qsphere": "8afffc181e2e05b8349099845e7ffe3b7a6a36e241d5689c4b6503c020485647"
+  },
+  "native_reference_sha256": {
+    "k1.plt": "362c2436be787483a237ce1fc7cabc789f28a75afb1b5a39d4819bb8285d0567",
+    "k2.plt": "f255b13bd439a8970025766d5bcfa17ddcdd9cb390f8e576c303d31cb12575d2",
+    "mri_k1_k2.mgh": "ec7dd5555453e074fbbf2f3c7c9e40f51cba2bfbbde2a8fb5afd5a274168f177"
+  },
+  "vertices": 102764,
+  "defect_vertices": 1363,
+  "invalid_fits": 0,
+  "ill_conditioned_fits": 0,
+  "python_fit_and_histogram_seconds_including_jit": 16.739385682158172,
+  "first_candidate_qcurv_ll": "not validated: candidate patch k1/k2 still require an independent fit",
+  "k1": {
+    "predicted_min_max": [
+      -3.803170680999756,
+      3.5964243412017822
+    ],
+    "predicted_mean": -0.09479880332946777,
+    "native_mean_from_unrounded_bins": -0.09473268687725067,
+    "mean_float32_bits_equal": false,
+    "mean_absolute_difference": 6.611645221710205e-05,
+    "native_first_bin": -3.0,
+    "bin_positions_matching_six_decimals": 100,
+    "pdf_counts_matching_ten_decimals": 53,
+    "first_bin_position_mismatch": null,
+    "first_pdf_count_mismatch": 5,
+    "largest_pdf_absolute_difference": 0.0001070425156185148,
+    "native_printed_six_decimal_equal": 92650,
+    "native_within_1e_3": 102516,
+    "native_median_absolute_difference": 2.384185791015625e-07,
+    "native_largest_absolute_difference": 3.353859066963196,
+    "first_native_vertex_difference_over_1e_3": 24
+  },
+  "k2": {
+    "predicted_min_max": [
+      -1.8369253873825073,
+      1.3193656206130981
+    ],
+    "predicted_mean": -0.03276367858052254,
+    "native_mean_from_unrounded_bins": -0.033347927033901215,
+    "mean_float32_bits_equal": false,
+    "mean_absolute_difference": 0.0005842484533786774,
+    "native_first_bin": -1.8466503620147705,
+    "bin_positions_matching_six_decimals": 0,
+    "pdf_counts_matching_ten_decimals": 34,
+    "first_bin_position_mismatch": 0,
+    "first_pdf_count_mismatch": 13,
+    "largest_pdf_absolute_difference": 0.003921605692175298,
+    "native_printed_six_decimal_equal": 95327,
+    "native_within_1e_3": 102565,
+    "native_median_absolute_difference": 2.4586915969848633e-07,
+    "native_largest_absolute_difference": 1.0209173262119293,
+    "first_native_vertex_difference_over_1e_3": 24
+  },
+  "joint": {
+    "bitwise_matching_cells": 0,
+    "cells": 10000,
+    "first_bitwise_mismatch": [
+      0,
+      0
+    ],
+    "largest_absolute_difference": 0.0011395181063562632,
+    "predicted_norm": 103553.9921875
+  },
+  "native_first_curvature_sha256": "22a885e113b1f1f14bc27aad44ac63701b5744e35c570dfc20e38ced125f9584",
+  "histogram_matches_native": false,
+  "hemisphere": "lh"
+}

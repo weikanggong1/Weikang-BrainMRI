@@ -1,0 +1,417 @@
+"""Source-order surface placement triangle intersection probe.
+
+The exact Möller triangle test follows FreeSurfer's `tritri.cpp`. The
+static-mesh broadphase is diagnostic; ordered asynchronous updates remain open.
+"""
+
+from __future__ import annotations
+
+import numpy as np
+from numba import njit
+from scipy.spatial import cKDTree
+
+
+@njit(cache=True)
+def _interval(v: np.ndarray, d: np.ndarray) -> tuple[float, float, bool]:
+    d01 = d[0] * d[1]
+    d02 = d[0] * d[2]
+    if d01 > 0:
+        first, second, third = 2, 0, 1
+    elif d02 > 0:
+        first, second, third = 1, 0, 2
+    elif d[1] * d[2] > 0 or d[0] != 0:
+        first, second, third = 0, 1, 2
+    elif d[1] != 0:
+        first, second, third = 1, 0, 2
+    elif d[2] != 0:
+        first, second, third = 2, 0, 1
+    else:
+        return 0.0, 0.0, True
+    a = v[first] + (v[second] - v[first]) * d[first] / (d[first] - d[second])
+    b = v[first] + (v[third] - v[first]) * d[first] / (d[first] - d[third])
+    return min(a, b), max(a, b), False
+
+
+@njit(cache=True)
+def _edge_hit(a: np.ndarray, b: np.ndarray, c: np.ndarray, d: np.ndarray, x: int, y: int) -> bool:
+    ax, ay = b[x] - a[x], b[y] - a[y]
+    bx, by = c[x] - d[x], c[y] - d[y]
+    cx, cy = a[x] - c[x], a[y] - c[y]
+    f = ay * bx - ax * by
+    h = by * cx - bx * cy
+    if (f > 0 and 0 <= h <= f) or (f < 0 and f <= h <= 0):
+        e = ax * cy - ay * cx
+        return (0 <= e <= f) if f > 0 else (f <= e <= 0)
+    return False
+
+
+@njit(cache=True)
+def _point_in_tri(a: np.ndarray, triangle: np.ndarray, x: int, y: int) -> bool:
+    distances = np.zeros(3, dtype=np.float64)
+    for edge in range(3):
+        p, q = triangle[edge], triangle[(edge + 1) % 3]
+        aa, bb = q[y] - p[y], -(q[x] - p[x])
+        cc = -aa * p[x] - bb * p[y]
+        distances[edge] = aa * a[x] + bb * a[y] + cc
+    return distances[0] * distances[1] > 0 and distances[0] * distances[2] > 0
+
+
+@njit(cache=True)
+def _coplanar(a: np.ndarray, b: np.ndarray, normal: np.ndarray) -> bool:
+    absolute = np.abs(normal)
+    if absolute[0] > absolute[1]:
+        x, y = (1, 2) if absolute[0] > absolute[2] else (0, 1)
+    else:
+        x, y = (0, 1) if absolute[2] > absolute[1] else (0, 2)
+    for edge in range(3):
+        p, q = a[edge], a[(edge + 1) % 3]
+        for other in range(3):
+            if _edge_hit(p, q, b[other], b[(other + 1) % 3], x, y):
+                return True
+    return _point_in_tri(a[0], b, x, y) or _point_in_tri(b[0], a, x, y)
+
+
+@njit(cache=True)
+def triangles_intersect(a: np.ndarray, b: np.ndarray) -> bool:
+    """FreeSurfer's double-precision Möller test on two float32 triangles."""
+    aa, bb = a.astype(np.float64), b.astype(np.float64)
+    n1 = np.cross(aa[1] - aa[0], aa[2] - aa[0])
+    d1 = -np.dot(n1, aa[0])
+    du = np.array([np.dot(n1, bb[i]) + d1 for i in range(3)])
+    absolute = np.abs(du)
+    if np.any(absolute > 1e-6) and du[0] * du[1] > 0 and du[0] * du[2] > 0:
+        return False
+    for i in range(3):
+        if absolute[i] < 1e-6:
+            du[i] = 0.0
+    if absolute[0] < 1e-5 and absolute[1] < 1e-5 and absolute[2] < 1e-6:
+        du[:] = 0.0
+
+    n2 = np.cross(bb[1] - bb[0], bb[2] - bb[0])
+    d2 = -np.dot(n2, bb[0])
+    dv = np.array([np.dot(n2, aa[i]) + d2 for i in range(3)])
+    absolute = np.abs(dv)
+    if np.any(absolute > 1e-6) and dv[0] * dv[1] > 0 and dv[0] * dv[2] > 0:
+        return False
+    for i in range(3):
+        if absolute[i] < 1e-6:
+            dv[i] = 0.0
+    if absolute[0] < 1e-5 and absolute[1] < 1e-5 and absolute[2] < 1e-6:
+        dv[:] = 0.0
+
+    direction = np.cross(n1, n2)
+    axis = 0
+    if abs(direction[1]) > abs(direction[axis]):
+        axis = 1
+    if abs(direction[2]) > abs(direction[axis]):
+        axis = 2
+    a0, a1, coplanar = _interval(aa[:, axis], dv)
+    if coplanar:
+        return _coplanar(aa, bb, n1)
+    b0, b1, coplanar = _interval(bb[:, axis], du)
+    if coplanar:
+        return _coplanar(aa, bb, n1)
+    return not (a1 < b0 or b1 < a0)
+
+
+def static_collision_mask(
+    vertices: np.ndarray, faces: np.ndarray, proposed: np.ndarray,
+    ripped: np.ndarray, selected: np.ndarray,
+) -> np.ndarray:
+    """Test selected proposed moves against the original mesh only."""
+    xyz = np.asarray(vertices, dtype=np.float32)
+    triangles = np.asarray(faces, dtype=np.int32)
+    next_xyz = np.asarray(proposed, dtype=np.float32)
+    face_ripped = np.zeros(len(triangles), dtype=np.bool_)
+    face_points = xyz[triangles]
+    centers = face_points.mean(axis=1, dtype=np.float64)
+    radii = np.linalg.norm(face_points.astype(np.float64) - centers[:, None, :], axis=2).max(axis=1)
+    tree = cKDTree(centers)
+    flat_vertices = triangles.ravel()
+    order = np.argsort(flat_vertices, kind="stable")
+    offsets = np.zeros(len(xyz) + 1, dtype=np.int64)
+    offsets[1:] = np.cumsum(np.bincount(flat_vertices, minlength=len(xyz)))
+    incident = order // 3
+    result = np.zeros(len(selected), dtype=np.bool_)
+    for position, vertex in enumerate(selected):
+        vertex = int(vertex)
+        if ripped[vertex] or np.array_equal(xyz[vertex], next_xyz[vertex]):
+            continue
+        for face_id in incident[offsets[vertex]:offsets[vertex + 1]]:
+            if face_ripped[face_id]:
+                continue
+            corners = triangles[face_id]
+            moved = xyz[corners].copy()
+            moved[np.flatnonzero(corners == vertex)[0]] = next_xyz[vertex]
+            center = moved.mean(axis=0, dtype=np.float64)
+            radius = np.linalg.norm(moved.astype(np.float64) - center, axis=1).max()
+            for other in tree.query_ball_point(center, radius + radii.max()):
+                if face_ripped[other]:
+                    continue
+                if np.linalg.norm(center - centers[other]) > radius + radii[other]:
+                    continue
+                if np.any(np.isin(triangles[other], corners)):
+                    continue
+                if triangles_intersect(moved, face_points[other]):
+                    result[position] = True
+                    break
+            if result[position]:
+                break
+    return result
+
+
+@njit(cache=True)
+def _subvolume_index(point: np.ndarray, geometry: np.ndarray) -> int:
+    index = np.zeros((2, 3), dtype=np.int32)
+    for axis in range(3):
+        low = geometry[2 * axis]
+        length = geometry[6 + axis]
+        verge = geometry[9 + axis]
+        value = point[axis]
+        index[0, axis] = min(3, int(np.float32(np.float32(np.float32(value - verge) - low) / length)))
+        index[1, axis] = min(3, int(np.float32(np.float32(np.float32(value + verge) - low) / length)))
+        if index[0, axis] != index[1, axis]:
+            return 64
+    return index[0, 0] * 16 + index[0, 1] * 4 + index[0, 2]
+
+
+@njit(cache=True)
+def _assign_faces(bounds: np.ndarray, faces: np.ndarray, geometry: np.ndarray) -> np.ndarray:
+    result = np.zeros(len(faces), dtype=np.int32)
+    for face_id in range(len(faces)):
+        low = np.empty(3, dtype=np.float32)
+        high = np.empty(3, dtype=np.float32)
+        for axis in range(3):
+            low[axis] = bounds[faces[face_id, 0], axis, 0]
+            high[axis] = bounds[faces[face_id, 0], axis, 1]
+            for corner in range(1, 3):
+                vertex = faces[face_id, corner]
+                low[axis] = min(low[axis], bounds[vertex, axis, 0])
+                high[axis] = max(high[axis], bounds[vertex, axis, 1])
+        first = _subvolume_index(low, geometry)
+        second = _subvolume_index(high, geometry)
+        result[face_id] = first if first == second else 64
+    return result
+
+
+def subvolume_assignment(
+    vertices: np.ndarray, faces: np.ndarray, proposed: np.ndarray, ripped: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Return fixed first-step geometry plus ordered face/vertex subvolumes."""
+    xyz = np.asarray(vertices, dtype=np.float32)
+    next_xyz = np.asarray(proposed, dtype=np.float32)
+    triangles = np.asarray(faces, dtype=np.int32)
+    bounds = np.stack((np.minimum(xyz, next_xyz), np.maximum(xyz, next_xyz)), axis=-1)
+    low = bounds[:, :, 0].min(axis=0)
+    high = bounds[:, :, 1].max(axis=0)
+    lengths = np.float32(np.float32(high - low) / np.float32(4))
+    verge = np.float32(np.float32(lengths * np.float32(0.02)) + np.float32(0.01))
+    geometry = np.concatenate((np.stack((low, high), axis=1).ravel(), lengths, verge)).astype(np.float32)
+    face_svi = _assign_faces(bounds, triangles, geometry)
+    flat = triangles.ravel()
+    order = np.argsort(flat, kind="stable") // 3
+    offsets = np.zeros(len(xyz) + 1, dtype=np.int64)
+    offsets[1:] = np.cumsum(np.bincount(flat, minlength=len(xyz)))
+    vertex_svi = np.full(len(xyz), -1, dtype=np.int32)
+    for vertex in range(len(xyz)):
+        if ripped[vertex] or offsets[vertex] == offsets[vertex + 1]:
+            continue
+        adjacent = face_svi[order[offsets[vertex]:offsets[vertex + 1]]]
+        vertex_svi[vertex] = int(adjacent[0]) if np.all(adjacent == adjacent[0]) else 64
+    return geometry, face_svi, vertex_svi
+
+
+
+@njit(cache=True)
+def _moved_face_geometry(
+    current: np.ndarray, triangles: np.ndarray, face_id: int,
+    vertex: int, endpoint: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray, float, np.ndarray, np.ndarray]:
+    corners = triangles[face_id]
+    moved = np.empty((3, 3), dtype=np.float32)
+    center = np.empty(3, dtype=np.float64)
+    low = np.empty(3, dtype=np.float32)
+    high = np.empty(3, dtype=np.float32)
+    for corner in range(3):
+        for axis in range(3):
+            moved[corner, axis] = endpoint[axis] if corners[corner] == vertex else current[corners[corner], axis]
+    for axis in range(3):
+        center[axis] = (float(moved[0, axis]) + float(moved[1, axis]) + float(moved[2, axis])) / 3.0
+        low[axis] = min(moved[0, axis], moved[1, axis], moved[2, axis])
+        high[axis] = max(moved[0, axis], moved[1, axis], moved[2, axis])
+    radius = 0.0
+    for corner in range(3):
+        dx = float(moved[corner, 0]) - center[0]
+        dy = float(moved[corner, 1]) - center[1]
+        dz = float(moved[corner, 2]) - center[2]
+        distance = np.sqrt(dx * dx + dy * dy + dz * dz)
+        radius = max(radius, distance)
+    return moved, center, radius, low, high
+
+
+@njit(cache=True)
+def _candidate_collision(
+    current: np.ndarray, triangles: np.ndarray, moved: np.ndarray,
+    corners: np.ndarray, low: np.ndarray, high: np.ndarray,
+    nearby: np.ndarray,
+) -> bool:
+    for face_id in nearby:
+        face = triangles[face_id]
+        touching = False
+        for first in range(3):
+            for second in range(3):
+                if face[first] == corners[second]:
+                    touching = True
+                    break
+            if touching:
+                break
+        if touching:
+            continue
+        overlap = True
+        for axis in range(3):
+            c0 = current[face[0], axis]
+            c1 = current[face[1], axis]
+            c2 = current[face[2], axis]
+            if max(c0, c1, c2) < low[axis] or min(c0, c1, c2) > high[axis]:
+                overlap = False
+                break
+        if not overlap:
+            continue
+        candidate = np.empty((3, 3), dtype=np.float32)
+        for corner in range(3):
+            for axis in range(3):
+                candidate[corner, axis] = current[face[corner], axis]
+        if triangles_intersect(moved, candidate):
+            return True
+    return False
+
+
+
+@njit(cache=True)
+def _project_close_neighbors(
+    current: np.ndarray, vertex: int, neighbors: np.ndarray, neighbor_valid: np.ndarray,
+    initial_offset: np.ndarray, geometry: np.ndarray, subvolume: int, min_neighbor_mm: np.float32,
+) -> tuple[np.ndarray, bool]:
+    """Apply mrisRemoveNeighborGradientComponent before the triangle collision test."""
+    x, y, z = current[vertex, 0], current[vertex, 1], current[vertex, 2]
+    odx, ody, odz = initial_offset[0], initial_offset[1], initial_offset[2]
+    for slot in range(neighbors.shape[1]):
+        if not neighbor_valid[vertex, slot]:
+            continue
+        other = neighbors[vertex, slot]
+        dx = np.float32(current[other, 0] - x)
+        dy = np.float32(current[other, 1] - y)
+        dz = np.float32(current[other, 2] - z)
+        squared = np.float32(np.float32(dx * dx + dy * dy) + dz * dz)
+        dist = np.float32(np.sqrt(float(squared)))
+        if dist == 0.0 or dist > min_neighbor_mm:
+            continue
+        dx, dy, dz = np.float32(dx / dist), np.float32(dy / dist), np.float32(dz / dist)
+        dot = np.float32(np.float32(dx * odx + dy * ody) + dz * odz)
+        if dot <= 0.0:
+            continue
+        next_dx = np.float32(odx - np.float32(dot * dx))
+        next_dy = np.float32(ody - np.float32(dot * dy))
+        next_dz = np.float32(odz - np.float32(dot * dz))
+        if subvolume != 64:
+            endpoint = np.empty(3, dtype=np.float32)
+            endpoint[0] = np.float32(x + next_dx)
+            endpoint[1] = np.float32(y + next_dy)
+            endpoint[2] = np.float32(z + next_dz)
+            if _subvolume_index(endpoint, geometry) != subvolume:
+                return initial_offset.copy(), False
+        odx, ody, odz = next_dx, next_dy, next_dz
+    output = np.empty(3, dtype=np.float32)
+    output[0], output[1], output[2] = odx, ody, odz
+    return output, True
+
+def asynchronous_first_step(
+    vertices: np.ndarray, faces: np.ndarray, proposed: np.ndarray,
+    ripped: np.ndarray, *, limit: int | None = None,
+    regions: tuple[int, ...] | None = None,
+    fast: bool = True,
+    offsets: np.ndarray | None = None,
+    ordered_neighbors: tuple[np.ndarray, np.ndarray] | None = None,
+    min_neighbor_mm: float = 0.01,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Replay sorted subvolumes with dynamic triangle collision tests.
+
+    `proposed` contains the clipped pre-collision endpoint. Optional `offsets`
+    retain its unrounded float32 displacement for close-neighbor projection.
+    The initial cKDTree is widened by 1 mm to cover all 0.3 mm moves.
+    """
+    xyz = np.asarray(vertices, dtype=np.float32)
+    triangles = np.asarray(faces, dtype=np.int32)
+    next_xyz = np.asarray(proposed, dtype=np.float32)
+    geometry, _, vertex_svi = subvolume_assignment(xyz, triangles, next_xyz, ripped)
+    if offsets is not None:
+        offsets = np.asarray(offsets, dtype=np.float32)
+        if ordered_neighbors is None:
+            from .place_surface_smoothing import _ordered_neighbors
+            neighbor_indices, neighbor_valid, _ = _ordered_neighbors(triangles, len(xyz))
+        else:
+            neighbor_indices, neighbor_valid = ordered_neighbors
+    order = np.concatenate([
+        np.flatnonzero(vertex_svi == region)
+        for region in (range(65) if regions is None else regions)
+    ])
+    if limit is not None:
+        order = order[:limit]
+    current = xyz.copy()
+    original_triangles = xyz[triangles]
+    initial_centers = original_triangles.mean(axis=1, dtype=np.float64)
+    initial_radii = np.linalg.norm(
+        original_triangles.astype(np.float64) - initial_centers[:, None, :], axis=2,
+    ).max(axis=1)
+    tree = cKDTree(initial_centers)
+    flat = triangles.ravel()
+    incident = np.argsort(flat, kind="stable") // 3
+    incident_offsets = np.zeros(len(xyz) + 1, dtype=np.int64)
+    incident_offsets[1:] = np.cumsum(np.bincount(flat, minlength=len(xyz)))
+    maximum_radius = float(initial_radii.max())
+    for vertex in order:
+        if np.array_equal(next_xyz[vertex], xyz[vertex]):
+            continue
+        endpoint = next_xyz[vertex]
+        if offsets is not None:
+            projected, valid = _project_close_neighbors(
+                current, int(vertex), neighbor_indices, neighbor_valid,
+                offsets[vertex], geometry, int(vertex_svi[vertex]),
+                np.float32(min_neighbor_mm),
+            )
+            if not valid:
+                continue
+            endpoint = np.float32(xyz[vertex] + projected)
+        collision = False
+        for face_id in incident[incident_offsets[vertex]:incident_offsets[vertex + 1]]:
+            corners = triangles[face_id]
+            if fast:
+                moved, center, radius, low, high = _moved_face_geometry(
+                    current, triangles, face_id, int(vertex), endpoint,
+                )
+            else:
+                moved = current[corners].copy()
+                moved[np.flatnonzero(corners == vertex)[0]] = endpoint
+                center = moved.mean(axis=0, dtype=np.float64)
+                radius = np.linalg.norm(moved.astype(np.float64) - center, axis=1).max()
+                low, high = moved.min(axis=0), moved.max(axis=0)
+            nearby = np.asarray(tree.query_ball_point(center, radius + maximum_radius + 1.0), dtype=np.int32)
+            if fast:
+                collision = _candidate_collision(current, triangles, moved, corners, low, high, nearby)
+            else:
+                if len(nearby):
+                    neighbors = triangles[nearby]
+                    touching = np.any(neighbors[:, :, None] == corners[None, None, :], axis=(1, 2))
+                    nearby = nearby[~touching]
+                if len(nearby):
+                    points = current[triangles[nearby]]
+                    overlap = np.all(points.max(axis=1) >= low, axis=1) & np.all(points.min(axis=1) <= high, axis=1)
+                    for candidate in points[overlap]:
+                        if triangles_intersect(moved, candidate):
+                            collision = True
+                            break
+            if collision:
+                break
+        if not collision:
+            current[vertex] = endpoint
+    return current, order

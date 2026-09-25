@@ -1,0 +1,97 @@
+{
+  "host": "headcw",
+  "native_binary": "/public/software/apps/Freesurfer/8.2.0-1/bin/mri_pretess",
+  "input_sha256": {
+    "wm.asegedit.mgz": "c1b0b0bfb9da0b240c3c07c82378db0411617989e7277614c11602616f7056c4",
+    "filled.mgz": "15848b056548ba8215c926c6ef70509b8f4859e767b36ec2d38af91e8fa3a2a0",
+    "norm.mgz": "e8875a30cb63dcdfdbda6a830fa4a8a30141e1f0da3058d33b491253abe74390"
+  },
+  "repeats": 3,
+  "timing_scope": "same-host file I/O; native process startup included; Python imports excluded",
+  "rows": [
+    {
+      "call": "wm",
+      "label": "wm",
+      "python_topology_edits": 336,
+      "comparison": {
+        "voxels": 16777216,
+        "voxel_differences": 0,
+        "header_and_voxel_bytes_identical": true,
+        "decompressed_mgh_identical": false,
+        "max_affine_error": 0.0
+      },
+      "wall_seconds": {
+        "native": [
+          1.3890350544825196,
+          1.3647134080529213,
+          1.7769907796755433
+        ],
+        "python": [
+          3.4773983052000403,
+          3.6663617184385657,
+          3.5415500216186047
+        ]
+      },
+      "median_seconds": {
+        "native": 1.3890350544825196,
+        "python": 3.5415500216186047
+      }
+    },
+    {
+      "call": "lh",
+      "label": "255",
+      "python_topology_edits": 18,
+      "comparison": {
+        "voxels": 16777216,
+        "voxel_differences": 0,
+        "header_and_voxel_bytes_identical": true,
+        "decompressed_mgh_identical": false,
+        "max_affine_error": 0.0
+      },
+      "wall_seconds": {
+        "native": [
+          0.8578191315755248,
+          0.9987986283376813,
+          1.1200668923556805
+        ],
+        "python": [
+          2.802021644078195,
+          2.82176033873111,
+          3.4120755763724446
+        ]
+      },
+      "median_seconds": {
+        "native": 0.9987986283376813,
+        "python": 2.82176033873111
+      }
+    },
+    {
+      "call": "rh",
+      "label": "127",
+      "python_topology_edits": 9,
+      "comparison": {
+        "voxels": 16777216,
+        "voxel_differences": 0,
+        "header_and_voxel_bytes_identical": true,
+        "decompressed_mgh_identical": false,
+        "max_affine_error": 0.0
+      },
+      "wall_seconds": {
+        "native": [
+          0.6591176809743047,
+          0.8667638404294848,
+          0.745016060769558
+        ],
+        "python": [
+          1.8963484978303313,
+          1.8837546911090612,
+          2.155109217390418
+        ]
+      },
+      "median_seconds": {
+        "native": 0.745016060769558,
+        "python": 1.8963484978303313
+      }
+    }
+  ]
+}

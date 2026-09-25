@@ -1,0 +1,22 @@
+{
+  "projections": 1,
+  "sigma": 4.0,
+  "device": "cpu",
+  "input_sphere_sha256": "744e8d937f942a3a8d5f0ee739342762288e6824386aaa8a558065c92de84efc",
+  "atlas_sha256": "1064e4c0ae0440f5071b4369f29a09860f1abf6eddc90a271d10cd0ff7e60043",
+  "native_mgz_sha256": "2aeadc3ce657c58afd783da3c9621e0e445adb8f6f5745cf7dfe6063c2735428",
+  "torch_seconds_excluding_io": 6.935715667903423,
+  "pixels": 131072,
+  "exact_pixels": 131072,
+  "max_abs_error": 0.0,
+  "median_abs_error": 0.0,
+  "mean_abs_error": 0.0,
+  "candidate_mean_std": [
+    0.031647127121686935,
+    0.9865259528160095
+  ],
+  "native_mean_std": [
+    0.031647127121686935,
+    0.9865259528160095
+  ]
+}

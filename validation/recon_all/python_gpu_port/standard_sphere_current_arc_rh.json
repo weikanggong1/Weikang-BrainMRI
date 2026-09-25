@@ -1,0 +1,42 @@
+{
+  "rows": 76,
+  "arc_six_decimal_exact": 76,
+  "c_reference_six_decimal_exact": 76,
+  "chord_six_decimal_exact": 0,
+  "arc_max_abs_mm": 4.999237060987483e-07,
+  "chord_max_abs_mm": 0.0027350694465637093,
+  "c_reference_max_abs_mm": 4.999237060987483e-07,
+  "numba_vs_c_reference_max_abs_mm": 0.0,
+  "largest_arc_differences": [
+    {
+      "neighbor": 144,
+      "native": 0.646858,
+      "arc": 0.646857500076294,
+      "chord": 0.6463932991027832
+    },
+    {
+      "neighbor": 390,
+      "native": 2.601902,
+      "arc": 2.601902484893799,
+      "chord": 2.602012872695923
+    },
+    {
+      "neighbor": 15,
+      "native": 1.052356,
+      "arc": 1.052356481552124,
+      "chord": 1.053093671798706
+    },
+    {
+      "neighbor": 15,
+      "native": 1.052356,
+      "arc": 1.052356481552124,
+      "chord": 1.053093671798706
+    },
+    {
+      "neighbor": 80,
+      "native": 2.606709,
+      "arc": 2.606708526611328,
+      "chord": 2.60679292678833
+    }
+  ]
+}

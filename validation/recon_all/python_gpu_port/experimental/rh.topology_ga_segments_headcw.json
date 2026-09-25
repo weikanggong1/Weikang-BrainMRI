@@ -1,0 +1,17 @@
+{
+  "hemisphere": "rh",
+  "source_old_edges": 403,
+  "cluster_sizes": [
+    259,
+    77,
+    66
+  ],
+  "unassigned_edges": 1,
+  "native_annotation_nonzero": 230,
+  "predicted_annotation_nonzero": 230,
+  "defect_and_border_annotation_exact_positions": 441,
+  "defect_and_border_annotation_positions": 441,
+  "first_annotation_difference": null,
+  "first_annotation_native": null,
+  "first_annotation_python": null
+}

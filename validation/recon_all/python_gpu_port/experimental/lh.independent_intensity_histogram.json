@@ -1,0 +1,69 @@
+{
+  "hemisphere": "lh",
+  "scope": "independent first-defect white/gray intensity histograms and first select0s-to-select0sm transition",
+  "source": "FreeSurfer 8.2 d932c45b7941662ea380a05efef580568b98d41a",
+  "input_sha256": {
+    "original_surface": "ef00440f651026e4d099bd282f3e4e2cfbfffdc1e0877684fe22aa2948542b79",
+    "sphere": "8afffc181e2e05b8349099845e7ffe3b7a6a36e241d5689c4b6503c020485647",
+    "brain": "1b7360d069b76c8a5a63f93f3c296dddeb4db725c4e2625e11ebfc156279f401",
+    "patch_report": "280cfb91f7a88b29750a94282e9325a4240b726405621f3b15b1bdc2d95c77bc",
+    "select0s": "06a17e01ca707c8d19646986b62c8eec99411096fd4d3d54f3b87eae6d6630ea",
+    "select0sm": "5cf5cc91bbf8f249ebddfeb5da32962c849ce2efd7728dd0692d545179b10362",
+    "white_histogram_plot": "3b19a13e2cfceef6a2f180f825a5fb5946010d676a14c5294e675e97147d4b8a",
+    "gray_histogram_plot": "a9bbc6dab367f40f00ebfb899209dc0289974505e147a820ed13432d9e45cc5b"
+  },
+  "histogram_artifact": "lh.independent_intensity_histogram.tsv",
+  "histogram_artifact_sha256": "3a54e6c0eefdf7a222fd6b9398a853731c4cd582f9cf1105311b1c1e7b541020",
+  "first_defect_vertices": 181,
+  "first_defect_border": 64,
+  "first_defect_hull": 146,
+  "histogram_selected_vertices": 543,
+  "defect_label_differences": 0,
+  "histograms": {
+    "wr": {
+      "printed_10_decimal_equal": 256,
+      "parsed_float32_equal": 58,
+      "max_absolute_difference_from_plot": 4.7828675048267044e-11,
+      "first_printed_difference": null,
+      "first_python_printed": null,
+      "first_native_printed": null
+    },
+    "gr": {
+      "printed_10_decimal_equal": 256,
+      "parsed_float32_equal": 51,
+      "max_absolute_difference_from_plot": 4.7828675048267044e-11,
+      "first_printed_difference": null,
+      "first_python_printed": null,
+      "first_native_printed": null
+    },
+    "w": {
+      "printed_10_decimal_equal": 256,
+      "parsed_float32_equal": 79,
+      "max_absolute_difference_from_plot": 4.9823844485916147e-11,
+      "first_printed_difference": null,
+      "first_python_printed": null,
+      "first_native_printed": null
+    },
+    "g": {
+      "printed_10_decimal_equal": 256,
+      "parsed_float32_equal": 63,
+      "max_absolute_difference_from_plot": 4.911489444314743e-11,
+      "first_printed_difference": null,
+      "first_python_printed": null,
+      "first_native_printed": null
+    }
+  },
+  "white_mean_python": 74.81342315673828,
+  "gray_mean_python": 58.288795471191406,
+  "white_mean_native_plot": 74.81342315673828,
+  "gray_mean_native_plot": 58.288795471191406,
+  "white_mean_float32_bits_equal": true,
+  "gray_mean_float32_bits_equal": true,
+  "select0sm_inside_bitwise_equal": 54,
+  "select0sm_inside_vertices": 54,
+  "select0sm_all_bitwise_equal": 102764,
+  "select0sm_all_vertices": 102764,
+  "select0sm_max_distance_mm": 0.0,
+  "histogram_python_seconds_including_jit_and_reads": 20.16062095668167,
+  "mri_match_python_seconds_including_jit": 1.3137046918272972
+}

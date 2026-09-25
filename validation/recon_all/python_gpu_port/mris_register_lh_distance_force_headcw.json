@@ -1,0 +1,26 @@
+{
+  "device": "cpu",
+  "vertices": 106622,
+  "faces": 213240,
+  "native_observed_scalars": {
+    "avg_nbrs": 37.553768157958984,
+    "orig_area": 125659.5,
+    "total_area": 125663.703125,
+    "weight": 5.0
+  },
+  "exact_ordered_gradient_vectors": 106622,
+  "max_abs_gradient_error": 0.0,
+  "seconds_excluding_io": {
+    "adjacency_and_distance_packing": 1.3513373117893934,
+    "distance_force": 0.01934031769633293
+  },
+  "sha256": {
+    "sphere": "d28a3d49a26984a8044a6b44bd7666059bf434c764b97adbd776e4f93804c6ed",
+    "positions": "9c35b8ab0037d79df0af70869fbdf75e092f62d51e31be0ef83641376b6de8a1",
+    "normals": "945b3c47d5d0b1945497fdbf635be8e512aaede4133f9b753767e33e775f85a4",
+    "native_current_distances": "823eff89fc7f8d731a18e0d62cdd3aa3a206d8a140a3779da38d7a2b2c124316",
+    "native_original_distances": "cc1365225c950b16ba6927722bb6f20290404134c57af27c8d60b5833bebb323",
+    "native_gradient": "ae1cb41537a9478a7e9e658d2927ed744c71f51c2923d735aa3c3769c5a6725f"
+  },
+  "predicted_sha256": "ae1cb41537a9478a7e9e658d2927ed744c71f51c2923d735aa3c3769c5a6725f"
+}

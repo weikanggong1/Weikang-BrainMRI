@@ -1,0 +1,39 @@
+{
+  "input_sha256": "8afffc181e2e05b8349099845e7ffe3b7a6a36e241d5689c4b6503c020485647",
+  "native_sha256": {
+    "smoothed": "4745d2644f763d33828734d4b696a7b816e674f639e4b869627ccae6fdae7376",
+    "centered": "3932d126fdc686e1d07a2c1b7ebac30f0b926b9c93e7c4b450bc729be420fa82"
+  },
+  "center_iterations": 8,
+  "smoothed": {
+    "matching_components": 308292,
+    "total_components": 308292,
+    "matching_vertices": 102764,
+    "total_vertices": 102764,
+    "first_mismatch": null,
+    "max_absolute_mm": 0.0
+  },
+  "centered": {
+    "matching_components": 308292,
+    "total_components": 308292,
+    "matching_vertices": 102764,
+    "total_vertices": 102764,
+    "first_mismatch": null,
+    "max_absolute_mm": 0.0
+  },
+  "native_center_change": {
+    "matching_components": 303103,
+    "total_components": 308292,
+    "matching_vertices": 98190,
+    "total_vertices": 102764,
+    "first_mismatch": {
+      "vertex": 1,
+      "axis": "x",
+      "python_hex": "0x41f07745",
+      "native_hex": "0x41f07746",
+      "python_mm": 30.058237075805664,
+      "native_mm": 30.058238983154297
+    },
+    "max_absolute_mm": 1.52587890625e-05
+  }
+}

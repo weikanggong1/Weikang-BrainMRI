@@ -1,0 +1,333 @@
+{
+  "sphere_sha256": "8afffc181e2e05b8349099845e7ffe3b7a6a36e241d5689c4b6503c020485647",
+  "native_log_sha256": "a6b0dd8eb7453e5c4bfae7a8ee52bfeca4dab6966e368aeaaa16519ca9476f29",
+  "vertices": {
+    "2887": {
+      "degree_equal": true,
+      "ordered_neighbor_prefix_equal": true,
+      "ordered_neighbors": [
+        2907,
+        2906,
+        2888,
+        3403,
+        3402,
+        3418
+      ],
+      "native_neighbor_prefix": [
+        2907,
+        2906,
+        2888,
+        3403,
+        3402,
+        3418
+      ],
+      "python_accumulator_hex": [
+        "0x4389b8ca",
+        "0xc3f5fdda",
+        "0xc34d244e"
+      ],
+      "python_average_hex": [
+        "0x4237a10d",
+        "0xc2a3fe91",
+        "0xc208c2df"
+      ],
+      "native_average_hex": [
+        "0x4237a10d",
+        "0xc2a3fe91",
+        "0xc208c2df"
+      ],
+      "average_bitwise_equal": 3,
+      "python_projected_hex": [
+        "0x4237a10f",
+        "0xc2a3fe93",
+        "0xc208c2e1"
+      ],
+      "native_projected_hex": [
+        "0x4237a10f",
+        "0xc2a3fe93",
+        "0xc208c2e1"
+      ],
+      "projected_bitwise_equal": 3
+    },
+    "2907": {
+      "degree_equal": true,
+      "ordered_neighbor_prefix_equal": true,
+      "ordered_neighbors": [
+        2906,
+        2887,
+        2888,
+        3419,
+        3418
+      ],
+      "native_neighbor_prefix": [
+        2906,
+        2887,
+        2888,
+        3419,
+        3418,
+        0
+      ],
+      "python_accumulator_hex": [
+        "0x4365c202",
+        "0xc3ccf698",
+        "0xc32acbdf"
+      ],
+      "python_average_hex": [
+        "0x4237ce68",
+        "0xc2a3f87a",
+        "0xc208a319"
+      ],
+      "native_average_hex": [
+        "0x4237ce68",
+        "0xc2a3f87a",
+        "0xc208a319"
+      ],
+      "average_bitwise_equal": 3,
+      "python_projected_hex": [
+        "0x4237ce6c",
+        "0xc2a3f87e",
+        "0xc208a31c"
+      ],
+      "native_projected_hex": [
+        "0x4237ce6c",
+        "0xc2a3f87e",
+        "0xc208a31c"
+      ],
+      "projected_bitwise_equal": 3
+    },
+    "2906": {
+      "degree_equal": true,
+      "ordered_neighbor_prefix_equal": true,
+      "ordered_neighbors": [
+        2887,
+        2907,
+        3418
+      ],
+      "native_neighbor_prefix": [
+        2887,
+        2907,
+        3418,
+        0,
+        0,
+        0
+      ],
+      "python_accumulator_hex": [
+        "0x4309c776",
+        "0xc375ff9a",
+        "0xc2ccf486"
+      ],
+      "python_average_hex": [
+        "0x4237b49d",
+        "0xc2a3ffbc",
+        "0xc208a304"
+      ],
+      "native_average_hex": [
+        "0x4237b49d",
+        "0xc2a3ffbc",
+        "0xc208a304"
+      ],
+      "average_bitwise_equal": 3,
+      "python_projected_hex": [
+        "0x4237b49f",
+        "0xc2a3ffbe",
+        "0xc208a305"
+      ],
+      "native_projected_hex": [
+        "0x4237b49f",
+        "0xc2a3ffbe",
+        "0xc208a305"
+      ],
+      "projected_bitwise_equal": 3
+    },
+    "2888": {
+      "degree_equal": true,
+      "ordered_neighbor_prefix_equal": true,
+      "ordered_neighbors": [
+        2907,
+        2887,
+        3403,
+        3419
+      ],
+      "native_neighbor_prefix": [
+        2907,
+        2887,
+        3403,
+        3419,
+        0,
+        0
+      ],
+      "python_accumulator_hex": [
+        "0x4337cd21",
+        "0xc3a3f2fe",
+        "0xc308bf1a"
+      ],
+      "python_average_hex": [
+        "0x4237cd21",
+        "0xc2a3f2fe",
+        "0xc208bf1a"
+      ],
+      "native_average_hex": [
+        "0x4237cd21",
+        "0xc2a3f2fe",
+        "0xc208bf1a"
+      ],
+      "average_bitwise_equal": 3,
+      "python_projected_hex": [
+        "0x4237cd25",
+        "0xc2a3f302",
+        "0xc208bf1e"
+      ],
+      "native_projected_hex": [
+        "0x4237cd25",
+        "0xc2a3f302",
+        "0xc208bf1e"
+      ],
+      "projected_bitwise_equal": 3
+    },
+    "3403": {
+      "degree_equal": true,
+      "ordered_neighbor_prefix_equal": true,
+      "ordered_neighbors": [
+        2888,
+        2887,
+        3402,
+        3419,
+        3386,
+        3387,
+        3404
+      ],
+      "native_neighbor_prefix": [
+        2888,
+        2887,
+        3402,
+        3419,
+        3386,
+        3387
+      ],
+      "python_accumulator_hex": [
+        "0x43a0bfd2",
+        "0xc40f729e",
+        "0xc36f95a6"
+      ],
+      "python_average_hex": [
+        "0x4237b6a7",
+        "0xc2a3f0b5",
+        "0xc208e7cd"
+      ],
+      "native_average_hex": [
+        "0x4237b6a7",
+        "0xc2a3f0b5",
+        "0xc208e7cd"
+      ],
+      "average_bitwise_equal": 3,
+      "python_projected_hex": [
+        "0x4237b6be",
+        "0xc2a3f0c9",
+        "0xc208e7de"
+      ],
+      "native_projected_hex": [
+        "0x4237b6be",
+        "0xc2a3f0c9",
+        "0xc208e7de"
+      ],
+      "projected_bitwise_equal": 3
+    },
+    "3402": {
+      "degree_equal": true,
+      "ordered_neighbor_prefix_equal": true,
+      "ordered_neighbors": [
+        3403,
+        2887,
+        3418,
+        3401,
+        3385,
+        3386,
+        3873,
+        3883
+      ],
+      "native_neighbor_prefix": [
+        3403,
+        2887,
+        3418,
+        3401,
+        3385,
+        3386
+      ],
+      "python_accumulator_hex": [
+        "0x43b7664d",
+        "0xc424029e",
+        "0xc388fd6e"
+      ],
+      "python_average_hex": [
+        "0x4237664d",
+        "0xc2a4029e",
+        "0xc208fd6e"
+      ],
+      "native_average_hex": [
+        "0x4237664d",
+        "0xc2a4029e",
+        "0xc208fd6e"
+      ],
+      "average_bitwise_equal": 3,
+      "python_projected_hex": [
+        "0x42376670",
+        "0xc2a402bd",
+        "0xc208fd88"
+      ],
+      "native_projected_hex": [
+        "0x42376670",
+        "0xc2a402bd",
+        "0xc208fd88"
+      ],
+      "projected_bitwise_equal": 3
+    },
+    "3418": {
+      "degree_equal": true,
+      "ordered_neighbor_prefix_equal": true,
+      "ordered_neighbors": [
+        3402,
+        2887,
+        2906,
+        2907,
+        3419,
+        3883,
+        3884
+      ],
+      "native_neighbor_prefix": [
+        3402,
+        2887,
+        2906,
+        2907,
+        3419,
+        3883
+      ],
+      "python_accumulator_hex": [
+        "0x43a0f4e6",
+        "0xc40f7623",
+        "0xc36ee57e"
+      ],
+      "python_average_hex": [
+        "0x4237f350",
+        "0xc2a3f4ba",
+        "0xc2088323"
+      ],
+      "native_average_hex": [
+        "0x4237f350",
+        "0xc2a3f4ba",
+        "0xc2088323"
+      ],
+      "average_bitwise_equal": 3,
+      "python_projected_hex": [
+        "0x4237f35f",
+        "0xc2a3f4c8",
+        "0xc208832e"
+      ],
+      "native_projected_hex": [
+        "0x4237f35f",
+        "0xc2a3f4c8",
+        "0xc208832e"
+      ],
+      "projected_bitwise_equal": 3
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "input_and_splat_seconds": 3.2625468112528324,
+  "fields": {
+    "x": {
+      "seconds": 63.919470604509115,
+      "voronoi_iterations": 91,
+      "soap_iterations": 50,
+      "elements": 16777216,
+      "different": 0,
+      "max_abs": 0.0,
+      "p99_abs": 0.0
+    },
+    "y": {
+      "seconds": 64.38705685175955,
+      "voronoi_iterations": 91,
+      "soap_iterations": 50,
+      "elements": 16777216,
+      "different": 0,
+      "max_abs": 0.0,
+      "p99_abs": 0.0
+    },
+    "z": {
+      "seconds": 63.956391335465014,
+      "voronoi_iterations": 91,
+      "soap_iterations": 50,
+      "elements": 16777216,
+      "different": 0,
+      "max_abs": 0.0,
+      "p99_abs": 0.0
+    }
+  },
+  "displacement": {
+    "seconds": 2.942779026925564,
+    "elements": 50331648,
+    "different": 0,
+    "max_abs": 0.0,
+    "p99_abs": 0.0
+  },
+  "written_file": {
+    "seconds": 8.144732999615371,
+    "decompressed_bytes": 268436688,
+    "different_bytes": 0,
+    "first_difference": null,
+    "written_raw_sha256": "9cc9a86ada9cc0b7873136d123b7c8756ee5081cbe907b284164ac19de4661b5",
+    "native_raw_sha256": "9cc9a86ada9cc0b7873136d123b7c8756ee5081cbe907b284164ac19de4661b5",
+    "written_compressed_sha256": "0c95c189c52590d56a0f03bd6523644e50183ed834e8ef4e33d83201d3e76c4d",
+    "native_compressed_sha256": "1b5b6402c1228f37ad7680b062ab3a17bf0e78dafd0049d769b1698466443498"
+  },
+  "total_seconds_including_io_jit_comparison": 211.74911883380264
+}

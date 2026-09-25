@@ -1,0 +1,14 @@
+{
+  "hemisphere": "rh",
+  "scope": "experimental first-candidate MRI match from native select0s",
+  "neighbor_order": "runtime_patch",
+  "white_mean_from_native_histogram": 77.67577362060547,
+  "gray_mean_from_native_histogram": 59.5891227722168,
+  "python_seconds_including_jit": 1.0704679964110255,
+  "inside": 124,
+  "inside_bitwise_equal": 0,
+  "outside_bitwise_equal": 101330,
+  "inside_max_distance_mm": 0.25818889310923654,
+  "inside_mean_distance_mm": 0.05933885420064359,
+  "inside_first_mismatch": 100263
+}

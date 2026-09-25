@@ -1,0 +1,1 @@
+{'vertices': 106622, 'device': 'cuda:0', 'setup_seconds': 0.8150210487656295, 'compute_seconds': 3.604357987176627, 'total_seconds': 4.428225757088512, 'expanded_searches': 0}

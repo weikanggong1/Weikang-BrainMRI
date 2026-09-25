@@ -1,0 +1,407 @@
+{
+  "hemisphere": "lh",
+  "input_sha256": {
+    "orig": "ef00440f651026e4d099bd282f3e4e2cfbfffdc1e0877684fe22aa2948542b79",
+    "qsphere": "8afffc181e2e05b8349099845e7ffe3b7a6a36e241d5689c4b6503c020485647"
+  },
+  "native_log_sha256": "f474c69e051a6f6f8dbef5109de790639bee2a2e323500e06295861468ee3574",
+  "diagnostic_vertices": [
+    2887,
+    2907,
+    2906,
+    2888,
+    3403,
+    3402,
+    3418
+  ],
+  "center_sphere_iterations": 8,
+  "stages": {
+    "projected": {
+      "xyz_bitwise_equal": 21,
+      "xyz_components": 21,
+      "first_xyz_mismatch": null,
+      "native_xyz_hex": {
+        "2887": [
+          "0x423789ed",
+          "0xc2a4039e",
+          "0xc208c9c2"
+        ],
+        "2907": [
+          "0x4237b582",
+          "0xc2a3fe27",
+          "0xc208a971"
+        ],
+        "2906": [
+          "0x423796e9",
+          "0xc2a409d8",
+          "0xc2089a6c"
+        ],
+        "2888": [
+          "0x4237b401",
+          "0xc2a3f470",
+          "0xc208da0f"
+        ],
+        "3403": [
+          "0x4237a04d",
+          "0xc2a3ef27",
+          "0xc2090dcb"
+        ],
+        "3402": [
+          "0x4237472d",
+          "0xc2a40e5e",
+          "0xc208efaa"
+        ],
+        "3418": [
+          "0x4237de69",
+          "0xc2a3fd6f",
+          "0xc20875d9"
+        ]
+      },
+      "python_xyz_hex": {
+        "2887": [
+          "0x423789ed",
+          "0xc2a4039e",
+          "0xc208c9c2"
+        ],
+        "2907": [
+          "0x4237b582",
+          "0xc2a3fe27",
+          "0xc208a971"
+        ],
+        "2906": [
+          "0x423796e9",
+          "0xc2a409d8",
+          "0xc2089a6c"
+        ],
+        "2888": [
+          "0x4237b401",
+          "0xc2a3f470",
+          "0xc208da0f"
+        ],
+        "3403": [
+          "0x4237a04d",
+          "0xc2a3ef27",
+          "0xc2090dcb"
+        ],
+        "3402": [
+          "0x4237472d",
+          "0xc2a40e5e",
+          "0xc208efaa"
+        ],
+        "3418": [
+          "0x4237de69",
+          "0xc2a3fd6f",
+          "0xc20875d9"
+        ]
+      },
+      "native_normal_hex": {
+        "2887": [
+          "0xbeeabaa0",
+          "0x3f520a4b",
+          "0x3eaede28"
+        ],
+        "2907": [
+          "0xbeeb45a5",
+          "0x3f51df4e",
+          "0x3eaef1c8"
+        ],
+        "2906": [
+          "0xbeeaf107",
+          "0x3f520488",
+          "0x3eaeb0c3"
+        ],
+        "2888": [
+          "0xbeeb5713",
+          "0x3f51cdcc",
+          "0x3eaf2e4f"
+        ],
+        "3403": [
+          "0xbeeb2b46",
+          "0x3f51c797",
+          "0x3eaf86c7"
+        ],
+        "3402": [
+          "0x3eefa6e2",
+          "0xbf4ee134",
+          "0xbeb7119a"
+        ],
+        "3418": [
+          "0xbeea35eb",
+          "0x3f52bbf2",
+          "0x3eac33f4"
+        ]
+      }
+    },
+    "smoothed": {
+      "xyz_bitwise_equal": 21,
+      "xyz_components": 21,
+      "first_xyz_mismatch": null,
+      "native_xyz_hex": {
+        "2887": [
+          "0x4237f42d",
+          "0xc2a3ea40",
+          "0xc208b4a5"
+        ],
+        "2907": [
+          "0x42381e4d",
+          "0xc2a3e342",
+          "0xc2089d73"
+        ],
+        "2906": [
+          "0x423809a0",
+          "0xc2a3e784",
+          "0xc208a4e5"
+        ],
+        "2888": [
+          "0x42381822",
+          "0xc2a3e3eb",
+          "0xc208a29c"
+        ],
+        "3403": [
+          "0x4237f734",
+          "0xc2a3e88d",
+          "0xc208b8bc"
+        ],
+        "3402": [
+          "0x4237a7a7",
+          "0xc2a3f116",
+          "0xc208faab"
+        ],
+        "3418": [
+          "0x42383db2",
+          "0xc2a3da86",
+          "0xc2089d0c"
+        ]
+      },
+      "python_xyz_hex": {
+        "2887": [
+          "0x4237f42d",
+          "0xc2a3ea40",
+          "0xc208b4a5"
+        ],
+        "2907": [
+          "0x42381e4d",
+          "0xc2a3e342",
+          "0xc2089d73"
+        ],
+        "2906": [
+          "0x423809a0",
+          "0xc2a3e784",
+          "0xc208a4e5"
+        ],
+        "2888": [
+          "0x42381822",
+          "0xc2a3e3eb",
+          "0xc208a29c"
+        ],
+        "3403": [
+          "0x4237f734",
+          "0xc2a3e88d",
+          "0xc208b8bc"
+        ],
+        "3402": [
+          "0x4237a7a7",
+          "0xc2a3f116",
+          "0xc208faab"
+        ],
+        "3418": [
+          "0x42383db2",
+          "0xc2a3da86",
+          "0xc2089d0c"
+        ]
+      },
+      "native_normal_hex": {
+        "2887": [
+          "0xbeeabaa0",
+          "0x3f520a4b",
+          "0x3eaede28"
+        ],
+        "2907": [
+          "0xbeeb45a5",
+          "0x3f51df4e",
+          "0x3eaef1c8"
+        ],
+        "2906": [
+          "0xbeeaf107",
+          "0x3f520488",
+          "0x3eaeb0c3"
+        ],
+        "2888": [
+          "0xbeeb5713",
+          "0x3f51cdcc",
+          "0x3eaf2e4f"
+        ],
+        "3403": [
+          "0xbeeb2b46",
+          "0x3f51c797",
+          "0x3eaf86c7"
+        ],
+        "3402": [
+          "0x3eefa6e2",
+          "0xbf4ee134",
+          "0xbeb7119a"
+        ],
+        "3418": [
+          "0xbeea35eb",
+          "0x3f52bbf2",
+          "0x3eac33f4"
+        ]
+      }
+    },
+    "centered": {
+      "xyz_bitwise_equal": 21,
+      "xyz_components": 21,
+      "first_xyz_mismatch": null,
+      "native_xyz_hex": {
+        "2887": [
+          "0x4237f42d",
+          "0xc2a3ea40",
+          "0xc208b4a5"
+        ],
+        "2907": [
+          "0x42381e4d",
+          "0xc2a3e342",
+          "0xc2089d73"
+        ],
+        "2906": [
+          "0x423809a0",
+          "0xc2a3e784",
+          "0xc208a4e5"
+        ],
+        "2888": [
+          "0x42381822",
+          "0xc2a3e3eb",
+          "0xc208a29c"
+        ],
+        "3403": [
+          "0x4237f734",
+          "0xc2a3e88d",
+          "0xc208b8bc"
+        ],
+        "3402": [
+          "0x4237a7a7",
+          "0xc2a3f116",
+          "0xc208faab"
+        ],
+        "3418": [
+          "0x42383db2",
+          "0xc2a3da86",
+          "0xc2089d0c"
+        ]
+      },
+      "python_xyz_hex": {
+        "2887": [
+          "0x4237f42d",
+          "0xc2a3ea40",
+          "0xc208b4a5"
+        ],
+        "2907": [
+          "0x42381e4d",
+          "0xc2a3e342",
+          "0xc2089d73"
+        ],
+        "2906": [
+          "0x423809a0",
+          "0xc2a3e784",
+          "0xc208a4e5"
+        ],
+        "2888": [
+          "0x42381822",
+          "0xc2a3e3eb",
+          "0xc208a29c"
+        ],
+        "3403": [
+          "0x4237f734",
+          "0xc2a3e88d",
+          "0xc208b8bc"
+        ],
+        "3402": [
+          "0x4237a7a7",
+          "0xc2a3f116",
+          "0xc208faab"
+        ],
+        "3418": [
+          "0x42383db2",
+          "0xc2a3da86",
+          "0xc2089d0c"
+        ]
+      },
+      "native_normal_hex": {
+        "2887": [
+          "0xbeeb011b",
+          "0x3f5233bd",
+          "0x3eadb750"
+        ],
+        "2907": [
+          "0xbeeb4e7e",
+          "0x3f51c576",
+          "0x3eaf61bb"
+        ],
+        "2906": [
+          "0x3eeb86df",
+          "0xbf51ee65",
+          "0xbeae5156"
+        ],
+        "2888": [
+          "0xbeeba169",
+          "0x3f51d4f0",
+          "0x3eaea7fb"
+        ],
+        "3403": [
+          "0xbeedc988",
+          "0x3f4ffc11",
+          "0x3eb4794a"
+        ],
+        "3402": [
+          "0x3eeb2bee",
+          "0xbf51bb0e",
+          "0xbeafc1c2"
+        ],
+        "3418": [
+          "0x3eebfaf4",
+          "0xbf5197f7",
+          "0xbeaf5392"
+        ]
+      },
+      "normal_bitwise_equal": 21,
+      "normal_components": 21,
+      "python_normal_hex": {
+        "2887": [
+          "0xbeeb011b",
+          "0x3f5233bd",
+          "0x3eadb750"
+        ],
+        "2907": [
+          "0xbeeb4e7e",
+          "0x3f51c576",
+          "0x3eaf61bb"
+        ],
+        "2906": [
+          "0x3eeb86df",
+          "0xbf51ee65",
+          "0xbeae5156"
+        ],
+        "2888": [
+          "0xbeeba169",
+          "0x3f51d4f0",
+          "0x3eaea7fb"
+        ],
+        "3403": [
+          "0xbeedc988",
+          "0x3f4ffc11",
+          "0x3eb4794a"
+        ],
+        "3402": [
+          "0x3eeb2bee",
+          "0xbf51bb0e",
+          "0xbeafc1c2"
+        ],
+        "3418": [
+          "0x3eebfaf4",
+          "0xbf5197f7",
+          "0xbeaf5392"
+        ]
+      }
+    }
+  }
+}

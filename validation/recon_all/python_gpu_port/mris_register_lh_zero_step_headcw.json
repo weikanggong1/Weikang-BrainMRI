@@ -1,0 +1,16 @@
+{
+  "device": "cpu",
+  "input_sha256": "d28a3d49a26984a8044a6b44bd7666059bf434c764b97adbd776e4f93804c6ed",
+  "sulc_sha256": "49801953491d37a6fac016bbd0342c5dc46d2524f1872416cee339469839481a",
+  "native_diagnostic_sha256": "80443ca97d929d883e4ae12b2d206acedf1d8563b6e0c936423f8f35261a427f",
+  "vertices": 106622,
+  "faces": 213240,
+  "ordered_faces_equal": true,
+  "exact_vertices": 106622,
+  "max_abs_coordinate_error_mm": 0.0,
+  "projection_seconds_excluding_io": 0.17369858734309673,
+  "sulc_mean_before_normalization": 2.978960969523164e-09,
+  "sulc_std_before_normalization": 5.520306772619432,
+  "normalized_sulc_mean": 5.965316908403671e-11,
+  "normalized_sulc_std": 1.0000000000501275
+}

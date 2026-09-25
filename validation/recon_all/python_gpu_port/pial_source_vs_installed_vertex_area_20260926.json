@@ -1,0 +1,16 @@
+{
+  "scope": "first LH pial normal CLI, not final pial or complete recon-all",
+  "method": "validated fnit.recon_all.surface_area_gpu.vertex_area CPU kernel",
+  "area_kernel_sha256": "ad60ee9c6b3e45464650ac15f2fce7bc2ea3a6cb519c15f371f4f653f45964a8",
+  "reference_sha256": "4bcd2b9ccd607db0e87b9e4da0d26cb55ac853a53b2bd0926cf17c63f73be76b",
+  "candidate_sha256": "9efbdd9dfac59d1032b9138ebb58df1ed47db48fb24bc01cbb907f77baa70cba",
+  "vertices": 106622,
+  "face_count": 213240,
+  "area_total_reference_mm2": 93008.2421875,
+  "area_total_candidate_mm2": 93008.578125,
+  "exact_vertex_areas": 7304,
+  "outliers_at_existing_area_rule": 79656,
+  "max_abs_vertex_area_mm2": 0.6212400197982788,
+  "p99_abs_vertex_area_mm2": 0.09690971761941909,
+  "first_outlier": 0
+}

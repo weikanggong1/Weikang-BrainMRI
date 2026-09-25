@@ -1,0 +1,49 @@
+{
+  "library": "0.6.3",
+  "seconds": 25.976712078787386,
+  "input_dtype": "uint8",
+  "output_dtype": "float32",
+  "shape": [
+    256,
+    256,
+    256
+  ],
+  "truncate_uint8": {
+    "exact_voxels": 16135004,
+    "total_voxels": 16777216,
+    "mean_abs": 0.038278818130493164,
+    "max_abs": 1,
+    "first_mismatch": [
+      64,
+      117,
+      112
+    ],
+    "first_mismatch_values": [
+      0,
+      1
+    ]
+  },
+  "round_uint8": {
+    "exact_voxels": 16777213,
+    "total_voxels": 16777216,
+    "mean_abs": 1.7881393432617188e-07,
+    "max_abs": 1,
+    "first_mismatch": [
+      67,
+      111,
+      129
+    ],
+    "first_mismatch_values": [
+      0,
+      1
+    ]
+  },
+  "freesurfer_nint_uint8": {
+    "exact_voxels": 16777216,
+    "total_voxels": 16777216,
+    "mean_abs": 0.0,
+    "max_abs": 0,
+    "first_mismatch": null,
+    "first_mismatch_values": null
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "stage": "mri_add_xform_to_header -c after conform",
+  "subject": "fs_sub01",
+  "host": "headcw",
+  "candidate": "conform_with_xform.mgz",
+  "reference": "fs_sub01/mri/orig.mgz",
+  "image_header_voxel_and_scan_parameters_identical": true,
+  "tag_id_candidate": 31,
+  "tag_id_reference": 31,
+  "tag_payload_length_bytes": 136,
+  "tag_payload_identical": true,
+  "mri_info_loaded_talairach_xform": true,
+  "mri_info_printed_same_talairach_path_and_voxel_to_ras": true,
+  "talairach_xfm_sha256": "1e509f0e544614555ef77ba4df6c8f6ebfa4c73c4771d7464589250dfc607e59",
+  "complete_decompressed_mgh_equal": false,
+  "note": "The native footer also contains metadata and command-history tags."
+}

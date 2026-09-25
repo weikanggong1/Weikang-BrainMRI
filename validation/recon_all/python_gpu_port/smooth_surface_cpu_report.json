@@ -1,0 +1,61 @@
+{
+  "host": "headcw",
+  "device": "cpu",
+  "native_binary": "/public/software/apps/Freesurfer/8.2.0-1/bin/mris_smooth",
+  "input_sha256": {
+    "lh": "2e27eb152b36e7a26f9f70cd43daa9c73a6924cafa3ce0e2431eee60d91abd02",
+    "rh": "a447d0d8f338c4012b7432a6fa098db965615da86e2b4726fa23eb59d73c6cb2"
+  },
+  "repeats": 3,
+  "timing_scope": "same-host file I/O; native process startup included; Python imports excluded",
+  "rows": [
+    {
+      "hemi": "lh",
+      "comparison": {
+        "vertices": 102764,
+        "triangles": 205560,
+        "geometry_bytes_identical": true
+      },
+      "wall_seconds": {
+        "native": [
+          1.4799432856962085,
+          1.396076811477542,
+          1.6561384536325932
+        ],
+        "python": [
+          3.2510919803753495,
+          3.2467025397345424,
+          3.243662145920098
+        ]
+      },
+      "median_seconds": {
+        "native": 1.4799432856962085,
+        "python": 3.2467025397345424
+      }
+    },
+    {
+      "hemi": "rh",
+      "comparison": {
+        "vertices": 101454,
+        "triangles": 202936,
+        "geometry_bytes_identical": true
+      },
+      "wall_seconds": {
+        "native": [
+          1.3666297849267721,
+          1.9792595067992806,
+          1.8642213251441717
+        ],
+        "python": [
+          3.56812653131783,
+          3.48544121067971,
+          3.808772317133844
+        ]
+      },
+      "median_seconds": {
+        "native": 1.8642213251441717,
+        "python": 3.56812653131783
+      }
+    }
+  ]
+}

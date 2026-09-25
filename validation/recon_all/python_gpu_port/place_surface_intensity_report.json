@@ -1,0 +1,41 @@
+{
+  "reference": "copied pinned FreeSurfer 8.2 first pial step source probe",
+  "comparisons": {
+    "initial_xyz": {
+      "exact_elements": 319866,
+      "total_elements": 319866,
+      "max_abs_error": 0.0
+    },
+    "initial_normals": {
+      "exact_elements": 319866,
+      "total_elements": 319866,
+      "max_abs_error": 0.0
+    },
+    "ripped": {
+      "exact_elements": 106622,
+      "total_elements": 106622,
+      "max_abs_error": 0.0
+    },
+    "placement_volume": {
+      "exact_elements": 16777216,
+      "total_elements": 16777216,
+      "max_abs_error": 0.0
+    },
+    "target_values": {
+      "exact_elements": 106622,
+      "total_elements": 106622,
+      "max_abs_error": 0.0
+    },
+    "vertex_sigma": {
+      "exact_elements": 106622,
+      "total_elements": 106622,
+      "max_abs_error": 0.0
+    },
+    "intensity_gradient": {
+      "exact_elements": 319866,
+      "total_elements": 319866,
+      "max_abs_error": 0.0
+    }
+  },
+  "seconds_including_io_and_jit": 15.733799137175083
+}

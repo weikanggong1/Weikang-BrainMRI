@@ -1,0 +1,19 @@
+{
+  "predictions": {
+    "native_feature": {
+      "seconds": 0.23129400797188282,
+      "exact_labels": 105541,
+      "vertices": 105541,
+      "first_mismatch_vertices": [],
+      "first_mismatch_native_pred": []
+    },
+    "python_feature": {
+      "seconds": 0.2233040053397417,
+      "exact_labels": 105541,
+      "vertices": 105541,
+      "first_mismatch_vertices": [],
+      "first_mismatch_native_pred": []
+    }
+  },
+  "total_seconds": 2.554420734755695
+}

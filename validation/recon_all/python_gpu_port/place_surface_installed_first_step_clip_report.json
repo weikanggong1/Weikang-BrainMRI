@@ -1,0 +1,210 @@
+{
+  "reference": "installed FreeSurfer 8.2.0-1 LH pial first-step RAM mesh; frozen copied-source gradient as input",
+  "limitation": "Only v80852 gradient was confirmed bitwise equal to installed native; other vertices and later steps require independent installed gradient checks.",
+  "sha256": {
+    "installed_binary": "67139c3590f961f879a4214cd01f173b42986c7b178d1851dfa3f08e8acf12aa",
+    "source_clear": "4d08114fbd114869c3c9c31764657177ddd3f86f33133d9f551287970674eb8f",
+    "source_final_gradient": "07a05f9b4ef1724f1904d49b3a5e1e3c204ec819965afa1bc047d3f305dfcd74",
+    "source_after_collision": "5ff4433419e255e6edf4923d0fd2f70753251b58471e0b781d15db1cc645a3bd",
+    "installed_ram_mesh": "cf4b4b37d14f7a042f22d80be5101a4013e07d94d2366f8c9fb927a3f6be1e10"
+  },
+  "ordered_faces_exact": true,
+  "processed_vertices": 101000,
+  "proposal_vs_installed": {
+    "exact_vertices": 106439,
+    "total_vertices": 106622,
+    "max_distance_mm": 0.3000037927389465,
+    "first_different_vertices": [
+      52,
+      65,
+      69,
+      78,
+      153,
+      1167,
+      1168,
+      1404,
+      1500,
+      1501,
+      1709,
+      1710
+    ]
+  },
+  "accepted_vs_installed": {
+    "exact_vertices": 106622,
+    "total_vertices": 106622,
+    "max_distance_mm": 0.0,
+    "first_different_vertices": []
+  },
+  "accepted_vs_copied_source": {
+    "exact_vertices": 105295,
+    "total_vertices": 106622,
+    "max_distance_mm": 7.62939453125e-06,
+    "first_different_vertices": [
+      32,
+      127,
+      129,
+      163,
+      168,
+      216,
+      217,
+      228,
+      252,
+      263,
+      328,
+      366
+    ]
+  },
+  "accepted_vs_copied_source_mesh": {
+    "exact_vertices": 105295,
+    "total_vertices": 106622,
+    "max_distance_mm": 7.62939453125e-06,
+    "first_different_vertices": [
+      32,
+      127,
+      129,
+      163,
+      168,
+      216,
+      217,
+      228,
+      252,
+      263,
+      328,
+      366
+    ]
+  },
+  "selected": {
+    "79330": {
+      "gradient_bits": [
+        3212935495,
+        1068475567,
+        1087302626
+      ],
+      "offset_bits": [
+        3174689185,
+        1031546279,
+        1049921087
+      ],
+      "proposal_bits": [
+        3249582712,
+        1108549043,
+        1113292279
+      ],
+      "accepted_bits": [
+        3249582712,
+        1108549043,
+        1113292279
+      ],
+      "installed_bits": [
+        3249582712,
+        1108549043,
+        1113292279
+      ],
+      "source_accepted_bits": [
+        3249582712,
+        1108549043,
+        1113292280
+      ],
+      "accepted_installed_exact": true
+    },
+    "80852": {
+      "gradient_bits": [
+        3226009079,
+        1072441039,
+        1083592287
+      ],
+      "offset_bits": [
+        3189919811,
+        1035908351,
+        1047708501
+      ],
+      "proposal_bits": [
+        3251516693,
+        1109770541,
+        1114034407
+      ],
+      "accepted_bits": [
+        3251516693,
+        1109770541,
+        1114034407
+      ],
+      "installed_bits": [
+        3251516693,
+        1109770541,
+        1114034407
+      ],
+      "source_accepted_bits": [
+        3251516693,
+        1109770542,
+        1114034407
+      ],
+      "accepted_installed_exact": true
+    },
+    "84480": {
+      "gradient_bits": [
+        1091040185,
+        3181475631,
+        3235283296
+      ],
+      "offset_bits": [
+        1047604545,
+        3138336763,
+        3191751611
+      ],
+      "proposal_bits": [
+        3247833117,
+        1112305769,
+        1110675978
+      ],
+      "accepted_bits": [
+        3247833117,
+        1112305769,
+        1110675978
+      ],
+      "installed_bits": [
+        3247833117,
+        1112305769,
+        1110675978
+      ],
+      "source_accepted_bits": [
+        3247833118,
+        1112305769,
+        1110675978
+      ],
+      "accepted_installed_exact": true
+    },
+    "97803": {
+      "gradient_bits": [
+        3236781782,
+        1065979587,
+        3219346939
+      ],
+      "offset_bits": [
+        3197364928,
+        1026256906,
+        3180177913
+      ],
+      "proposal_bits": [
+        3255028006,
+        1111539901,
+        1111290992
+      ],
+      "accepted_bits": [
+        3255028006,
+        1111539901,
+        1111290992
+      ],
+      "installed_bits": [
+        3255028006,
+        1111539901,
+        1111290992
+      ],
+      "source_accepted_bits": [
+        3255028007,
+        1111539901,
+        1111290992
+      ],
+      "accepted_installed_exact": true
+    }
+  }
+}

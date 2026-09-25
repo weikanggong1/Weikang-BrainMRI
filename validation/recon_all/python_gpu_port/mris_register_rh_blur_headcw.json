@@ -1,0 +1,16 @@
+{
+  "device": "cpu",
+  "sigma": 0.5,
+  "frame": 4,
+  "atlas_sha256": "1064e4c0ae0440f5071b4369f29a09860f1abf6eddc90a271d10cd0ff7e60043",
+  "native_mgz_sha256": "240b79d17a1bb6669882231b7448f359564ae54d510f26d08b6c458e4b05fdd2",
+  "grid_shape": [
+    512,
+    256
+  ],
+  "exact_pixels": 131072,
+  "pixels": 131072,
+  "max_abs_error": 0.0,
+  "median_abs_error": 0.0,
+  "torch_seconds_excluding_io": 0.22874921187758446
+}

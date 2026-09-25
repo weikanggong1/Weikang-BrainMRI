@@ -1,0 +1,67 @@
+{
+  "reference": "pinned FreeSurfer 8.2 copied-source LH pial full-precision objective probe",
+  "inputs": "original MRI, WM, aseg, LH white, label and frozen autodet stats",
+  "target_values_match_probe": true,
+  "checkpoints": {
+    "initial": {
+      "intensity_sse": 153906393.05213502,
+      "intensity_rms": 39.05922669761335,
+      "eligible_vertices": 100881,
+      "tangential_spring_energy": 541187.1003165314,
+      "orig_area": 75302.5,
+      "total_area": 75302.5,
+      "full_sse": 30943635.20565021,
+      "rms_abs_error": 0.0,
+      "full_sse_abs_error": 0.0,
+      "native_total_area_abs_error": 0.0
+    },
+    "step1": {
+      "intensity_sse": 105937721.11419295,
+      "intensity_rms": 32.40564155460752,
+      "eligible_vertices": 100881,
+      "tangential_spring_energy": 548330.0289134457,
+      "orig_area": 75302.5,
+      "total_area": 76115.171875,
+      "full_sse": 21350287.220679563,
+      "rms_abs_error": 0.0,
+      "full_sse_abs_error": 3.725290298461914e-09,
+      "native_total_area_abs_error": 0.0
+    },
+    "step2": {
+      "intensity_sse": 71129844.72812295,
+      "intensity_rms": 26.553467457855252,
+      "eligible_vertices": 100881,
+      "tangential_spring_energy": 561808.6724831286,
+      "orig_area": 75302.5,
+      "total_area": 76982.5859375,
+      "full_sse": 14390833.45159803,
+      "rms_abs_error": 0.0,
+      "full_sse_abs_error": 0.0,
+      "native_total_area_abs_error": 0.0
+    }
+  },
+  "native": {
+    "initial": {
+      "rms": 39.05922669761335,
+      "full_sse": 30943635.20565021,
+      "orig_area": 75302.5,
+      "total_area": 75302.5
+    },
+    "step1": {
+      "rms": 32.40564155460752,
+      "full_sse": 21350287.22067956,
+      "orig_area": 75302.5,
+      "total_area": 76115.171875
+    },
+    "step2": {
+      "rms": 26.553467457855252,
+      "full_sse": 14390833.45159803,
+      "orig_area": 75302.5,
+      "total_area": 76982.5859375
+    }
+  },
+  "accepted_steps_by_fixed_native_rule": {
+    "step1": true,
+    "step2": true
+  }
+}

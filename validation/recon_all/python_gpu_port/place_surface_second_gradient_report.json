@@ -1,0 +1,57 @@
+{
+  "reference": "pinned FreeSurfer 8.2 copied-source second LH pial gradient step",
+  "inputs": "original MRI, WM, aseg, LH white, label, frozen autodet stats; source-validated first-step gradient and mesh",
+  "collision_cropped_vertices_from_first_step": 175,
+  "comparisons": {
+    "start_xyz": {
+      "exact_elements": 319866,
+      "total_elements": 319866,
+      "max_abs_error": 0.0
+    },
+    "normals_active": {
+      "exact_elements": 303000,
+      "total_elements": 303000,
+      "max_abs_error": 0.0
+    },
+    "normals_ripped_diagnostic_only": {
+      "exact_elements": 15804,
+      "total_elements": 16866,
+      "max_abs_error": 0.48264267295598984
+    },
+    "ripped": {
+      "exact_elements": 106622,
+      "total_elements": 106622,
+      "max_abs_error": 0.0
+    },
+    "intensity": {
+      "exact_elements": 319866,
+      "total_elements": 319866,
+      "max_abs_error": 0.0
+    },
+    "surface_repulsion": {
+      "exact_elements": 319866,
+      "total_elements": 319866,
+      "max_abs_error": 0.0
+    },
+    "pre_normal_spring": {
+      "exact_elements": 319866,
+      "total_elements": 319866,
+      "max_abs_error": 0.0
+    },
+    "normal_spring": {
+      "exact_elements": 319866,
+      "total_elements": 319866,
+      "max_abs_error": 0.0
+    },
+    "curvature": {
+      "exact_elements": 319866,
+      "total_elements": 319866,
+      "max_abs_error": 0.0
+    },
+    "tangential_spring": {
+      "exact_elements": 319866,
+      "total_elements": 319866,
+      "max_abs_error": 0.0
+    }
+  }
+}

@@ -1,0 +1,139 @@
+{
+  "reference": "instrumented pinned FreeSurfer 8.2 source",
+  "cases": {
+    "lh_white": {
+      "vertices": 106622,
+      "seconds_including_io_and_jit": 11.337712624110281,
+      "comparisons": {
+        "initial_xyz": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0
+        },
+        "initial_normals": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0
+        },
+        "volume_voxels": {
+          "exact_elements": 16777216,
+          "total_elements": 16777216,
+          "max_abs_error": 0.0
+        },
+        "bright_labels": {
+          "exact_elements": 16777216,
+          "total_elements": 16777216,
+          "max_abs_error": 0.0
+        },
+        "surface_ras_to_voxel": {
+          "exact_elements": 16,
+          "total_elements": 16,
+          "max_abs_error": 0.0
+        }
+      }
+    },
+    "lh_pial": {
+      "vertices": 106622,
+      "seconds_including_io_and_jit": 5.562632439658046,
+      "comparisons": {
+        "initial_xyz": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0
+        },
+        "initial_normals": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0
+        },
+        "volume_voxels": {
+          "exact_elements": 16777216,
+          "total_elements": 16777216,
+          "max_abs_error": 0.0
+        },
+        "bright_labels": {
+          "exact_elements": 16777216,
+          "total_elements": 16777216,
+          "max_abs_error": 0.0
+        },
+        "surface_ras_to_voxel": {
+          "exact_elements": 16,
+          "total_elements": 16,
+          "max_abs_error": 0.0
+        },
+        "ripped": {
+          "exact_elements": 106622,
+          "total_elements": 106622,
+          "max_abs_error": 0.0
+        }
+      }
+    },
+    "rh_white": {
+      "vertices": 105541,
+      "seconds_including_io_and_jit": 10.085470953024924,
+      "comparisons": {
+        "initial_xyz": {
+          "exact_elements": 316623,
+          "total_elements": 316623,
+          "max_abs_error": 0.0
+        },
+        "initial_normals": {
+          "exact_elements": 316623,
+          "total_elements": 316623,
+          "max_abs_error": 0.0
+        },
+        "volume_voxels": {
+          "exact_elements": 16777216,
+          "total_elements": 16777216,
+          "max_abs_error": 0.0
+        },
+        "bright_labels": {
+          "exact_elements": 16777216,
+          "total_elements": 16777216,
+          "max_abs_error": 0.0
+        },
+        "surface_ras_to_voxel": {
+          "exact_elements": 16,
+          "total_elements": 16,
+          "max_abs_error": 0.0
+        }
+      }
+    },
+    "rh_pial": {
+      "vertices": 105541,
+      "seconds_including_io_and_jit": 5.7103065345436335,
+      "comparisons": {
+        "initial_xyz": {
+          "exact_elements": 316623,
+          "total_elements": 316623,
+          "max_abs_error": 0.0
+        },
+        "initial_normals": {
+          "exact_elements": 316623,
+          "total_elements": 316623,
+          "max_abs_error": 0.0
+        },
+        "volume_voxels": {
+          "exact_elements": 16777216,
+          "total_elements": 16777216,
+          "max_abs_error": 0.0
+        },
+        "bright_labels": {
+          "exact_elements": 16777216,
+          "total_elements": 16777216,
+          "max_abs_error": 0.0
+        },
+        "surface_ras_to_voxel": {
+          "exact_elements": 16,
+          "total_elements": 16,
+          "max_abs_error": 0.0
+        },
+        "ripped": {
+          "exact_elements": 105541,
+          "total_elements": 105541,
+          "max_abs_error": 0.0
+        }
+      }
+    }
+  }
+}

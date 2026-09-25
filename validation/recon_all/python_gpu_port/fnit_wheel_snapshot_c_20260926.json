@@ -1,0 +1,18 @@
+{
+  "source_snapshot_tar_sha256": "935c2c5d3e4c5925d4bc139b3b52c26b294866f84bebf48d3e08ff0dbe9a3ca9",
+  "metadata_tar_sha256": "180a030074ca0c9d7b1a61625103bba9c2e1ee35f54d612b7a0ec741adfd0a5f",
+  "host": "headcw",
+  "wheel": "fudan_neuroimaging_toolkit-0.9.0-py3-none-any.whl",
+  "wheel_bytes": 1076397,
+  "wheel_sha256": "0d4d6a41e5394537bad1e30befe58ad9db7587d96dddf67793841a8e59629b3f",
+  "build": "pip wheel --no-deps --no-build-isolation . -w dist",
+  "isolated_target_install": "pip install --no-deps --target fnit_wheel_smoke_c dist/fudan_neuroimaging_toolkit-0.9.0-py3-none-any.whl",
+  "imported_from_wheel": [
+    "fnit.recon_all.input_n4_chain",
+    "fnit.recon_all.sphere_standard_python",
+    "fnit.recon_all.mris_register_nonlinear",
+    "fnit.recon_all.place_surface_step",
+    "fnit.synthseg_parc.synthseg"
+  ],
+  "build_log_sha256": "b50f9b3755cef25936aff9e02e5cddb392cbfe2293638a7f027fc3415c12fa96"
+}

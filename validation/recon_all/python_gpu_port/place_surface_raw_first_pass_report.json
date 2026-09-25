@@ -1,0 +1,289 @@
+{
+  "reference": "instrumented pinned FreeSurfer 8.2 source",
+  "cases": {
+    "lh_white": {
+      "vertices": 106622,
+      "seconds_including_io_and_jit": 30.328708685934544,
+      "comparisons": {
+        "initial_xyz": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0
+        },
+        "initial_normals": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0
+        },
+        "volume_voxels": {
+          "exact_elements": 16777216,
+          "total_elements": 16777216,
+          "max_abs_error": 0.0
+        },
+        "bright_labels": {
+          "exact_elements": 16777216,
+          "total_elements": 16777216,
+          "max_abs_error": 0.0
+        },
+        "surface_ras_to_voxel": {
+          "exact_elements": 16,
+          "total_elements": 16,
+          "max_abs_error": 0.0
+        },
+        "ripped": {
+          "exact_elements": 106622,
+          "total_elements": 106622,
+          "max_abs_error": 0.0
+        },
+        "initial_value": {
+          "exact_elements": 106622,
+          "total_elements": 106622,
+          "max_abs_error": 0.0
+        },
+        "border_value": {
+          "exact_elements": 106622,
+          "total_elements": 106622,
+          "max_abs_error": 0.0
+        },
+        "border_distance": {
+          "exact_elements": 106622,
+          "total_elements": 106622,
+          "max_abs_error": 0.0
+        },
+        "border_gradient": {
+          "exact_elements": 106622,
+          "total_elements": 106622,
+          "max_abs_error": 0.0
+        },
+        "border_target_xyz": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0
+        },
+        "border_mark": {
+          "exact_elements": 106622,
+          "total_elements": 106622,
+          "max_abs_error": 0.0
+        },
+        "border_sigma": {
+          "exact_elements": 106622,
+          "total_elements": 106622,
+          "max_abs_error": 0.0
+        }
+      }
+    },
+    "lh_pial": {
+      "vertices": 106622,
+      "seconds_including_io_and_jit": 12.37976869288832,
+      "comparisons": {
+        "initial_xyz": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0
+        },
+        "initial_normals": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0
+        },
+        "volume_voxels": {
+          "exact_elements": 16777216,
+          "total_elements": 16777216,
+          "max_abs_error": 0.0
+        },
+        "bright_labels": {
+          "exact_elements": 16777216,
+          "total_elements": 16777216,
+          "max_abs_error": 0.0
+        },
+        "surface_ras_to_voxel": {
+          "exact_elements": 16,
+          "total_elements": 16,
+          "max_abs_error": 0.0
+        },
+        "ripped": {
+          "exact_elements": 106622,
+          "total_elements": 106622,
+          "max_abs_error": 0.0
+        },
+        "initial_value": {
+          "exact_elements": 106622,
+          "total_elements": 106622,
+          "max_abs_error": 0.0
+        },
+        "border_value": {
+          "exact_elements": 106622,
+          "total_elements": 106622,
+          "max_abs_error": 0.0
+        },
+        "border_distance": {
+          "exact_elements": 106622,
+          "total_elements": 106622,
+          "max_abs_error": 0.0
+        },
+        "border_gradient": {
+          "exact_elements": 106622,
+          "total_elements": 106622,
+          "max_abs_error": 0.0
+        },
+        "border_target_xyz": {
+          "exact_elements": 319866,
+          "total_elements": 319866,
+          "max_abs_error": 0.0
+        },
+        "border_mark": {
+          "exact_elements": 106622,
+          "total_elements": 106622,
+          "max_abs_error": 0.0
+        },
+        "border_sigma": {
+          "exact_elements": 106622,
+          "total_elements": 106622,
+          "max_abs_error": 0.0
+        }
+      }
+    },
+    "rh_white": {
+      "vertices": 105541,
+      "seconds_including_io_and_jit": 28.52959688100964,
+      "comparisons": {
+        "initial_xyz": {
+          "exact_elements": 316623,
+          "total_elements": 316623,
+          "max_abs_error": 0.0
+        },
+        "initial_normals": {
+          "exact_elements": 316623,
+          "total_elements": 316623,
+          "max_abs_error": 0.0
+        },
+        "volume_voxels": {
+          "exact_elements": 16777216,
+          "total_elements": 16777216,
+          "max_abs_error": 0.0
+        },
+        "bright_labels": {
+          "exact_elements": 16777216,
+          "total_elements": 16777216,
+          "max_abs_error": 0.0
+        },
+        "surface_ras_to_voxel": {
+          "exact_elements": 16,
+          "total_elements": 16,
+          "max_abs_error": 0.0
+        },
+        "ripped": {
+          "exact_elements": 105541,
+          "total_elements": 105541,
+          "max_abs_error": 0.0
+        },
+        "initial_value": {
+          "exact_elements": 105541,
+          "total_elements": 105541,
+          "max_abs_error": 0.0
+        },
+        "border_value": {
+          "exact_elements": 105541,
+          "total_elements": 105541,
+          "max_abs_error": 0.0
+        },
+        "border_distance": {
+          "exact_elements": 105541,
+          "total_elements": 105541,
+          "max_abs_error": 0.0
+        },
+        "border_gradient": {
+          "exact_elements": 105541,
+          "total_elements": 105541,
+          "max_abs_error": 0.0
+        },
+        "border_target_xyz": {
+          "exact_elements": 316623,
+          "total_elements": 316623,
+          "max_abs_error": 0.0
+        },
+        "border_mark": {
+          "exact_elements": 105541,
+          "total_elements": 105541,
+          "max_abs_error": 0.0
+        },
+        "border_sigma": {
+          "exact_elements": 105541,
+          "total_elements": 105541,
+          "max_abs_error": 0.0
+        }
+      }
+    },
+    "rh_pial": {
+      "vertices": 105541,
+      "seconds_including_io_and_jit": 13.592116468586028,
+      "comparisons": {
+        "initial_xyz": {
+          "exact_elements": 316623,
+          "total_elements": 316623,
+          "max_abs_error": 0.0
+        },
+        "initial_normals": {
+          "exact_elements": 316623,
+          "total_elements": 316623,
+          "max_abs_error": 0.0
+        },
+        "volume_voxels": {
+          "exact_elements": 16777216,
+          "total_elements": 16777216,
+          "max_abs_error": 0.0
+        },
+        "bright_labels": {
+          "exact_elements": 16777216,
+          "total_elements": 16777216,
+          "max_abs_error": 0.0
+        },
+        "surface_ras_to_voxel": {
+          "exact_elements": 16,
+          "total_elements": 16,
+          "max_abs_error": 0.0
+        },
+        "ripped": {
+          "exact_elements": 105541,
+          "total_elements": 105541,
+          "max_abs_error": 0.0
+        },
+        "initial_value": {
+          "exact_elements": 105541,
+          "total_elements": 105541,
+          "max_abs_error": 0.0
+        },
+        "border_value": {
+          "exact_elements": 105541,
+          "total_elements": 105541,
+          "max_abs_error": 0.0
+        },
+        "border_distance": {
+          "exact_elements": 105541,
+          "total_elements": 105541,
+          "max_abs_error": 0.0
+        },
+        "border_gradient": {
+          "exact_elements": 105541,
+          "total_elements": 105541,
+          "max_abs_error": 0.0
+        },
+        "border_target_xyz": {
+          "exact_elements": 316623,
+          "total_elements": 316623,
+          "max_abs_error": 0.0
+        },
+        "border_mark": {
+          "exact_elements": 105541,
+          "total_elements": 105541,
+          "max_abs_error": 0.0
+        },
+        "border_sigma": {
+          "exact_elements": 105541,
+          "total_elements": 105541,
+          "max_abs_error": 0.0
+        }
+      }
+    }
+  }
+}

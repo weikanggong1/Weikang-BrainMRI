@@ -1,0 +1,97 @@
+{
+  "scope": "first global topology curvature histogram only; source-order VNL float SVD inverse",
+  "input_sha256": {
+    "orig": "45d53fa51554b6f58f04ac37ee8eff1814fd31c001178e7648af2eb97b9f01cf",
+    "qsphere": "b93d519dd0da418ca2fbfed01617af4939b3d7528e91a7d5f73eaae279a9977a"
+  },
+  "native_reference_sha256": {
+    "k1.plt": "830b4bfeb42d68c232284e4cab97eeb2a73fe8efedd2e05d32bc5fa5cca001a2",
+    "k2.plt": "0a05695898106351ed8523d4d824f5eee183fda11ddb0b264cc525069d2be15a",
+    "mri_k1_k2.mgh": "463893f31d5cbf4e83dcfe323f932d743b9ec9884b12bf5ebcaf66cd67bb4153"
+  },
+  "vertices": 101454,
+  "defect_vertices": 1191,
+  "invalid_fits": 0,
+  "ill_conditioned_fits": 0,
+  "python_fit_and_histogram_seconds_including_jit": 24.74960035458207,
+  "first_candidate_qcurv_ll": "not validated: candidate patch k1/k2 still require an independent fit",
+  "frozen_reference_sha256_match": true,
+  "frozen_reference_report": "rh.independent_curvature_histogram.json",
+  "k1": {
+    "raw_count_matching_bins": 77,
+    "first_raw_count_mismatch": 23,
+    "raw_count_l1_difference": 32,
+    "predicted_min_max": [
+      -8.408014297485352,
+      3.6149544715881348
+    ],
+    "predicted_mean": -0.09281402081251144,
+    "native_mean_from_unrounded_bins": -0.09279382973909378,
+    "mean_float32_bits_equal": false,
+    "mean_absolute_difference": 2.0191073417663574e-05,
+    "native_first_bin": -3.0,
+    "bin_positions_matching_six_decimals": 100,
+    "pdf_counts_matching_ten_decimals": 77,
+    "first_bin_position_mismatch": null,
+    "first_pdf_count_mismatch": 23,
+    "largest_pdf_absolute_difference": 3.942657627058026e-05,
+    "native_printed_six_decimal_equal": 100314,
+    "first_native_printed_six_decimal_difference": 2198,
+    "first_native_printed_difference_values": [
+      0.5155283212661743,
+      0.5155199766159058
+    ],
+    "native_within_1e_3": 101328,
+    "native_median_absolute_difference": 2.384185791015625e-07,
+    "native_largest_absolute_difference": 3.2850077152252197,
+    "first_native_vertex_difference_over_1e_3": 3552
+  },
+  "k2": {
+    "raw_count_matching_bins": 70,
+    "first_raw_count_mismatch": 38,
+    "raw_count_l1_difference": 56,
+    "predicted_min_max": [
+      -1.959591269493103,
+      1.3228504657745361
+    ],
+    "predicted_mean": -0.035491883754730225,
+    "native_mean_from_unrounded_bins": -0.035519663244485855,
+    "mean_float32_bits_equal": false,
+    "mean_absolute_difference": 2.7779489755630493e-05,
+    "native_first_bin": -1.959591269493103,
+    "bin_positions_matching_six_decimals": 3,
+    "pdf_counts_matching_ten_decimals": 70,
+    "first_bin_position_mismatch": 3,
+    "first_pdf_count_mismatch": 38,
+    "largest_pdf_absolute_difference": 6.899982954559902e-05,
+    "native_printed_six_decimal_equal": 100344,
+    "first_native_printed_six_decimal_difference": 2198,
+    "first_native_printed_difference_values": [
+      -0.25286468863487244,
+      -0.25286200642585754
+    ],
+    "native_within_1e_3": 101351,
+    "native_median_absolute_difference": 2.4586915969848633e-07,
+    "native_largest_absolute_difference": 1.2890978455543518,
+    "first_native_vertex_difference_over_1e_3": 4013
+  },
+  "joint": {
+    "bitwise_matching_cells": 0,
+    "cells": 10000,
+    "first_bitwise_mismatch": [
+      0,
+      0
+    ],
+    "largest_absolute_difference": 1.956382766366005e-05,
+    "predicted_norm": 102253.7734375,
+    "native_norm_inferred_from_pseudocount": 102253.671875,
+    "raw_count_matching_cells": 9879,
+    "first_raw_count_mismatch": [
+      23,
+      55
+    ],
+    "raw_count_l1_difference": 130
+  },
+  "native_first_curvature_sha256": "8b65d1df1316c2fa13c861b55b32f878b934f212f874eb2aaf0b09e69404b364",
+  "histogram_matches_native": false
+}

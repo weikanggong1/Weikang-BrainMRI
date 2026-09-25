@@ -1,0 +1,37 @@
+{
+  "vertices": 106622,
+  "samples": 8268920,
+  "max_candidates": 321,
+  "topology_seconds": 4.493655977770686,
+  "sampling_seconds_including_jit": 10.976142030209303,
+  "read_seconds": 0.004182903096079826,
+  "first_row_count": 79,
+  "last_row_count": 74,
+  "count_min": 46,
+  "count_max": 97,
+  "reciprocal_matches": 5644354,
+  "reciprocal_seconds_including_jit": 0.6635635616257787,
+  "changed_distances": 2732782,
+  "native_vertex_0": {
+    "ordered_ids_exact": true,
+    "exact_ids": 79,
+    "entries": 79,
+    "printed_six_decimal_exact": 79,
+    "max_abs_error_mm": 4.957275390182758e-07,
+    "mean_abs_error_mm": 2.383530532046178e-07
+  },
+  "native_vertex_1": {
+    "ordered_ids_exact": true,
+    "exact_ids": 79,
+    "entries": 79,
+    "printed_six_decimal_exact": 79,
+    "max_abs_error_mm": 4.929199217684754e-07,
+    "mean_abs_error_mm": 2.8565027743036507e-07
+  },
+  "native_full_matrix": {
+    "entries": 8268920,
+    "four_decimal_exact": 8268920,
+    "max_abs_error_mm": 5.0000000000105516e-05,
+    "mean_abs_error_mm": 2.4990018059104328e-05
+  }
+}

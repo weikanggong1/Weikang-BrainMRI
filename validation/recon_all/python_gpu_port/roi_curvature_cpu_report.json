@@ -1,0 +1,162 @@
+{
+  "reference": "FreeSurfer 8.2.0-1 d932c45 fs_sub01 archived stats",
+  "scope": "Four curvature columns only, 8 bilateral aparc/a2009s/DKT and pial aparc tables",
+  "host": "headcw",
+  "device": "cpu",
+  "criterion": "All displayed MeanCurv 3dp, GausCurv 3dp, FoldInd integer, CurvInd 1dp values match",
+  "total_rows": 346,
+  "total_formatted_mismatches": 0,
+  "max_unrounded_difference_by_column": [
+    0.0004984428523603646,
+    0.0004990456098886917,
+    0.4966482602408533,
+    0.049815066781556894
+  ],
+  "runs": [
+    {
+      "hemi": "lh",
+      "surface": "white",
+      "atlas": "aparc.DKTatlas",
+      "device": "cpu",
+      "elapsed_seconds": 0.7797595411539078,
+      "rows": 31,
+      "missing": [],
+      "extra": [],
+      "max_abs": [
+        0.000479989928568042,
+        0.0004918388421474018,
+        0.4865134893046843,
+        0.04357389053160965
+      ],
+      "formatted_mismatches": [],
+      "formatted_mismatch_count": 0
+    },
+    {
+      "hemi": "lh",
+      "surface": "white",
+      "atlas": "aparc.a2009s",
+      "device": "cpu",
+      "elapsed_seconds": 0.810488123446703,
+      "rows": 74,
+      "missing": [],
+      "extra": [],
+      "max_abs": [
+        0.0004984428523603646,
+        0.0004892740100880325,
+        0.4966482602408533,
+        0.04975066467379641
+      ],
+      "formatted_mismatches": [],
+      "formatted_mismatch_count": 0
+    },
+    {
+      "hemi": "lh",
+      "surface": "pial",
+      "atlas": "aparc",
+      "device": "cpu",
+      "elapsed_seconds": 0.7656236877664924,
+      "rows": 34,
+      "missing": [],
+      "extra": [],
+      "max_abs": [
+        0.0004943837585927591,
+        0.0004990456098886917,
+        0.48851712638028744,
+        0.049815066781556894
+      ],
+      "formatted_mismatches": [],
+      "formatted_mismatch_count": 0
+    },
+    {
+      "hemi": "lh",
+      "surface": "white",
+      "atlas": "aparc",
+      "device": "cpu",
+      "elapsed_seconds": 0.8026135778054595,
+      "rows": 34,
+      "missing": [],
+      "extra": [],
+      "max_abs": [
+        0.0004610732285457442,
+        0.0004946300090726552,
+        0.49131359214008796,
+        0.04893655636639149
+      ],
+      "formatted_mismatches": [],
+      "formatted_mismatch_count": 0
+    },
+    {
+      "hemi": "rh",
+      "surface": "white",
+      "atlas": "aparc.DKTatlas",
+      "device": "cpu",
+      "elapsed_seconds": 0.8024419955909252,
+      "rows": 31,
+      "missing": [],
+      "extra": [],
+      "max_abs": [
+        0.0004965159502206828,
+        0.000482466598143258,
+        0.48680810254312235,
+        0.048674732089716954
+      ],
+      "formatted_mismatches": [],
+      "formatted_mismatch_count": 0
+    },
+    {
+      "hemi": "rh",
+      "surface": "white",
+      "atlas": "aparc.a2009s",
+      "device": "cpu",
+      "elapsed_seconds": 0.9262325456365943,
+      "rows": 74,
+      "missing": [],
+      "extra": [],
+      "max_abs": [
+        0.0004966884994098142,
+        0.0004981830108671606,
+        0.49480799342303783,
+        0.049580945317610814
+      ],
+      "formatted_mismatches": [],
+      "formatted_mismatch_count": 0
+    },
+    {
+      "hemi": "rh",
+      "surface": "pial",
+      "atlas": "aparc",
+      "device": "cpu",
+      "elapsed_seconds": 0.8702141316607594,
+      "rows": 34,
+      "missing": [],
+      "extra": [],
+      "max_abs": [
+        0.0004923854539033434,
+        0.00048650253776350016,
+        0.48359858126606525,
+        0.04914294385811768
+      ],
+      "formatted_mismatches": [],
+      "formatted_mismatch_count": 0
+    },
+    {
+      "hemi": "rh",
+      "surface": "white",
+      "atlas": "aparc",
+      "device": "cpu",
+      "elapsed_seconds": 0.7217751322314143,
+      "rows": 34,
+      "missing": [],
+      "extra": [],
+      "max_abs": [
+        0.0004720010328012614,
+        0.00047503683134720795,
+        0.4961766873492621,
+        0.04954184988431898
+      ],
+      "formatted_mismatches": [],
+      "formatted_mismatch_count": 0
+    }
+  ],
+  "timing_scope": "Each Python run is a fresh CLI process; elapsed_seconds only times curvature_columns after imports and argument/reference parsing. Native stage was not timed in this report."
+}

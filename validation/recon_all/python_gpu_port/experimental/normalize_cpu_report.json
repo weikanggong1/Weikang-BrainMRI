@@ -1,0 +1,49 @@
+{
+  "device": "cpu",
+  "reference_log_seconds": {
+    "first": 109.49,
+    "second": 145.07
+  },
+  "first": {
+    "phase": "first",
+    "mode": 112,
+    "control_voxels": 0,
+    "wall_seconds": 0.7826057504862547,
+    "source_sha256": "ed0155a083a64ce3929a7598f61b45875ca7dcfef1000e9de42af62a807c7e3e",
+    "reference_sha256": "38649d61806ed5faf4cdc4d7888f6957bec16da740f1c4f3bb2558aaf112a5be",
+    "shape": [
+      256,
+      256,
+      256
+    ],
+    "dtype_equal": true,
+    "affine_equal": true,
+    "foreground_voxels": 2226863,
+    "voxel_mismatches": 1753902,
+    "foreground_mae": 3.8046884536743164,
+    "foreground_p95_absolute_error": 15.0,
+    "foreground_max_absolute_error": 60.0,
+    "foreground_exact_fraction": 0.21238890762476184
+  },
+  "second": {
+    "phase": "second",
+    "mode": 104,
+    "control_voxels": 51048,
+    "wall_seconds": 7.458242101594806,
+    "source_sha256": "e8875a30cb63dcdfdbda6a830fa4a8a30141e1f0da3058d33b491253abe74390",
+    "reference_sha256": "1b7360d069b76c8a5a63f93f3c296dddeb4db725c4e2625e11ebfc156279f401",
+    "shape": [
+      256,
+      256,
+      256
+    ],
+    "dtype_equal": true,
+    "affine_equal": true,
+    "foreground_voxels": 1269875,
+    "voxel_mismatches": 1028737,
+    "foreground_mae": 3.2625999450683594,
+    "foreground_p95_absolute_error": 12.0,
+    "foreground_max_absolute_error": 65.0,
+    "foreground_exact_fraction": 0.18989113101683236
+  }
+}

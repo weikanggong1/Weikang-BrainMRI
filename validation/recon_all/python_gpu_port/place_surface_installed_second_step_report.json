@@ -1,0 +1,162 @@
+{
+  "reference": "installed FreeSurfer 8.2.0-1 LH pial RAM step 2; independent Python gradient from exact installed step-1 mesh and original MRI",
+  "limitations": "Installed step-2 gradient has not been captured; copied-source step-2 gradients are a separate reference class.",
+  "sha256": {
+    "installed_binary": "67139c3590f961f879a4214cd01f173b42986c7b178d1851dfa3f08e8acf12aa",
+    "first_source_gradient": "07a05f9b4ef1724f1904d49b3a5e1e3c204ec819965afa1bc047d3f305dfcd74",
+    "first_installed_ram": "cf4b4b37d14f7a042f22d80be5101a4013e07d94d2366f8c9fb927a3f6be1e10",
+    "second_installed_ram": "36ee118a068d86405c5c606b7cf601ec3f88cb21be3320be4cf2e9406d6dfc12"
+  },
+  "ordered_faces_exact": true,
+  "first_step_blocked_vertices": 183,
+  "processed_vertices": 101000,
+  "stage_vs_copied_source": {
+    "intensity": {
+      "exact_components": 305771,
+      "total_components": 319866,
+      "exact_vertices": 100082,
+      "max_abs_error": 1.1324882507324219e-05,
+      "first_different_vertices": [
+        27,
+        31,
+        32,
+        33,
+        60,
+        61,
+        64,
+        74,
+        127,
+        129,
+        136,
+        152
+      ]
+    },
+    "surface_repulsion": {
+      "exact_components": 305447,
+      "total_components": 319866,
+      "exact_vertices": 100092,
+      "max_abs_error": 0.000194549560546875,
+      "first_different_vertices": [
+        27,
+        31,
+        32,
+        60,
+        61,
+        64,
+        74,
+        127,
+        129,
+        136,
+        152,
+        157
+      ]
+    },
+    "pre_normal_spring": {
+      "exact_components": 242972,
+      "total_components": 319866,
+      "exact_vertices": 60534,
+      "max_abs_error": 6.67572021484375e-06,
+      "first_different_vertices": [
+        3,
+        4,
+        5,
+        7,
+        8,
+        10,
+        11,
+        12,
+        13,
+        16,
+        17,
+        19
+      ]
+    },
+    "normal_spring": {
+      "exact_components": 243086,
+      "total_components": 319866,
+      "exact_vertices": 60640,
+      "max_abs_error": 8.106231689453125e-06,
+      "first_different_vertices": [
+        3,
+        4,
+        5,
+        7,
+        8,
+        10,
+        11,
+        12,
+        13,
+        16,
+        17,
+        19
+      ]
+    },
+    "curvature": {
+      "exact_components": 237677,
+      "total_components": 319866,
+      "exact_vertices": 59448,
+      "max_abs_error": 2.3484230041503906e-05,
+      "first_different_vertices": [
+        3,
+        4,
+        5,
+        7,
+        8,
+        10,
+        11,
+        12,
+        13,
+        16,
+        17,
+        19
+      ]
+    },
+    "tangential_spring": {
+      "exact_components": 237981,
+      "total_components": 319866,
+      "exact_vertices": 59662,
+      "max_abs_error": 2.396106719970703e-05,
+      "first_different_vertices": [
+        3,
+        4,
+        5,
+        7,
+        8,
+        10,
+        11,
+        12,
+        13,
+        16,
+        17,
+        21
+      ]
+    }
+  },
+  "proposal_vs_installed_step2": {
+    "exact_components": 319620,
+    "total_components": 319866,
+    "exact_vertices": 106540,
+    "max_abs_error": 0.2995338439941406,
+    "first_different_vertices": [
+      153,
+      1167,
+      1487,
+      1500,
+      1501,
+      1596,
+      1710,
+      1772,
+      1773,
+      1780,
+      1794,
+      2488
+    ]
+  },
+  "accepted_vs_installed_step2": {
+    "exact_components": 319866,
+    "total_components": 319866,
+    "exact_vertices": 106622,
+    "max_abs_error": 0.0,
+    "first_different_vertices": []
+  }
+}

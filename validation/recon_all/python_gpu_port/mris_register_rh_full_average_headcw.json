@@ -1,0 +1,17 @@
+{
+  "device": "cpu",
+  "vertices": 105541,
+  "iterations": 16384,
+  "exact_gradient_vectors": 105541,
+  "max_abs_gradient_error": 0.0,
+  "seconds_excluding_io": {
+    "ordered_adjacency": 1.1985057769343257,
+    "averaging": 76.31198897399008
+  },
+  "sha256": {
+    "sphere": "744e8d937f942a3a8d5f0ee739342762288e6824386aaa8a558065c92de84efc",
+    "before": "373bae6caa23f0f5df85fa6825188e1563a17028c3a65789163a17116074fb26",
+    "native_after": "37b4dfeaf0df00d1a589452e7aed512f39c65b74cace753db4ee1f18a109a54e"
+  },
+  "predicted_sha256": "37b4dfeaf0df00d1a589452e7aed512f39c65b74cace753db4ee1f18a109a54e"
+}

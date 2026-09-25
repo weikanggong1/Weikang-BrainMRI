@@ -1,0 +1,547 @@
+{
+  "source_sha256": "2046109533afd30c5e98d4f67f2f24b9808176dbc98053f39aa2192497bcd0ee",
+  "input_sha256": {
+    "inflated": "a8ff9644b5ef8183d08daaedff69c6ae74ef3270f0b54d9db88aaf788a9e52ed",
+    "smoothwm": "36e199e4d971a39457a4ad1d0b8eed3a84feb236ada29c05e297ffdd865a5002",
+    "native_before": "55bb1d7365151b4415f441c94facb31f5714f4e0638606eb4624bf7fe76b0382",
+    "native_after": "5efb3a7ec06ac244230f80037cb64e5e62fafffa9832602c7bb351b7b35c4ab4"
+  },
+  "selected_dt": 0.9675227403640747,
+  "variants": {
+    "minus_ulp_vector_projection": {
+      "exact_components": 319853,
+      "vertices_le_1e-5_mm": 106622,
+      "max_error_mm": 8.529922399520072e-06,
+      "mismatched_components": [
+        {
+          "vertex": 12655,
+          "component": 2,
+          "predicted": -30.008655548095703,
+          "native": -30.00865364074707
+        },
+        {
+          "vertex": 14193,
+          "component": 1,
+          "predicted": -83.28585815429688,
+          "native": -83.2858657836914
+        },
+        {
+          "vertex": 15639,
+          "component": 2,
+          "predicted": -24.28684425354004,
+          "native": -24.286842346191406
+        },
+        {
+          "vertex": 17086,
+          "component": 0,
+          "predicted": 41.74817657470703,
+          "native": 41.748172760009766
+        },
+        {
+          "vertex": 17086,
+          "component": 2,
+          "predicted": -20.88651466369629,
+          "native": -20.886512756347656
+        },
+        {
+          "vertex": 17129,
+          "component": 0,
+          "predicted": 42.16631317138672,
+          "native": 42.16630935668945
+        },
+        {
+          "vertex": 17129,
+          "component": 2,
+          "predicted": -23.415660858154297,
+          "native": -23.415658950805664
+        },
+        {
+          "vertex": 18709,
+          "component": 2,
+          "predicted": -39.17835235595703,
+          "native": -39.1783561706543
+        },
+        {
+          "vertex": 19547,
+          "component": 0,
+          "predicted": 41.2382698059082,
+          "native": 41.23827362060547
+        },
+        {
+          "vertex": 19547,
+          "component": 1,
+          "predicted": -81.978515625,
+          "native": -81.97850799560547
+        },
+        {
+          "vertex": 24297,
+          "component": 0,
+          "predicted": 39.42400360107422,
+          "native": 39.424007415771484
+        },
+        {
+          "vertex": 87623,
+          "component": 0,
+          "predicted": -24.055923461914062,
+          "native": -24.05592155456543
+        },
+        {
+          "vertex": 88297,
+          "component": 2,
+          "predicted": -19.2412166595459,
+          "native": -19.241214752197266
+        }
+      ]
+    },
+    "minus_ulp_scalar_projection": {
+      "exact_components": 319853,
+      "vertices_le_1e-5_mm": 106622,
+      "max_error_mm": 8.529922399520072e-06,
+      "mismatched_components": [
+        {
+          "vertex": 12655,
+          "component": 2,
+          "predicted": -30.008655548095703,
+          "native": -30.00865364074707
+        },
+        {
+          "vertex": 14193,
+          "component": 1,
+          "predicted": -83.28585815429688,
+          "native": -83.2858657836914
+        },
+        {
+          "vertex": 15639,
+          "component": 2,
+          "predicted": -24.28684425354004,
+          "native": -24.286842346191406
+        },
+        {
+          "vertex": 17086,
+          "component": 0,
+          "predicted": 41.74817657470703,
+          "native": 41.748172760009766
+        },
+        {
+          "vertex": 17086,
+          "component": 2,
+          "predicted": -20.88651466369629,
+          "native": -20.886512756347656
+        },
+        {
+          "vertex": 17129,
+          "component": 0,
+          "predicted": 42.16631317138672,
+          "native": 42.16630935668945
+        },
+        {
+          "vertex": 17129,
+          "component": 2,
+          "predicted": -23.415660858154297,
+          "native": -23.415658950805664
+        },
+        {
+          "vertex": 18709,
+          "component": 2,
+          "predicted": -39.17835235595703,
+          "native": -39.1783561706543
+        },
+        {
+          "vertex": 19547,
+          "component": 0,
+          "predicted": 41.2382698059082,
+          "native": 41.23827362060547
+        },
+        {
+          "vertex": 19547,
+          "component": 1,
+          "predicted": -81.978515625,
+          "native": -81.97850799560547
+        },
+        {
+          "vertex": 24297,
+          "component": 0,
+          "predicted": 39.42400360107422,
+          "native": 39.424007415771484
+        },
+        {
+          "vertex": 87623,
+          "component": 0,
+          "predicted": -24.055923461914062,
+          "native": -24.05592155456543
+        },
+        {
+          "vertex": 88297,
+          "component": 2,
+          "predicted": -19.2412166595459,
+          "native": -19.241214752197266
+        }
+      ]
+    },
+    "selected_vector_projection": {
+      "exact_components": 319856,
+      "vertices_le_1e-5_mm": 106622,
+      "max_error_mm": 7.62939453125e-06,
+      "mismatched_components": [
+        {
+          "vertex": 12655,
+          "component": 2,
+          "predicted": -30.008655548095703,
+          "native": -30.00865364074707
+        },
+        {
+          "vertex": 14193,
+          "component": 1,
+          "predicted": -83.28585815429688,
+          "native": -83.2858657836914
+        },
+        {
+          "vertex": 15639,
+          "component": 2,
+          "predicted": -24.28684425354004,
+          "native": -24.286842346191406
+        },
+        {
+          "vertex": 15654,
+          "component": 0,
+          "predicted": 42.04249572753906,
+          "native": 42.04249954223633
+        },
+        {
+          "vertex": 17086,
+          "component": 0,
+          "predicted": 41.74817657470703,
+          "native": 41.748172760009766
+        },
+        {
+          "vertex": 17086,
+          "component": 2,
+          "predicted": -20.88651466369629,
+          "native": -20.886512756347656
+        },
+        {
+          "vertex": 17129,
+          "component": 0,
+          "predicted": 42.16631317138672,
+          "native": 42.16630935668945
+        },
+        {
+          "vertex": 17129,
+          "component": 2,
+          "predicted": -23.415660858154297,
+          "native": -23.415658950805664
+        },
+        {
+          "vertex": 18709,
+          "component": 2,
+          "predicted": -39.17835235595703,
+          "native": -39.1783561706543
+        },
+        {
+          "vertex": 88297,
+          "component": 2,
+          "predicted": -19.2412166595459,
+          "native": -19.241214752197266
+        }
+      ]
+    },
+    "selected_scalar_projection": {
+      "exact_components": 319856,
+      "vertices_le_1e-5_mm": 106622,
+      "max_error_mm": 7.62939453125e-06,
+      "mismatched_components": [
+        {
+          "vertex": 12655,
+          "component": 2,
+          "predicted": -30.008655548095703,
+          "native": -30.00865364074707
+        },
+        {
+          "vertex": 14193,
+          "component": 1,
+          "predicted": -83.28585815429688,
+          "native": -83.2858657836914
+        },
+        {
+          "vertex": 15639,
+          "component": 2,
+          "predicted": -24.28684425354004,
+          "native": -24.286842346191406
+        },
+        {
+          "vertex": 15654,
+          "component": 0,
+          "predicted": 42.04249572753906,
+          "native": 42.04249954223633
+        },
+        {
+          "vertex": 17086,
+          "component": 0,
+          "predicted": 41.74817657470703,
+          "native": 41.748172760009766
+        },
+        {
+          "vertex": 17086,
+          "component": 2,
+          "predicted": -20.88651466369629,
+          "native": -20.886512756347656
+        },
+        {
+          "vertex": 17129,
+          "component": 0,
+          "predicted": 42.16631317138672,
+          "native": 42.16630935668945
+        },
+        {
+          "vertex": 17129,
+          "component": 2,
+          "predicted": -23.415660858154297,
+          "native": -23.415658950805664
+        },
+        {
+          "vertex": 18709,
+          "component": 2,
+          "predicted": -39.17835235595703,
+          "native": -39.1783561706543
+        },
+        {
+          "vertex": 88297,
+          "component": 2,
+          "predicted": -19.2412166595459,
+          "native": -19.241214752197266
+        }
+      ]
+    },
+    "plus_ulp_vector_projection": {
+      "exact_components": 319855,
+      "vertices_le_1e-5_mm": 106622,
+      "max_error_mm": 4.264961199760036e-06,
+      "mismatched_components": [
+        {
+          "vertex": 12655,
+          "component": 2,
+          "predicted": -30.008655548095703,
+          "native": -30.00865364074707
+        },
+        {
+          "vertex": 15639,
+          "component": 2,
+          "predicted": -24.28684425354004,
+          "native": -24.286842346191406
+        },
+        {
+          "vertex": 15654,
+          "component": 0,
+          "predicted": 42.04249572753906,
+          "native": 42.04249954223633
+        },
+        {
+          "vertex": 16302,
+          "component": 2,
+          "predicted": -19.784406661987305,
+          "native": -19.784408569335938
+        },
+        {
+          "vertex": 17086,
+          "component": 0,
+          "predicted": 41.74817657470703,
+          "native": 41.748172760009766
+        },
+        {
+          "vertex": 17086,
+          "component": 2,
+          "predicted": -20.88651466369629,
+          "native": -20.886512756347656
+        },
+        {
+          "vertex": 17129,
+          "component": 0,
+          "predicted": 42.16631317138672,
+          "native": 42.16630935668945
+        },
+        {
+          "vertex": 17129,
+          "component": 2,
+          "predicted": -23.415660858154297,
+          "native": -23.415658950805664
+        },
+        {
+          "vertex": 17195,
+          "component": 0,
+          "predicted": 41.593910217285156,
+          "native": 41.59391403198242
+        },
+        {
+          "vertex": 19552,
+          "component": 0,
+          "predicted": 41.33235168457031,
+          "native": 41.33235549926758
+        },
+        {
+          "vertex": 87966,
+          "component": 0,
+          "predicted": -24.09836769104004,
+          "native": -24.098365783691406
+        }
+      ]
+    },
+    "plus_ulp_scalar_projection": {
+      "exact_components": 319855,
+      "vertices_le_1e-5_mm": 106622,
+      "max_error_mm": 4.264961199760036e-06,
+      "mismatched_components": [
+        {
+          "vertex": 12655,
+          "component": 2,
+          "predicted": -30.008655548095703,
+          "native": -30.00865364074707
+        },
+        {
+          "vertex": 15639,
+          "component": 2,
+          "predicted": -24.28684425354004,
+          "native": -24.286842346191406
+        },
+        {
+          "vertex": 15654,
+          "component": 0,
+          "predicted": 42.04249572753906,
+          "native": 42.04249954223633
+        },
+        {
+          "vertex": 16302,
+          "component": 2,
+          "predicted": -19.784406661987305,
+          "native": -19.784408569335938
+        },
+        {
+          "vertex": 17086,
+          "component": 0,
+          "predicted": 41.74817657470703,
+          "native": 41.748172760009766
+        },
+        {
+          "vertex": 17086,
+          "component": 2,
+          "predicted": -20.88651466369629,
+          "native": -20.886512756347656
+        },
+        {
+          "vertex": 17129,
+          "component": 0,
+          "predicted": 42.16631317138672,
+          "native": 42.16630935668945
+        },
+        {
+          "vertex": 17129,
+          "component": 2,
+          "predicted": -23.415660858154297,
+          "native": -23.415658950805664
+        },
+        {
+          "vertex": 17195,
+          "component": 0,
+          "predicted": 41.593910217285156,
+          "native": 41.59391403198242
+        },
+        {
+          "vertex": 19552,
+          "component": 0,
+          "predicted": 41.33235168457031,
+          "native": 41.33235549926758
+        },
+        {
+          "vertex": 87966,
+          "component": 0,
+          "predicted": -24.09836769104004,
+          "native": -24.098365783691406
+        }
+      ]
+    },
+    "selected_float_multiply_add": {
+      "exact_components": 319853,
+      "vertices_le_1e-5_mm": 106622,
+      "max_error_mm": 8.529922399520072e-06,
+      "mismatched_components": [
+        {
+          "vertex": 12655,
+          "component": 2,
+          "predicted": -30.008655548095703,
+          "native": -30.00865364074707
+        },
+        {
+          "vertex": 14193,
+          "component": 1,
+          "predicted": -83.28585815429688,
+          "native": -83.2858657836914
+        },
+        {
+          "vertex": 15639,
+          "component": 2,
+          "predicted": -24.28684425354004,
+          "native": -24.286842346191406
+        },
+        {
+          "vertex": 17086,
+          "component": 0,
+          "predicted": 41.74817657470703,
+          "native": 41.748172760009766
+        },
+        {
+          "vertex": 17086,
+          "component": 2,
+          "predicted": -20.88651466369629,
+          "native": -20.886512756347656
+        },
+        {
+          "vertex": 17129,
+          "component": 0,
+          "predicted": 42.16631317138672,
+          "native": 42.16630935668945
+        },
+        {
+          "vertex": 17129,
+          "component": 2,
+          "predicted": -23.415660858154297,
+          "native": -23.415658950805664
+        },
+        {
+          "vertex": 17195,
+          "component": 0,
+          "predicted": 41.593910217285156,
+          "native": 41.59391403198242
+        },
+        {
+          "vertex": 18709,
+          "component": 2,
+          "predicted": -39.17835235595703,
+          "native": -39.1783561706543
+        },
+        {
+          "vertex": 19547,
+          "component": 0,
+          "predicted": 41.2382698059082,
+          "native": 41.23827362060547
+        },
+        {
+          "vertex": 19547,
+          "component": 1,
+          "predicted": -81.978515625,
+          "native": -81.97850799560547
+        },
+        {
+          "vertex": 87623,
+          "component": 0,
+          "predicted": -24.055923461914062,
+          "native": -24.05592155456543
+        },
+        {
+          "vertex": 87966,
+          "component": 0,
+          "predicted": -24.09836769104004,
+          "native": -24.098365783691406
+        }
+      ]
+    }
+  }
+}

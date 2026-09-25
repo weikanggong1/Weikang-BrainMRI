@@ -1,0 +1,85 @@
+{
+  "reference": "installed FreeSurfer 8.2.0-1 rh pial RAM steps 1 and 2",
+  "inference_inputs": "original brain.finalsurfs, WM, aseg, white surface, label, autodet stats; no installed RAM or copied-source gradient as inference input",
+  "limits": "First two accepted iterations only; no later optimizer, final surface, or downstream vertex-metric claim.",
+  "sha256": {
+    "/public/software/apps/Freesurfer/8.2.0-1/bin/mris_place_surface": "67139c3590f961f879a4214cd01f173b42986c7b178d1851dfa3f08e8acf12aa",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/surf/rh.white": "5c7fda4367dd3624de0ef265303dab49579aa603aee75f1cce2f9c30bec965b9",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/label/rh.cortex+hipamyg.label": "e0842a3bea859666a099ad83a07db60b94624ad4b0f0bcad17463612b94e4bc2",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/surf/autodet.gw.stats.rh.dat": "7a3f0f58063738feeec43a6132057e79db4989b88debdff3dbb7b35cd4236c0f",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/brain.finalsurfs.mgz": "796e295b88343a3c3c754fa63048be8c3fe7764b443ad909f9aebd564d762947",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz": "b190b1d8f9a4bf114c8a6623fdfd37cde0950de8f991b35243bccea46498ed5e",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/aseg.presurf.mgz": "263653b66a9aacba4d0d704781c6e67e581c86a9f99374e37d7e3f28d1674ce2",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_rh_ram_official_step1_exact/surf/rh.pial.ram": "13764f45d0f051ae8917610f3e536e1f771759777aeffaefcc018b7f9a715723",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_rh_ram_official_step2_exact/surf/rh.pial.ram": "39d715ac46ee672d019a065e53d30c6b87770092d06c35e08069a3567c98bafb"
+  },
+  "ordered_faces_exact": true,
+  "steps": [
+    {
+      "step": 1,
+      "dt": 0.5,
+      "processed_vertices": 99899,
+      "cropped_after_step": 195,
+      "candidate_vs_installed": {
+        "exact_components": 316038,
+        "total_components": 316623,
+        "exact_vertices": 105346,
+        "max_abs_error": 0.29963159561157227,
+        "first_different_vertices": [
+          126,
+          131,
+          488,
+          816,
+          2654,
+          2713,
+          2714,
+          2722,
+          2723,
+          2728,
+          3109,
+          3120
+        ]
+      },
+      "accepted_vs_installed": {
+        "exact_components": 316623,
+        "total_components": 316623,
+        "exact_vertices": 105541,
+        "max_abs_error": 0.0,
+        "first_different_vertices": []
+      }
+    },
+    {
+      "step": 2,
+      "dt": 0.5,
+      "processed_vertices": 99899,
+      "cropped_after_step": 108,
+      "candidate_vs_installed": {
+        "exact_components": 316299,
+        "total_components": 316623,
+        "exact_vertices": 105433,
+        "max_abs_error": 0.2996978759765625,
+        "first_different_vertices": [
+          488,
+          2303,
+          2714,
+          2722,
+          3052,
+          3110,
+          6626,
+          7206,
+          8688,
+          9344,
+          10628,
+          10629
+        ]
+      },
+      "accepted_vs_installed": {
+        "exact_components": 316623,
+        "total_components": 316623,
+        "exact_vertices": 105541,
+        "max_abs_error": 0.0,
+        "first_different_vertices": []
+      }
+    }
+  ]
+}

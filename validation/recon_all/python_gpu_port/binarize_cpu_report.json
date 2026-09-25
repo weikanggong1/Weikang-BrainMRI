@@ -1,0 +1,47 @@
+{
+  "command": "mri_binarize --i synthseg.rca.mgz --match 3 42 --inv --o ctxsegmask.mgz",
+  "device": "cpu",
+  "repeats": 3,
+  "timing_scope": "Fresh command startup, device initialization, and file I/O on the same host; one warm-up pair excluded",
+  "input_sha256": "34e2fa57d5f118b3d6de4ed66730d493f4a53b4c32d3c201ad6ef686a570123f",
+  "decompressed_output_sha256": "723f0dffd95b916e418ab4e780b96e5eb65652bd8a8117189d5852de9e04c98f",
+  "shape": [
+    256,
+    256,
+    256
+  ],
+  "native_dtype": ">i4",
+  "pytorch_dtype": ">i4",
+  "voxel_mismatches": 0,
+  "native_positive_voxels": 16370114,
+  "pytorch_positive_voxels": 16370114,
+  "affine_equal": true,
+  "mgh_header_equal": true,
+  "mgh_footer_equal": true,
+  "mgh_bytes_equal": true,
+  "paired_decompressed_mgh_equal": [
+    true,
+    true,
+    true
+  ],
+  "mgh_footer_lengths": [
+    83807,
+    83807
+  ],
+  "wall_seconds": {
+    "native": [
+      2.8919489211402833,
+      2.836181224323809,
+      3.4988166857510805
+    ],
+    "pytorch": [
+      6.18419111520052,
+      6.217053494881839,
+      6.06121784588322
+    ]
+  },
+  "median_wall_seconds": {
+    "native": 2.8919489211402833,
+    "pytorch": 6.18419111520052
+  }
+}

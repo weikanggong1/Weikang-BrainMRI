@@ -1,0 +1,22 @@
+{
+  "elapsed_seconds": 2.0470083095133305,
+  "max_absolute_difference_mm3": 0.00029480463126674294,
+  "differences_mm3": {
+    "BrainSegVol": 0.0,
+    "BrainSegVolNotVent": 0.0,
+    "SupraTentorialVol": 0.0,
+    "SupraTentorialVolNotVent": 0.0,
+    "SubCortGrayVol": 0.0,
+    "lhCortexVol": -0.0002088737383019179,
+    "rhCortexVol": -8.593086386099458e-05,
+    "CortexVol": -0.00029480463126674294,
+    "TotalGrayVol": -0.00029480463126674294,
+    "lhCerebralWhiteMatterVol": 0.0,
+    "rhCerebralWhiteMatterVol": 0.0,
+    "CerebralWhiteMatterVol": 0.0,
+    "MaskVol": 0.0,
+    "SupraTentorialVolNotVentVox": 0.0,
+    "BrainSegVolNotVentSurf": 0.0,
+    "VentricleChoroidVol": 0.0
+  }
+}

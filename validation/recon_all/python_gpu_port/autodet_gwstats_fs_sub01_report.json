@@ -1,0 +1,23 @@
+{
+  "reference": "FreeSurfer 8.2.0 fixed fs_sub01 run",
+  "cases": {
+    "lh": {
+      "fields": 40,
+      "exact_fields": 40,
+      "byte_exact": true,
+      "native_sha256": "10b313e9f29a9d6572f0aef4546d307f6514eaae44896fc19b4212891719c7d9",
+      "python_sha256": "10b313e9f29a9d6572f0aef4546d307f6514eaae44896fc19b4212891719c7d9",
+      "seconds_including_io_and_jit": 3.5413673780858517,
+      "differences": {}
+    },
+    "rh": {
+      "fields": 40,
+      "exact_fields": 40,
+      "byte_exact": true,
+      "native_sha256": "7a3f0f58063738feeec43a6132057e79db4989b88debdff3dbb7b35cd4236c0f",
+      "python_sha256": "7a3f0f58063738feeec43a6132057e79db4989b88debdff3dbb7b35cd4236c0f",
+      "seconds_including_io_and_jit": 2.621838105842471,
+      "differences": {}
+    }
+  }
+}

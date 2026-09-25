@@ -1,0 +1,351 @@
+{
+  "reference": "FreeSurfer 8.2.0 d932c45, fs_sub01; mris_anatomical_stats -no-th3",
+  "device": "headcw CPU",
+  "scope": "NumVert, SurfArea, ThickAvg, ThickStd, GrayVol only; curvature and folding not implemented",
+  "rows": [
+    {
+      "hemi": "lh",
+      "atlas": "aparc",
+      "surface": "white",
+      "reference_rows": 34,
+      "candidate_rows": 34,
+      "missing": [],
+      "extra": [],
+      "max_error": {
+        "NumVert": 0,
+        "SurfArea": 0.4700980894267559,
+        "ThickAvg": 0.0004992211266192648,
+        "ThickStd": 0.0004950798563763126,
+        "GrayVol": 0.42937157201595255
+      },
+      "mismatched_numvert": [],
+      "area_outliers": [],
+      "thickness_outliers": [],
+      "volume_outliers": [],
+      "volume_examples": {
+        "bankssts": [
+          1887.8348631103327,
+          1888
+        ],
+        "caudalanteriorcingulate": [
+          1028.3853846726226,
+          1028
+        ],
+        "caudalmiddlefrontal": [
+          4087.1849854911798,
+          4087
+        ],
+        "cuneus": [
+          2715.336651785871,
+          2715
+        ],
+        "entorhinal": [
+          1441.9829074033348,
+          1442
+        ]
+      },
+      "formatted_differences": []
+    },
+    {
+      "hemi": "rh",
+      "atlas": "aparc",
+      "surface": "white",
+      "reference_rows": 34,
+      "candidate_rows": 34,
+      "missing": [],
+      "extra": [],
+      "max_error": {
+        "NumVert": 0,
+        "SurfArea": 0.49840700812637806,
+        "ThickAvg": 0.0004861494688856993,
+        "ThickStd": 0.0004868594143037086,
+        "GrayVol": 0.4903204769752847
+      },
+      "mismatched_numvert": [],
+      "area_outliers": [],
+      "thickness_outliers": [],
+      "volume_outliers": [],
+      "volume_examples": {
+        "bankssts": [
+          1958.8881155534655,
+          1959
+        ],
+        "caudalanteriorcingulate": [
+          1997.0191674694001,
+          1997
+        ],
+        "caudalmiddlefrontal": [
+          3606.7229684879103,
+          3607
+        ],
+        "cuneus": [
+          2239.5372307474127,
+          2240
+        ],
+        "entorhinal": [
+          1175.5170832555343,
+          1176
+        ]
+      },
+      "formatted_differences": []
+    },
+    {
+      "hemi": "lh",
+      "atlas": "aparc",
+      "surface": "pial",
+      "reference_rows": 34,
+      "candidate_rows": 34,
+      "missing": [],
+      "extra": [],
+      "max_error": {
+        "NumVert": 0,
+        "SurfArea": 0.485721617937088,
+        "ThickAvg": 0.0004992211266192648,
+        "ThickStd": 0.0004950798563763126,
+        "GrayVol": 0.42937157201595255
+      },
+      "mismatched_numvert": [],
+      "area_outliers": [],
+      "thickness_outliers": [],
+      "volume_outliers": [],
+      "volume_examples": {
+        "bankssts": [
+          1887.8348631103327,
+          1888
+        ],
+        "caudalanteriorcingulate": [
+          1028.3853846726226,
+          1028
+        ],
+        "caudalmiddlefrontal": [
+          4087.1849854911798,
+          4087
+        ],
+        "cuneus": [
+          2715.336651785871,
+          2715
+        ],
+        "entorhinal": [
+          1441.9829074033348,
+          1442
+        ]
+      },
+      "formatted_differences": []
+    },
+    {
+      "hemi": "rh",
+      "atlas": "aparc",
+      "surface": "pial",
+      "reference_rows": 34,
+      "candidate_rows": 34,
+      "missing": [],
+      "extra": [],
+      "max_error": {
+        "NumVert": 0,
+        "SurfArea": 0.4997576829046011,
+        "ThickAvg": 0.0004861494688856993,
+        "ThickStd": 0.0004868594143037086,
+        "GrayVol": 0.4903204769752847
+      },
+      "mismatched_numvert": [],
+      "area_outliers": [],
+      "thickness_outliers": [],
+      "volume_outliers": [],
+      "volume_examples": {
+        "bankssts": [
+          1958.8881155534655,
+          1959
+        ],
+        "caudalanteriorcingulate": [
+          1997.0191674694001,
+          1997
+        ],
+        "caudalmiddlefrontal": [
+          3606.7229684879103,
+          3607
+        ],
+        "cuneus": [
+          2239.5372307474127,
+          2240
+        ],
+        "entorhinal": [
+          1175.5170832555343,
+          1176
+        ]
+      },
+      "formatted_differences": []
+    },
+    {
+      "hemi": "lh",
+      "atlas": "aparc.a2009s",
+      "surface": "white",
+      "reference_rows": 74,
+      "candidate_rows": 74,
+      "missing": [],
+      "extra": [],
+      "max_error": {
+        "NumVert": 0,
+        "SurfArea": 0.49886150285601616,
+        "ThickAvg": 0.0004977359771731749,
+        "ThickStd": 0.0004996740357209317,
+        "GrayVol": 0.49705125247680826
+      },
+      "mismatched_numvert": [],
+      "area_outliers": [],
+      "thickness_outliers": [],
+      "volume_outliers": [],
+      "volume_examples": {
+        "G_Ins_lg_and_S_cent_ins": [
+          1254.4507059355615,
+          1254
+        ],
+        "G_and_S_cingul-Ant": [
+          4012.3082322940995,
+          4012
+        ],
+        "G_and_S_cingul-Mid-Ant": [
+          1871.8590635789403,
+          1872
+        ],
+        "G_and_S_cingul-Mid-Post": [
+          2027.6340001424849,
+          2028
+        ],
+        "G_and_S_frontomargin": [
+          2009.204621660599,
+          2009
+        ]
+      },
+      "formatted_differences": []
+    },
+    {
+      "hemi": "rh",
+      "atlas": "aparc.a2009s",
+      "surface": "white",
+      "reference_rows": 74,
+      "candidate_rows": 74,
+      "missing": [],
+      "extra": [],
+      "max_error": {
+        "NumVert": 0,
+        "SurfArea": 0.49729837477207184,
+        "ThickAvg": 0.0004933132500875015,
+        "ThickStd": 0.0004818050193098333,
+        "GrayVol": 0.4999713905108365
+      },
+      "mismatched_numvert": [],
+      "area_outliers": [],
+      "thickness_outliers": [],
+      "volume_outliers": [],
+      "volume_examples": {
+        "G_Ins_lg_and_S_cent_ins": [
+          1117.7280828787466,
+          1118
+        ],
+        "G_and_S_cingul-Ant": [
+          4570.9281117366445,
+          4571
+        ],
+        "G_and_S_cingul-Mid-Ant": [
+          2071.7373955508256,
+          2072
+        ],
+        "G_and_S_cingul-Mid-Post": [
+          2033.9036888124601,
+          2034
+        ],
+        "G_and_S_frontomargin": [
+          1790.097636243353,
+          1790
+        ]
+      },
+      "formatted_differences": []
+    },
+    {
+      "hemi": "lh",
+      "atlas": "aparc.DKTatlas",
+      "surface": "white",
+      "reference_rows": 31,
+      "candidate_rows": 31,
+      "missing": [],
+      "extra": [],
+      "max_error": {
+        "NumVert": 0,
+        "SurfArea": 0.4806376025080681,
+        "ThickAvg": 0.0004980793461255573,
+        "ThickStd": 0.0004963605650454284,
+        "GrayVol": 0.4948719599560718
+      },
+      "mismatched_numvert": [],
+      "area_outliers": [],
+      "thickness_outliers": [],
+      "volume_outliers": [],
+      "volume_examples": {
+        "caudalanteriorcingulate": [
+          2222.120160205379,
+          2222
+        ],
+        "caudalmiddlefrontal": [
+          4372.494871959956,
+          4372
+        ],
+        "cuneus": [
+          3777.8930845202176,
+          3778
+        ],
+        "entorhinal": [
+          1344.3115248203885,
+          1344
+        ],
+        "fusiform": [
+          5927.0055295502625,
+          5927
+        ]
+      },
+      "formatted_differences": []
+    },
+    {
+      "hemi": "rh",
+      "atlas": "aparc.DKTatlas",
+      "surface": "white",
+      "reference_rows": 31,
+      "candidate_rows": 31,
+      "missing": [],
+      "extra": [],
+      "max_error": {
+        "NumVert": 0,
+        "SurfArea": 0.4903738722205162,
+        "ThickAvg": 0.0004830768115939854,
+        "ThickStd": 0.0004913105339328094,
+        "GrayVol": 0.48140484891882807
+      },
+      "mismatched_numvert": [],
+      "area_outliers": [],
+      "thickness_outliers": [],
+      "volume_outliers": [],
+      "volume_examples": {
+        "caudalanteriorcingulate": [
+          2123.4805322442776,
+          2123
+        ],
+        "caudalmiddlefrontal": [
+          3707.6298736534695,
+          3708
+        ],
+        "cuneus": [
+          2720.0351728421083,
+          2720
+        ],
+        "entorhinal": [
+          1153.0066950008693,
+          1153
+        ],
+        "fusiform": [
+          6947.4601305163715,
+          6947
+        ]
+      },
+      "formatted_differences": []
+    }
+  ]
+}

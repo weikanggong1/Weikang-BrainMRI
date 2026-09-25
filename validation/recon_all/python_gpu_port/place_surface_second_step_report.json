@@ -1,0 +1,13 @@
+{
+  "reference": "pinned FreeSurfer 8.2 copied-source second LH pial mesh snapshot",
+  "previous_first_step_exact": true,
+  "gradient_start_exact": true,
+  "ordered_faces_exact": true,
+  "exact_vertices": 106622,
+  "total_vertices": 106622,
+  "max_distance_mm": 0.0,
+  "first_mismatched_vertices": [],
+  "source_collision_blocked_vertices": 182,
+  "processed_vertices": 101000,
+  "python_step_seconds_excluding_io": 68.37784450035542
+}

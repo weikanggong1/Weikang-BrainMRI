@@ -1,0 +1,102 @@
+{
+  "installed_binary": {
+    "lh.white_target_vs_pre_iteration": {
+      "vertices": 106622,
+      "faces_equal": true,
+      "changed_vertices": 100960,
+      "median_mm": 0.35000001217162435,
+      "p99_mm": 3.150000033658587,
+      "max_mm": 9.65000000337253
+    },
+    "lh.pial_target_vs_input": {
+      "vertices": 106622,
+      "faces_equal": true,
+      "changed_vertices": 100881,
+      "median_mm": 2.050000334314285,
+      "p99_mm": 7.849995783840973,
+      "max_mm": 9.650003443350542
+    },
+    "lh.pial_pre_iteration_vs_input": {
+      "vertices": 106622,
+      "faces_equal": true,
+      "changed_vertices": 0,
+      "median_mm": 0.0,
+      "p99_mm": 0.0,
+      "max_mm": 0.0
+    },
+    "rh.white_target_vs_pre_iteration": {
+      "vertices": 105541,
+      "faces_equal": true,
+      "changed_vertices": 99882,
+      "median_mm": 0.3500000306024685,
+      "p99_mm": 3.450000054225222,
+      "max_mm": 9.750000256417708
+    },
+    "rh.pial_target_vs_input": {
+      "vertices": 105541,
+      "faces_equal": true,
+      "changed_vertices": 99797,
+      "median_mm": 1.9500008708661125,
+      "p99_mm": 7.9499941659850615,
+      "max_mm": 9.650002647433224
+    },
+    "rh.pial_pre_iteration_vs_input": {
+      "vertices": 105541,
+      "faces_equal": true,
+      "changed_vertices": 0,
+      "median_mm": 0.0,
+      "p99_mm": 0.0,
+      "max_mm": 0.0
+    }
+  },
+  "source_probe": {
+    "lh.white.step0_vs_installed_pre_iteration": {
+      "vertices": 106622,
+      "faces_equal": true,
+      "changed_vertices": 0,
+      "median_mm": 0.0,
+      "p99_mm": 0.0,
+      "max_mm": 0.0
+    },
+    "lh.white.step1_vs_pre_iteration": {
+      "vertices": 106622,
+      "faces_equal": true,
+      "changed_vertices": 101004,
+      "median_mm": 0.2999998552829265,
+      "p99_mm": 0.3000020780108026,
+      "max_mm": 0.3000040242265854
+    },
+    "lh.white.target_vs_installed_target": {
+      "vertices": 106622,
+      "faces_equal": true,
+      "changed_vertices": 0,
+      "median_mm": 0.0,
+      "p99_mm": 0.0,
+      "max_mm": 0.0
+    },
+    "lh.pial.step0_vs_installed_pre_iteration": {
+      "vertices": 106622,
+      "faces_equal": true,
+      "changed_vertices": 0,
+      "median_mm": 0.0,
+      "p99_mm": 0.0,
+      "max_mm": 0.0
+    },
+    "lh.pial.step1_vs_pre_iteration": {
+      "vertices": 106622,
+      "faces_equal": true,
+      "changed_vertices": 100825,
+      "median_mm": 0.29999996550386443,
+      "p99_mm": 0.3000021629096246,
+      "max_mm": 0.30000394445889617
+    },
+    "lh.pial.target_vs_installed_target": {
+      "vertices": 106622,
+      "faces_equal": true,
+      "changed_vertices": 0,
+      "median_mm": 0.0,
+      "p99_mm": 0.0,
+      "max_mm": 0.0
+    }
+  }
+}

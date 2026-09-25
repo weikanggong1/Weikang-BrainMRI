@@ -1,0 +1,13 @@
+{
+  "input_sha256": "242eb3be519fdc503a70bf9eb4a4709a5b2196da7d5d4cbd0abc60befe0bf83c",
+  "native_sha256": "d0ee16e13093e122cd96f388e87f95e0f5278798357dea1bc64b33ad3355ca5a",
+  "python_sha256": "242eb3be519fdc503a70bf9eb4a4709a5b2196da7d5d4cbd0abc60befe0bf83c",
+  "vertices": 105541,
+  "faces": 211078,
+  "python_input_bytes_exact": true,
+  "native_python_ordered_vertices_exact": true,
+  "native_python_ordered_faces_exact": true,
+  "native_python_volume_info_exact": true,
+  "native_input_ordered_vertices_exact": true,
+  "native_input_ordered_faces_exact": true
+}

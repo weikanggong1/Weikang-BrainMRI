@@ -7,6 +7,151 @@
 实现执行，其他步骤由随本地运行包保存的 FreeSurfer 原生程序执行。单被试支持
 `fnit-recon-all` 命令行和 Python 调用；多被试完整流程只提供 Python 调用。
 
+去除原生运行包的 Python/CUDA 移植仍在逐阶段验证。
+[完整替换的验收门槛](../../validation/recon_all/python_gpu_port/RELEASE_GATES.md)
+列出同一 T1 的端到端、逐顶点和分阶段计时条件。
+[阶段代码与配对结果](../../validation/recon_all/python_gpu_port/README.md)涵盖已通过的
+体素掩膜、表面厚度、面积、顶点体积、曲率及脑区表格数值；这些独立阶段尚未接入
+本页的完整入口。[双侧连续六步](../../validation/recon_all/python_gpu_port/SMOOTH_SURFACE.md)
+已从冻结被试的 `filled.mgz` 与 `norm.mgz` 由 Python 依次生成
+`orig.nofix`、`smoothwm.nofix`、`inflated.nofix` 和 `qsphere.nofix`，
+两侧逐顶点、逐面及体积几何元数据与官方完全一致；已验证路径为 CPU。
+后续 Numba 优化保留了双侧几何逐项一致；[隔离计时与哈希](../../validation/recon_all/python_gpu_port/inflate_qsphere_numba_optimized_report.json)
+记录了膨胀和快速球面阶段的单次耗时，尚不是完整流程或配对加速结论。
+现有 `run_initial_surface_chain` Python API 可在一个进程内串联双侧这六步；
+[真实 T1 对照](../../validation/recon_all/python_gpu_port/initial_surface_chain_api_fs_sub01_report.json)
+确认两侧 pretess 体素与八个表面文件的有序顶点、面和体积几何信息均与官方一致。
+该调用在 CPU 上验证，输出止于 `qsphere.nofix`，尚不能替代完整 recon-all。
+
+```python
+from fnit.recon_all.initial_surface_chain import run_initial_surface_chain
+
+report = run_initial_surface_chain(
+    "/subjects/sub01/mri/filled.mgz",
+    "/subjects/sub01/mri/norm.mgz",
+    "/scratch/sub01_initial_surface",
+    device="cpu",
+)
+```
+
+输出目录须为空；返回值记录双侧各阶段耗时及输出路径。安装这些独立 Python
+阶段的附加依赖使用 `python -m pip install '.[recon-all-python-stages]'`；
+其中 SimpleITK 和 ANTsPy 是 CPU 算子依赖，Numba 用于按原生顺序计算的热点。
+固定流程所需的 102 个非模型模板与图谱文件可按
+[已核验清单](../../validation/recon_all/python_gpu_port/ASSETS_VALIDATION.md)单独下载并校验：
+
+```bash
+fnit-setup-recon-all-assets --dest /path/to/recon_all_assets
+fnit-setup-recon-all-assets --dest /path/to/recon_all_assets --verify-only
+```
+
+首轮下载约 796.17 MiB，实际使用文件共 328.73 MiB；安装器逐文件校验大小与
+SHA-256，数据保存在包外。此资产入口尚未接入完整 Python recon-all 调度。
+[常规球面](../../validation/recon_all/python_gpu_port/SPHERE_STANDARD_STATUS.md)
+已完成双侧全距离表对照；隔离首轮展开的独立步长搜索与双侧全部顶点坐标误差
+也通过 `1×10⁻⁵ mm` 数值门槛。该首轮使用原生负面积修复检查点；后续轮次
+和最终 `sphere` 文件仍未通过。
+拓扑修复、完整表面优化与配准、
+原生无依赖调度仍待完成。[pial 安装版首差报告](../../validation/recon_all/python_gpu_port/place_surface_installed_first_difference_report.json)
+已定位第 1 步的 1 ULP 接受坐标差及后续近零邻点判定放大；官方最终
+pial 网格和逐顶点指标尚未通过。[T1 输入转换](../../validation/recon_all/python_gpu_port/NIFTI_IMPORT.md)、
+[conform 阶段](../../validation/recon_all/python_gpu_port/CONFORM.md)
+和 [N4 完整包装](N4_WRAPPER_VALIDATION.md)也已分别与原生代码配对验证。
+[单 T1 连续输入链](../../validation/recon_all/python_gpu_port/input_chain_fs_sub01_report.json)
+现已把 NIfTI 导入、单次扫描复制、conform 和 XFORM 路径标签接成
+`run_input_chain` Python API；冻结被试的前三个 MRI 文件均与官方逐体素、
+MGH 头及仿射一致。该链输出止于 `orig.mgz`，已验证路径为 CPU。
+从这个 Python 生成的 `orig.mgz` 接续运行 PyTorch SynthStrip 也已在 CPU 上
+逐体素匹配官方 `synthstrip.mgz`，见[连续输入对照](../../validation/recon_all/python_gpu_port/connected_synthstrip_fs_sub01_report.json)。
+33 类 SynthSeg 的同一路径 CPU 测试受 headcw PyTorch `Conv3d` 故障阻断，
+[诊断记录](../../validation/recon_all/python_gpu_port/connected_synthseg_cpu_headcw_20260926.json)；
+该连接尚未在 GPU 上核验。
+[现有混合版与未经修改的官方 FreeSurfer 被试比较](../../validation/recon_all/python_gpu_port/TRUE_OFFICIAL_BASELINE_20260926.md)
+显示 138 项中 110 项通过：双侧有序表面顶点、面及逐顶点指标一致，
+但 SynthSeg 软体积、SynthMorph 形变场和部分统计值仍不同。
+SynthSeg 标签存储类型已改为官方的 float32；该修改仍需在连接式 GPU 推理中复验。
+
+```python
+from fnit.recon_all.input_chain import run_input_chain
+
+report = run_input_chain("subject_T1w.nii.gz", "/scratch/sub01", device="cpu")
+```
+
+进一步的 [`run_input_talairach_chain`](../../src/fnit/recon_all/input_talairach_chain.py)
+把外置权重和 MNI305 模板接入同一个 Python 进程：从原始 T1 连续生成
+`orig/001.mgz`、`rawavg.mgz`、`orig.mgz`、`synthstrip.mgz` 和
+`transforms/talairach.xfm`。同一 T1 的四个影像文件与未经修改的官方运行逐体素、
+MGH 头和仿射一致；Talairach 变换在输入网格八角点的最大位移差为
+0.000157 mm。CPU 单次各段时间及输入哈希见[连续链报告](../../validation/recon_all/python_gpu_port/INPUT_TALAIRACH_CHAIN.md)。
+这段调用止于仿射配准，尚未产生皮层表面或统计表。
+从该链生成的 `orig.mgz` 和 `talairach.xfm` 接续 Python/SimpleITK N4 后，
+`nu.mgz` 与 headcw 同机新跑的官方 N4 全体素一致；相对旧版完整官方归档仍有
+34/16,777,216 个体素差异（最大 2 灰度级）。详见
+[连接式 N4 对照](../../validation/recon_all/python_gpu_port/CONNECTED_N4_20260926.md)。
+同一段现可用 [`run_input_n4_chain`](../../src/fnit/recon_all/input_n4_chain.py)
+单次 Python 调用；真实新目录回放验证到 `nu.mgz`，其中 SimpleITK N4
+使用 CPU。它尚不是完整的 recon-all 入口。
+接续运行 Python 的首遍 `mri_normalize` 后，`T1.mgz` 与同一 `nu.mgz`
+输入的新跑官方命令全体素匹配；相对旧版完整官方归档有 112 个体素差异。
+[同输入与归档对照](../../validation/recon_all/python_gpu_port/CONNECTED_T1_NORMALIZE_20260926.md)
+将两种比较分开记录。
+
+[ANTs 去噪](../../validation/recon_all/python_gpu_port/ANTS_DENOISE_STATUS.md)另以
+`antspyx==0.6.3` Python API 在同一冻结 T1 输入上匹配全部 16,777,216 个输出体素；
+它使用 CPU 上的编译 ANTs/ITK 算子，尚未接入完整入口。
+[T1 强度标准化](NORMALIZATION.md)的第一遍和带 `-aseg -mask` 的第二遍现均有
+独立 Python API 与命令行。第一遍已在 CPU/H100 上逐体素匹配；[第二遍](../../validation/recon_all/python_gpu_port/NORMALIZE_SECOND_PASS.md)
+在 `fs_sub01` 上独立生成与官方一致的 16,777,216 个体素和 MGH 头，已验证路径为 CPU。
+两遍均尚未接入本页完整入口。
+[GCA 控制点标准化](../../validation/recon_all/python_gpu_port/CA_NORMALIZE.md)已在同一输入上
+复现官方 `mri_ca_normalize` 的 `norm.mgz` 全体素及 `ctrl_pts.mgz` 六帧，
+284 字节 MGH 头一致；它是独立 Python/Numba CPU 阶段，尚未接入完整入口。
+[GCA 仿射配准](../../validation/recon_all/python_gpu_port/MRI_EM_REGISTER_VALIDATION.md)
+在固定被试上已由独立 Python/Numba CPU 命令生成与原生数值一致的最终 LTA：
+矩阵最大误差 `7.45e-9`，315,638 个 atlas 样本的源体素映射零差异。
+该阶段尚未接入完整入口，其他被试和 GPU 实现仍待验证；单次同机运行耗时为
+Python 230.20 秒、原生 236.52 秒，尚非严格配对速度测试。
+[GCA 逆场生成](../../validation/recon_all/python_gpu_port/CA_REGISTER_INVERSE_KERNELS.md)
+在冻结 warp 输入上已由 Python/Numba 逐字节复现完整压缩 NIfTI；它仍是独立 CPU 阶段，
+尚未接入完整入口。
+[皮层脑区标注](../../validation/recon_all/python_gpu_port/MRIS_CA_LABEL_STATUS.md)
+的六次 `mris_ca_label` 调用也已从冻结网格、球面配准及 GCS 输入由 Python 逐字节复现；
+上游 `sphere.reg` 仍依赖尚未移植的配准阶段。
+[脑区曲率四列](../../validation/recon_all/python_gpu_port/ROI_CURVATURE.md)
+在已有网格和标注上通过 346 行对照；
+[白质到球面 Jacobian](../../validation/recon_all/python_gpu_port/SURFACE_JACOBIAN.md)
+也通过双侧 212,163 顶点的 CPU/CUDA 数值对照；
+[低信号白质重标记](../../validation/recon_all/python_gpu_port/RELABEL_HYPOINTENSITIES.md)
+通过 16,777,216 个体素及解压后 MGH 字节对照；
+[固定输入的综合白质编辑](../../validation/recon_all/python_gpu_port/WM_ASEGEDIT_FIXED.md)
+通过同一被试 16,777,216 个体素与新跑原生输出对照，其他被试仍受输入哈希门槛限制；
+[ribbon 修正 aseg](../../validation/recon_all/python_gpu_port/SURF2VOLSEG_FIX.md)
+通过 16,777,216 个体素对照；
+[皮层 ribbon 生成](../../validation/recon_all/python_gpu_port/VOLMASK.md)
+通过三个 256³ 输出及完整解压 MGH 字节对照；
+[aparc、a2009s 和 DKTatlas 体积标注](../../validation/recon_all/python_gpu_port/SURF2VOLSEG_CORTEX.md)
+各通过 16,777,216 个体素和完整解压 MGH 对照；
+[wmparc 白质标注](../../validation/recon_all/python_gpu_port/experimental/SURF2VOLSEG_WM.md)
+通过全体素和完整解压 MGH 对照；
+[72 个 fsaverage 标签投射](../../validation/recon_all/python_gpu_port/LABEL2LABEL_SURFACE_STATUS.md)
+与[六个 BA/VPnL 注释文件](../../validation/recon_all/python_gpu_port/LABEL2ANNOT.md)
+在冻结球面输入上逐文件匹配；
+[wmparc 统计](../../validation/recon_all/python_gpu_port/experimental/SEGSTATS_WMPARC.md)
+通过 70 行数值与格式对照；
+[aseg 统计](../../validation/recon_all/python_gpu_port/ASEG_STATS.md)
+通过 45 行表格和 21 项汇总指标对照；
+[白质/灰质对比度 SNR 表](../../validation/recon_all/python_gpu_port/SURFACE_SNR_STATS.md)
+在冻结上游输入及 Python 生成的对比度图上通过左右半球共 70 行逐字节对照；
+[其表面采样上游](../../validation/recon_all/python_gpu_port/VOL2SURF_CONTRAST_STATUS.md)
+已通过左右半球白质、灰质中间图及最终对比度图逐顶点一致性验收；
+[统计表 Python 写入](../../validation/recon_all/python_gpu_port/ANATOMICAL_STATS_FILE.md)
+已复现同一冻结被试的 34 行左侧 aparc 白质表数值及格式，16 项脑体积指标的最大
+数值误差为 0.000295 mm³。这些统计阶段仍依赖尚未全部由 Python 生成的上游网格与分割。
+另有双侧连续六步验证（[左](../../validation/recon_all/python_gpu_port/six_stage_surface_chain_lh_report.json)、[右](../../validation/recon_all/python_gpu_port/six_stage_surface_chain_rh_report.json)）：
+从冻结的 `filled.mgz` 与 `norm.mgz` 出发，纯 Python 顺序生成 `orig.nofix`、
+`smoothwm.nofix`、`inflated.nofix` 和 `qsphere.nofix`，所有有序顶点、面及
+体积几何标签均与官方输出完全一致。此链为 CPU 单被试隔离验证，尚未覆盖完整重建。
+
 ```mermaid
 flowchart LR
   A[T1w] --> B[recon-all 调度]

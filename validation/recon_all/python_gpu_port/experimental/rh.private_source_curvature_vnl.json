@@ -1,0 +1,97 @@
+{
+  "scope": "first global topology curvature histogram only; source-order VNL float SVD inverse",
+  "input_sha256": {
+    "orig": "45d53fa51554b6f58f04ac37ee8eff1814fd31c001178e7648af2eb97b9f01cf",
+    "qsphere": "b93d519dd0da418ca2fbfed01617af4939b3d7528e91a7d5f73eaae279a9977a"
+  },
+  "native_reference_sha256": {
+    "k1.plt": "f5492f5e6599746a2137006ad13cfb682901bb0c8840b9b70828af718ddeff5f",
+    "k2.plt": "4b34d983837a696e5fbf6b32a6ebb46c82a8039437253a0837d4fc7cb001be44",
+    "mri_k1_k2.mgh": "3bd50b5fa13a453aae289be97bef6ca4e59c0837bb74ecf1beb3b621cc696c4f"
+  },
+  "vertices": 101454,
+  "defect_vertices": 1191,
+  "invalid_fits": 0,
+  "ill_conditioned_fits": 0,
+  "python_fit_and_histogram_seconds_including_jit": 27.24696496129036,
+  "first_candidate_qcurv_ll": "not validated: candidate patch k1/k2 still require an independent fit",
+  "k1": {
+    "raw_count_matching_bins": 90,
+    "first_raw_count_mismatch": 36,
+    "raw_count_l1_difference": 16,
+    "predicted_min_max": [
+      -8.408014297485352,
+      3.6149544715881348
+    ],
+    "predicted_mean": -0.09282229095697403,
+    "native_mean_from_unrounded_bins": -0.09280337393283844,
+    "mean_float32_bits_equal": false,
+    "mean_absolute_difference": 1.89170241355896e-05,
+    "native_first_bin": -3.0,
+    "bin_positions_matching_six_decimals": 100,
+    "pdf_counts_matching_ten_decimals": 90,
+    "first_bin_position_mismatch": null,
+    "first_pdf_count_mismatch": 36,
+    "largest_pdf_absolute_difference": 3.942663992538564e-05,
+    "native_printed_six_decimal_equal": 100124,
+    "first_native_printed_six_decimal_difference": 96,
+    "first_native_printed_difference_values": [
+      0.780408501625061,
+      0.7804080247879028
+    ],
+    "native_within_1e_3": 101444,
+    "native_median_absolute_difference": 2.384185791015625e-07,
+    "native_largest_absolute_difference": 1.1451340317726135,
+    "first_native_vertex_difference_over_1e_3": 6477
+  },
+  "k2": {
+    "raw_count_matching_bins": 88,
+    "first_raw_count_mismatch": 50,
+    "raw_count_l1_difference": 16,
+    "predicted_min_max": [
+      -1.9595911502838135,
+      1.3228504657745361
+    ],
+    "predicted_mean": -0.03548396751284599,
+    "native_mean_from_unrounded_bins": -0.035495124757289886,
+    "mean_float32_bits_equal": false,
+    "mean_absolute_difference": 1.1157244443893433e-05,
+    "native_first_bin": -1.959591269493103,
+    "bin_positions_matching_six_decimals": 87,
+    "pdf_counts_matching_ten_decimals": 88,
+    "first_bin_position_mismatch": 12,
+    "first_pdf_count_mismatch": 50,
+    "largest_pdf_absolute_difference": 2.9571383934778872e-05,
+    "native_printed_six_decimal_equal": 100236,
+    "first_native_printed_six_decimal_difference": 237,
+    "first_native_printed_difference_values": [
+      0.36016055941581726,
+      0.3601599931716919
+    ],
+    "native_within_1e_3": 101445,
+    "native_median_absolute_difference": 2.421438694000244e-07,
+    "native_largest_absolute_difference": 0.4528902769088745,
+    "first_native_vertex_difference_over_1e_3": 6477
+  },
+  "joint": {
+    "bitwise_matching_cells": 0,
+    "cells": 10000,
+    "first_bitwise_mismatch": [
+      0,
+      0
+    ],
+    "largest_absolute_difference": 2.9342016205191612e-05,
+    "predicted_norm": 102253.7734375,
+    "native_norm_inferred_from_pseudocount": 102253.8671875,
+    "raw_count_matching_cells": 9986,
+    "first_raw_count_mismatch": [
+      29,
+      74
+    ],
+    "raw_count_l1_difference": 18
+  },
+  "native_first_curvature_sha256": "719176a22b1b6408199b35e916ad159423f8f13c2c3af6824452b59cd58cc9d2",
+  "histogram_matches_native": false,
+  "reference_kind": "private pinned d932 source build diagnostic; not the installed FreeSurfer acceptance reference",
+  "frozen_reference_sha256_match": false
+}

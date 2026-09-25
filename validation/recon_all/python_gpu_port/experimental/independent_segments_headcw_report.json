@@ -1,0 +1,54 @@
+{
+  "lh": {
+    "hemisphere": "lh",
+    "scope": "first defect only; independent candidate edges, MRI scores, old-edge segmentation; no GA patch or final orig.premesh",
+    "all_candidate_pairs": 6903,
+    "scored_edges": 6456,
+    "defect_label_differences": 0,
+    "defect_status_differences": 0,
+    "candidate_table_differences": 0,
+    "bitwise_score_equal": 6388,
+    "max_score_absolute_error": 3.0517578125e-05,
+    "sorted_all_edge_order_differences": 0,
+    "first_sorted_all_edge_order_difference": null,
+    "old_edges": 164,
+    "sorted_old_edge_order_differences": 0,
+    "first_sorted_old_edge_order_difference": null,
+    "cluster_sizes": [
+      88,
+      70,
+      3
+    ],
+    "unassigned_edges": 3,
+    "annotation_differences_all_vertices": 0,
+    "annotation_equal_defect_and_border": 245,
+    "defect_and_border_vertices": 245,
+    "first_annotation_difference": null
+  },
+  "rh": {
+    "hemisphere": "rh",
+    "scope": "first defect only; independent candidate edges, MRI scores, old-edge segmentation; no GA patch or final orig.premesh",
+    "all_candidate_pairs": 28920,
+    "scored_edges": 26560,
+    "defect_label_differences": 0,
+    "defect_status_differences": 0,
+    "candidate_table_differences": 0,
+    "bitwise_score_equal": 26334,
+    "max_score_absolute_error": 3.0517578125e-05,
+    "sorted_all_edge_order_differences": 2,
+    "first_sorted_all_edge_order_difference": 16570,
+    "old_edges": 403,
+    "sorted_old_edge_order_differences": 0,
+    "first_sorted_old_edge_order_difference": null,
+    "cluster_sizes": [
+      259,
+      77,
+      66
+    ],
+    "unassigned_edges": 1,
+    "annotation_differences_all_vertices": 0,
+    "annotation_equal_defect_and_border": 441,
+    "defect_and_border_vertices": 441,
+    "first_annotation_difference": null
+  }
+}

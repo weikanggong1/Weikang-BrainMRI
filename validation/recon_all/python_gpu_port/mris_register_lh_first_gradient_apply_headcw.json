@@ -1,0 +1,13 @@
+{
+  "device": "cpu",
+  "vertices": 106622,
+  "dt_from_native": 70.93703089944263,
+  "exact_ordered_vertices": 106622,
+  "max_abs_coordinate_error_mm": 0.0,
+  "seconds_excluding_io": 0.025404184125363827,
+  "sha256": {
+    "positions": "9c35b8ab0037d79df0af70869fbdf75e092f62d51e31be0ef83641376b6de8a1",
+    "gradient": "ec3a65132d0cf2ac47389933585a76b61e09471f22e22bde3b267d4df673dbb7",
+    "native_first_step": "bfe040c4da88cdd83e26b11fef5f2c011d19b871d51efe003dcc658f01b092ae"
+  }
+}

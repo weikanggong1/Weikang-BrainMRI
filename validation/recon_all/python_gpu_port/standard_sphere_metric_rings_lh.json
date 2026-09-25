@@ -1,0 +1,54 @@
+{
+  "vertex": 0,
+  "python_seconds": 3.0322450678795576,
+  "candidate_count_by_ring": [
+    7,
+    13,
+    19,
+    26,
+    31,
+    34,
+    44
+  ],
+  "native_sample_count": 79,
+  "native_ids_in_candidates": 79,
+  "initial_three_ring_order_exact": true,
+  "initial_two_ring_distance_six_decimal_matches": 20,
+  "sampled_by_ring": {
+    "3": {
+      "count": 8,
+      "ids_in_candidate_ring": 8,
+      "distance_error_median_mm": 0.029556445938110465,
+      "distance_error_max_mm": 0.10612746755218505,
+      "distance_six_decimal_matches": 0
+    },
+    "4": {
+      "count": 8,
+      "ids_in_candidate_ring": 8,
+      "distance_error_median_mm": 1.682128905056146e-07,
+      "distance_error_max_mm": 4.801025390577252e-07,
+      "distance_six_decimal_matches": 8
+    },
+    "5": {
+      "count": 8,
+      "ids_in_candidate_ring": 8,
+      "distance_error_median_mm": 3.71101379403882e-07,
+      "distance_error_max_mm": 0.10830579132080098,
+      "distance_six_decimal_matches": 5
+    },
+    "6": {
+      "count": 8,
+      "ids_in_candidate_ring": 8,
+      "distance_error_median_mm": 2.3538208004936223e-07,
+      "distance_error_max_mm": 4.1940307626830986e-07,
+      "distance_six_decimal_matches": 8
+    },
+    "7": {
+      "count": 8,
+      "ids_in_candidate_ring": 8,
+      "distance_error_median_mm": 2.831115724077904e-07,
+      "distance_error_max_mm": 4.6420288057902326e-07,
+      "distance_six_decimal_matches": 8
+    }
+  }
+}

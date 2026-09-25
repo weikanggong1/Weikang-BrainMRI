@@ -1,0 +1,58 @@
+{
+  "freesurfer_source": "d932c45b7941662ea380a05efef580568b98d41a",
+  "hemispheres": {
+    "lh": {
+      "all_pairs": 6903,
+      "candidate_vertices": 118,
+      "native_after_sha256": "87c5b1810efb592b586216fe49fcac318d84d65ce9d75d1746056879ae28227f",
+      "native_before_sha256": "9886ad9d9b70ae98c7f000f5c38be79f1972bdc725c73f25196aa07ad839ac7b",
+      "native_capture_wall_seconds": 3.92,
+      "native_edges_after_sort": 6456,
+      "native_edges_before_sort": 6456,
+      "native_only_edges": 0,
+      "native_score_range": [
+        0.55597323179245,
+        184.77696228027344
+      ],
+      "native_scores_finite": true,
+      "native_scores_non_decreasing_after_sort": true,
+      "native_sort_retained_same_edge_set": true,
+      "native_used_counts": {
+        "0": 6223,
+        "1": 69,
+        "2": 164
+      },
+      "ordered_endpoint_differences": 0,
+      "ordered_used_flag_differences": 0,
+      "python_edges_after_base_prune": 6456,
+      "python_only_edges": 0
+    },
+    "rh": {
+      "all_pairs": 28920,
+      "candidate_vertices": 241,
+      "native_after_sha256": "eb343f6b15c69bca928d9ed5b04e82a86a5e93e8bd1a7f2961ef5b2b72c9b95f",
+      "native_before_sha256": "ff58e0fadc76dbd33df3eb9ba7415b52a16802fa15e29d62ac16dd5536dbdc2f",
+      "native_capture_wall_seconds": 5.17,
+      "native_edges_after_sort": 26560,
+      "native_edges_before_sort": 26560,
+      "native_only_edges": 0,
+      "native_score_range": [
+        0.5639743804931641,
+        187.32659912109375
+      ],
+      "native_scores_finite": true,
+      "native_scores_non_decreasing_after_sort": true,
+      "native_sort_retained_same_edge_set": true,
+      "native_used_counts": {
+        "0": 26030,
+        "1": 127,
+        "2": 403
+      },
+      "ordered_endpoint_differences": 0,
+      "ordered_used_flag_differences": 0,
+      "python_edges_after_base_prune": 26560,
+      "python_only_edges": 0
+    }
+  },
+  "scope": "first-defect EDGE identities and used flags before MRI scoring sort; no GA patch parity"
+}

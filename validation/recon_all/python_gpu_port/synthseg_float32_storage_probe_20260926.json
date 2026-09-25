@@ -1,0 +1,9 @@
+{
+  "reference_dtype": ">f4",
+  "converted_dtype": ">f4",
+  "voxel_mismatches": 0,
+  "affine_max_abs": 0.0,
+  "mgh_header_equal": true,
+  "mgh_header_and_payload_equal": true,
+  "trailer_equal": true
+}

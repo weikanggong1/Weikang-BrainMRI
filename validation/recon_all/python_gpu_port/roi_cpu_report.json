@@ -1,0 +1,159 @@
+{
+  "reference": "FreeSurfer 8.2.0 d932c45, fs_sub01",
+  "device": "headcw CPU",
+  "scope": "NumVert, SurfArea, ThickAvg, ThickStd only; no GrayVol/curvature",
+  "rows": [
+    {
+      "hemi": "lh",
+      "atlas": "aparc",
+      "surface": "white",
+      "reference_rows": 34,
+      "candidate_rows": 34,
+      "missing": [],
+      "extra": [],
+      "max_error": {
+        "NumVert": 0,
+        "SurfArea": 0.4700980894267559,
+        "ThickAvg": 0.0004992211266192648,
+        "ThickStd": 0.0004950798563763126
+      },
+      "mismatched_numvert": [],
+      "area_outliers": [],
+      "thickness_outliers": [],
+      "formatted_differences": []
+    },
+    {
+      "hemi": "rh",
+      "atlas": "aparc",
+      "surface": "white",
+      "reference_rows": 34,
+      "candidate_rows": 34,
+      "missing": [],
+      "extra": [],
+      "max_error": {
+        "NumVert": 0,
+        "SurfArea": 0.49840700812637806,
+        "ThickAvg": 0.0004861494688856993,
+        "ThickStd": 0.0004868594143037086
+      },
+      "mismatched_numvert": [],
+      "area_outliers": [],
+      "thickness_outliers": [],
+      "formatted_differences": []
+    },
+    {
+      "hemi": "lh",
+      "atlas": "aparc",
+      "surface": "pial",
+      "reference_rows": 34,
+      "candidate_rows": 34,
+      "missing": [],
+      "extra": [],
+      "max_error": {
+        "NumVert": 0,
+        "SurfArea": 0.485721617937088,
+        "ThickAvg": 0.0004992211266192648,
+        "ThickStd": 0.0004950798563763126
+      },
+      "mismatched_numvert": [],
+      "area_outliers": [],
+      "thickness_outliers": [],
+      "formatted_differences": []
+    },
+    {
+      "hemi": "rh",
+      "atlas": "aparc",
+      "surface": "pial",
+      "reference_rows": 34,
+      "candidate_rows": 34,
+      "missing": [],
+      "extra": [],
+      "max_error": {
+        "NumVert": 0,
+        "SurfArea": 0.4997576829046011,
+        "ThickAvg": 0.0004861494688856993,
+        "ThickStd": 0.0004868594143037086
+      },
+      "mismatched_numvert": [],
+      "area_outliers": [],
+      "thickness_outliers": [],
+      "formatted_differences": []
+    },
+    {
+      "hemi": "lh",
+      "atlas": "aparc.a2009s",
+      "surface": "white",
+      "reference_rows": 74,
+      "candidate_rows": 74,
+      "missing": [],
+      "extra": [],
+      "max_error": {
+        "NumVert": 0,
+        "SurfArea": 0.49886150285601616,
+        "ThickAvg": 0.0004977359771731749,
+        "ThickStd": 0.0004996740357209317
+      },
+      "mismatched_numvert": [],
+      "area_outliers": [],
+      "thickness_outliers": [],
+      "formatted_differences": []
+    },
+    {
+      "hemi": "rh",
+      "atlas": "aparc.a2009s",
+      "surface": "white",
+      "reference_rows": 74,
+      "candidate_rows": 74,
+      "missing": [],
+      "extra": [],
+      "max_error": {
+        "NumVert": 0,
+        "SurfArea": 0.49729837477207184,
+        "ThickAvg": 0.0004933132500875015,
+        "ThickStd": 0.0004818050193098333
+      },
+      "mismatched_numvert": [],
+      "area_outliers": [],
+      "thickness_outliers": [],
+      "formatted_differences": []
+    },
+    {
+      "hemi": "lh",
+      "atlas": "aparc.DKTatlas",
+      "surface": "white",
+      "reference_rows": 31,
+      "candidate_rows": 31,
+      "missing": [],
+      "extra": [],
+      "max_error": {
+        "NumVert": 0,
+        "SurfArea": 0.4806376025080681,
+        "ThickAvg": 0.0004980793461255573,
+        "ThickStd": 0.0004963605650454284
+      },
+      "mismatched_numvert": [],
+      "area_outliers": [],
+      "thickness_outliers": [],
+      "formatted_differences": []
+    },
+    {
+      "hemi": "rh",
+      "atlas": "aparc.DKTatlas",
+      "surface": "white",
+      "reference_rows": 31,
+      "candidate_rows": 31,
+      "missing": [],
+      "extra": [],
+      "max_error": {
+        "NumVert": 0,
+        "SurfArea": 0.4903738722205162,
+        "ThickAvg": 0.0004830768115939854,
+        "ThickStd": 0.0004913105339328094
+      },
+      "mismatched_numvert": [],
+      "area_outliers": [],
+      "thickness_outliers": [],
+      "formatted_differences": []
+    }
+  ]
+}

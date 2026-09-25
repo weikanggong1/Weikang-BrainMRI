@@ -1,0 +1,17 @@
+{
+  "reference_rows": 34,
+  "python_rows": 34,
+  "exact_row_mismatches": 0,
+  "header_measure_differences": {
+    "NumVert": 0.0,
+    "WhiteSurfArea": 0.0,
+    "MeanThickness": 0.0,
+    "BrainSegVol": 0.0,
+    "BrainSegVolNotVent": 0.0,
+    "BrainSegVolNotVentSurf": 0.0,
+    "CortexVol": -0.00029499997617676854,
+    "SupraTentorialVol": 0.0,
+    "SupraTentorialVolNotVent": 0.0,
+    "eTIV": 0.0
+  }
+}

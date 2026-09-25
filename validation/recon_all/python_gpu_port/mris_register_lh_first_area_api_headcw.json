@@ -1,0 +1,26 @@
+{
+  "device": "cpu",
+  "vertices": 106622,
+  "faces": 213240,
+  "exact_current_face_areas": 213240,
+  "exact_original_face_areas": 213240,
+  "exact_current_face_normals": 213240,
+  "exact_after_area_with_native_distance_gradient": 106622,
+  "exact_after_area_from_input_surfaces": 106622,
+  "max_abs_from_input_surfaces": 0.0,
+  "seconds_excluding_io": {
+    "area_only": 4.922980293631554,
+    "distance_plus_area": 12.182279910892248
+  },
+  "sha256": {
+    "input_sphere": "d28a3d49a26984a8044a6b44bd7666059bf434c764b97adbd776e4f93804c6ed",
+    "smoothwm": "36e199e4d971a39457a4ad1d0b8eed3a84feb236ada29c05e297ffdd865a5002",
+    "rigid_sphere": "f30b07dadc90ee1dbb72314db8bac95c38f79cb547d948d0474db5b2b9cc13d7",
+    "native_after_distance": "ae1cb41537a9478a7e9e658d2927ed744c71f51c2923d735aa3c3769c5a6725f",
+    "native_after_area": "b80f924f61e6b80e1a245c72b17d3069ce49085c9c0e1e319f32393b6baec761",
+    "native_current_areas": "ead4b9eaf5a19299d7c58a86919d5136f50a9113798f9df508a87adede665c7b",
+    "native_original_areas": "fb17cd2f8f71a6c1d5574de2fe7e45365d61116d0de2ab935eef96e0f6abf108",
+    "native_face_normals": "5dfe434edcd922772e079ae0c006553d62d388e0afbd024f533f23a48d21dc3a"
+  },
+  "predicted_from_surfaces_sha256": "b80f924f61e6b80e1a245c72b17d3069ce49085c9c0e1e319f32393b6baec761"
+}

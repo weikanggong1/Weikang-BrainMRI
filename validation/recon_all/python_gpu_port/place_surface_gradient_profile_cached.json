@@ -1,0 +1,61 @@
+{
+  "reference": "pinned source third LH pial gradient",
+  "load_before": [
+    17.16,
+    18.55,
+    21.35
+  ],
+  "input_prep_seconds": 20.119779576547444,
+  "cropped_at_start": 182,
+  "reuse_neighbors": true,
+  "repeats": [
+    {
+      "repeat": 0,
+      "timings_seconds": {
+        "current_normals": 0.9560694750398397,
+        "intensity_gradient": 0.12094863224774599,
+        "repulsion_candidates": 0.25327958166599274,
+        "repulsion_gradient": 0.008863325230777264,
+        "signed_gradient_average": 0.2356018852442503,
+        "normal_spring": 0.31113824620842934,
+        "tangent_basis": 0.33335865568369627,
+        "quadratic_curvature": 0.8776420010253787,
+        "tangential_spring": 0.004319656640291214,
+        "intensity_sse": 0.2291437480598688,
+        "tangential_spring_sse": 0.1445342544466257,
+        "surface_area": 0.14590587560087442
+      },
+      "total_seconds": 3.6208053370937705,
+      "load_after": [
+        17.16,
+        18.55,
+        21.35
+      ],
+      "third_gradient_exact": true
+    },
+    {
+      "repeat": 1,
+      "timings_seconds": {
+        "current_normals": 0.943123304285109,
+        "intensity_gradient": 0.1264199810102582,
+        "repulsion_candidates": 0.22629101481288671,
+        "repulsion_gradient": 0.004549218341708183,
+        "signed_gradient_average": 0.005140325054526329,
+        "normal_spring": 0.002453075721859932,
+        "tangent_basis": 0.0010328013449907303,
+        "quadratic_curvature": 0.0758503945544362,
+        "tangential_spring": 0.0019627176225185394,
+        "intensity_sse": 0.0064173247665166855,
+        "tangential_spring_sse": 0.002245470881462097,
+        "surface_area": 0.0020077982917428017
+      },
+      "total_seconds": 1.3974934266880155,
+      "load_after": [
+        16.75,
+        18.44,
+        21.3
+      ],
+      "third_gradient_exact": true
+    }
+  ]
+}

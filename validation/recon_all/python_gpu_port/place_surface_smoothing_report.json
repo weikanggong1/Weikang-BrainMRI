@@ -1,0 +1,32 @@
+{
+  "device": "cpu",
+  "iterations": 5,
+  "hemispheres": {
+    "lh": {
+      "input_sha256": "b04ab6a6f6cda294b512a21eb79a308fccb8849bcf84e2d6afeea4a0dc773099",
+      "native_checkpoint_sha256": "388df33f48f452e3d2bebf1d0a57ed60d80431136a61f73047c3345949d60eb0",
+      "vertices": 106622,
+      "faces": 213240,
+      "faces_equal": true,
+      "coordinates_equal": true,
+      "mismatched_vertices": 0,
+      "max_abs_mm": 0.0,
+      "p99_abs_mm": 0.0,
+      "python_seconds": 3.3134484039619565,
+      "python_output": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/python_cpu/lh.python.pre_iter_nsmooth5"
+    },
+    "rh": {
+      "input_sha256": "242eb3be519fdc503a70bf9eb4a4709a5b2196da7d5d4cbd0abc60befe0bf83c",
+      "native_checkpoint_sha256": "21703a4767aa5f5230fc485340b7ee9034fe478d1400879fbd49026265d52be6",
+      "vertices": 105541,
+      "faces": 211078,
+      "faces_equal": true,
+      "coordinates_equal": true,
+      "mismatched_vertices": 0,
+      "max_abs_mm": 0.0,
+      "p99_abs_mm": 0.0,
+      "python_seconds": 3.2912031253799796,
+      "python_output": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/python_cpu/rh.python.pre_iter_nsmooth5"
+    }
+  }
+}

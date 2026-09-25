@@ -1,0 +1,107 @@
+{
+  "device": "cuda:1",
+  "repeats": 1,
+  "timing_scope": "Native subprocess and resident Python call on cuda:1, both with file I/O; import/device initialization excluded",
+  "rows": [
+    {
+      "stage": "brainmask",
+      "median_seconds": {
+        "native": 0.8957120021805167,
+        "candidate": 0.9041212061420083
+      },
+      "wall_seconds": {
+        "native": [
+          0.8957120021805167
+        ],
+        "candidate": [
+          0.9041212061420083
+        ]
+      },
+      "comparison": {
+        "shape": [
+          256,
+          256,
+          256
+        ],
+        "voxel_mismatches": 0,
+        "affine_max_error": 0,
+        "decompressed_mgh_identical": true
+      }
+    },
+    {
+      "stage": "finalsurfs_threshold",
+      "median_seconds": {
+        "native": 0.9845937779173255,
+        "candidate": 0.6713323839940131
+      },
+      "wall_seconds": {
+        "native": [
+          0.9845937779173255
+        ],
+        "candidate": [
+          0.6713323839940131
+        ]
+      },
+      "comparison": {
+        "shape": [
+          256,
+          256,
+          256
+        ],
+        "voxel_mismatches": 0,
+        "affine_max_error": 0,
+        "decompressed_mgh_identical": true
+      }
+    },
+    {
+      "stage": "finalsurfs_mcadura",
+      "median_seconds": {
+        "native": 2.585438243113458,
+        "candidate": 0.9962329482659698
+      },
+      "wall_seconds": {
+        "native": [
+          2.585438243113458
+        ],
+        "candidate": [
+          0.9962329482659698
+        ]
+      },
+      "comparison": {
+        "shape": [
+          256,
+          256,
+          256
+        ],
+        "voxel_mismatches": 0,
+        "affine_max_error": 0,
+        "decompressed_mgh_identical": true
+      }
+    },
+    {
+      "stage": "finalsurfs_vsinus",
+      "median_seconds": {
+        "native": 2.3555123014375567,
+        "candidate": 0.9039482627995312
+      },
+      "wall_seconds": {
+        "native": [
+          2.3555123014375567
+        ],
+        "candidate": [
+          0.9039482627995312
+        ]
+      },
+      "comparison": {
+        "shape": [
+          256,
+          256,
+          256
+        ],
+        "voxel_mismatches": 0,
+        "affine_max_error": 0,
+        "decompressed_mgh_identical": true
+      }
+    }
+  ]
+}

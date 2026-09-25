@@ -1,0 +1,20 @@
+{
+  "rigid_sha256": "04530e1d51fbb6b6593c315a2a2a69e3084833a5de934fe486b2162bf431d4d3",
+  "first_step_sha256": "5b7f70c445183cf08f79d7519c1b20969ae28d279e1975e03e41bbb33ae39597",
+  "vertices": 105541,
+  "faces_equal": true,
+  "exact_unchanged_vertices": 0,
+  "median_displacement_mm": 5.206440392051185,
+  "p95_displacement_mm": 6.673705828558402,
+  "max_displacement_mm": 6.893691717986884,
+  "first_rigid_vertex": [
+    -44.556243896484375,
+    -81.41486358642578,
+    -37.23387145996094
+  ],
+  "first_step_vertex": [
+    -39.87825012207031,
+    -81.84947204589844,
+    -41.356849670410156
+  ]
+}

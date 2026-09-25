@@ -1,0 +1,58 @@
+{
+  "base_main_commit": "d6645fe",
+  "host": "headcw",
+  "python": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/venv/bin/python",
+  "scope": "namespace migration import and offline focused tests; no numerical reconstruction rerun",
+  "checks": [
+    {
+      "command": "python -m fnit.recon_all.initial_surface_chain --help",
+      "status": "pass"
+    },
+    {
+      "command": "python -m fnit.recon_all.assets --help",
+      "status": "pass"
+    },
+    {
+      "command": "python -m fnit.recon_all.normalization.pipeline --help",
+      "status": "pass",
+      "note": "runpy warning because normalization __init__ imports pipeline"
+    },
+    {
+      "command": "pytest -q tests/recon_all/test_assets.py tests/recon_all/test_mris_register_line_search.py tests/recon_all/test_surface_area_gpu.py",
+      "passed": 20,
+      "failed": 0
+    },
+    {
+      "command": "pytest -q tests/recon_all/test_assets.py::test_cli_uses_configured_asset_environment",
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "command": "pytest -q tests/recon_all/test_surface_thickness_gpu.py tests/recon_all/test_surface_curvature_gpu.py tests/recon_all/test_sphere_python.py",
+      "passed": 9,
+      "failed": 0
+    },
+    {
+      "command": "python -m fnit.recon_all.normalization.aseg_pipeline --help",
+      "status": "pass",
+      "note": "runpy warning because normalization __init__ imports aseg_pipeline"
+    }
+  ],
+  "source_sha256": {
+    "src/fnit/recon_all/initial_surface_chain.py": "deebe7beff06b2695a1195413ebcfcb1309e8fd88361505ba87de20953e09a61",
+    "src/fnit/recon_all/assets.py": "aa6c4bb4d3c4ac531b2a8099b0cbd23cd701a2bdc11554146f04252922f817c4",
+    "src/fnit/recon_all/normalization/pipeline.py": "ad9a206a35e6ac2334f1c8006ef3f6245985a14d6169e7c8e308171162e29ec5",
+    "src/fnit/recon_all/mris_register_line_search.py": "052415718033859fc4fad565f3a50e1f88e9c65f1f86fba405de67f9f7afc628",
+    "src/fnit/recon_all/surface_area_gpu.py": "ad60ee9c6b3e45464650ac15f2fce7bc2ea3a6cb519c15f371f4f653f45964a8",
+    "tests/recon_all/test_assets.py": "003f28e499a8ce4fee3166b6fe469519ca870cfa3eb208ad6332890ff9bdd867",
+    "tests/recon_all/test_mris_register_line_search.py": "5a2de5ea6b606665b6c04cc7c373eef16ba054863eec8bab0fe42081ae5bc4ca",
+    "tests/recon_all/test_surface_area_gpu.py": "3cba8b7d4fd6f3a69099317d4f32d6048e89dee3c6d4857a2440db497935696b",
+    "src/fnit/recon_all/surface_thickness_gpu.py": "e00dcb26dff747d6f3bc9e51a81ecdfe6254e7984da22cb8308d882505fab90f",
+    "src/fnit/recon_all/surface_curvature_gpu.py": "7af66e0b23dd19cabe8e20e7ea75686531eb87550e599d318f35dc24f7efc8e0",
+    "src/fnit/recon_all/sphere_python.py": "21172e853cc062b5015cd5bcdf5dcb02bcd2833abe1d1f5afa3a7af3d64e60a6",
+    "tests/recon_all/test_surface_thickness_gpu.py": "09149e04b5a8dc26ac736052a944d02d5330c32aa45c7d4f3a2c35c7121030eb",
+    "tests/recon_all/test_surface_curvature_gpu.py": "fcdf0b5345c4b16d13b607d51640d8cfffaadbcea6b4c92224983c98b8c26ac3",
+    "tests/recon_all/test_sphere_python.py": "823286da23766586fa1e9ce0684b58e33957acf5897fb7aa87fc4d61a7fb1e85",
+    "src/fnit/recon_all/normalization/aseg_pipeline.py": "8060c5b7311433c51f3161269ee7092d2656d8d0ab80e329de081d8cbdece494"
+  }
+}

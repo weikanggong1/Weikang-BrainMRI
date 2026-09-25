@@ -1,0 +1,77 @@
+{
+  "reference": "copied pinned FreeSurfer 8.2 first pial step source probe",
+  "comparisons": {
+    "tangent_basis": {
+      "exact_elements": 639732,
+      "total_elements": 639732,
+      "max_abs_error": 0.0,
+      "first_mismatch": null
+    },
+    "two_ring_offsets": {
+      "exact_elements": 106623,
+      "total_elements": 106623,
+      "max_abs_error": 0.0,
+      "first_mismatch": null
+    },
+    "two_ring_candidates": {
+      "exact_elements": 1965674,
+      "total_elements": 1965674,
+      "max_abs_error": 0.0,
+      "first_mismatch": null
+    },
+    "quadratic_scalar": {
+      "exact_elements": 106622,
+      "total_elements": 106622,
+      "max_abs_error": 0.0,
+      "first_mismatch": null,
+      "p99_abs_error": 0.0,
+      "above_1e_5": 0,
+      "above_1e_6": 0,
+      "largest": [
+        {
+          "vertex": 0,
+          "candidate": 0.0041304840706288815,
+          "source": 0.0041304840706288815,
+          "abs_error": 0.0
+        },
+        {
+          "vertex": 106621,
+          "candidate": -0.02340693026781082,
+          "source": -0.02340693026781082,
+          "abs_error": 0.0
+        },
+        {
+          "vertex": 106620,
+          "candidate": -0.03150918334722519,
+          "source": -0.03150918334722519,
+          "abs_error": 0.0
+        },
+        {
+          "vertex": 106619,
+          "candidate": -0.016767483204603195,
+          "source": -0.016767483204603195,
+          "abs_error": 0.0
+        },
+        {
+          "vertex": 106618,
+          "candidate": 0.04970208555459976,
+          "source": 0.04970208555459976,
+          "abs_error": 0.0
+        }
+      ]
+    },
+    "post_curvature_gradient": {
+      "exact_elements": 319866,
+      "total_elements": 319866,
+      "max_abs_error": 0.0,
+      "first_mismatch": null
+    },
+    "final_gradient_from_python_curvature": {
+      "exact_elements": 319866,
+      "total_elements": 319866,
+      "max_abs_error": 0.0,
+      "first_mismatch": null
+    }
+  },
+  "seconds_including_jit": 11.358060560189188
+}

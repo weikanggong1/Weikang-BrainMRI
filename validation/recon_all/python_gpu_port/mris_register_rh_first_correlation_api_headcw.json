@@ -1,0 +1,31 @@
+{
+  "hemisphere": "rh",
+  "device": "cpu",
+  "vertices": 105541,
+  "faces": 211078,
+  "exact_source_curvature": 105541,
+  "exact_target_mean_pixels": 131072,
+  "exact_target_variance_pixels": 131072,
+  "exact_e1_vertices": 105541,
+  "exact_e2_vertices": 105541,
+  "exact_after_area_vertices": 105541,
+  "exact_after_correlation_vertices": 105541,
+  "max_after_correlation_abs_error": 0.0,
+  "avg_vertex_dist": 1.2635392146650295,
+  "seconds_excluding_io": {
+    "source_curve": 7.241068430244923,
+    "target_grids": 14.258711879141629,
+    "distance_area_correlation": 18.89008520822972
+  },
+  "input_sha256": {
+    "sphere": "744e8d937f942a3a8d5f0ee739342762288e6824386aaa8a558065c92de84efc",
+    "smoothwm": "b67ceb95069d865bb11f6c2b20bac99eab9f19982b73d3c9c43735b7bedbe7ca",
+    "sulc": "dc213c473326a0fe4d860a668f843fa8eeba2f494878afc7086a2b1ca4af6d06",
+    "rigid": "bf01682ce28bbe7052cb5daed8aae5dceaa26a3d8991674c49ed940bdba04aab",
+    "atlas": "1064e4c0ae0440f5071b4369f29a09860f1abf6eddc90a271d10cd0ff7e60043",
+    "native_grid": "2aeadc3ce657c58afd783da3c9621e0e445adb8f6f5745cf7dfe6063c2735428",
+    "native_after_area": "7f7d3c29865a9693db65999977f0b5dd0084b8c8089c4e53ded2c2738e2e8d4f"
+  },
+  "predicted_gradient_sha256": "373bae6caa23f0f5df85fa6825188e1563a17028c3a65789163a17116074fb26",
+  "native_gradient_sha256": "373bae6caa23f0f5df85fa6825188e1563a17028c3a65789163a17116074fb26"
+}

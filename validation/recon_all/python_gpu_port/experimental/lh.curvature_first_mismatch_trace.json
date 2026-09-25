@@ -1,0 +1,212 @@
+{
+  "scope": "first global principal-curvature output mismatch, LH vertex 24",
+  "source_commit": "d932c45b7941662ea380a05efef580568b98d41a",
+  "native_probe": "isolated pinned-source mris_fix_topology_trace with the official -ga -seed 1234 -threads 1 -correct_defect 0 -verbose_low options; GDB stops before topology search",
+  "official_curvature_printed_at_vertex_24": [
+    0.047619,
+    -0.047619
+  ],
+  "pinned_source_native": {
+    "gram_float32": [
+      [
+        73.0,
+        42.0,
+        21.0
+      ],
+      [
+        42.0,
+        84.0,
+        42.0
+      ],
+      [
+        21.0,
+        42.0,
+        73.0
+      ]
+    ],
+    "rhs_float32": [
+      -1.0,
+      -2.0,
+      -1.0
+    ],
+    "svd_inverse_float32": [
+      [
+        0.0192307681,
+        -0.00961538404,
+        4.65661287e-10
+      ],
+      [
+        -0.00961538404,
+        0.0215201471,
+        -0.00961538404
+      ],
+      [
+        -1.39698386e-09,
+        -0.0096153859,
+        0.0192307681
+      ]
+    ],
+    "hessian_float32": [
+      [
+        -9.31322575e-10,
+        -0.0476190522
+      ],
+      [
+        -0.0476190522,
+        1.11758709e-08
+      ]
+    ],
+    "sorted_eigenvalues_float32": [
+      0.047619056,
+      -0.0476190485
+    ]
+  },
+  "independent_python": {
+    "defect_label": 0,
+    "normal_float32": [
+      0.0,
+      -1.0,
+      0.0
+    ],
+    "neighbor_count": 17,
+    "gram_float32": [
+      [
+        73.0,
+        42.0,
+        21.0
+      ],
+      [
+        42.0,
+        84.0,
+        42.0
+      ],
+      [
+        21.0,
+        42.0,
+        73.0
+      ]
+    ],
+    "rhs_float32": [
+      -1.0,
+      -2.0,
+      -1.0
+    ],
+    "numpy_solve_coefficients_float32": [
+      -2.756546924493922e-18,
+      -0.02380952425301075,
+      0.0
+    ],
+    "hessian_float32": [
+      [
+        -5.513093848987844e-18,
+        -0.0476190485060215
+      ],
+      [
+        -0.0476190485060215,
+        0.0
+      ]
+    ],
+    "ordered_curvatures_float32": [
+      -0.0476190485060215,
+      0.0476190485060215
+    ]
+  },
+  "source_order_diagnosis": "Gram and RHS agree at this vertex. Replacing FreeSurfer's float32 VNL MatrixSVDInverse with NumPy solve first changes the coefficients. Multiplying the captured native SVD inverse by the independently computed RHS in source float32 order exactly reproduces all four native Hessian elements. The ensuing nearly tied absolute eigenvalues are then ordered oppositely by the Python fit.",
+  "limitation": "The private pinned-source build differs from the installed official binary at other defect vertices; this trace establishes the first shared vertex's upstream mismatch, not complete global histogram parity.",
+  "source_order_confirmation": "GDB at the source-order MatrixMultiply(Ut,z) result directly returned native RHS [-1,-2,-1]; the source-order product of the captured native SVD inverse with that RHS reproduces every native Hessian float32 element.",
+  "tested_substitutes": {
+    "numpy_float32_direct_solve": {
+      "inverse_matching_native_bits": "not an inverse operation",
+      "lh_k1_pdf_matching_bins": 53,
+      "lh_k2_pdf_matching_bins": 34,
+      "lh_joint_matching_bits": 0
+    },
+    "numpy_float32_inverse": {
+      "inverse_matching_native_bits": 1
+    },
+    "numpy_float32_pseudoinverse": {
+      "inverse_matching_native_bits": 2,
+      "lh_k1_pdf_matching_bins": 53,
+      "lh_k2_pdf_matching_bins": 34,
+      "lh_joint_matching_bits": 0
+    },
+    "scipy_float32_pseudoinverse": {
+      "inverse_matching_native_bits": 1
+    },
+    "scipy_float32_gesvd_with_source_order_multiplication": {
+      "inverse_matching_native_bits": 1
+    },
+    "scipy_float32_gesdd_with_source_order_multiplication": {
+      "inverse_matching_native_bits": 1
+    }
+  },
+  "source_order_port": {
+    "module": "src/freesurfer_torch/recon_all/topology_vnl_svd.py",
+    "algorithm": "ITK 5.3 VNL vnl_svd<float> -> LINPACK ssvdc(job=21), then FreeSurfer MatrixSVDInverse float MatrixMultiply order; Numba CPU implementation",
+    "first_difference_vertex_24": {
+      "U_float32_bits_matching_pinned_native": 9,
+      "W_float32_bits_matching_pinned_native": 3,
+      "V_float32_bits_matching_pinned_native": 9,
+      "inverse_float32_bits_matching_pinned_native": 9,
+      "hessian_float32_bits_matching_pinned_native": 4,
+      "inverse_float32_bits": [
+        [
+          1016957400,
+          3156052440,
+          805306368
+        ],
+        [
+          3156052440,
+          1018186501,
+          3156052440
+        ],
+        [
+          2965372928,
+          3156052442,
+          1016957400
+        ]
+      ]
+    },
+    "source_c_crosscheck": "Pure Python prototype matched ITK 5.3 vendored LINPACK/BLAS C float U/W/V bits for vertex 24 plus 100 deterministic random SPD matrices; Numba v24 focused pytest passed",
+    "float_operation_identified": "snrm2 and srotg multiply double sqrt results by float scale, then round once to float; Numba requires explicit float64 conversion, not Python float()",
+    "reference_boundary": "Pinned d932 private build supplies U/W/V and Hessian debugger traces. Installed FreeSurfer 8.2 supplies frozen LH/RH curv.dat and k1/k2/joint histogram acceptance outputs; all eight native output SHA-256 values matched the original frozen reports. The private build differs from installed official at defect vertices and its histograms are labeled diagnostic only.",
+    "status": "LH v24 SVD inverse accepted bitwise; complete first-pass bilateral histograms not accepted",
+    "private_pinned_source_curvature_histograms": {
+      "lh": {
+        "k1_pdf_matching_bins": 79,
+        "k2_pdf_matching_bins": 79,
+        "joint_float32_matching_cells": 9955,
+        "first_vertex_delta_gt_1e_3": 3388,
+        "seconds_including_jit": 27.397530229762197
+      },
+      "rh": {
+        "k1_pdf_matching_bins": 90,
+        "k2_pdf_matching_bins": 88,
+        "joint_float32_matching_cells": 0,
+        "first_vertex_delta_gt_1e_3": 6477,
+        "seconds_including_jit": 22.07295773178339
+      },
+      "reference_sha256_matches_installed": false
+    },
+    "installed_reference_curvature_histograms": {
+      "reference_sha256_matches_frozen_report": true,
+      "lh": {
+        "k1_raw_matching_bins": 54,
+        "k2_raw_matching_bins": 34,
+        "joint_raw_matching_cells": 8591,
+        "joint_float32_matching_cells": 0,
+        "first_k1_vertex_delta_gt_1e_3": 2887,
+        "first_k2_vertex_delta_gt_1e_3": 2906
+      },
+      "rh": {
+        "k1_raw_matching_bins": 71,
+        "k2_raw_matching_bins": 69,
+        "joint_raw_matching_cells": 9875,
+        "joint_float32_matching_cells": 0,
+        "first_k1_vertex_delta_gt_1e_3": 3552,
+        "first_k2_vertex_delta_gt_1e_3": 4013
+      }
+    },
+    "next_source_difference": "VNL symmetric eigensystem promotes float32 Hessian to double before EISPACK rs_; LH v27 pinned-source Hessian matches independent 4/4 float bits, then float analytic eigen first differs. A double 2x2 eig calculation reproduces pinned-source LH v27 and RH v96 eigen bits; installed direct Hessian bits unavailable because official executable is stripped."
+  }
+}

@@ -1,0 +1,202 @@
+{
+  "lh.CDaparc.atlas.acfb40.noaparc.i12.2016-08-02.gcs": {
+    "classifier_nodes": 2562,
+    "prior_nodes": 163842,
+    "classifier_labels": 7444,
+    "prior_labels": 319342,
+    "color_table_entries": 76,
+    "color_table_source": "Simple_surface_labels2009.txt",
+    "average_std": 2.961519199978628,
+    "min_det": 0.08770595971842052,
+    "singular_count": 0,
+    "regularized_count": 0,
+    "seconds": 0.7742137499153614,
+    "classifier_zero": [
+      [
+        11832380,
+        725,
+        -0.17178000509738922,
+        0.044248998165130615
+      ]
+    ],
+    "prior_zero": [
+      [
+        11832380,
+        1.0
+      ]
+    ]
+  },
+  "lh.DKTaparc.atlas.acfb40.noaparc.i12.2016-08-02.gcs": {
+    "classifier_nodes": 2562,
+    "prior_nodes": 163842,
+    "classifier_labels": 6022,
+    "prior_labels": 305275,
+    "color_table_entries": 36,
+    "color_table_source": "/autofs/space/tanha_002/users/greve/fsdev.build/average/colortable_desikan_killiany.txt",
+    "average_std": 1.4303204494436563,
+    "min_det": 0.020458165880967032,
+    "singular_count": 0,
+    "regularized_count": 383,
+    "seconds": 0.678655301220715,
+    "classifier_zero": [
+      [
+        14423100,
+        6013,
+        -0.16631899774074554,
+        0.04708699882030487
+      ]
+    ],
+    "prior_zero": [
+      [
+        14423100,
+        1.0
+      ]
+    ]
+  },
+  "lh.DKaparc.atlas.acfb40.noaparc.i12.2016-08-02.gcs": {
+    "classifier_nodes": 2562,
+    "prior_nodes": 163842,
+    "classifier_labels": 5538,
+    "prior_labels": 270460,
+    "color_table_entries": 36,
+    "color_table_source": "/autofs/space/tanha_002/users/greve/fsdev.build/average/colortable_desikan_killiany.txt",
+    "average_std": 0.7655624811952914,
+    "min_det": 0.005860859126138908,
+    "singular_count": 0,
+    "regularized_count": 342,
+    "seconds": 0.5621897904202342,
+    "classifier_zero": [
+      [
+        14423100,
+        1702,
+        -0.16112099587917328,
+        0.016253000125288963
+      ],
+      [
+        6500,
+        57,
+        -0.34383198618888855,
+        0.04491100087761879
+      ]
+    ],
+    "prior_zero": [
+      [
+        14423100,
+        1.0
+      ]
+    ]
+  },
+  "rh.CDaparc.atlas.acfb40.noaparc.i12.2016-08-02.gcs": {
+    "classifier_nodes": 2562,
+    "prior_nodes": 163842,
+    "classifier_labels": 7510,
+    "prior_labels": 322663,
+    "color_table_entries": 76,
+    "color_table_source": "Simple_surface_labels2009.txt",
+    "average_std": 1.4322299038762285,
+    "min_det": 0.02051282497557311,
+    "singular_count": 0,
+    "regularized_count": 0,
+    "seconds": 0.9867266770452261,
+    "classifier_zero": [
+      [
+        11832380,
+        45,
+        -0.014433999545872211,
+        0.009734000079333782
+      ],
+      [
+        13112341,
+        434,
+        0.08488299697637558,
+        0.015843000262975693
+      ]
+    ],
+    "prior_zero": [
+      [
+        13112341,
+        1.0
+      ]
+    ]
+  },
+  "rh.DKTaparc.atlas.acfb40.noaparc.i12.2016-08-02.gcs": {
+    "classifier_nodes": 2562,
+    "prior_nodes": 163842,
+    "classifier_labels": 6000,
+    "prior_labels": 304721,
+    "color_table_entries": 36,
+    "color_table_source": "/autofs/space/tanha_002/users/greve/fsdev.build/average/colortable_desikan_killiany.txt",
+    "average_std": 0.9291514329338845,
+    "min_det": 0.008633223853230908,
+    "singular_count": 0,
+    "regularized_count": 325,
+    "seconds": 1.0008448865264654,
+    "classifier_zero": [
+      [
+        14423100,
+        4198,
+        0.016457999125123024,
+        0.06686300039291382
+      ],
+      [
+        10542100,
+        351,
+        -0.011509999632835388,
+        0.06644199788570404
+      ],
+      [
+        6500,
+        28,
+        -0.33079099655151367,
+        0.12370199710130692
+      ]
+    ],
+    "prior_zero": [
+      [
+        14423100,
+        0.982758641242981
+      ],
+      [
+        10542100,
+        0.017241379246115685
+      ]
+    ]
+  },
+  "rh.DKaparc.atlas.acfb40.noaparc.i12.2016-08-02.gcs": {
+    "classifier_nodes": 2562,
+    "prior_nodes": 163842,
+    "classifier_labels": 5464,
+    "prior_labels": 266807,
+    "color_table_entries": 36,
+    "color_table_source": "/autofs/space/tanha_002/users/greve/fsdev.build/average/colortable_desikan_killiany.txt",
+    "average_std": 0.6668343943323906,
+    "min_det": 0.004446681094646462,
+    "singular_count": 0,
+    "regularized_count": 309,
+    "seconds": 0.628955652937293,
+    "classifier_zero": [
+      [
+        14423100,
+        1603,
+        -0.00853700004518032,
+        0.09211599826812744
+      ],
+      [
+        10542100,
+        26,
+        0.10200099647045135,
+        0.016044000163674355
+      ]
+    ],
+    "prior_zero": [
+      [
+        14423100,
+        0.9655172228813171
+      ],
+      [
+        10542100,
+        0.03448275849223137
+      ]
+    ]
+  }
+}

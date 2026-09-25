@@ -1,0 +1,2 @@
+{'vertices': 105541, 'device': 'cuda:0', 'setup_seconds': 0.9067477039061487, 'compute_seconds': 3.397087445948273, 'total_seconds': 4.312869178131223, 'expanded_searches': 0}
+THICKNESS_ADAPTIVE_RH_WALL:7.84

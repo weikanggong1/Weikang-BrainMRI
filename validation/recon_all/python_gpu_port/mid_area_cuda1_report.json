@@ -1,0 +1,65 @@
+{
+  "device": "cuda:1",
+  "repeats": 3,
+  "timing_scope": "Read two area maps and write mid-area; shared Python/CUDA startup excluded",
+  "rows": [
+    {
+      "hemi": "lh",
+      "median_seconds": {
+        "native": 0.0598306842148304,
+        "gpu": 0.01702885702252388
+      },
+      "wall_seconds": {
+        "native": [
+          0.0598306842148304,
+          0.07223169598728418,
+          0.0490442831069231
+        ],
+        "gpu": [
+          0.02654951112344861,
+          0.006757707800716162,
+          0.01702885702252388
+        ]
+      },
+      "gpu_vs_reference": {
+        "max_error_mm2": 0.0,
+        "mean_error_mm2": 0.0,
+        "outliers": 0
+      },
+      "native_vs_reference": {
+        "max_error_mm2": 0.0,
+        "mean_error_mm2": 0.0,
+        "outliers": 0
+      }
+    },
+    {
+      "hemi": "rh",
+      "median_seconds": {
+        "native": 0.04938091663643718,
+        "gpu": 0.007112718652933836
+      },
+      "wall_seconds": {
+        "native": [
+          0.04938091663643718,
+          0.06920565059408545,
+          0.046034243889153004
+        ],
+        "gpu": [
+          0.029455595184117556,
+          0.006803398951888084,
+          0.007112718652933836
+        ]
+      },
+      "gpu_vs_reference": {
+        "max_error_mm2": 0.0,
+        "mean_error_mm2": 0.0,
+        "outliers": 0
+      },
+      "native_vs_reference": {
+        "max_error_mm2": 0.0,
+        "mean_error_mm2": 0.0,
+        "outliers": 0
+      }
+    }
+  ]
+}

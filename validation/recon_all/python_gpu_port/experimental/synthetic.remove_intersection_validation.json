@@ -1,0 +1,14 @@
+{
+  "overlapping": {
+    "native_marked_vertices": 7,
+    "python_marked_vertices": 7,
+    "python_intersecting_faces": 4,
+    "marked_vertex_mask_exact": true
+  },
+  "disjoint": {
+    "native_marked_vertices": 0,
+    "python_marked_vertices": 0,
+    "python_intersecting_faces": 0,
+    "marked_vertex_mask_exact": true
+  }
+}

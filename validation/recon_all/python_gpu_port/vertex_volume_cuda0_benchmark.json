@@ -1,0 +1,69 @@
+{
+  "device": "cuda:0",
+  "repeats": 3,
+  "timing_scope": "Full file I/O for each stage; Python/Torch startup and initial CUDA context excluded",
+  "rows": [
+    {
+      "hemi": "lh",
+      "median_seconds": {
+        "native": 1.4391397922299802,
+        "candidate": 0.03313091117888689
+      },
+      "wall_seconds": {
+        "native": [
+          1.5634037842974067,
+          1.4071095241233706,
+          1.4391397922299802
+        ],
+        "candidate": [
+          0.13862050184980035,
+          0.03313091117888689,
+          0.03216471802443266
+        ]
+      },
+      "candidate_vs_reference": {
+        "vertices": 106622,
+        "max_error_mm3": 1.9073486328125e-06,
+        "mean_error_mm3": 6.202470359539802e-08,
+        "outliers": 0
+      },
+      "native_vs_reference": {
+        "vertices": 106622,
+        "max_error_mm3": 0.0,
+        "mean_error_mm3": 0.0,
+        "outliers": 0
+      }
+    },
+    {
+      "hemi": "rh",
+      "median_seconds": {
+        "native": 1.4377252687700093,
+        "candidate": 0.030765436124056578
+      },
+      "wall_seconds": {
+        "native": [
+          1.4377252687700093,
+          1.3518026010133326,
+          1.491532820276916
+        ],
+        "candidate": [
+          0.031239481177181005,
+          0.03071818221360445,
+          0.030765436124056578
+        ]
+      },
+      "candidate_vs_reference": {
+        "vertices": 105541,
+        "max_error_mm3": 1.9073486328125e-06,
+        "mean_error_mm3": 6.06841794592583e-08,
+        "outliers": 0
+      },
+      "native_vs_reference": {
+        "vertices": 105541,
+        "max_error_mm3": 0.0,
+        "mean_error_mm3": 0.0,
+        "outliers": 0
+      }
+    }
+  ]
+}

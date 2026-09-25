@@ -1,0 +1,19 @@
+{
+  "reference": "copied pinned FreeSurfer 8.2 source first pial optimizer step",
+  "comparisons": {
+    "normal": {
+      "vertices": 106622,
+      "exact_elements": 319866,
+      "total_elements": 319866,
+      "max_abs_error": 0.0,
+      "seconds_including_jit": 4.917446305975318
+    },
+    "tangent": {
+      "vertices": 106622,
+      "exact_elements": 319866,
+      "total_elements": 319866,
+      "max_abs_error": 0.0,
+      "seconds_including_jit": 4.269560479559004
+    }
+  }
+}

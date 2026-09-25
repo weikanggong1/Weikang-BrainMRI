@@ -1,0 +1,140 @@
+{
+  "reference_class": "source-order Python candidate and collision trace from pinned-source gradient; installed candidate gradient is not captured, only installed accepted RAM coordinates",
+  "step": 13,
+  "dt": 0.5,
+  "vertices": [
+    {
+      "vertex": 53114,
+      "source_order_position": 31077,
+      "source_subvolume": 26,
+      "source_start_xyz": [
+        -42.17400360107422,
+        -3.477510452270508,
+        38.57695007324219
+      ],
+      "source_gradient": [
+        -0.1631363481283188,
+        0.19366028904914856,
+        -0.03262966871261597
+      ],
+      "source_clipped_offset": [
+        -0.0815681740641594,
+        0.09683014452457428,
+        -0.016314834356307983
+      ],
+      "source_clipped_endpoint": [
+        -42.25557327270508,
+        -3.3806803226470947,
+        38.56063461303711
+      ],
+      "source_close_neighbors_mm": [],
+      "source_projection_valid": true,
+      "source_projected_offset": [
+        -0.0815681740641594,
+        0.09683014452457428,
+        -0.016314834356307983
+      ],
+      "source_projected_endpoint": [
+        -42.25557327270508,
+        -3.3806803226470947,
+        38.56063461303711
+      ],
+      "source_broadphase_faces_visited": 987,
+      "source_first_triangle_collision": {
+        "moving_face": 123585,
+        "other_face": 123550
+      },
+      "source_predicted_accept": false,
+      "source_prediction_matches_native_checkpoint": true,
+      "source_accepted_delta_mm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "source_moved": false,
+      "installed_previous_xyz": [
+        -42.17400360107422,
+        -3.477510929107666,
+        38.57695007324219
+      ],
+      "installed_current_xyz": [
+        -42.25598907470703,
+        -3.3802506923675537,
+        38.560333251953125
+      ],
+      "installed_accepted_delta_mm": [
+        -0.0819854736328125,
+        0.0972602367401123,
+        -0.0166168212890625
+      ],
+      "installed_moved": true,
+      "pre_step_source_installed_distance_mm": 4.76837158203125e-07,
+      "post_step_source_installed_distance_mm": 0.1282856092199336
+    },
+    {
+      "vertex": 55276,
+      "source_order_position": 31237,
+      "source_subvolume": 26,
+      "source_start_xyz": [
+        -40.26162338256836,
+        -1.0838162899017334,
+        37.200927734375
+      ],
+      "source_gradient": [
+        -0.10762101411819458,
+        0.25692006945610046,
+        0.23468133807182312
+      ],
+      "source_clipped_offset": [
+        -0.05381050705909729,
+        0.12846003472805023,
+        0.11734066903591156
+      ],
+      "source_clipped_endpoint": [
+        -40.315433502197266,
+        -0.955356240272522,
+        37.318267822265625
+      ],
+      "source_close_neighbors_mm": [],
+      "source_projection_valid": true,
+      "source_projected_offset": [
+        -0.05381050705909729,
+        0.12846003472805023,
+        0.11734066903591156
+      ],
+      "source_projected_endpoint": [
+        -40.315433502197266,
+        -0.955356240272522,
+        37.318267822265625
+      ],
+      "source_broadphase_faces_visited": 2003,
+      "source_first_triangle_collision": null,
+      "source_predicted_accept": true,
+      "source_prediction_matches_native_checkpoint": true,
+      "source_accepted_delta_mm": [
+        -0.05381011962890625,
+        0.12846004962921143,
+        0.117340087890625
+      ],
+      "source_moved": true,
+      "installed_previous_xyz": [
+        -40.261627197265625,
+        -1.0837934017181396,
+        37.20094680786133
+      ],
+      "installed_current_xyz": [
+        -40.317649841308594,
+        -0.9554310441017151,
+        37.31364440917969
+      ],
+      "installed_accepted_delta_mm": [
+        -0.05602264404296875,
+        0.12836235761642456,
+        0.11269760131835938
+      ],
+      "installed_moved": true,
+      "pre_step_source_installed_distance_mm": 3.0036956306502575e-05,
+      "post_step_source_installed_distance_mm": 0.0051277386080496356
+    }
+  ]
+}

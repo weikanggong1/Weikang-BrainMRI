@@ -1,0 +1,24 @@
+{
+  "hemisphere": "lh",
+  "scope": "experimental first-candidate MRI match from native select0s",
+  "neighbor_order": "runtime_patch",
+  "white_mean_from_native_histogram": 74.81342315673828,
+  "gray_mean_from_native_histogram": 58.288795471191406,
+  "intensity_histogram_bin_size": 0.0,
+  "input_sha256": {
+    "patch_report": "280cfb91f7a88b29750a94282e9325a4240b726405621f3b15b1bdc2d95c77bc",
+    "select0s": "06a17e01ca707c8d19646986b62c8eec99411096fd4d3d54f3b87eae6d6630ea",
+    "select0sm": "5cf5cc91bbf8f249ebddfeb5da32962c849ce2efd7728dd0692d545179b10362",
+    "brain": "1b7360d069b76c8a5a63f93f3c296dddeb4db725c4e2625e11ebfc156279f401",
+    "white_histogram": "3b19a13e2cfceef6a2f180f825a5fb5946010d676a14c5294e675e97147d4b8a",
+    "gray_histogram": "a9bbc6dab367f40f00ebfb899209dc0289974505e147a820ed13432d9e45cc5b"
+  },
+  "python_seconds_including_jit": 1.8001389913260937,
+  "inside": 54,
+  "all_vertices_bitwise_equal": 102764,
+  "inside_bitwise_equal": 54,
+  "outside_bitwise_equal": 102710,
+  "inside_max_distance_mm": 0.0,
+  "inside_mean_distance_mm": 0.0,
+  "inside_first_mismatch": null
+}

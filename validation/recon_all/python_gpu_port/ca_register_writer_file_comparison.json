@@ -1,0 +1,10 @@
+{
+  "rewrite_seconds": 9.296482962556183,
+  "decompressed_bytes": 268436688,
+  "different_bytes": 0,
+  "first_difference": null,
+  "written_raw_sha256": "9cc9a86ada9cc0b7873136d123b7c8756ee5081cbe907b284164ac19de4661b5",
+  "native_raw_sha256": "9cc9a86ada9cc0b7873136d123b7c8756ee5081cbe907b284164ac19de4661b5",
+  "written_compressed_sha256": "1b5b6402c1228f37ad7680b062ab3a17bf0e78dafd0049d769b1698466443498",
+  "native_compressed_sha256": "1b5b6402c1228f37ad7680b062ab3a17bf0e78dafd0049d769b1698466443498"
+}

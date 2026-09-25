@@ -1,0 +1,63 @@
+{
+  "host": "headcw",
+  "device": "cpu",
+  "native_binary": "/public/software/apps/Freesurfer/8.2.0-1/bin/mri_tessellate",
+  "input_sha256": {
+    "lh": "fa242b0549ed426122afd16ca3735849a88a0d2dbe9d94041790f50b53cc42fe",
+    "rh": "13b7fd3d0df977bfb7c0525eb32d87302d8ee86cd375c22ebce51036e952ac22"
+  },
+  "repeats": 3,
+  "timing_scope": "same-host input and output I/O; native process startup included; Python imports excluded",
+  "rows": [
+    {
+      "hemi": "lh",
+      "comparison": {
+        "vertices": 102764,
+        "quads": 102780,
+        "vertex_and_quad_bytes_identical": true,
+        "geometry_tags_identical": true
+      },
+      "wall_seconds": {
+        "native": [
+          0.7228852892294526,
+          0.7577859358862042,
+          0.7388646248728037
+        ],
+        "python": [
+          0.24780983850359917,
+          0.24299530126154423,
+          0.2188640832901001
+        ]
+      },
+      "median_seconds": {
+        "native": 0.7388646248728037,
+        "python": 0.24299530126154423
+      }
+    },
+    {
+      "hemi": "rh",
+      "comparison": {
+        "vertices": 101454,
+        "quads": 101468,
+        "vertex_and_quad_bytes_identical": true,
+        "geometry_tags_identical": true
+      },
+      "wall_seconds": {
+        "native": [
+          1.0225945571437478,
+          0.8058935413137078,
+          0.7532534999772906
+        ],
+        "python": [
+          0.17096483800560236,
+          0.3088785959407687,
+          0.24100986029952765
+        ]
+      },
+      "median_seconds": {
+        "native": 0.8058935413137078,
+        "python": 0.24100986029952765
+      }
+    }
+  ]
+}

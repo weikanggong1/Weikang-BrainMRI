@@ -1,0 +1,55 @@
+{
+  "warp_shape": [
+    193,
+    229,
+    193,
+    3
+  ],
+  "source_shape": [
+    256,
+    256,
+    256
+  ],
+  "geometry_read_seconds": 0.00012946967035531998,
+  "coordinate_conversion": {
+    "seconds": 0.308683292940259,
+    "elements": 25590063,
+    "different": 0,
+    "max_abs": 0.0,
+    "p99_abs": 0.0
+  },
+  "count_splat": {
+    "seconds_including_jit": 0.5551468254998326,
+    "elements": 16777216,
+    "different": 0,
+    "max_abs": 0.0,
+    "p99_abs": 0.0
+  },
+  "count_splat_from_native_coordinates": {
+    "seconds": 0.26233652234077454,
+    "elements": 16777216,
+    "different": 0,
+    "max_abs": 0.0,
+    "p99_abs": 0.0
+  },
+  "x_coordinate_splat": {
+    "seconds_including_jit_and_yz": 1.2181206811219454,
+    "elements": 16777216,
+    "different": 0,
+    "max_abs": 0.0,
+    "p99_abs": 0.0
+  },
+  "control_mask": {
+    "marked_voxels": 2799105,
+    "elements": 16777216,
+    "different": 0,
+    "max_abs": 0.0,
+    "p99_abs": 0.0
+  },
+  "control_x_average": {
+    "elements": 2799105,
+    "different": 0,
+    "max_abs": 0.0,
+    "p99_abs": 0.0
+  }
+}

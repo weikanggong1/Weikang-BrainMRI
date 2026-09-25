@@ -1,0 +1,112 @@
+{
+  "subject": "fs_sub01",
+  "hemisphere": "lh",
+  "input_filled_sha256": "15848b056548ba8215c926c6ef70509b8f4859e767b36ec2d38af91e8fa3a2a0",
+  "input_norm_sha256": "e8875a30cb63dcdfdbda6a830fa4a8a30141e1f0da3058d33b491253abe74390",
+  "python_pretess_sha256": "8415132b3efc275aade51c20f752ac88a955d5768cbddaee1458443aad7a1e5e",
+  "native_pretess_sha256": "fa242b0549ed426122afd16ca3735849a88a0d2dbe9d94041790f50b53cc42fe",
+  "pretess_voxels_and_affine_exact": true,
+  "source_sha256": {
+    "pretess_python": "65f9f7497df080682f54131d4f7985ae8e017ef04334b9b764f750b152791d14",
+    "tessellate_gpu": "1c87b10862bf7ab4d3e648339489762d5798e92a97a6c1ca7195b18368877faf",
+    "extract_main_component_python": "4bacd27cd62872e704c5fb19fd79c6617ba75e7bc64a927f55ff87dedf0f8d02",
+    "smooth_surface_python": "36c41d7420ae716dd3a8d6fe6f906d1cbb459ce4f9794c748e464bfcce71906f",
+    "inflate_python": "d167e10a66945eae5ab9c2c8253c461578723f2a9e6274638fa6c33c0a7482de",
+    "sphere_quick_python": "e44d14a72d0110745ef5000d5150bce72734c943eb54cc5efae2521ad26aa035"
+  },
+  "stages": [
+    {
+      "stage": "mri_pretess",
+      "seconds": 3.156986817717552,
+      "arguments": [
+        "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/filled.mgz",
+        "255",
+        "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/norm.mgz",
+        "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_python_gpu_20260925/six_stage_chain_lh/mri/filled-pretess255.mgz"
+      ]
+    },
+    {
+      "stage": "mri_tessellate",
+      "seconds": 2.0751339411363006,
+      "arguments": [
+        "../mri/filled-pretess255.mgz",
+        "255",
+        "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_python_gpu_20260925/six_stage_chain_lh/surf/lh.orig.raw.quad",
+        "--device",
+        "cpu"
+      ]
+    },
+    {
+      "stage": "mris_extract_main_component",
+      "seconds": 0.38039409276098013,
+      "arguments": [
+        "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_python_gpu_20260925/six_stage_chain_lh/surf/lh.orig.raw.quad",
+        "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_python_gpu_20260925/six_stage_chain_lh/surf/lh.orig.nofix"
+      ]
+    },
+    {
+      "stage": "mris_smooth",
+      "seconds": 4.515964564867318,
+      "arguments": [
+        "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_python_gpu_20260925/six_stage_chain_lh/surf/lh.orig.nofix",
+        "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_python_gpu_20260925/six_stage_chain_lh/surf/lh.smoothwm.nofix",
+        "--device",
+        "cpu"
+      ]
+    },
+    {
+      "stage": "mris_inflate",
+      "seconds": 41.448222489096224,
+      "arguments": [
+        "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_python_gpu_20260925/six_stage_chain_lh/surf/lh.smoothwm.nofix",
+        "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_python_gpu_20260925/six_stage_chain_lh/surf/lh.inflated.nofix"
+      ]
+    },
+    {
+      "stage": "mris_sphere -q",
+      "seconds": 135.41093026846647,
+      "arguments": [
+        "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_python_gpu_20260925/six_stage_chain_lh/surf/lh.inflated.nofix",
+        "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_python_gpu_20260925/six_stage_chain_lh/surf/lh.qsphere.nofix"
+      ]
+    }
+  ],
+  "surfaces": {
+    "orig": {
+      "vertices": 102764,
+      "faces": 205560,
+      "exact_vertices": true,
+      "exact_faces": true,
+      "exact_volume_geometry": true,
+      "python_sha256": "5392cced21cadf8b07d829f4e74d3f8594dc6b820ee9631dc6040c36f522b714",
+      "native_sha256": "ef00440f651026e4d099bd282f3e4e2cfbfffdc1e0877684fe22aa2948542b79"
+    },
+    "smoothwm": {
+      "vertices": 102764,
+      "faces": 205560,
+      "exact_vertices": true,
+      "exact_faces": true,
+      "exact_volume_geometry": true,
+      "python_sha256": "341626b465e1d36f2564c350f0f0197aad2f9d79b7ebb3f7409d71c4fc53e9f8",
+      "native_sha256": "0e013cc26e172ae9422faa83b803b77f3dd074bd0d4dd5c4fc4da741070188cf"
+    },
+    "inflated": {
+      "vertices": 102764,
+      "faces": 205560,
+      "exact_vertices": true,
+      "exact_faces": true,
+      "exact_volume_geometry": true,
+      "python_sha256": "b7617f0ec61053c7a378b69abfc66c64306bdf59898a4f6e3128a9cc742875ac",
+      "native_sha256": "75fe13f102a4ee85fb61b7449ae5a9d7df349994e3b17e07acbfa7e0d82e43f3"
+    },
+    "qsphere": {
+      "vertices": 102764,
+      "faces": 205560,
+      "exact_vertices": true,
+      "exact_faces": true,
+      "exact_volume_geometry": true,
+      "python_sha256": "73130beb97208fb35c63a0086a4c19bb9ec42d2fb454620a7b8faf40bf13cea3",
+      "native_sha256": "8afffc181e2e05b8349099845e7ffe3b7a6a36e241d5689c4b6503c020485647"
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "subject": "fs_sub01",
+  "host": "headcw",
+  "source_sha256": {
+    "inflate_python": "958a43bcedb905c5cfd5a25ea1340bae761fc4b9c9cab603447a16c0e156dea2",
+    "sphere_python": "fc7e580f3b8d3683aa3af374e3588441173a45a0bae447b661f9e4283021afb0",
+    "sphere_quick_python": "ff58338834ad6a0e5a1f41632924262ef6b23234396b7b676e4badc7dd229425"
+  },
+  "input_smoothwm_sha256": {
+    "lh": "0e013cc26e172ae9422faa83b803b77f3dd074bd0d4dd5c4fc4da741070188cf",
+    "rh": "58aeb1195e60454af6a575d6a5e85cf6586ceed5b67e411560ff59145bbf04bf"
+  },
+  "rh_qsphere_input_sha256": "bf1710cde58dc25bd74f7142404e3c15e238481ff3bda40a549afef638c470f8",
+  "rh_final_inflation_sha256": "bf1710cde58dc25bd74f7142404e3c15e238481ff3bda40a549afef638c470f8",
+  "observed_cli_seconds": {
+    "lh_inflation": 30.31,
+    "rh_inflation": 24.25,
+    "lh_quick_sphere": 56.75,
+    "rh_quick_sphere": 62.27
+  },
+  "timing_scope": "Separate single calls on shared headcw CPU, not paired with native or prior Python calls",
+  "prior_clean_lh_reference_seconds": {
+    "native_inflation": 6.986,
+    "prior_python_inflation": 41.71,
+    "native_quick_sphere": 41.866,
+    "prior_python_quick_sphere": 135.866
+  },
+  "surfaces": {
+    "lh.inflated": {
+      "vertices": 102764,
+      "faces": 205560,
+      "ordered_vertex_bytes_exact": true,
+      "ordered_face_bytes_exact": true,
+      "volume_geometry_bytes_exact": true,
+      "optimized_sha256": "3044650cee08aecb3e22bdcc0cb644361abc6484f82d81a1da7f3a0fdbf7d9d5",
+      "official_sha256": "75fe13f102a4ee85fb61b7449ae5a9d7df349994e3b17e07acbfa7e0d82e43f3"
+    },
+    "lh.qsphere": {
+      "vertices": 102764,
+      "faces": 205560,
+      "ordered_vertex_bytes_exact": true,
+      "ordered_face_bytes_exact": true,
+      "volume_geometry_bytes_exact": true,
+      "optimized_sha256": "50ae195912e4b1421645538be7bdfa4522f693426e48afd0c3211719223c5925",
+      "official_sha256": "8afffc181e2e05b8349099845e7ffe3b7a6a36e241d5689c4b6503c020485647"
+    },
+    "rh.inflated": {
+      "vertices": 101454,
+      "faces": 202936,
+      "ordered_vertex_bytes_exact": true,
+      "ordered_face_bytes_exact": true,
+      "volume_geometry_bytes_exact": true,
+      "optimized_sha256": "bf1710cde58dc25bd74f7142404e3c15e238481ff3bda40a549afef638c470f8",
+      "official_sha256": "c92f129aaaa6c44f94f56e7531875c4468ecb31ae3015f39c297aa6f0bcbb4f3"
+    },
+    "rh.qsphere": {
+      "vertices": 101454,
+      "faces": 202936,
+      "ordered_vertex_bytes_exact": true,
+      "ordered_face_bytes_exact": true,
+      "volume_geometry_bytes_exact": true,
+      "optimized_sha256": "5976a3119cfbe0149cb80fa54aba7632d36d25fe7cbba77a650a212165e0bc25",
+      "official_sha256": "b93d519dd0da418ca2fbfed01617af4939b3d7528e91a7d5f73eaae279a9977a"
+    }
+  }
+}

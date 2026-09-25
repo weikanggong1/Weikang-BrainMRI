@@ -1,0 +1,81 @@
+{
+  "host": "headcw",
+  "reference": "FreeSurfer 8.2.0 completed fs_sub01 stats on frozen official maps/labels and brainvol.stats cache",
+  "scope": "exact text of 11 numeric/global header lines per table; does not recompute brainvol.stats cache",
+  "cases": [
+    {
+      "hemi": "lh",
+      "surface": "white",
+      "atlas": "aparc.DKTatlas",
+      "native_lines": 11,
+      "python_lines": 11,
+      "mismatch_count": 0,
+      "first_mismatches": []
+    },
+    {
+      "hemi": "lh",
+      "surface": "white",
+      "atlas": "aparc.a2009s",
+      "native_lines": 11,
+      "python_lines": 11,
+      "mismatch_count": 0,
+      "first_mismatches": []
+    },
+    {
+      "hemi": "lh",
+      "surface": "pial",
+      "atlas": "aparc",
+      "native_lines": 11,
+      "python_lines": 11,
+      "mismatch_count": 0,
+      "first_mismatches": []
+    },
+    {
+      "hemi": "lh",
+      "surface": "white",
+      "atlas": "aparc",
+      "native_lines": 11,
+      "python_lines": 11,
+      "mismatch_count": 0,
+      "first_mismatches": []
+    },
+    {
+      "hemi": "rh",
+      "surface": "white",
+      "atlas": "aparc.DKTatlas",
+      "native_lines": 11,
+      "python_lines": 11,
+      "mismatch_count": 0,
+      "first_mismatches": []
+    },
+    {
+      "hemi": "rh",
+      "surface": "white",
+      "atlas": "aparc.a2009s",
+      "native_lines": 11,
+      "python_lines": 11,
+      "mismatch_count": 0,
+      "first_mismatches": []
+    },
+    {
+      "hemi": "rh",
+      "surface": "pial",
+      "atlas": "aparc",
+      "native_lines": 11,
+      "python_lines": 11,
+      "mismatch_count": 0,
+      "first_mismatches": []
+    },
+    {
+      "hemi": "rh",
+      "surface": "white",
+      "atlas": "aparc",
+      "native_lines": 11,
+      "python_lines": 11,
+      "mismatch_count": 0,
+      "first_mismatches": []
+    }
+  ],
+  "total_native_lines": 88,
+  "total_mismatches": 0
+}

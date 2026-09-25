@@ -1,0 +1,74 @@
+{
+  "reference_class": "paired normal CLI files from same frozen scientific inputs; no debugger or diagnostic source patch",
+  "installed": {
+    "path": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_official_run/surf/lh.pial.objective",
+    "bytes": 3839664,
+    "sha256": "4bcd2b9ccd607db0e87b9e4da0d26cb55ac853a53b2bd0926cf17c63f73be76b",
+    "area_mm2": 93008.24083324753,
+    "signed_volume_mm3": 388238.71605766664
+  },
+  "source": {
+    "path": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_official_pristine_cli/surf/lh.pial.cli",
+    "bytes": 3839664,
+    "sha256": "9efbdd9dfac59d1032b9138ebb58df1ed47db48fb24bc01cbb907f77baa70cba",
+    "area_mm2": 93008.5771047752,
+    "signed_volume_mm3": 388298.47376163077
+  },
+  "ordered_faces_exact": true,
+  "ordered_face_count": 213240,
+  "coordinate_comparison": {
+    "exact_vertices": 8279,
+    "vertex_count": 106622,
+    "first_different_vertex": 0,
+    "first_difference_mm": 0.03133544829072894,
+    "median_mm": 0.015768032113139242,
+    "p99_mm": 0.2293647740151822,
+    "max_mm": 1.6692659573803497,
+    "vertices_over_tolerance_mm": {
+      "1e-05": 95864,
+      "0.0001": 95556,
+      "0.001": 95263,
+      "0.01": 70139,
+      "0.1": 5571,
+      "1": 6
+    }
+  },
+  "optimizer_accepted_steps": {
+    "installed": 41,
+    "source": 42
+  },
+  "native_elapsed_lines": {
+    "installed": [
+      "#ET# mris_place_surface  1.91 minutes"
+    ],
+    "source": [
+      "#ET# mris_place_surface  1.58 minutes"
+    ]
+  },
+  "historical_original_lh_output": {
+    "path": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/surf/lh.pial.T1",
+    "bytes": 3839664,
+    "sha256": "f7c61a103d48497d38fb46ff0495984624eba726f384473f5634a8d7102d66d5",
+    "area_mm2": 93008.24083324753,
+    "signed_volume_mm3": 388238.71605766664,
+    "basis": "original recon-all LH pial output; its LH initial objective matches the current installed rerun and all coordinates are directly compared",
+    "ordered_faces_equal_to_current_installed": true,
+    "current_installed_coordinate_difference": {
+      "exact_vertices": 106622,
+      "vertex_count": 106622,
+      "first_different_vertex": null,
+      "first_difference_mm": 0.0,
+      "median_mm": 0.0,
+      "p99_mm": 0.0,
+      "max_mm": 0.0,
+      "vertices_over_tolerance_mm": {
+        "1e-05": 0,
+        "0.0001": 0,
+        "0.001": 0,
+        "0.01": 0,
+        "0.1": 0,
+        "1": 0
+      }
+    }
+  }
+}

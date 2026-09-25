@@ -1,0 +1,99 @@
+{
+  "host": "headcw",
+  "native_binary": "/public/software/apps/Freesurfer/8.2.0-1/bin/mris_inflate",
+  "input_sha256": {
+    "lh": "983341188a8dd04d83dc9c9a100b794e85068c0fc1bf9dc1409986c215c5303b",
+    "rh": "3e321bb94eaa1e4187f65924e2967a50734800b611989d17033408fc2f43262c"
+  },
+  "repeats": 3,
+  "timing_scope": "same-host file I/O; native process startup included; Python imports excluded",
+  "vertex_parity_gate_mm": 0.001,
+  "rows": [
+    {
+      "hemi": "lh",
+      "comparison": {
+        "vertices": 102764,
+        "faces": 205560,
+        "faces_identical": true,
+        "vertex_distance_mm": {
+          "median": 2.555864960338096e-05,
+          "rms": 2.8048413202134428e-05,
+          "max": 0.00027060834319722865
+        },
+        "surface_area_mm2": {
+          "native": 55548.840310937725,
+          "python": 55548.84368300735,
+          "relative_error": 6.07045908425862e-08
+        },
+        "barycentric_vertex_area_mm2": {
+          "max_absolute_error": 7.100453577202348e-05,
+          "median_relative_error": 3.906827813142912e-06
+        },
+        "signed_enclosed_volume_mm3": {
+          "native": 845004.6579768645,
+          "python": 845004.7561425624,
+          "relative_error": 1.1617178314596021e-07
+        }
+      },
+      "wall_seconds": {
+        "native": [
+          7.712440928444266,
+          6.620593384839594,
+          5.244100796990097
+        ],
+        "python": [
+          46.5645798034966,
+          45.89680379629135,
+          46.43794834520668
+        ]
+      },
+      "median_seconds": {
+        "native": 6.620593384839594,
+        "python": 46.43794834520668
+      }
+    },
+    {
+      "hemi": "rh",
+      "comparison": {
+        "vertices": 101454,
+        "faces": 202936,
+        "faces_identical": true,
+        "vertex_distance_mm": {
+          "median": 1.0831658069229648e-05,
+          "rms": 1.286710001155122e-05,
+          "max": 6.22158295833591e-05
+        },
+        "surface_area_mm2": {
+          "native": 55452.85629527335,
+          "python": 55452.85627738591,
+          "relative_error": 3.2257021456475005e-10
+        },
+        "barycentric_vertex_area_mm2": {
+          "max_absolute_error": 2.335844418199784e-05,
+          "median_relative_error": 3.65137566347394e-06
+        },
+        "signed_enclosed_volume_mm3": {
+          "native": 849253.9972565958,
+          "python": 849254.0023817691,
+          "relative_error": 6.0349122690221226e-09
+        }
+      },
+      "wall_seconds": {
+        "native": [
+          5.8189119650051,
+          6.824031386524439,
+          19.958651241846383
+        ],
+        "python": [
+          43.91118115000427,
+          44.93278694525361,
+          44.94464472960681
+        ]
+      },
+      "median_seconds": {
+        "native": 6.824031386524439,
+        "python": 44.93278694525361
+      }
+    }
+  ]
+}

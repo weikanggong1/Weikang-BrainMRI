@@ -1,0 +1,108 @@
+{
+  "reference": "same frozen LH pial input; installed FreeSurfer 8.2.0-1 RAM checkpoints versus GCC11.2 copied-source diagnostics; first pass n_averages=16, sigma=2, dt=0.5",
+  "reference_classes_separate": true,
+  "selected_first_step_vertex": 80852,
+  "selected_vertex_ring_distance_from_step14_81282": 10,
+  "step1_81282_center_difference_mm": 0.0,
+  "step1_16_ring_vertices": 1004,
+  "step1_16_ring_differing_vertices": 4,
+  "step1_16_ring_max_difference_mm": 3.814697265625e-06,
+  "step13_16_ring_max_difference_mm": 1.9073486328125e-05,
+  "step13_16_ring_vertices_above_1e-4_mm": 0,
+  "step1_selected_installed_gradient_bits_equal_copied_source": true,
+  "step1_selected_installed_gradient": [
+    -3.140500783920288,
+    1.844934344291687,
+    4.697066783905029
+  ],
+  "step1_selected_source_gradient": [
+    -3.140500783920288,
+    1.844934344291687,
+    4.697066783905029
+  ],
+  "step1_selected_source_candidate_equals_source_after_collision": true,
+  "step1_selected_source_candidate_xyz": [
+    -25.77591896057129,
+    41.43865203857422,
+    57.70400619506836
+  ],
+  "step1_selected_installed_accepted_xyz": [
+    -25.77591896057129,
+    41.43864822387695,
+    57.70400619506836
+  ],
+  "step1_selected_installed_minus_source_xyz_mm": [
+    0.0,
+    -3.814697265625e-06,
+    0.0
+  ],
+  "step1_selected_installed_debug_mesh_matches_RAM_baseline": true,
+  "step1_unresolved_operator": "exact matched pre-move gradient; 1-ULP y difference occurs in clipped displacement, close-neighbor projection, collision/acceptance, or coordinate update; native intermediate odxyz not captured",
+  "step14_vertex": 81282,
+  "step14_pre_step_center_difference_mm": 4.264961199760036e-06,
+  "step14_native_force_lines_rounded": [
+    "v 81282 intensity term:      (-0.000, 0.000, 0.000), delV=-0.0, delI=-1, sigma=2.0, target=36.7",
+    "before averaging dot = 0.00  after dot = 0.07 (-0.020, 0.066, 0.020)",
+    "v 81282 curvature term:      (-0.022, 0.089, 0.023), e=0.1"
+  ],
+  "step14_python_installed_mesh_aggregate_minus_native_text_max_abs": 3.324975967472499e-08,
+  "step14_first_signed_average_gate_difference_pass": 1,
+  "step14_first_signed_average_output_y_sign_difference_pass": 1,
+  "step14_first_pass_source_output_y": -0.20695188641548157,
+  "step14_first_pass_installed_output_y": 0.04877784475684166,
+  "step14_first_gate_difference": {
+    "vertex": 81291,
+    "rank": 0,
+    "source": {
+      "rank": 0,
+      "vertex": 81291,
+      "input_y": -0.17034006118774414,
+      "dot": 2.2717554202245083e-06,
+      "included": true,
+      "partial_sum_y": -0.1703523392916395,
+      "count": 2
+    },
+    "installed": {
+      "rank": 0,
+      "vertex": 81291,
+      "input_y": -0.17034006118774414,
+      "dot": -4.084526153746992e-06,
+      "included": false,
+      "partial_sum_y": 2.20755555346841e-05,
+      "count": 1
+    }
+  },
+  "step14_first_positive_installed_only_neighbor": {
+    "vertex": 80901,
+    "rank": 3,
+    "source": {
+      "rank": 3,
+      "vertex": 80901,
+      "input_y": 0.09753371775150299,
+      "dot": -1.3949770618637558e-06,
+      "included": false,
+      "partial_sum_y": -0.5182187999726011,
+      "count": 4
+    },
+    "installed": {
+      "rank": 3,
+      "vertex": 80901,
+      "input_y": 0.09753361344337463,
+      "dot": 2.508110355847748e-06,
+      "included": true,
+      "partial_sum_y": 0.09755568899890932,
+      "count": 2
+    }
+  },
+  "step14_last_pass_source_output_y": -0.21125271916389465,
+  "step14_last_pass_installed_output_y": 0.06612826883792877,
+  "installed_cropped_counters_captured": false,
+  "installed_exact_force_terms_captured": false,
+  "acceptance": "installed-binary final surface parity not achieved by copied source or independent Python; native first-step intermediate displacement operator unresolved",
+  "source_evidence": {
+    "early_16_ring": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/place_surface_early_step_16ring_report.json",
+    "exact_installed_gradient": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_exact_v80852_step1/exact_gradient_report.json",
+    "installed_debug_branch": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/place_surface_installed_debug_first_branch_report.json",
+    "force_terms_and_16_passes": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/place_surface_installed_step14_force_terms_report.json"
+  }
+}

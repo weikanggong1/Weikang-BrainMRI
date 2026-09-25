@@ -1,0 +1,16 @@
+{
+  "wheel": "fudan_neuroimaging_toolkit-0.9.0-py3-none-any.whl",
+  "bytes": 1063027,
+  "missing_modules": [],
+  "vxl_license_entries": [
+    "fudan_neuroimaging_toolkit-0.9.0.dist-info/VXL.txt"
+  ],
+  "missing_console_scripts": [],
+  "recon_all_python_stages_extra": true,
+  "console_scripts": {
+    "fnit-normalize": "fnit.recon_all.normalization.pipeline:main",
+    "fnit-normalize-aseg": "fnit.recon_all.normalization.aseg_pipeline:main",
+    "fnit-recon-all": "fnit.recon_all.standalone:main",
+    "fnit-setup-recon-all-assets": "fnit.recon_all.assets:main"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "repeats": 3,
+  "timing_scope": "Fixed nu0 input through final nu; native subprocess launch and IO included; Python resident function import excluded; N4 bias correction excluded",
+  "all_decompressed_mgh_identical": true,
+  "median_seconds": {
+    "native": 14.711600807495415,
+    "python": 0.9878097120672464
+  },
+  "rows": [
+    {
+      "trial": 0,
+      "decompressed_mgh_identical": true,
+      "native_sha256": "6370e1ab0c888ec4d574a244ed745c640442c6ff6a2b54093d6353e89af07dc7",
+      "python_sha256": "6370e1ab0c888ec4d574a244ed745c640442c6ff6a2b54093d6353e89af07dc7",
+      "wall_seconds": {
+        "native_stages": {
+          "binarize": 1.190164741128683,
+          "segstats_input": 2.322777137160301,
+          "segstats_output": 2.7235597986727953,
+          "scale": 2.0247137304395437,
+          "convert_like": 1.6977607924491167,
+          "make_uchar": 2.909466621465981,
+          "add_xform": 0.2558508012443781
+        },
+        "native": 13.124672126956284,
+        "python": 1.0320720057934523
+      }
+    },
+    {
+      "trial": 1,
+      "decompressed_mgh_identical": true,
+      "native_sha256": "6370e1ab0c888ec4d574a244ed745c640442c6ff6a2b54093d6353e89af07dc7",
+      "python_sha256": "6370e1ab0c888ec4d574a244ed745c640442c6ff6a2b54093d6353e89af07dc7",
+      "wall_seconds": {
+        "python": 0.9878097120672464,
+        "native_stages": {
+          "binarize": 1.3397120647132397,
+          "segstats_input": 2.4411724619567394,
+          "segstats_output": 3.2308687353506684,
+          "scale": 2.4986872607842088,
+          "convert_like": 2.2859685625880957,
+          "make_uchar": 3.3443618649616838,
+          "add_xform": 0.24283454474061728
+        },
+        "native": 15.38428459316492
+      }
+    },
+    {
+      "trial": 2,
+      "decompressed_mgh_identical": true,
+      "native_sha256": "6370e1ab0c888ec4d574a244ed745c640442c6ff6a2b54093d6353e89af07dc7",
+      "python_sha256": "6370e1ab0c888ec4d574a244ed745c640442c6ff6a2b54093d6353e89af07dc7",
+      "wall_seconds": {
+        "native_stages": {
+          "binarize": 1.3897918965667486,
+          "segstats_input": 2.239135257899761,
+          "segstats_output": 3.1009347923099995,
+          "scale": 1.6935729812830687,
+          "convert_like": 2.189137917943299,
+          "make_uchar": 3.7579357204958797,
+          "add_xform": 0.3406514059752226
+        },
+        "native": 14.711600807495415,
+        "python": 0.907686460763216
+      }
+    }
+  ]
+}

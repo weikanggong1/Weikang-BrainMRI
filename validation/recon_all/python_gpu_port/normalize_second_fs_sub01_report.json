@@ -1,0 +1,13 @@
+{
+  "voxel_mismatches": 0,
+  "voxel_count": 16777216,
+  "maximum_absolute_voxel_error": 0,
+  "mgh_header_equal": true,
+  "voxel_payload_equal": true,
+  "decompressed_file_equal": false,
+  "candidate_trailer_bytes": 1969,
+  "reference_trailer_bytes": 2965,
+  "candidate_is_decompressed_prefix": true,
+  "candidate_decompressed_sha256": "31d8effdf70c9da89b952aa5165393f68c871ac7dc1093c75ee08aec17ee3d95",
+  "reference_decompressed_sha256": "4a57c05e7188203e67fbb547083d38ed93a3170d36db6ce0e034e5f571b8c19b"
+}

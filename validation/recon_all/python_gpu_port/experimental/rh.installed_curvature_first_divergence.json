@@ -1,0 +1,358 @@
+{
+  "scope": "installed FreeSurfer first global topology curvature, selected vertices only",
+  "acceptance_reference": "installed FreeSurfer 8.2.0-1; private pinned-source build is a separate diagnostic",
+  "installed_mris_fix_topology_sha256": "0ee25cee2760cde9858d2043f1a9d42be9c10cd613dc43d9620203feeadab02c",
+  "input_sha256": {
+    "orig": "45d53fa51554b6f58f04ac37ee8eff1814fd31c001178e7648af2eb97b9f01cf",
+    "qsphere": "b93d519dd0da418ca2fbfed01617af4939b3d7528e91a7d5f73eaae279a9977a"
+  },
+  "native_reference_sha256": {
+    "k1.plt": "830b4bfeb42d68c232284e4cab97eeb2a73fe8efedd2e05d32bc5fa5cca001a2",
+    "k2.plt": "0a05695898106351ed8523d4d824f5eee183fda11ddb0b264cc525069d2be15a",
+    "mri_k1_k2.mgh": "463893f31d5cbf4e83dcfe323f932d743b9ec9884b12bf5ebcaf66cd67bb4153"
+  },
+  "native_first_curvature_sha256": "8b65d1df1316c2fa13c861b55b32f878b934f212f874eb2aaf0b09e69404b364",
+  "frozen_reference_sha256_match": true,
+  "old_printed_mismatch_vertex_now_fixed": 96,
+  "old_vertex_official": {
+    "HESSIAN": {
+      "values": [
+        0.423593223,
+        -0.233711958,
+        -0.233711958,
+        0.627328455
+      ],
+      "float32_hex": [
+        "0x3ed8e136",
+        "0xbe6f5230",
+        "0xbe6f5230",
+        "0x3f209899"
+      ]
+    },
+    "EIGEN": {
+      "values": [
+        0.780408442,
+        0.270513207
+      ],
+      "float32_hex": [
+        "0x3f47c8d9",
+        "0x3e8a80b5"
+      ]
+    }
+  },
+  "old_vertex_independent": {
+    "hessian": {
+      "values": [
+        [
+          0.4235932230949402,
+          -0.23371195793151855
+        ],
+        [
+          -0.23371195793151855,
+          0.6273284554481506
+        ]
+      ],
+      "float32_hex": [
+        "0x3ed8e136",
+        "0xbe6f5230",
+        "0xbe6f5230",
+        "0x3f209899"
+      ]
+    },
+    "predicted_k1_k2": {
+      "values": [
+        0.7804084420204163,
+        0.2705132067203522
+      ],
+      "float32_hex": [
+        "0x3f47c8d9",
+        "0x3e8a80b5"
+      ]
+    }
+  },
+  "old_vertex_bitwise_comparison": {
+    "hessian_float32_matching_elements": 4,
+    "eigen_float32_matching_elements": 2
+  },
+  "first_remaining_printed_mismatch_vertex": 2198,
+  "first_remaining_independent_defect_label": 1,
+  "first_remaining_official_ordered_two_ring": [
+    2197,
+    2206,
+    2207,
+    2654,
+    2199,
+    2655,
+    2196,
+    1817,
+    1827,
+    2653,
+    2217,
+    2218,
+    2208,
+    2219,
+    2642,
+    2641,
+    2663,
+    2643,
+    2656,
+    2664
+  ],
+  "first_remaining_official_ripflag": 0,
+  "first_remaining_official": {
+    "NORMAL": {
+      "values": [
+        -0.146728858,
+        -0.888523579,
+        -0.434737116
+      ],
+      "float32_hex": [
+        "0xbe164017",
+        "0xbf637648",
+        "0xbede95dd"
+      ]
+    },
+    "GRAM": {
+      "values": [
+        41.69347,
+        -13.3638926,
+        21.143959,
+        -13.3638926,
+        84.5758362,
+        -30.8355064,
+        21.143959,
+        -30.8355064,
+        63.4759827
+      ],
+      "float32_hex": [
+        "0x4226c61d",
+        "0xc155d281",
+        "0x41a926d4",
+        "0xc155d281",
+        "0x42a926d4",
+        "0xc1f6af1e",
+        "0x41a926d4",
+        "0xc1f6af1e",
+        "0x427de768"
+      ]
+    },
+    "INVERSE": {
+      "values": [
+        0.0289746169,
+        0.00128748664,
+        -0.00902606174,
+        0.0012874892,
+        0.0144257527,
+        0.00657890551,
+        -0.00902605895,
+        0.00657890877,
+        0.0219565071
+      ],
+      "float32_hex": [
+        "0x3ced5c2d",
+        "0x3aa8c0e2",
+        "0xbc13e20c",
+        "0x3aa8c0f8",
+        "0x3c6c59fe",
+        "0x3bd793dc",
+        "0xbc13e209",
+        "0x3bd793e3",
+        "0x3cb3de22"
+      ]
+    },
+    "RHS": {
+      "values": [
+        7.29513073,
+        4.45775652,
+        -3.80995774
+      ],
+      "float32_hex": [
+        "0x40e971b6",
+        "0x408ea5f1",
+        "0xc073d659"
+      ]
+    },
+    "HESSIAN": {
+      "values": [
+        0.503003657,
+        0.0972670838,
+        0.0972670838,
+        -0.240344942
+      ],
+      "float32_hex": [
+        "0x3f00c4d9",
+        "0x3dc733f7",
+        "0x3dc733f7",
+        "0xbe761cfc"
+      ]
+    },
+    "EIGEN": {
+      "values": [
+        0.515520275,
+        -0.252861559
+      ],
+      "float32_hex": [
+        "0x3f03f923",
+        "0xbe817712"
+      ]
+    }
+  },
+  "first_remaining_independent": {
+    "normal": {
+      "values": [
+        -0.1467156559228897,
+        -0.8885235786437988,
+        -0.4347417950630188
+      ],
+      "float32_hex": [
+        "0xbe163ca1",
+        "0xbf637648",
+        "0xbede967a"
+      ]
+    },
+    "gram": {
+      "values": [
+        [
+          41.69379806518555,
+          -13.365187644958496,
+          21.144207000732422
+        ],
+        [
+          -13.365187644958496,
+          84.57682800292969,
+          -30.835697174072266
+        ],
+        [
+          21.144207000732422,
+          -30.835697174072266,
+          63.474220275878906
+        ]
+      ],
+      "float32_hex": [
+        "0x4226c673",
+        "0xc155d7cf",
+        "0x41a92756",
+        "0xc155d7cf",
+        "0x42a92756",
+        "0xc1f6af82",
+        "0x41a92756",
+        "0xc1f6af82",
+        "0x427de59a"
+      ]
+    },
+    "rhs": {
+      "values": [
+        7.295038223266602,
+        4.458431720733643,
+        -3.809943437576294
+      ],
+      "float32_hex": [
+        "0x40e970f4",
+        "0x408eab79",
+        "0xc073d61d"
+      ]
+    },
+    "inverse": {
+      "values": [
+        [
+          0.028974706307053566,
+          0.0012878328561782837,
+          -0.009026278741657734
+        ],
+        [
+          0.001287833321839571,
+          0.014425696805119514,
+          0.0065789902582764626
+        ],
+        [
+          -0.00902627781033516,
+          0.0065789902582764626,
+          0.021957281976938248
+        ]
+      ],
+      "float32_hex": [
+        "0x3ced5c5d",
+        "0x3aa8cc80",
+        "0xbc13e2f5",
+        "0x3aa8cc84",
+        "0x3c6c59c2",
+        "0x3bd79492",
+        "0xbc13e2f4",
+        "0x3bd79492",
+        "0x3cb3dfc2"
+      ]
+    },
+    "hessian": {
+      "values": [
+        [
+          0.5030058026313782,
+          0.09729039669036865
+        ],
+        [
+          0.09729039669036865,
+          -0.2403421401977539
+        ]
+      ],
+      "float32_hex": [
+        "0x3f00c4fd",
+        "0x3dc74030",
+        "0x3dc74030",
+        "0xbe761c40"
+      ]
+    },
+    "predicted_k1_k2": {
+      "values": [
+        0.5155283212661743,
+        -0.25286468863487244
+      ],
+      "float32_hex": [
+        "0x3f03f9aa",
+        "0xbe81777b"
+      ]
+    }
+  },
+  "first_remaining_bitwise_comparison": {
+    "normal_float32_matching_components": 1,
+    "ordered_two_ring_equal": true,
+    "gram_float32_matching_elements": 0,
+    "rhs_float32_matching_elements": 0,
+    "inverse_float32_matching_elements": 0,
+    "hessian_float32_matching_elements": 0,
+    "eigen_float32_matching_elements": 0
+  },
+  "earliest_verified_difference": "normal before Gram construction; native defect-marked field still to be captured",
+  "bilateral_histogram_accepted": false,
+  "histogram_summary": {
+    "k1": {
+      "raw_count_matching_bins": 77,
+      "pdf_counts_matching_ten_decimals": 77,
+      "mean_float32_bits_equal": false
+    },
+    "k2": {
+      "raw_count_matching_bins": 70,
+      "pdf_counts_matching_ten_decimals": 70,
+      "mean_float32_bits_equal": false
+    }
+  },
+  "joint_raw_count_matching_cells": 9879,
+  "joint_float32_matching_cells": 0,
+  "first_remaining_official_marked_marked2_marked3_ripflag": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "first_remaining_official_canonical_xyz": {
+    "values": [
+      -14.6115646,
+      -88.8199158,
+      -43.5605888
+    ],
+    "float32_hex": [
+      "0xc169c8f8",
+      "0xc2b1a3cc",
+      "0xc22e3e0b"
+    ]
+  },
+  "defect_label_boundary": "Independent component label 1 describes preflight defect membership; installed marked=0 at first global curvature fit and is not equivalent to that component label."
+}

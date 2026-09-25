@@ -1,0 +1,13 @@
+{
+  "candidate_sha256": "0ed5eae42b33551dd456310ac9e6e0c200b65d338d5603b74608dfd08510a656",
+  "reference_sha256": "240580f421fd190dce59d9bbe539d5ed23c8fd1bd7cfeceef6d8a6a57ddae6cc",
+  "dtype_equal": true,
+  "shape_equal": true,
+  "voxel_mismatch_count": 0,
+  "max_abs_voxel_difference": 0,
+  "affine_max_abs_mm": 0.0,
+  "mgh_header_equal": true,
+  "mgh_header_and_payload_equal": true,
+  "decompressed_bytes_equal": false,
+  "difference_histogram": {}
+}

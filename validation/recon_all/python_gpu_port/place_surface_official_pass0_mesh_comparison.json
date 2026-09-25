@@ -1,0 +1,34 @@
+{
+  "reference_class": "installed FreeSurfer 8.2.0-1 RAM first-outer-pass snapshot versus copied-source instrumented snapshot; normal CLI final surface is separate",
+  "source_step": 26,
+  "installed_ram_mesh": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_ram_official_pass0/surf/lh.pial.ram",
+  "source_snapshot_mesh": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_official_pass0_run/surf/lh.probe0026",
+  "ordered_faces_equal": true,
+  "ordered_face_count": 213240,
+  "vertex_count": 106622,
+  "exact_vertices": 13074,
+  "first_different_vertex": 0,
+  "first_different_installed_xyz": [
+    -2.3232314586639404,
+    -87.72456359863281,
+    3.121445417404175
+  ],
+  "first_different_source_xyz": [
+    -2.3232312202453613,
+    -87.72456359863281,
+    3.121445417404175
+  ],
+  "first_difference_mm": 2.384185791015625e-07,
+  "median_mm": 3.844384073399806e-06,
+  "p99_mm": 0.03722496468176261,
+  "max_mm": 0.6637838285898431,
+  "vertices_over_tolerance_mm": {
+    "1e-05": 17948,
+    "0.0001": 10178,
+    "0.001": 6106,
+    "0.01": 2674,
+    "0.1": 265
+  },
+  "installed_objective_line": "026: dt: 0.1250, sse=474668.0, rms=3.711 (0.889%)",
+  "source_objective_line": "026: dt: 0.1250, sse=475080.2, rms=3.714 (0.830%)"
+}

@@ -1,0 +1,41 @@
+{
+  "hemisphere": "rh",
+  "surface": "pial",
+  "vertices": 105541,
+  "seconds_including_jit": 5.3491719495505095,
+  "comparisons": {
+    "value": {
+      "exact_elements": 105541,
+      "total_elements": 105541,
+      "max_abs_error": 0.0,
+      "first_mismatch_vertices": [],
+      "first_mismatch_actual": [],
+      "first_mismatch_native": []
+    },
+    "distance": {
+      "exact_elements": 105541,
+      "total_elements": 105541,
+      "max_abs_error": 0.0
+    },
+    "gradient": {
+      "exact_elements": 105541,
+      "total_elements": 105541,
+      "max_abs_error": 0.0
+    },
+    "target_xyz": {
+      "exact_elements": 316623,
+      "total_elements": 316623,
+      "max_abs_error": 0.0
+    },
+    "marked": {
+      "exact_elements": 105541,
+      "total_elements": 105541,
+      "max_abs_error": 0.0
+    },
+    "sigma": {
+      "exact_elements": 105541,
+      "total_elements": 105541,
+      "max_abs_error": 0.0
+    }
+  }
+}

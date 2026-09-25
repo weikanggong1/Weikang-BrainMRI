@@ -1,0 +1,68 @@
+{
+  "reference_freesurfer": "8.2.0-1 d932c45b7941662ea380a05efef580568b98d41a",
+  "subject": "fs_sub01",
+  "rows": [
+    {
+      "name": "lh_native_inflated_cli",
+      "input": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_python_gpu_20260925/tessellate/sphere/quick_full_lh_a128/first_capture/python_lh.qsphere",
+      "reference": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/surf/lh.qsphere.nofix",
+      "input_sha256": "ab271df85bdcb7a5f77776ccf44369a7a42f57b0bcf68cf6743ec016a0692f51",
+      "reference_sha256": "8afffc181e2e05b8349099845e7ffe3b7a6a36e241d5689c4b6503c020485647",
+      "vertices": 102764,
+      "faces": 205560,
+      "exact_vertices": 102764,
+      "exact_faces": 205560,
+      "median_vertex_distance_mm": 0.0,
+      "p99_vertex_distance_mm": 0.0,
+      "max_vertex_distance_mm": 0.0,
+      "input_area_mm2": 125667.02935082487,
+      "reference_area_mm2": 125667.02935082487,
+      "input_signed_volume_mm3": 4188235.965080211,
+      "reference_signed_volume_mm3": 4188235.965080211,
+      "metadata_equal": true,
+      "metadata_differing_keys": []
+    },
+    {
+      "name": "rh_native_inflated_cli",
+      "input": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_python_gpu_20260925/tessellate/sphere/quick_full_lh_a128/first_capture/python_rh.qsphere",
+      "reference": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/surf/rh.qsphere.nofix",
+      "input_sha256": "6c07fa1f5d6e47608236d958edcee9530354a030f38ad7e3347b4d8a804af3a9",
+      "reference_sha256": "b93d519dd0da418ca2fbfed01617af4939b3d7528e91a7d5f73eaae279a9977a",
+      "vertices": 101454,
+      "faces": 202936,
+      "exact_vertices": 101454,
+      "exact_faces": 202936,
+      "median_vertex_distance_mm": 0.0,
+      "p99_vertex_distance_mm": 0.0,
+      "max_vertex_distance_mm": 0.0,
+      "input_area_mm2": 125671.95697221036,
+      "reference_area_mm2": 125671.95697221036,
+      "input_signed_volume_mm3": 4188235.1659477893,
+      "reference_signed_volume_mm3": 4188235.1659477893,
+      "metadata_equal": true,
+      "metadata_differing_keys": []
+    },
+    {
+      "name": "lh_python_inflated_chain",
+      "input": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_python_gpu_20260925/tessellate/sphere/quick_full_lh_a128/first_capture/python_chain_lh.qsphere",
+      "reference": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/surf/lh.qsphere.nofix",
+      "input_sha256": "9736d5ad4458913587028879f0b7e5672fb62fe1f460b219de811fed1684d8fa",
+      "reference_sha256": "8afffc181e2e05b8349099845e7ffe3b7a6a36e241d5689c4b6503c020485647",
+      "vertices": 102764,
+      "faces": 205560,
+      "exact_vertices": 0,
+      "exact_faces": 205560,
+      "median_vertex_distance_mm": 0.16138331042067317,
+      "p99_vertex_distance_mm": 2.194288814728369,
+      "max_vertex_distance_mm": 6.901210185794652,
+      "input_area_mm2": 125666.75349756143,
+      "reference_area_mm2": 125667.02935082487,
+      "input_signed_volume_mm3": 4188235.763812033,
+      "reference_signed_volume_mm3": 4188235.965080211,
+      "metadata_equal": false,
+      "metadata_differing_keys": [
+        "filename"
+      ]
+    }
+  ]
+}

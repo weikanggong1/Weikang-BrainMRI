@@ -1,0 +1,23 @@
+{
+  "load_convert_splat_seconds": 2.3825612533837557,
+  "fields": {
+    "x": {
+      "seconds": 63.73388815950602,
+      "voronoi_iterations": 91,
+      "soap_iterations": 50
+    },
+    "y": {
+      "seconds": 64.72854144312441,
+      "voronoi_iterations": 91,
+      "soap_iterations": 50
+    },
+    "z": {
+      "seconds": 63.244612883776426,
+      "voronoi_iterations": 91,
+      "soap_iterations": 50
+    }
+  },
+  "displacement_seconds": 1.595504131168127,
+  "write_seconds": 8.217598668299615,
+  "total_seconds": 203.90457319188863
+}

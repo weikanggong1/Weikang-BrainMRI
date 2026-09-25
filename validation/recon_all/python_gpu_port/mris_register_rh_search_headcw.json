@@ -1,0 +1,35 @@
+{
+  "device": "cpu",
+  "vertices": 105541,
+  "faces_equal": true,
+  "source_grid_exact_pixels": 131072,
+  "source_grid_max_abs_error": 0.0,
+  "target_mean_exact_pixels": 131072,
+  "target_mean_max_abs_error": 0.0,
+  "target_variance_exact_pixels": 131072,
+  "target_variance_max_abs_error": 0.0,
+  "target_grids_seconds_excluding_io": 10.78482667542994,
+  "curvature_exact_vertices": 105541,
+  "curvature_max_abs_error": 0.0,
+  "source_curve_seconds_excluding_io": 16.564281962811947,
+  "input_sha256": {
+    "sphere": "744e8d937f942a3a8d5f0ee739342762288e6824386aaa8a558065c92de84efc",
+    "sulc": "dc213c473326a0fe4d860a668f843fa8eeba2f494878afc7086a2b1ca4af6d06",
+    "atlas": "1064e4c0ae0440f5071b4369f29a09860f1abf6eddc90a271d10cd0ff7e60043",
+    "native_source_grid": "7e906c29e7615410c10d184b013e4897816b08e7194e0afe1eed192d53f742cb",
+    "target_grid": "2aeadc3ce657c58afd783da3c9621e0e445adb8f6f5745cf7dfe6063c2735428",
+    "native_curvature": "f9b36bfaaa5ab8ec3960559bb56a4c630ab4b572f96800598ad428b73bdacd81",
+    "native_rigid_surface": "b094ef45e3f6f19a406b172362991d99e0beacc604f65cf8711124d46bb3a17e"
+  },
+  "angles_degrees": [
+    19.500000542636936,
+    -9.499999979770369,
+    -1.9999999845072665
+  ],
+  "objective": 208867.4773702946,
+  "angle_evaluations": 3172,
+  "search_and_rotation_seconds_excluding_io": 20.903417327441275,
+  "exact_ordered_vertices": 105541,
+  "max_abs_coordinate_error_mm": 0.0,
+  "median_vertex_error_mm": 0.0
+}

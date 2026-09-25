@@ -1,0 +1,27 @@
+{
+  "lh.white": {
+    "vertices": 106622,
+    "source_probe_final_target_vs_installed_xyz_exact": true,
+    "ordered_faces_exact": true,
+    "source_probe_first_pass_input_xyz_vs_installed_preiteration_exact": true,
+    "preprocessed_volume_vs_original_reconall_voxels_exact": true
+  },
+  "lh.pial": {
+    "vertices": 106622,
+    "source_probe_final_target_vs_installed_xyz_exact": true,
+    "ordered_faces_exact": true,
+    "source_probe_first_pass_input_xyz_vs_installed_preiteration_exact": true
+  },
+  "rh.white": {
+    "vertices": 105541,
+    "source_probe_final_target_vs_installed_xyz_exact": true,
+    "ordered_faces_exact": true,
+    "source_probe_first_pass_input_xyz_vs_installed_preiteration_exact": true
+  },
+  "rh.pial": {
+    "vertices": 105541,
+    "source_probe_final_target_vs_installed_xyz_exact": true,
+    "ordered_faces_exact": true,
+    "source_probe_first_pass_input_xyz_vs_installed_preiteration_exact": true
+  }
+}

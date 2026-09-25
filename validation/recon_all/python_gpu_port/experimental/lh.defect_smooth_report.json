@@ -1,0 +1,29 @@
+{
+  "hemisphere": "lh",
+  "scope": "25-iteration type-2 smoothing with native saved curvature plots and MGH bin widths; no independent histogram generation or MRI match",
+  "inside_vertices": 54,
+  "independent_first_patch_report_sha256": "280cfb91f7a88b29750a94282e9325a4240b726405621f3b15b1bdc2d95c77bc",
+  "native_select0_sha256": "6830e155603859dcb046570d6825e17c107581d953f8d6467ff2bc8834e9892e",
+  "native_select0s_sha256": "06a17e01ca707c8d19646986b62c8eec99411096fd4d3d54f3b87eae6d6630ea",
+  "histogram_k1_mean_from_source_order_bins": -0.09473268687725067,
+  "histogram_k2_mean_from_source_order_bins": -0.033347927033901215,
+  "histogram_k1_first_bin": -3.0,
+  "histogram_k2_first_bin": -1.8466503620147705,
+  "histogram_k1_bin_size": 0.05999999865889549,
+  "histogram_k2_bin_size": 0.031660161912441254,
+  "native_plot_and_mgh_sha256": {
+    "k1.plt": "362c2436be787483a237ce1fc7cabc789f28a75afb1b5a39d4819bb8285d0567",
+    "k2.plt": "f255b13bd439a8970025766d5bcfa17ddcdd9cb390f8e576c303d31cb12575d2",
+    "mri_k1_k2.mgh": "ec7dd5555453e074fbbf2f3c7c9e40f51cba2bfbbde2a8fb5afd5a274168f177"
+  },
+  "python_seconds_including_jit": 1.3101079314947128,
+  "bitwise_equal_vertices": 102764,
+  "inside_bitwise_equal_vertices": 54,
+  "outside_bitwise_equal_vertices": 102710,
+  "outside_vertices": 102710,
+  "max_vertex_distance_mm": 0.0,
+  "inside_mean_distance_mm": 0.0,
+  "inside_median_distance_mm": 0.0,
+  "inside_mismatch_vertices": [],
+  "first_inside_difference": null
+}

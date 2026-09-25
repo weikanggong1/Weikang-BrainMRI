@@ -1,0 +1,140 @@
+{
+  "hemispheres": {
+    "lh": {
+      "defects": 14,
+      "first_defect_candidate_edges": {
+        "discarded": 447,
+        "native_discarded": 447,
+        "native_log_sha256": "1107ee958f4e7f7d9490e354aabd8080a8cef2c07f393e4136b2262a6386dc94",
+        "native_remaining": 6456,
+        "native_total": 6903,
+        "remaining": 6456,
+        "total": 6903
+      },
+      "input_sha256": {
+        "orig.nofix": "ef00440f651026e4d099bd282f3e4e2cfbfffdc1e0877684fe22aa2948542b79",
+        "qsphere.nofix": "8afffc181e2e05b8349099845e7ffe3b7a6a36e241d5689c4b6503c020485647"
+      },
+      "input_topology": {
+        "boundary_edges": 0,
+        "edges": 308340,
+        "euler": -16,
+        "faces": 205560,
+        "nonmanifold_edges": 0,
+        "vertices": 102764
+      },
+      "maps": {
+        "defect_borders": {
+          "different_vertices": 0,
+          "reference_sha256": "28fc7a10e94bbc91ca0b038c907fbae4285a5b184c9e8e0852f3c1aaffbd4797"
+        },
+        "defect_chull": {
+          "different_vertices": 0,
+          "reference_sha256": "ea11b55a8b62a98280056b0e24203736a1366f0ca57cdb0041d15ecb0b38d988"
+        },
+        "defect_labels": {
+          "different_vertices": 0,
+          "reference_sha256": "aeafcd4a5b66c8412a48caabca2bdb77c5985c863b76ad1e3f70442400e8477c"
+        },
+        "defect_status": {
+          "different_vertices": 0,
+          "reference_sha256": "e65f542bc8175489578df23abfda520dca91ac9a9543d06d3d402e3b19a5ef3c"
+        }
+      },
+      "native_diagnostic_sphere_sha256": "d984351fbadde9378522eace96d2bc8295ff520cd201bdbcb7900a8e435f50a5",
+      "native_final_surface_sha256": "06eb4b9603e21e07a59ec02e21c97d33d4e8217e6c64eb0986a07bc42abf09aa",
+      "native_final_topology": {
+        "boundary_edges": 0,
+        "edges": 305061,
+        "euler": 2,
+        "faces": 203374,
+        "nonmanifold_edges": 0,
+        "vertices": 101689
+      },
+      "pre_patch_translation": {
+        "ftrans": {
+          "different_indices": 0,
+          "reference_sha256": "041abcf04cd07cbcb851df36de354ac360a389ffee79280b88c88894c3cea29e"
+        },
+        "vtrans": {
+          "different_indices": 0,
+          "reference_sha256": "8c72f46841e5dbaf74b5eb8f5e603ef19701df7de180e6cc9680d0826ebb085b"
+        }
+      },
+      "python_defects_seconds": 36.51931854803115,
+      "python_sphere_seconds": 4.783516978845,
+      "sphere_iterations_python": 14,
+      "sphere_max_vertex_distance_mm": 3.28706511299402e-05,
+      "sphere_vertices_over_0.0001_mm": 0
+    },
+    "rh": {
+      "defects": 10,
+      "first_defect_candidate_edges": {
+        "discarded": 2360,
+        "native_discarded": 2360,
+        "native_log_sha256": "7909093c464628e173e259169bcae52a00b0d4bf5772eb2e695a6cbe489386d3",
+        "native_remaining": 26560,
+        "native_total": 28920,
+        "remaining": 26560,
+        "total": 28920
+      },
+      "input_sha256": {
+        "orig.nofix": "45d53fa51554b6f58f04ac37ee8eff1814fd31c001178e7648af2eb97b9f01cf",
+        "qsphere.nofix": "b93d519dd0da418ca2fbfed01617af4939b3d7528e91a7d5f73eaae279a9977a"
+      },
+      "input_topology": {
+        "boundary_edges": 0,
+        "edges": 304404,
+        "euler": -14,
+        "faces": 202936,
+        "nonmanifold_edges": 0,
+        "vertices": 101454
+      },
+      "maps": {
+        "defect_borders": {
+          "different_vertices": 0,
+          "reference_sha256": "0b6fccc544e4dd75238ffe658cee38e0b6772cc04b8642ecd7729c73e855879b"
+        },
+        "defect_chull": {
+          "different_vertices": 0,
+          "reference_sha256": "69f6b3ab9f9dece0c6cfb1d93b3561d9ac5c8d38c28b4e99441bc5dcc3bb36d7"
+        },
+        "defect_labels": {
+          "different_vertices": 0,
+          "reference_sha256": "53e9620ac592abc4d11ba18686f4a05d2bde73e3c4a197d2de2d9e612adfbd73"
+        },
+        "defect_status": {
+          "different_vertices": 0,
+          "reference_sha256": "e60380970a49f56d038928f6a40afbf614b9865bf5d8c8fa84e63352b88409f5"
+        }
+      },
+      "native_diagnostic_sphere_sha256": "a06687d7d37cc5ac1fd54677c425926d02d860ad44a1f35c5ce4830f03b7b9c1",
+      "native_final_surface_sha256": "c5808d16eb02753a92d19cbd45c127b9c8e17921803be4c1f7ef5e6a29622d79",
+      "native_final_topology": {
+        "boundary_edges": 0,
+        "edges": 301659,
+        "euler": 2,
+        "faces": 201106,
+        "nonmanifold_edges": 0,
+        "vertices": 100555
+      },
+      "pre_patch_translation": {
+        "ftrans": {
+          "different_indices": 0,
+          "reference_sha256": "60fd8253db79bcff07c833c7a0fd0975a82bbb6212ccf616fc896213e77f4e1e"
+        },
+        "vtrans": {
+          "different_indices": 0,
+          "reference_sha256": "a7b8e500ea0770d9379610c76faa00c7ba31e595097a3f7b41e885ee6263953f"
+        }
+      },
+      "python_defects_seconds": 28.01289294846356,
+      "python_sphere_seconds": 3.5521219046786427,
+      "sphere_iterations_python": 11,
+      "sphere_max_vertex_distance_mm": 3.145679951185349e-05,
+      "sphere_vertices_over_0.0001_mm": 0
+    }
+  },
+  "scope": "spherical preprocessing and pre-genetic defect diagnostics only",
+  "source_commit": "d932c45b7941662ea380a05efef580568b98d41a"
+}

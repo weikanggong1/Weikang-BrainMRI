@@ -1,0 +1,311 @@
+{
+  "hemisphere": "rh",
+  "device": "cpu",
+  "threads": 4,
+  "input_sha256": {
+    "sphere": "744e8d937f942a3a8d5f0ee739342762288e6824386aaa8a558065c92de84efc",
+    "smoothwm": "b67ceb95069d865bb11f6c2b20bac99eab9f19982b73d3c9c43735b7bedbe7ca",
+    "sulc": "dc213c473326a0fe4d860a668f843fa8eeba2f494878afc7086a2b1ca4af6d06",
+    "rigid": "04530e1d51fbb6b6593c315a2a2a69e3084833a5de934fe486b2162bf431d4d3",
+    "atlas": "1064e4c0ae0440f5071b4369f29a09860f1abf6eddc90a271d10cd0ff7e60043"
+  },
+  "native_sha256": {
+    "native_first": "5b7f70c445183cf08f79d7519c1b20969ae28d279e1975e03e41bbb33ae39597",
+    "native_second": "35be4269fce67fcfdd6497a104e74899c5cfbc6952177d2fa3f112eee094f286"
+  },
+  "capture_script_sha256": "0ca6c9331877f88ff16ca47f8d90cb18beb9cb4aaf389df12692ea28efd878b8",
+  "first": {
+    "dt": 69.6503677368164,
+    "line_samples": [
+      [
+        0.0,
+        1763269.2731835041
+      ],
+      [
+        0.012318527503292185,
+        1763161.4525781577
+      ],
+      [
+        0.12318527503292184,
+        1762017.6446168118
+      ],
+      [
+        1.2318527503292185,
+        1750712.552425771
+      ],
+      [
+        12.318527503292184,
+        1646106.0589978858
+      ],
+      [
+        123.18527503292185,
+        1510373.5815951605
+      ],
+      [
+        61.592637516460925,
+        1382744.4138699076
+      ],
+      [
+        184.7779125493828,
+        1984037.5591653124
+      ],
+      [
+        69.6503677368164,
+        1372289.8357443647
+      ]
+    ],
+    "saved_surface": {
+      "exact_vectors": 105541,
+      "within_1e-5_vectors": 105541,
+      "total_vectors": 105541,
+      "max_abs_error": 0.0,
+      "predicted_sha256": "c191abbaad7d49c7092e07ea6d537ffbfa45aee0c01509b46dfa0f8d2ec19b85",
+      "reference_sha256": "f5cabbb7668518fd0c84f9ced0e9079edceed531853071ac6a7898ad02980f6f"
+    }
+  },
+  "second": {
+    "navgs": 4096,
+    "dt": 66.45890045166016,
+    "line_samples": [
+      [
+        0.0,
+        1372289.1058765133
+      ],
+      [
+        0.01723129685585567,
+        1372199.5146543945
+      ],
+      [
+        0.1723129685585567,
+        1371312.9245981753
+      ],
+      [
+        1.7231296855855671,
+        1362648.265551852
+      ],
+      [
+        17.23129685585567,
+        1285922.6658638814
+      ],
+      [
+        172.31296855855672,
+        1715359.0007708538
+      ],
+      [
+        8.615648427927836,
+        1326227.4784225244
+      ],
+      [
+        25.846945283783505,
+        1252120.2538781837
+      ],
+      [
+        66.45890045166016,
+        1188555.9470853843
+      ]
+    ],
+    "avg_vertex_dist": 1.2604480459429641,
+    "comparisons": {
+      "start": {
+        "exact_vectors": 105541,
+        "within_1e-5_vectors": 105541,
+        "total_vectors": 105541,
+        "max_abs_error": 0.0,
+        "predicted_sha256": "5e96eb8a2b1b450fa5a9f0044021bccaefe84a2bf697178e95d3b25a2996a417",
+        "reference_sha256": "5e96eb8a2b1b450fa5a9f0044021bccaefe84a2bf697178e95d3b25a2996a417"
+      },
+      "normals": {
+        "exact_vectors": 105541,
+        "within_1e-5_vectors": 105541,
+        "total_vectors": 105541,
+        "max_abs_error": 0.0,
+        "predicted_sha256": "ae49616c61dc4577770f13da94e452e8b70388d61e4064ec3a0d0931e5c42a5e",
+        "reference_sha256": "ae49616c61dc4577770f13da94e452e8b70388d61e4064ec3a0d0931e5c42a5e"
+      },
+      "distance": {
+        "exact_vectors": 105541,
+        "within_1e-5_vectors": 105541,
+        "total_vectors": 105541,
+        "max_abs_error": 0.0,
+        "predicted_sha256": "45c4f0cc4fb4594630a61e4e840037232d0e80b762bdaef5b260baf047aea002",
+        "reference_sha256": "45c4f0cc4fb4594630a61e4e840037232d0e80b762bdaef5b260baf047aea002"
+      },
+      "area": {
+        "exact_vectors": 105541,
+        "within_1e-5_vectors": 105541,
+        "total_vectors": 105541,
+        "max_abs_error": 0.0,
+        "predicted_sha256": "265f5991555db4a002a573d31d797797d0c4512c65467639c1c0c03b431d9d56",
+        "reference_sha256": "265f5991555db4a002a573d31d797797d0c4512c65467639c1c0c03b431d9d56"
+      },
+      "correlation": {
+        "exact_vectors": 105541,
+        "within_1e-5_vectors": 105541,
+        "total_vectors": 105541,
+        "max_abs_error": 0.0,
+        "predicted_sha256": "b1dc3561cb534d97993343685ef3b1fdab6019bdc79e135d62d56822605f4835",
+        "reference_sha256": "b1dc3561cb534d97993343685ef3b1fdab6019bdc79e135d62d56822605f4835"
+      },
+      "before_average": {
+        "exact_vectors": 105541,
+        "within_1e-5_vectors": 105541,
+        "total_vectors": 105541,
+        "max_abs_error": 0.0,
+        "predicted_sha256": "b1dc3561cb534d97993343685ef3b1fdab6019bdc79e135d62d56822605f4835",
+        "reference_sha256": "b1dc3561cb534d97993343685ef3b1fdab6019bdc79e135d62d56822605f4835"
+      },
+      "after_average": {
+        "exact_vectors": 105541,
+        "within_1e-5_vectors": 105541,
+        "total_vectors": 105541,
+        "max_abs_error": 0.0,
+        "predicted_sha256": "c45d5aaf18470c9bc42b976531aacb881cd43e0591d52081d635ea9d5342028e",
+        "reference_sha256": "c45d5aaf18470c9bc42b976531aacb881cd43e0591d52081d635ea9d5342028e"
+      },
+      "saved_surface": {
+        "exact_vectors": 105541,
+        "within_1e-5_vectors": 105541,
+        "total_vectors": 105541,
+        "max_abs_error": 0.0,
+        "predicted_sha256": "6e765756d253c1ec80627035ece96dc7c51f308badf61b1419b11c5cdd2b5a4d",
+        "reference_sha256": "d06d519fecd3ac0d97038ed3b783032081404cda6ef039ba355daeecdf1f723b"
+      }
+    }
+  },
+  "third": {
+    "navgs": 1024,
+    "dt": 25.513355255126953,
+    "line_samples": [
+      [
+        0.0,
+        1188555.618573695
+      ],
+      [
+        0.019879318363719294,
+        1188370.445266421
+      ],
+      [
+        0.19879318363719295,
+        1186708.614767369
+      ],
+      [
+        1.9879318363719296,
+        1170791.1949696548
+      ],
+      [
+        19.879318363719296,
+        1079125.3922941838
+      ],
+      [
+        198.79318363719295,
+        2066932.166056389
+      ],
+      [
+        9.939659181859648,
+        1115164.1052556196
+      ],
+      [
+        29.818977545578946,
+        1076798.7852049507
+      ],
+      [
+        25.513355255126953,
+        1074012.8031613384
+      ]
+    ],
+    "avg_vertex_dist": 1.254378381927613,
+    "comparisons": {
+      "start": {
+        "exact_vectors": 105541,
+        "within_1e-5_vectors": 105541,
+        "total_vectors": 105541,
+        "max_abs_error": 0.0,
+        "predicted_sha256": "0b5167febde03082a6795711e19bbb85b8a796b1340e6cdedab144a12862a162",
+        "reference_sha256": "0b5167febde03082a6795711e19bbb85b8a796b1340e6cdedab144a12862a162"
+      },
+      "normals": {
+        "exact_vectors": 105541,
+        "within_1e-5_vectors": 105541,
+        "total_vectors": 105541,
+        "max_abs_error": 0.0,
+        "predicted_sha256": "a0a581cc7f73aff78559b7965d2445cf11a98143ab668c2723785054a605be31",
+        "reference_sha256": "a0a581cc7f73aff78559b7965d2445cf11a98143ab668c2723785054a605be31"
+      },
+      "distance": {
+        "exact_vectors": 105541,
+        "within_1e-5_vectors": 105541,
+        "total_vectors": 105541,
+        "max_abs_error": 0.0,
+        "predicted_sha256": "9e22b9c09d022cdd2f3882a75d3977a554623cdf53fe4a2b5cc8dae123228e14",
+        "reference_sha256": "9e22b9c09d022cdd2f3882a75d3977a554623cdf53fe4a2b5cc8dae123228e14"
+      },
+      "area": {
+        "exact_vectors": 105541,
+        "within_1e-5_vectors": 105541,
+        "total_vectors": 105541,
+        "max_abs_error": 0.0,
+        "predicted_sha256": "28ca67d2c8774dc1265ff329980813f864fec2b3da0d85c569ee23664bbd5f74",
+        "reference_sha256": "28ca67d2c8774dc1265ff329980813f864fec2b3da0d85c569ee23664bbd5f74"
+      },
+      "correlation": {
+        "exact_vectors": 105541,
+        "within_1e-5_vectors": 105541,
+        "total_vectors": 105541,
+        "max_abs_error": 0.0,
+        "predicted_sha256": "8a6e5c600559fd697bae8a6f1b362793189b372b2d8410dd7822a527d2741155",
+        "reference_sha256": "8a6e5c600559fd697bae8a6f1b362793189b372b2d8410dd7822a527d2741155"
+      },
+      "before_average": {
+        "exact_vectors": 105541,
+        "within_1e-5_vectors": 105541,
+        "total_vectors": 105541,
+        "max_abs_error": 0.0,
+        "predicted_sha256": "8a6e5c600559fd697bae8a6f1b362793189b372b2d8410dd7822a527d2741155",
+        "reference_sha256": "8a6e5c600559fd697bae8a6f1b362793189b372b2d8410dd7822a527d2741155"
+      },
+      "after_average": {
+        "exact_vectors": 105541,
+        "within_1e-5_vectors": 105541,
+        "total_vectors": 105541,
+        "max_abs_error": 0.0,
+        "predicted_sha256": "24f13e73f33d083f3f9c2d2957437983eeb04ecd16f9da4e059d444e2ec56ea0",
+        "reference_sha256": "24f13e73f33d083f3f9c2d2957437983eeb04ecd16f9da4e059d444e2ec56ea0"
+      },
+      "saved_surface": {
+        "exact_vectors": 105541,
+        "within_1e-5_vectors": 105541,
+        "total_vectors": 105541,
+        "max_abs_error": 0.0,
+        "predicted_sha256": "bb017185e7ea006f56360a62aac17317da601f646986ea5dcbab96dcaab38b69",
+        "reference_sha256": "025ef15060450493c7729a0cfc3099a3b99b847a6d1259c70669527fd235dff4"
+      }
+    },
+    "native_surface_sha256": "2ecd48fa7fbc1225c09fdb7d9f7eea499c3de5b10a750d8ff8e5173f62f55b45",
+    "capture_script_sha256": "3c8d80cc9af576ad5f70468639dc55b142935078b37a31f634707fd2d764943c"
+  },
+  "seconds_excluding_io": {
+    "prepare_curvature_and_atlas": 21.034206945449114,
+    "first_force": 17.887606379576027,
+    "first_average": 91.2868664925918,
+    "first_line": 0.36015674099326134,
+    "second_force": 16.269071405753493,
+    "second_average": 23.163708101026714,
+    "second_line": 0.3460176018998027,
+    "third_average": 6.00211220420897,
+    "third_line": 0.3243720317259431,
+    "third_force": 16.030317693948746
+  },
+  "source_namespace_at_validation": "freesurfer_torch",
+  "source_sha256": {
+    "probe": "3821d2ff72f584bb580ee6381e018a026c54f246eacf91d0b52add6072758baa",
+    "mris_register_atlas": "38170e443c7ed83d7c145cf4a9cef3daf34f4da1177363cd7841677b1177ca74",
+    "mris_register_blur": "3082615bd6d6c0782790eb56e04f2add8de1bbc8d99ddaffa64a85e342209d4f",
+    "mris_register_kernels": "f53d3ed3cc63a8af08a1174226f6aaa00cc84f7d8d42176a87d953f0a605378f",
+    "mris_register_line_search": "2ffd835eb00c9cf894db3019403f4e4beb1ac51bf35d323acf86efb559718eaa",
+    "mris_register_nonlinear": "57a66970e9f7339cc30e410077b006f63cdb6736ceb0557ad077bc0785044465",
+    "mris_register_objective": "53dc46a81299f4dc7d4997c8356429429b0f9fc42689a23664a1876b737edd0e",
+    "mris_register_parameterization": "83a783effa74d75523a16425ae38384084e82f6546361c3f516f1bd49830a950"
+  },
+  "installed_freesurfer_8_2_binary_sha256": "75137b92fcbed63b441e6214b5b923d7664f05d00c454b62da724dec26636f80",
+  "array_hash_note": "nibabel read_geometry returns float64 reference coordinates; predicted PyTorch coordinates are float32. Exact vector counts compare numeric coordinates. Native file hashes are separately recorded."
+}
