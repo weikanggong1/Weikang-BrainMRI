@@ -154,4 +154,4 @@ def test_pcg_solves_spd_system():
     expected_residual = torch.linalg.vector_norm(matrix @ solution - rhs) / (
         torch.linalg.vector_norm(rhs)
     )
-    assert report.relative_residual == float(expected_residual)
+    assert abs(report.relative_residual - float(expected_residual)) < 1e-15

@@ -4,9 +4,9 @@ Git 仓库和 wheel 均不包含权重。SynthStrip、SynthMorph、33 类 SynthS
 WMH-SynthSeg、SynthSR 和 GPU recon-all 辅助分割使用 FreeSurfer 官方发布的文件；
 配置脚本下载文件、核对大小与 SHA-256，并
 保存权重目录。此后 Python API 和 `fs-torch` 命令会自动查找它，下载过程无需安装
-FreeSurfer。TorchFAST、PyTorch FLIRT 和 PyTorch FNIRT-style 注册器是数值算法，
+FreeSurfer。TorchFAST、TorchFLIRT 和 TorchFNIRT 是数值算法，
 不使用模型权重。FastVBM 的默认 SynthMorph 分支使用 `synthstrip.1.pt` 和官方
-`synthmorph.deform.3.h5`；FNIRT-style 分支只在 raw T1 脑提取时使用 SynthStrip。
+`synthmorph.deform.3.h5`；TorchFNIRT 分支只在 raw T1 脑提取时使用 SynthStrip。
 
 ## 一次配置，后续自动使用
 
@@ -137,11 +137,11 @@ bias field 和 PVE 数值计算，不读取 checkpoint，也不需要执行
 `synthstrip.1.pt`。`registration_backend="synthmorph"` 还读取
 `synthmorph.deform.3.h5`；该分支传入外部线性初始化并设置 `mid_space=False`，因此
 不需要 `synthmorph.affine.2.h5`。`registration_backend="fnirt"` 使用本包 PyTorch
-cubic B-spline 优化器，不读取 SynthMorph 权重。独立 PyTorch FLIRT、TorchFAST、
-FNIRT-style 优化、Jacobian 和 modulation 都不读取 checkpoint。
+cubic B-spline 优化器，不读取 SynthMorph 权重。独立 TorchFLIRT、TorchFAST、
+TorchFNIRT、TorchApplyWarp、Jacobian 和 modulation 都不读取 checkpoint。
 
 `python tools/setup_weights.py --model fast-vbm` 配置 SynthStrip 和 deform 两个文件，
-是两个后端的权重超集；只运行 FNIRT-style 分支可改为 `--model synthstrip`。GM
+是两个后端的权重超集；只运行 TorchFNIRT 分支可改为 `--model synthstrip`。GM
 template 是独立输入，不是模型权重，也不由本仓库或配置脚本下载。
 
 ## 权重许可与归属

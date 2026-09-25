@@ -41,7 +41,6 @@
       "linear_registration": "src/freesurfer_torch/fast_vbm/linear.py",
       "flirt_file_api": "src/freesurfer_torch/flirt/core.py",
       "synthmorph_registration": "src/freesurfer_torch/fast_vbm/synthmorph_backend.py",
-      "fnirt_style_registration": "src/freesurfer_torch/fast_vbm/fnirt_backend.py",
       "sequence_basis": "bb_struct_init brain and GM preparation followed by bb_vbm GM-to-template registration and Jacobian modulation",
       "implementation": "SynthStrip and TorchFAST followed by the source-derived PyTorch FLIRT path and a selectable package PyTorch SynthMorph deform or source-derived PyTorch FNIRT path",
       "linear_method": "PyTorch port of the FSL FLIRT 2111.2 12-DOF correlation-ratio path; matrices use the FSL input-to-reference scaled-mm contract",
@@ -61,7 +60,8 @@
       "fnirt_method": "PyTorch port of the FSL FNIRT 2203.0 UKB GM path with basisfield 2203.1, miscmaths 2203.2, newimage 2203.11 and warpfns 2203.0 source references",
       "source_provenance_manifest": "src/freesurfer_torch/_vendor_fsl/manifest.json",
       "fsl_flirt_equivalence_status": "exact-target; fixed 0.05 mm ten-case matrix gate passed 9 of 10, so validated_fsl_equivalent is false",
-      "fsl_fnirt_equivalence_status": "pending published numerical validation"
+      "fsl_fnirt_equivalence_status": "exact-target components pass; real case01 warped GM r=0.999089, nonlinear Jacobian r=0.999669, and modulated GM r=0.999206, but truncated-PCG reduction-order divergence keeps validated_fsl_equivalent false",
+      "legacy_fnirt_style_registration": "src/freesurfer_torch/fast_vbm/fnirt_backend.py"
     },
     "upstream_license": "Apache-2.0",
     "upstream_copyright": "Copyright 2021 University of Oxford, Oxford, UK",

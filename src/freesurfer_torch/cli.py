@@ -255,7 +255,7 @@ def _run_fast_vbm(args):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(prog='fs-torch')
-    parser.add_argument('--version', action='version', version='freesurfer-torch 0.8.0')
+    parser.add_argument('--version', action='version', version='freesurfer-torch 0.9.0')
     commands = parser.add_subparsers(dest='command', required=True)
     strip = commands.add_parser('synthstrip', help='brain extraction')
     strip.add_argument('-i', '--image', required=True)
@@ -415,8 +415,8 @@ def main(argv=None):
     fast_vbm.add_argument(
         '--reference-mask',
         help=(
-            'optional template-grid mask used by nonlinear registration; '
-            'pass the FSL dilated MNI mask for UKB/FSL parity'
+            'optional template-grid mask recorded by both backends and used '
+            'by FNIRT; pass the FSL dilated MNI mask for UKB/FSL parity'
         ),
     )
     fast_vbm.add_argument('--synthstrip-weights',

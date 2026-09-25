@@ -438,6 +438,9 @@ class FastVBM:
             "linear_strides": list(self.linear_strides),
             "linear_steps": list(self.linear_steps),
             "linear_learning_rates": list(self.linear_learning_rates),
+            "linear_compatibility_options_effect": (
+                "ignored by the source-derived FSL-default TorchFLIRT path"
+            ),
             "registration_backend": self.registration_backend,
             "registration_reference_mask_source": registration.qc.get(
                 "reference_mask_source", "unreported"
@@ -537,6 +540,12 @@ class FastVBM:
             ),
             "fnirt_jacobian_penalty": (
                 self.fnirt_jacobian_penalty
+                if self.registration_backend == "fnirt"
+                else None
+            ),
+            "fnirt_compatibility_options_effect": (
+                "fnirt_learning_rates and fnirt_jacobian_penalty are ignored "
+                "by TorchFNIRT"
                 if self.registration_backend == "fnirt"
                 else None
             ),

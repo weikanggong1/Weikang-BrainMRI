@@ -4,7 +4,7 @@
 
 本页记录 `tools/experimental/ukb_vbm/` 的历史研究臂和 FSL 参考生成方法。当前稳定
 `FastVBM` 已提供 `registration_backend="synthmorph"` 与 `"fnirt"` 两个分支；后者是
-独立 PyTorch cubic B-spline FNIRT-style 实现。当前接口、输入输出和新的双后端对照以
+source-derived `TorchFNIRT` GM-config 实现。当前接口、输入输出和新的双后端对照以
 [FastVBM 专页](../fast_vbm/README.md)及其[版本化验证](../../validation/fast_vbm/README.md)
 为准。
 
@@ -62,9 +62,9 @@ flowchart LR
 | 调制 | warped GM × nonlinear Jacobian | 同一公式 |
 
 本节所述旧注册器不是 FNIRT 的源码移植；它的控制网格、损失和约束回退也不代表当前
-`FastVBM(registration_backend="fnirt")`。当前 FNIRT-style 后端另行实现 cubic B-spline、
-FSL scaled-mm residual、SSD、bending energy 和 nonlinear-only Jacobian，但仍因强度
-模型与优化器不同而不与 FSL FNIRT 数值等价。本页工具继续保留 FSL 参考臂、SynthSeg
+`FastVBM(registration_backend="fnirt")`。当前 `TorchFNIRT` 另行实现 cubic B-spline、
+FSL scaled-mm residual、SSD、bending energy、FSL schedule 和 nonlinear-only
+Jacobian；其数值等价标志仍为 `false`。本页工具继续保留 FSL 参考臂、SynthSeg
 实验臂、双模板比较和历史公开报告生成工具。
 
 ## 研究脚本的输入与输出

@@ -48,5 +48,5 @@ python examples/render_wmh_comparison.py \
 
 FastVBM 的公开 raw-T1w 整链示例图和生成边界见
 [`docs/fast_vbm`](../fast_vbm/README.md#图示与验证)。现有图由 PyTorch SynthMorph
-`deform` 分支生成；当前 pipeline 也可选择 PyTorch FNIRT-style 分支。FSL 与
+`deform` 分支生成；当前 pipeline 也可选择 `TorchFNIRT` 分支。FSL 与
 FreeSurfer 仅用于独立参考实验，不是生成这幅图时的运行时依赖。

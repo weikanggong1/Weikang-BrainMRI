@@ -2,9 +2,9 @@
 
 [返回首页](../README.md) · [新增功能](ADDING_FUNCTIONS.md)
 
-SynthStrip、SynthMorph、WMH-SynthSeg、33 类 SynthSeg、SynthSR、TorchFAST 和 FastVBM 分别位于 `src/freesurfer_torch/` 的功能目录；每个目录包含实现及简短说明。共享的 `cli.py` 提供单例命令行，`weights.py` 定位官方权重，`_batch_table.py` 检查 SynthStrip、SynthMorph、WMH-SynthSeg 和 SynthSR 的多被试输入表，`batch.py` 调度 Python 多进程任务。各功能的参数、原版对应和验证见专属页面。
+SynthStrip、SynthMorph、WMH-SynthSeg、33 类 SynthSeg、SynthSR、TorchFAST、TorchFLIRT、TorchFNIRT、TorchApplyWarp 和 FastVBM 分别位于 `src/freesurfer_torch/` 的功能目录；每个目录包含实现及说明。共享的 `cli.py` 提供单例命令行，`weights.py` 定位官方权重，`_batch_table.py` 检查 SynthStrip、SynthMorph、WMH-SynthSeg 和 SynthSR 的多被试输入表，`batch.py` 调度 Python 多进程任务。各功能的参数、原版对应和验证见专属页面。
 
-FastVBM 的活跃配准链位于 `fast_vbm/linear.py`、`fast_vbm/flirt.py`、`fast_vbm/registration.py`、`fast_vbm/synthmorph_backend.py` 和 `fast_vbm/fnirt_backend.py`。`flirt.py` 提供 FSL 文件角色与 scaled-mm matrix 契约；`registration.py` 在本包 PyTorch SynthMorph `deform` 与 PyTorch FNIRT-style cubic B-spline 后端之间调度。`fast_vbm/legacy_registration.py` 只保留早期实验工具的旧导入兼容。
+FastVBM 的活跃配准链位于 `flirt/`、`fnirt/`、`applywarp/`、`fast_vbm/registration.py` 和 `fast_vbm/synthmorph_backend.py`。`registration.py` 先执行共同 TorchFLIRT，再只在 nonlinear pull-field estimation 处分到 SynthMorph 或 TorchFNIRT，随后回到共同 FSL warp conversion、TorchApplyWarp、Jacobian 和 modulation。`fast_vbm/flirt.py`、`fast_vbm/fsl_flirt.py`、`fast_vbm/fnirt_backend.py` 和 `fast_vbm/legacy_registration.py` 保留旧导入或早期实验兼容。
 
 | 功能 | 详细说明 | 多被试入口 |
 |---|---|---|
@@ -14,6 +14,9 @@ FastVBM 的活跃配准链位于 `fast_vbm/linear.py`、`fast_vbm/flirt.py`、`f
 | 33 类 SynthSeg | [T1 结构分割](synthseg/README.md) | Python 复用 `SynthSeg` 逐例处理 |
 | SynthSR | [合成 T1w](synthsr/README.md) | 两列表 `predict_batch()` |
 | TorchFAST | [三组织分割及偏置校正](fast/README.md) | Python `BatchRunner` |
+| TorchFLIRT | [FSL 12-DOF affine](flirt/README.md) | 单被试 Python/CLI |
+| TorchFNIRT | [FSL GM nonlinear registration](fnirt/README.md) | 单被试 Python/CLI |
+| TorchApplyWarp | [FSL warp application](applywarp/README.md) | 单被试 Python/CLI |
 | FastVBM | [原始 T1w 到 modulated GM](fast_vbm/README.md) | Python `BatchRunner` |
 
 ## 公开 API 与兼容性
@@ -22,14 +25,16 @@ FastVBM 的活跃配准链位于 `fast_vbm/linear.py`、`fast_vbm/flirt.py`、`f
 from freesurfer_torch import (
     SynthStrip, SynthMorph, WMHSynthSeg, SynthSeg, SynthSR,
     TorchFAST, FastVBM, FastVBMResult, VBMRegistrationResult,
-    TorchFLIRT, FLIRTResult, PyTorchFNIRTRegistration, FNIRTVBMResult,
+    TorchFLIRT, FLIRTResult, TorchFNIRT, TorchFNIRTResult,
+    TorchApplyWarp, ApplyWarpResult,
+    PyTorchFNIRTRegistration, FNIRTVBMResult,
     LinearRegistrationResult, register_affine, register_gm,
     BatchRunner, BatchResult, run_batch,
     apply_transform,
 )
 ```
 
-五个学习模型构造时加载权重并选择 `device="cpu"` 或 `device="cuda:0"`；TorchFAST 与 TorchFLIRT 不加载权重。单例调用返回带几何信息的结果对象，由调用者选择保存字段。FastVBM 组合 SynthStrip、TorchFAST、PyTorch 12-DOF affine 和一个可选非线性后端。`registration_backend="synthmorph"` 延迟加载官方 deform checkpoint；`registration_backend="fnirt"` 构造无 checkpoint 的 PyTorch B-spline 优化器。旧导入路径 `freesurfer_torch.spatial` 和 `freesurfer_torch.synthmorph_models` 继续转导出对应实现。权重查找顺序为显式路径、`FREESURFER_TORCH_WEIGHTS`、配置脚本保存的目录、用户缓存目录、已设置的 `FREESURFER_HOME/models/`；见[权重说明](WEIGHTS.md)。
+学习模型构造时加载权重并选择 `device="cpu"` 或 `device="cuda:0"`；TorchFAST、TorchFLIRT、TorchFNIRT 和 TorchApplyWarp 不加载权重。单例调用返回带几何信息的结果对象，由调用者选择保存字段。FastVBM 组合 SynthStrip、TorchFAST、TorchFLIRT 和一个可选非线性后端。`registration_backend="synthmorph"` 延迟加载官方 deform checkpoint；`registration_backend="fnirt"` 构造无 checkpoint 的 TorchFNIRT。旧导入路径 `freesurfer_torch.spatial` 和 `freesurfer_torch.synthmorph_models` 继续转导出对应实现。权重查找顺序为显式路径、`FREESURFER_TORCH_WEIGHTS`、配置脚本保存的目录、用户缓存目录、已设置的 `FREESURFER_HOME/models/`；见[权重说明](WEIGHTS.md)。
 
 ## 批量执行
 
@@ -63,7 +68,7 @@ SynthMorph 的 `fixed` 可以是全表共用的一幅目标图像，也可以是
 
 默认 `workers=1` 在当前程序中逐例复用模型。表中至少有两行时，`workers=2` 用当前程序和一个 spawn 子进程在同一指定设备上各加载一份模型，按表行顺序返回结果。每次调用都会新建并关闭子进程，下次调用需重新加载子进程模型。多进程时 `threads_per_worker` 控制每个进程的 Torch CPU 线程数；脚本须以 `if __name__ == "__main__":` 保护调用。两种模式的每次网络推理均为 B=1；只有一行时实际只运行一个进程。各功能子页的 B2 对照使用未发布的合批实验路径，不代表单被试加速。
 
-FastVBM 多病例使用 Python `BatchRunner`，每例一个 `fast_vbm` job。`model` 是传给 `FastVBM(...)` 的共享构造参数，其中 `registration_backend` 选择 `synthmorph` 或 `fnirt`；`kwargs` 至少包含 `image` 和 `template`，可加与输入同网格的 `brain_mask`；`outputs` 将 `pve_gm`、`warped_gm`、`jacobian`、`modulated_gm` 等结果属性映射到完整文件路径。下面在两张 GPU 上处理两例，完整输出字段见[FastVBM 多病例说明](fast_vbm/README.md#多被试python-batchrunner)：
+FastVBM 多病例使用 Python `BatchRunner`，每例一个 `fast_vbm` job。`model` 是传给 `FastVBM(...)` 的共享构造参数，其中 `registration_backend` 选择 `synthmorph` 或 `fnirt`；`kwargs` 至少包含 `image` 和 `template`，可加与输入同网格的 `brain_mask` 以及与模板同网格的 `reference_mask`；`outputs` 将 `pve_gm`、`warped_gm`、`jacobian`、`modulated_gm` 等结果属性映射到完整文件路径。下面在两张 GPU 上处理两例，完整输出字段见[FastVBM 多病例说明](fast_vbm/README.md#多被试python-batchrunner)：
 
 ```python
 from freesurfer_torch import BatchRunner
@@ -77,6 +82,7 @@ def main():
             "kwargs": {
                 "image": f"/data/{subject}_T1w.nii.gz",
                 "template": "/data/template_GM.nii.gz",
+                "reference_mask": "/data/MNI152_T1_2mm_brain_mask_dil.nii.gz",
             },
             "outputs": {
                 "modulated_gm": f"/results/{subject}/T1_GM_to_template_GM_mod.nii.gz",

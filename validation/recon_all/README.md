@@ -67,9 +67,8 @@ or voxel indices for volumes. Large lists explicitly report truncation while
 retaining the full outlier count. Additional aggregate criteria below must also
 pass; the comparator exit code alone does not implement those criteria.
 
-For the gpucw1 reference, run this on gpucw1 from
-`/cwStorage/home/gongwk/Notebook_code/freesurfer_synth`, substituting the existing
-runtime interpreter and the candidate subject directory (no new SSH/tmux needed):
+For an existing validation checkout, run this from the repository root,
+substituting its runtime interpreter and the candidate subject directory:
 
 ```bash
 PYTHONPATH=src "$FS_TORCH_PYTHON" -m freesurfer_torch.recon_all.compare_subject \
