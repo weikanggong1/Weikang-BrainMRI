@@ -1,6 +1,8 @@
 """Public feature imports resolve to their implementation objects."""
 import importlib
 import inspect
+import os
+from pathlib import Path
 import subprocess
 import sys
 
@@ -34,8 +36,14 @@ def test_removed_batch_api_is_absent():
 
     with pytest.raises(ModuleNotFoundError):
         importlib.import_module("fnit.batch")
-    with pytest.raises(ModuleNotFoundError):
-        importlib.import_module("freesurfer_torch")
+    source = Path(__file__).resolve().parents[1] / "src"
+    removed = subprocess.run(
+        [sys.executable, "-S", "-c", "import freesurfer_torch"],
+        env={**os.environ, "PYTHONPATH": str(source)},
+        capture_output=True,
+        text=True,
+    )
+    assert removed.returncode != 0
 
     apply_transform = package.apply_transform
     assert "device" not in inspect.signature(apply_transform).parameters
