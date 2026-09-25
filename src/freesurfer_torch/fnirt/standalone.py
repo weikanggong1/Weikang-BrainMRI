@@ -12,7 +12,7 @@ import numpy as np
 import surfa as sf
 import torch
 
-from ..fast_vbm.linear import flirt_to_world_affine
+from ..flirt.coordinates import flirt_to_world_affine
 from .io import FSL_CUBIC_SPLINE_COEFFICIENTS
 from .registration import GMFNIRTConfig, TorchFNIRT
 

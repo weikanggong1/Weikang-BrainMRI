@@ -38,14 +38,14 @@
     "package_feature": {
       "pipeline": "src/freesurfer_torch/fast_vbm/pipeline.py",
       "registration": "src/freesurfer_torch/fast_vbm/registration.py",
-      "linear_registration": "src/freesurfer_torch/fast_vbm/linear.py",
-      "flirt_file_api": "src/freesurfer_torch/flirt/core.py",
+      "flirt_registration": "src/freesurfer_torch/flirt/core.py",
+      "flirt_coordinates": "src/freesurfer_torch/flirt/coordinates.py",
       "synthmorph_registration": "src/freesurfer_torch/fast_vbm/synthmorph_backend.py",
       "sequence_basis": "bb_struct_init brain and GM preparation followed by bb_vbm GM-to-template registration and Jacobian modulation",
       "implementation": "SynthStrip and TorchFAST followed by the source-derived PyTorch FLIRT path and a selectable package PyTorch SynthMorph deform or source-derived PyTorch FNIRT path",
       "linear_method": "PyTorch port of the FSL FLIRT 2111.2 12-DOF correlation-ratio path; matrices use the FSL input-to-reference scaled-mm contract",
       "synthmorph_method": "official synthmorph.deform.3.h5 checkpoint loaded by the package PyTorch SynthMorph implementation after the same FLIRT affine stage used by the FNIRT branch",
-      "fnirt_style_method": "legacy independent Adam backend retained separately from the source-derived FNIRT path",
+      "retired_experiment": "tools/experimental/ukb_vbm/_legacy_registration.py is kept outside the installed package only to trace historical 0.6 results",
       "fsl_fnirt_source": "https://git.fmrib.ox.ac.uk/fsl/fnirt",
       "component_license_files": {
         "synthstrip": "licenses/FreeSurfer.txt",
@@ -60,8 +60,7 @@
       "fnirt_method": "PyTorch port of the FSL FNIRT 2203.0 UKB GM path with basisfield 2203.1, miscmaths 2203.2, newimage 2203.11 and warpfns 2203.0 source references",
       "source_provenance_manifest": "src/freesurfer_torch/_vendor_fsl/manifest.json",
       "fsl_flirt_equivalence_status": "source-derived implementation of the supported FSL path; validated_fsl_equivalent remains false pending the current ten-case FSL reference-centred rmsdiff report",
-      "fsl_fnirt_equivalence_status": "source-derived implementation of the supported FSL path; an earlier matched-input case01 diagnostic measured warped GM r=0.999089, nonlinear Jacobian r=0.999669, and modulated GM r=0.999206, but truncated-PCG reduction-order divergence keeps fsl_fnirt_numerically_equivalent false; the current ten-case report is pending",
-      "legacy_fnirt_style_registration": "src/freesurfer_torch/fast_vbm/fnirt_backend.py"
+      "fsl_fnirt_equivalence_status": "source-derived implementation of the supported FSL path; an earlier matched-input case01 diagnostic measured warped GM r=0.999089, nonlinear Jacobian r=0.999669, and modulated GM r=0.999206, but truncated-PCG reduction-order divergence keeps fsl_fnirt_numerically_equivalent false; the current ten-case report is pending"
     },
     "upstream_license": "Apache-2.0",
     "upstream_copyright": "Copyright 2021 University of Oxford, Oxford, UK",

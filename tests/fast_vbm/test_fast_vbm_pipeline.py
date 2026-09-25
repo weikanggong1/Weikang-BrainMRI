@@ -1,5 +1,6 @@
 """End-to-end API, validation, geometry, and completion-marker checks."""
 
+import inspect
 import json
 
 import numpy as np
@@ -74,12 +75,26 @@ def _pipeline(monkeypatch):
                 "nonpositive_jacobian_voxels": 0,
             },
         )
-    monkeypatch.setattr(pipeline_module, "register_gm", fake_registration)
+    monkeypatch.setattr(pipeline_module, "_register_gm", fake_registration)
     monkeypatch.setattr(pipeline_module.FastVBM, "_deform_model", lambda self: object())
-    return FastVBM(
-        device="cpu", linear_strides=(1,), linear_steps=(0,),
-        linear_learning_rates=(0.01,),
-    )
+    return FastVBM(device="cpu")
+
+
+def test_public_pipeline_has_no_affine_bypass_or_ignored_legacy_options():
+    removed = {
+        "initial_pull",
+        "initial_pull_convention",
+        "linear_strides",
+        "linear_steps",
+        "linear_learning_rates",
+        "fnirt_learning_rates",
+        "fnirt_jacobian_penalty",
+    }
+    constructor = set(inspect.signature(FastVBM).parameters)
+    call = set(inspect.signature(FastVBM.__call__).parameters)
+    run = set(inspect.signature(FastVBM.run).parameters)
+
+    assert removed.isdisjoint(constructor | call | run)
 
 
 def test_fnirt_pipeline_uses_fsl_topology_failure_semantics_by_default(
@@ -111,8 +126,6 @@ def test_explicit_mask_pipeline_returns_input_and_template_grid_outputs(
     assert isinstance(result, FastVBMResult)
     assert result.settings["mask_source"] == "explicit"
     assert result.settings["bias_correction"] is True
-    assert result.settings["linear_steps"] == [0]
-    assert result.settings["linear_strides"] == [1]
     assert result.settings["nonlinear_backend"] == "pytorch-synthmorph-deform"
     assert result.settings["synthmorph_implementation"] == (
         "freesurfer_torch.synthmorph.SynthMorph"
@@ -214,19 +227,15 @@ def test_fnirt_backend_is_reported_without_synthmorph_settings(monkeypatch):
             },
         )
 
-    monkeypatch.setattr(pipeline_module, "register_gm", fake_registration)
+    monkeypatch.setattr(pipeline_module, "_register_gm", fake_registration)
     monkeypatch.setattr(
         pipeline_module.FastVBM, "_deform_model", lambda self: object()
     )
     model = FastVBM(
         device="cpu",
         registration_backend="fnirt",
-        linear_strides=(1,),
-        linear_steps=(0,),
-        linear_learning_rates=(0.01,),
         fnirt_strides=(1,),
         fnirt_steps=(0,),
-        fnirt_learning_rates=(0.1,),
         fnirt_input_fwhm_mm=(0,),
         fnirt_reference_fwhm_mm=(0,),
         fnirt_regularization=(0,),

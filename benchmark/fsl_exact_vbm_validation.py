@@ -71,23 +71,17 @@ import surfa as sf
 import torch
 
 import freesurfer_torch
-from freesurfer_torch.fast_vbm import (
-    FastVBM,
+from freesurfer_torch.fast_vbm import FastVBM
+from freesurfer_torch.flirt import (
+    TorchFLIRT as SourceDerivedFLIRT,
     flirt_to_world_pull,
     voxel_to_fsl_scaled_mm,
 )
-from freesurfer_torch.fast_vbm.registration import register_gm
+from freesurfer_torch.fast_vbm.registration import _register_gm
 from freesurfer_torch.fast_vbm.synthmorph_backend import (
     SynthMorphDeformRegistration,
 )
 from freesurfer_torch.fnirt import TorchFNIRT
-
-try:
-    # Final public layout used by the 0.9 release.
-    from freesurfer_torch.flirt import TorchFLIRT as SourceDerivedFLIRT
-except ImportError:
-    # Transitional location while the source-derived port is being validated.
-    from freesurfer_torch.fast_vbm.fsl_flirt import FSLFLIRT as SourceDerivedFLIRT
 
 
 SCHEMA_VERSION = 1
@@ -526,7 +520,7 @@ def flirt_provenance(
     if context["script_sha256"] == LEGACY_EXACT_TARGET_HARNESS_SHA256:
         algorithm = "FSLFLIRT exact-target default 12-DOF correlation-ratio path"
     else:
-        algorithm = "source-derived FSLFLIRT default 12-DOF correlation-ratio path"
+        algorithm = "source-derived TorchFLIRT default 12-DOF correlation-ratio path"
     return {
         **context,
         "case_inputs_sha256": case_hashes,
@@ -666,7 +660,7 @@ def build_deform_model(backend: str, args):
 
 
 def initial_pull_from_flirt(matrix, moving: sf.Volume, fixed: sf.Volume):
-    return flirt_to_world_pull(
+    pull = flirt_to_world_pull(
         np.asarray(matrix, dtype=np.float64),
         moving.geom.vox2world.matrix,
         fixed.geom.vox2world.matrix,
@@ -675,6 +669,7 @@ def initial_pull_from_flirt(matrix, moving: sf.Volume, fixed: sf.Volume):
         moving.geom.voxsize,
         fixed.geom.voxsize,
     )
+    return sf.Affine(pull, source=fixed, target=moving, space="world")
 
 
 def save_vbm_outputs(result, paths) -> float:
@@ -806,12 +801,11 @@ def run_candidate(
                         dtype=np.float64,
                     )
                 initial_pull = initial_pull_from_flirt(matrix, moving, template)
-                return register_gm(
+                return _register_gm(
                     moving,
                     template,
                     device=args.device,
                     initial_pull=initial_pull,
-                    initial_pull_convention="fixed-to-moving-world-ras",
                     reference_mask=reference_mask,
                     synthmorph_weights=args.weights,
                     registration_backend=backend,
@@ -1881,7 +1875,8 @@ def summarize(args) -> int:
                 ),
                 "fnirt": "freesurfer_torch.fnirt.TorchFNIRT",
                 "synthmorph": (
-                    "freesurfer_torch.fast_vbm.SynthMorphDeformRegistration "
+                    "freesurfer_torch.fast_vbm.synthmorph_backend."
+                    "SynthMorphDeformRegistration "
                     "using the package PyTorch SynthMorph model"
                 ),
                 "pipeline": "freesurfer_torch.fast_vbm.FastVBM",

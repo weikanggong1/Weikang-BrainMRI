@@ -6,7 +6,7 @@ import pytest
 import surfa as sf
 
 from freesurfer_torch import cli as root_cli
-from freesurfer_torch.fast_vbm.linear import flirt_to_world_affine
+from freesurfer_torch.flirt.coordinates import flirt_to_world_affine
 from freesurfer_torch.fnirt import cli, standalone
 from freesurfer_torch.fnirt.io import make_fsl_coefficient_image
 from freesurfer_torch.fnirt.spline import fsl_control_shape

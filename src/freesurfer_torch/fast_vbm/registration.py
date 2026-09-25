@@ -10,14 +10,13 @@ import surfa as sf
 import torch
 
 from ..applywarp import TorchApplyWarp
-from .legacy_registration import constrain_deformation, pull_jacobian, register
-from .linear import (
+from ..flirt import TorchFLIRT
+from ..flirt.coordinates import (
     WORLD_FORWARD_CONVENTION,
     WORLD_PULL_CONVENTION,
     voxel_to_fsl_scaled_mm,
     world_to_flirt_affine,
 )
-from .fsl_flirt import FSLFLIRT
 from .synthmorph_backend import SynthMorphDeformRegistration
 
 
@@ -76,41 +75,24 @@ def _affine(volume, name):
     return affine
 
 
-def _initial_pull_world(initial_pull, moving, fixed, convention):
-    """Validate an explicitly typed fixed-to-moving world-RAS affine."""
-    if isinstance(initial_pull, sf.Affine):
-        if convention not in (None, WORLD_PULL_CONVENTION):
-            raise ValueError(
-                f"initial_pull_convention must be {WORLD_PULL_CONVENTION!r}"
-            )
-        if not sf.transform.image_geometry_equal(
-            fixed.geom, initial_pull.source, tol=1e-3
-        ):
-            raise ValueError("initial_pull source geometry must match fixed")
-        if not sf.transform.image_geometry_equal(
-            moving.geom, initial_pull.target, tol=1e-3
-        ):
-            raise ValueError("initial_pull target geometry must match moving")
-        try:
-            matrix = np.asarray(
-                initial_pull.convert(space="world").matrix, dtype=np.float64
-            )
-        except RuntimeError as error:
-            raise ValueError("initial_pull must define its coordinate space") from error
-    else:
-        if convention != WORLD_PULL_CONVENTION:
-            raise ValueError(
-                "a bare initial_pull matrix is coordinate-ambiguous; set "
-                f"initial_pull_convention={WORLD_PULL_CONVENTION!r} only for a "
-                "fixed-to-moving world-RAS matrix. An FSL FLIRT .mat is a "
-                "moving-to-fixed scaled-mm matrix and must be converted first."
-            )
-        if isinstance(initial_pull, (str, bytes)):
-            raise TypeError(
-                "initial_pull does not accept matrix paths; load and convert an "
-                "FSL FLIRT .mat with flirt_to_world_pull"
-            )
-        matrix = np.asarray(initial_pull, dtype=np.float64)
+def _initial_pull_world(initial_pull, moving, fixed):
+    """Validate a geometry-tagged fixed-to-moving world-RAS affine."""
+    if not isinstance(initial_pull, sf.Affine):
+        raise TypeError("internal initial_pull must be a geometry-tagged surfa.Affine")
+    if not sf.transform.image_geometry_equal(
+        fixed.geom, initial_pull.source, tol=1e-3
+    ):
+        raise ValueError("initial_pull source geometry must match fixed")
+    if not sf.transform.image_geometry_equal(
+        moving.geom, initial_pull.target, tol=1e-3
+    ):
+        raise ValueError("initial_pull target geometry must match moving")
+    try:
+        matrix = np.asarray(
+            initial_pull.convert(space="world").matrix, dtype=np.float64
+        )
+    except RuntimeError as error:
+        raise ValueError("initial_pull must define its coordinate space") from error
     if matrix.shape != (4, 4) or not np.isfinite(matrix).all():
         raise ValueError("initial_pull must be a finite 4x4 matrix")
     if not np.allclose(matrix[3], (0, 0, 0, 1), atol=1e-8, rtol=0):
@@ -251,16 +233,11 @@ def _prepare_registration(
     *,
     device,
     initial_pull,
-    initial_pull_convention,
     reference_mask,
 ):
     """Run the one shared FSL-coordinate affine preparation stage."""
     if initial_pull is None:
-        if initial_pull_convention is not None:
-            raise ValueError(
-                "initial_pull_convention requires an initial_pull transform"
-            )
-        linear = FSLFLIRT(device=device)(moving, fixed)
+        linear = TorchFLIRT(device=device)(moving, fixed)
         moving_to_fixed = np.asarray(
             linear.moving_to_fixed_world, dtype=np.float64
         )
@@ -268,9 +245,7 @@ def _prepare_registration(
         flirt_matrix = np.asarray(linear.matrix, dtype=np.float64)
         linear_qc = dict(linear.qc)
     else:
-        pull_affine = _initial_pull_world(
-            initial_pull, moving, fixed, initial_pull_convention
-        )
+        pull_affine = _initial_pull_world(initial_pull, moving, fixed)
         moving_to_fixed = np.linalg.inv(pull_affine)
         moving_to_fixed[3] = (0, 0, 0, 1)
         flirt_matrix = world_to_flirt_affine(
@@ -557,17 +532,13 @@ def _common_applywarp(
     return np.asarray(result.image.dataobj, dtype=np.float32), result.qc
 
 
-def register_gm(
+def _register_gm(
     moving,
     fixed,
     *,
     device="cpu",
     initial_pull=None,
-    initial_pull_convention=None,
     reference_mask=None,
-    linear_strides=(4, 2, 1),
-    linear_steps=(80, 60, 50),
-    linear_learning_rates=(0.05, 0.025, 0.0125),
     synthmorph_weights=None,
     synthmorph_extent=256,
     synthmorph_hyper=0.5,
@@ -575,12 +546,10 @@ def register_gm(
     registration_backend="synthmorph",
     fnirt_strides=(4, 2, 1, 1),
     fnirt_steps=(5, 5, 10, 5),
-    fnirt_learning_rates=(0.5, 0.25, 0.1, 0.05),
     fnirt_input_fwhm_mm=(6.0, 4.0, 2.0, 2.0),
     fnirt_reference_fwhm_mm=(4.0, 2.0, 0.0, 0.0),
     fnirt_warp_resolution_mm=10.0,
     fnirt_regularization=(150.0, 75.0, 50.0, 30.0),
-    fnirt_jacobian_penalty=1.0,
     deform_model=None,
 ):
     """Register one GM PVE image to a GM template and compute modulation.
@@ -591,10 +560,9 @@ def register_gm(
     branch-specific operation is estimation of the nonlinear pull field:
     SynthMorph deform or :class:`~freesurfer_torch.fnirt.TorchFNIRT`.
 
-    ``initial_pull``, when provided, is a fixed-to-moving world-RAS affine. A
-    bare matrix requires ``initial_pull_convention='fixed-to-moving-world-ras'``
-    because an FSL FLIRT ``.mat`` has incompatible direction and scaled-mm
-    coordinates. A geometry-tagged :class:`surfa.Affine` needs no convention.
+    ``initial_pull`` is private support for matched-input validation. It must be
+    a geometry-tagged fixed-to-moving world-RAS :class:`surfa.Affine`. Public
+    FastVBM calls always leave it unset and run TorchFLIRT.
     """
     device = torch.device(device)
     if device.type == "cuda" and not torch.cuda.is_available():
@@ -615,7 +583,6 @@ def register_gm(
         fixed_affine,
         device=device,
         initial_pull=initial_pull,
-        initial_pull_convention=initial_pull_convention,
         reference_mask=reference_mask,
     )
     if deform_model is None:
@@ -791,15 +758,6 @@ def register_gm(
             if package_fnirt
             else None
         ),
-        "legacy_linear_options_ignored": {
-            "linear_strides": list(linear_strides),
-            "linear_steps": list(linear_steps),
-            "linear_learning_rates": list(linear_learning_rates),
-        },
-        "legacy_fnirt_options_ignored": {
-            "learning_rates": list(fnirt_learning_rates),
-            "jacobian_penalty": float(fnirt_jacobian_penalty),
-        },
         "warp_conversion": (
             "fixed-grid RAS pull -> FSL scaled-mm residual relative to "
             "inv(FLIRT) -> full dense FSL relative field"
@@ -838,8 +796,4 @@ def register_gm(
 
 __all__ = [
     "VBMRegistrationResult",
-    "constrain_deformation",
-    "pull_jacobian",
-    "register",
-    "register_gm",
 ]

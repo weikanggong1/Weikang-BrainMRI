@@ -284,7 +284,7 @@ def test_flirt_provenance_preserves_formal_execution_signature_wording():
     current = MODULE.flirt_provenance(
         {"script_sha256": "a" * 64}, {"gm": "digest"}
     )
-    assert current["algorithm"].startswith("source-derived FSLFLIRT")
+    assert current["algorithm"].startswith("source-derived TorchFLIRT")
 
 
 def test_backend_execution_order_alternates_by_case_slot(tmp_path):

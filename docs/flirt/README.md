@@ -131,18 +131,6 @@ result = model(moving_volume, reference_volume, init=None)
 NumPy 4 x 4 matrix. The direct model call computes results without writing
 files.
 
-`FSLFLIRT` is a compatibility alias for this same class:
-
-```python
-from freesurfer_torch.flirt import FSLFLIRT, TorchFLIRT
-
-assert FSLFLIRT is TorchFLIRT
-```
-
-The former NCC/Adam implementation remains available only under the explicit
-name `LegacyTorchFLIRT`. It is retained for reproduction of earlier package
-results and is not the FLIRT source port.
-
 ## Matrix coordinates
 
 An FSL `.mat` file does not contain a NIfTI world-RAS affine. It maps the

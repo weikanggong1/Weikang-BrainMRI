@@ -199,7 +199,7 @@ def main():
             # Evaluate ordinary resampling from those transforms without repeating inference.
             command = [executable, "apply", str(ref / "forward.lta"), str(moving), str(ref / "moved.nii.gz")]
             entry["reference_resample"] = run(command, ref / "apply.log", env)
-            apply_transform(moving, cand / "forward.lta", device=args.device).save(cand / "moved.nii.gz")
+            apply_transform(moving, cand / "forward.lta").save(cand / "moved.nii.gz")
             checks["resampled_image"] = image_comparison(ref / "moved.nii.gz", cand / "moved.nii.gz")
             entry["checks"] = checks
             entry["passed"] = all(value["passed"] for value in checks.values())
@@ -230,7 +230,7 @@ def main():
                                str(trans), str(label_path), str(reference)]
                     entry["reference"] = run(command, folder / "reference.log", env)
                     start = time.perf_counter()
-                    apply_transform(label_path, trans, device=args.device, method=method, dtype=dtype, fill=-7).save(candidate)
+                    apply_transform(label_path, trans, method=method, dtype=dtype, fill=-7).save(candidate)
                     entry["candidate_seconds"] = time.perf_counter()-start
                     entry["comparison"] = image_comparison(reference, candidate, bitwise=True)
                     entry["passed"] = entry["comparison"]["passed"]
@@ -253,7 +253,7 @@ def main():
                 command = [executable, "apply", "-m", method, "-t", "float32", "-f", "-7",
                            str(trans), str(frames_path), str(reference)]
                 entry["reference"] = run(command, folder / "reference.log", env)
-                apply_transform(frames_path, trans, device=args.device, method=method,
+                apply_transform(frames_path, trans, method=method,
                                 dtype="float32", fill=-7).save(candidate)
                 entry["comparison"] = image_comparison(reference, candidate, bitwise=True)
                 entry["passed"] = entry["comparison"]["passed"]
@@ -268,7 +268,7 @@ def main():
         reference, candidate = folder / "reference.nii.gz", folder / "candidate.nii.gz"
         command = [executable, "apply", "-H", "-t", "uint8", str(initial), str(label_path), str(reference)]
         entry["reference"] = run(command, folder / "reference.log", env)
-        apply_transform(label_path, initial, device=args.device, header_only=True, dtype="uint8").save(candidate)
+        apply_transform(label_path, initial, header_only=True, dtype="uint8").save(candidate)
         entry["comparison"] = image_comparison(reference, candidate, bitwise=True)
         entry["passed"] = entry["comparison"]["passed"]
     except Exception as exc:

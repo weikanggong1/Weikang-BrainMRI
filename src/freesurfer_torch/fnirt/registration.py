@@ -18,7 +18,7 @@ import numpy as np
 import surfa as sf
 import torch
 
-from ..fast_vbm.linear import voxel_to_fsl_scaled_mm, world_to_flirt_affine
+from ..flirt.coordinates import voxel_to_fsl_scaled_mm, world_to_flirt_affine
 from ..fast_vbm.synthmorph_backend import (
     _world_affine,
     pull_jacobian_determinants,

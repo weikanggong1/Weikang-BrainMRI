@@ -1,6 +1,6 @@
 # SynthStrip
 
-这里实现脑提取。`model.py` 定义官方 U-Net，`pipeline.py` 实现影像处理及 `SynthStrip`、`StripResult`；`__init__.py` 导出接口，`__main__.py` 提供模块命令行入口。
+这里实现脑提取。`model.py` 定义官方 U-Net，`pipeline.py` 实现影像处理及 `SynthStrip`、`StripResult`，`__init__.py` 导出接口。单被试命令使用统一的 `fs-torch synthstrip` 入口。
 
 ```python
 from freesurfer_torch.synthstrip import SynthStrip

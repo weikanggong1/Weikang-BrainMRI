@@ -157,21 +157,16 @@ FastVBM(
     device="cpu", threads=None,
     synthstrip_weights=None, synthmorph_weights=None,
     bias_correction=True,
-    linear_strides=(4, 2, 1),
-    linear_steps=(80, 60, 50),
-    linear_learning_rates=(0.05, 0.025, 0.0125),
     registration_backend="synthmorph",
     synthmorph_extent=256,
     synthmorph_hyper=0.5,
     synthmorph_steps=7,
     fnirt_strides=(4, 2, 1, 1),
     fnirt_steps=(5, 5, 10, 5),
-    fnirt_learning_rates=(0.5, 0.25, 0.1, 0.05),
     fnirt_input_fwhm_mm=(6, 4, 2, 2),
     fnirt_reference_fwhm_mm=(4, 2, 0, 0),
     fnirt_warp_resolution_mm=10,
     fnirt_regularization=(150, 75, 50, 30),
-    fnirt_jacobian_penalty=1,
 )
 ```
 
@@ -182,29 +177,17 @@ FastVBM(
 | `synthstrip_weights` | `synthstrip.1.pt` 或其目录；有显式 `brain_mask` 时不读取 |
 | `synthmorph_weights` | `synthmorph.deform.3.h5` 或其目录；仅 SynthMorph 分支读取 |
 | `bias_correction` | 默认 `True`；TorchFAST 同时估计平滑乘性 bias field |
-| `linear_*` | 旧 NCC/Adam API 的兼容参数；公开 FastVBM 两分支固定调用 source-derived `TorchFLIRT`，不再用这些参数选择旧优化器 |
 | `registration_backend` | `"synthmorph"` 或 `"fnirt"` |
 | `synthmorph_*` | 仅 SynthMorph 分支使用的网络空间、正则化超参数和积分次数 |
 | `fnirt_strides` | `TorchFNIRT` 四层 fixed-grid 下采样步长 |
 | `fnirt_steps` | FNIRT 四层 `miter`，默认 `(5, 5, 10, 5)` |
-| `fnirt_learning_rates` | 旧 FNIRT-style Adam API 的兼容参数；当前 `TorchFNIRT` 不使用 |
 | `fnirt_input_fwhm_mm`、`fnirt_reference_fwhm_mm` | 各层 moving/reference Gaussian FWHM，单位 mm |
 | `fnirt_warp_resolution_mm` | cubic B-spline 控制点目标间距，单位 mm |
 | `fnirt_regularization` | 各层 bending-energy 权重 |
-| `fnirt_jacobian_penalty` | 旧 FNIRT-style Adam API 的兼容参数；当前 `TorchFNIRT` 不使用 |
 
-已有 fixed/template-world → moving-world 的 4×4 RAS pull affine 时，可跳过线性估计：
-
-```python
-result = pipeline(
-    image,
-    template,
-    initial_pull=matrix,
-    initial_pull_convention="fixed-to-moving-world-ras",
-)
-```
-
-裸矩阵没有 `initial_pull_convention` 时会被拒绝。FSL FLIRT `.mat` 是 input → reference 的 FSL scaled-mm 矩阵，不能作为上面的 RAS pull 直接传入；应先调用 `flirt_to_world_pull()`。带 source/target 几何并声明 world space 的 `surfa.Affine` 已包含方向信息，不需要约定字符串。
+公开 `FastVBM` 不接受外部 affine，也不能跳过线性阶段。每次调用固定运行本包
+`TorchFLIRT`，因此两个后端进入非线性估计器前只有一条公开计算路径。matched-affine
+验证所需的固定变换注入只存在于仓库的私有验证入口。
 
 ### 返回值
 
@@ -217,7 +200,7 @@ result = pipeline(
 | `warped_gm` | 仿射与所选非线性后端共同重采样后的 GM |
 | `jacobian` | 所选后端的 nonlinear-only pull Jacobian |
 | `modulated_gm` | `warped_gm × jacobian` |
-| `settings` | 实际设备、线性参数和所选非线性后端参数 |
+| `settings` | 实际设备、固定 TorchFLIRT 路径和所选非线性后端参数 |
 | `timing_sec` | 脑提取、FAST、配准/Jacobian/modulation 和总墙钟时间 |
 
 `timing_sec` 包含读取和输出回到 CPU，不包含 `result.save()` 的 NIfTI 写入。第一次无显式 mask 的调用包含 SynthStrip 延迟加载；SynthMorph 分支第一次配准还包含 3.51 GB checkpoint 的加载，后续调用复用模型。FNIRT 分支没有非线性 checkpoint。
@@ -266,12 +249,11 @@ fs-torch fast-vbm \
 | `--reference-mask MASK` | template-grid reference mask；两分支共同记录，仅 `TorchFNIRT` estimator 消费 |
 | `--synthstrip-weights PATH` | 显式指定 SynthStrip checkpoint 或目录 |
 | `--synthmorph-weights PATH` | 显式指定 deform checkpoint；仅 SynthMorph 分支读取 |
-| `--linear-strides / --linear-steps / --linear-learning-rates` | 旧 NCC/Adam affine API 的兼容参数；当前两分支固定使用 source-derived `TorchFLIRT`，不会读取这些值 |
 | `--synthmorph-extent / --synthmorph-hyper / --synthmorph-steps` | SynthMorph 分支参数 |
-| `--fnirt-strides / --fnirt-steps` | `TorchFNIRT` 四层下采样和 `miter` 参数；`--fnirt-learning-rates` 只为旧 API 兼容，当前实现不使用 |
+| `--fnirt-strides / --fnirt-steps` | `TorchFNIRT` 四层下采样和 `miter` 参数 |
 | `--fnirt-input-fwhm-mm / --fnirt-reference-fwhm-mm` | `TorchFNIRT` 四层平滑参数 |
 | `--fnirt-warp-resolution-mm` | B-spline 控制点目标间距 |
-| `--fnirt-regularization / --fnirt-jacobian-penalty` | 前者是 `TorchFNIRT` bending-energy 权重；后者只为旧 API 兼容，当前实现不使用 |
+| `--fnirt-regularization` | `TorchFNIRT` bending-energy 权重 |
 | `--no-bias` | 关闭 TorchFAST bias correction，用于消融 |
 | `--overwrite` | 允许覆盖同名输出 |
 

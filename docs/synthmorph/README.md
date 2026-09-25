@@ -76,13 +76,12 @@ labels.save(out / "labels_in_fixed.nii.gz")
 
 ### 应用已有变换
 
-`apply_transform(image, transformation, device="cpu", method="linear", fill=0, dtype="float32", header_only=False)`：
+`apply_transform(image, transformation, method="linear", fill=0, dtype="float32", header_only=False)`：
 
 | 参数 | 含义 |
 |---|---|
 | `image` | 路径或 `surfa.Volume`；接受 3D 和带 frame 维的 4D |
 | `transformation` | `.lta` 路径、warp 文件路径或 Surfa Affine/Warp |
-| `device` | 为 API 兼容保留；该函数始终使用 Surfa CPU 重采样 |
 | `method` | `linear` 或 `nearest`，标签使用 `nearest` |
 | `fill` | 视野外强度，默认 0 |
 | `dtype` | 输出类型，默认 `float32` |
@@ -130,7 +129,7 @@ mri_synthmorph apply -m nearest -t int16 \
 | `-j`, `--threads` | Torch 线程数，CLI 默认 4 |
 | `-d`, `--output-dir` | 调试目录 |
 
-配准至少请求一个影像、变换或调试输出。统一 CLI 会创建输出父目录。`fs-torch apply` 的位置参数依次是变换、影像、输出；支持 `--method`、`--fill`、`--dtype`、`--header-only`。CLI dtype 选择为 `uint8`、`uint16`、`int16`、`int32`、`float32`，默认 `float32`。`--device` 同样仅保留接口兼容，apply 不在 GPU 执行。当前 apply CLI 每次处理一对 image/output；多个图像可在 Python 中循环调用。
+配准至少请求一个影像、变换或调试输出。统一 CLI 会创建输出父目录。`fs-torch apply` 的位置参数依次是变换、影像、输出；支持 `--method`、`--fill`、`--dtype`、`--header-only`。CLI dtype 选择为 `uint8`、`uint16`、`int16`、`int32`、`float32`，默认 `float32`。apply 使用 Surfa CPU 重采样，不接受设备参数。当前 apply CLI 每次处理一对 image/output；多个图像可在 Python 中循环调用。
 
 ## 多被试 Python
 
@@ -248,7 +247,7 @@ The wrapper preserves single-frame NIfTI/MGZ image geometry. Joint/affine/rigid 
 
 The original CLI also supports bidirectional image and transform output, affine initialization, mid-space initialization, header-only affine application, interpolation/dtype/fill control for apply, alternative checkpoint paths, and debug network-space outputs. These functions belong to the wrapper and must be compared separately from neural forward equivalence.
 
-Neural inference, network-space resampling, SVF integration and native-coordinate composition use PyTorch on the selected device. Final moved-image resampling and applying a saved transform use the standalone Surfa library on CPU, exactly as the original CLI does. These operations do not invoke FreeSurfer executables or TensorFlow. The public `apply_transform(..., device=...)` argument remains accepted for compatibility; this function performs CPU postprocessing regardless of that value.
+Neural inference, network-space resampling, SVF integration and native-coordinate composition use PyTorch on the selected device. Final moved-image resampling and applying a saved transform use the standalone Surfa library on CPU, exactly as the original CLI does. These operations do not invoke FreeSurfer executables or TensorFlow.
 
 Two interpolation conventions must remain separate. Neurite's network sampler accepts coordinates in `[0,n−1]`, filling a sample outside that closed interval. Surfa 0.6.3's final linear sampler checks the floored coordinate, accepting `[0,n)` and extending the final voxel over `[n−1,n)`. Surfa nearest-neighbor sampling also accepts `[0,n)` and rounds positive half-integers upward, whereas TensorFlow/PyTorch round ties to even. Reusing the network sampler for final outputs therefore changes edge voxels even when the estimated transforms agree. The port resamples using the original native voxel/CRS transforms before converting the returned transforms to world/RAS format, preserving the original operation order and avoiding unnecessary coordinate round trips.
 

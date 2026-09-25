@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 
 from freesurfer_torch import cli as root_cli
-from freesurfer_torch.flirt import FSLFLIRT, TorchFLIRT
+from freesurfer_torch.flirt import TorchFLIRT
 from freesurfer_torch.flirt import cli, standalone
 
 
@@ -28,8 +28,7 @@ def _fake_model(captured):
     return Model
 
 
-def test_public_names_select_the_source_derived_backend():
-    assert FSLFLIRT is TorchFLIRT
+def test_public_name_selects_the_source_derived_backend():
     assert TorchFLIRT.__module__ == "freesurfer_torch.flirt.core"
 
 

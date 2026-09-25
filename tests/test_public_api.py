@@ -1,5 +1,6 @@
-"""Public imports and old module paths must survive the feature layout change."""
+"""Public feature imports resolve to their implementation objects."""
 import importlib
+import inspect
 import subprocess
 import sys
 
@@ -13,12 +14,11 @@ import pytest
     ("synthseg_parc", ("SynthSeg", "SynthSegResult")),
     ("synthsr", ("SynthSR", "SynthSRResult", "SynthSRImage")),
     ("fast", ("TorchFAST", "FASTResult", "FASTConfig", "FASTTensorResult", "segment_t1")),
-    ("flirt", ("FLIRTResult", "TorchFLIRT", "FSLFLIRT", "LegacyTorchFLIRT")),
+    ("flirt", ("FLIRTResult", "TorchFLIRT",
+               "flirt_to_world_affine", "flirt_to_world_pull",
+               "voxel_to_fsl_scaled_mm", "world_to_flirt_affine")),
     ("fnirt", ("TorchFNIRT", "TorchFNIRTResult", "GMFNIRTConfig")),
-    ("fast_vbm", ("FastVBM", "FastVBMResult", "LinearRegistrationResult",
-                  "FLIRTResult", "TorchFLIRT", "FNIRTVBMResult",
-                  "PyTorchFNIRTRegistration", "VBMRegistrationResult",
-                  "register_affine", "register_gm", "world_to_flirt_affine")),
+    ("fast_vbm", ("FastVBM", "FastVBMResult", "VBMRegistrationResult")),
     ("batch", ("BatchRunner", "BatchResult", "run_batch")),
 ])
 def test_top_level_exports_are_feature_objects(module, names):
@@ -28,20 +28,34 @@ def test_top_level_exports_are_feature_objects(module, names):
         assert getattr(package, name) is getattr(feature, name)
 
 
-@pytest.mark.parametrize("old_module,new_module,names", [
-    ("spatial", "synthmorph.spatial", (
-        "grid", "square", "dense", "transform", "compose", "integrate", "affine_to_dense",
-    )),
-    ("synthmorph_models", "synthmorph.models", (
-        "FeatureDetector", "barycenter", "fit_affine", "matrix_sqrt",
-        "AffineNetwork", "DeformNetwork", "SynthMorphNetwork",
-    )),
-])
-def test_legacy_module_exports_are_same_objects(old_module, new_module, names):
-    old = importlib.import_module(f"freesurfer_torch.{old_module}")
-    new = importlib.import_module(f"freesurfer_torch.{new_module}")
-    for name in names:
-        assert getattr(old, name) is getattr(new, name)
+def test_removed_compatibility_api_is_absent():
+    package = importlib.import_module("freesurfer_torch")
+    for name in (
+        "FASTVBMResult",
+        "FSLFLIRT",
+        "LegacyTorchFLIRT",
+        "LinearRegistrationResult",
+        "FNIRTVBMResult",
+        "PyTorchFNIRTRegistration",
+        "register_affine",
+        "register_gm",
+    ):
+        assert not hasattr(package, name)
+
+    for module in (
+        "freesurfer_torch.spatial",
+        "freesurfer_torch.synthmorph_models",
+        "freesurfer_torch.fast_vbm.linear",
+        "freesurfer_torch.fast_vbm.fnirt_backend",
+        "freesurfer_torch.fast_vbm.legacy_registration",
+        "freesurfer_torch.flirt.legacy",
+        "freesurfer_torch.synthstrip.__main__",
+    ):
+        with pytest.raises(ModuleNotFoundError):
+            importlib.import_module(module)
+
+    apply_transform = package.apply_transform
+    assert "device" not in inspect.signature(apply_transform).parameters
 
 
 def test_top_level_import_stays_lightweight():

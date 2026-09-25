@@ -190,12 +190,9 @@ class SynthMorph:
 
 
 @torch.inference_mode()
-def apply_transform(image, transformation, device='cpu', method='linear', fill=0,
+def apply_transform(image, transformation, method='linear', fill=0,
                     dtype='float32', header_only=False):
     """Apply an LTA or RAS warp with the original Surfa CPU resampling rules.
-
-    ``device`` is retained for API compatibility; applying a saved transform
-    is CPU postprocessing and does not invoke a neural network.
     """
     image = _load(image, single_frame=False)
     if isinstance(transformation, (str, Path)):

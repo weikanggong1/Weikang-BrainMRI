@@ -196,7 +196,7 @@ def backend_run(args):
                     result = source.transform(transformation, method=case["method"], fill=0)
                 else:
                     from freesurfer_torch.synthmorph import apply_transform
-                    result = apply_transform(source, transformation, device=args.device, method=case["method"])
+                    result = apply_transform(source, transformation, method=case["method"])
                 version["geometry_backend"] = f"surfa {getattr(sf, '__version__', 'unknown')}"
                 outputs[name] = result.data[..., None]
                 outputs[name + "__geometry"] = result.geom.vox2world.matrix

@@ -3,9 +3,10 @@
 This directory contains the public FLIRT implementation:
 
 - `core.py`: source-derived 12-DOF correlation-ratio registration;
+- `coordinates.py`: FSL scaled-mm and world-RAS conversion;
+- `types.py`: shared result and image-input validation;
 - `standalone.py`: FSL-style Python file API with atomic outputs;
-- `cli.py` and `__main__.py`: `fs-torch-flirt` and module commands;
-- `legacy.py`: the earlier NCC/Adam method, named `LegacyTorchFLIRT`.
+- `cli.py` and `__main__.py`: `fs-torch-flirt` and module commands.
 
 ```python
 from freesurfer_torch.flirt import run_flirt

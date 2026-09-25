@@ -5,8 +5,8 @@ import pytest
 import torch
 
 import freesurfer_torch
-from freesurfer_torch.fast_vbm import FSLFLIRT, TorchFLIRT
-from freesurfer_torch.fast_vbm.fsl_flirt import (
+from freesurfer_torch.flirt import TorchFLIRT
+from freesurfer_torch.flirt.core import (
     _DefaultFLIRTEngine,
     _centre_of_gravity,
     _newimage_percentile,
@@ -35,11 +35,9 @@ def _synthetic_pair():
     return moving, reference, vox2world
 
 
-def test_fsl_flirt_is_an_alias_for_the_exact_target_public_api():
-    assert FSLFLIRT is TorchFLIRT
-    assert freesurfer_torch.FSLFLIRT is FSLFLIRT
+def test_torch_flirt_is_the_exact_target_public_api():
     assert freesurfer_torch.TorchFLIRT is TorchFLIRT
-    assert FSLFLIRT(device="cpu").angular_search is True
+    assert TorchFLIRT(device="cpu").angular_search is True
 
 
 def test_newimage_percentile_uses_order_statistic_without_interpolation():

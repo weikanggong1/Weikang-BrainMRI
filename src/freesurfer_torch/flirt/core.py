@@ -18,7 +18,8 @@ import surfa as sf
 import torch
 import torch.nn.functional as F
 
-from .legacy import FLIRTResult, _load_volume, _single_frame
+from .coordinates import flirt_to_world_affine, voxel_to_fsl_scaled_mm
+from .types import FLIRTResult, _load_volume, _single_frame
 
 
 FSL_FLIRT_VERSION = "2111.2"
@@ -1149,13 +1150,6 @@ class TorchFLIRT:
         self.angular_search = bool(angular_search)
 
     def __call__(self, moving, fixed, *, init=None):
-        # Imported here to keep the standalone FLIRT package independent of
-        # FastVBM's package-initialization order.
-        from ..fast_vbm.linear import (
-            flirt_to_world_affine,
-            voxel_to_fsl_scaled_mm,
-        )
-
         moving = _load_volume(moving, "moving")
         fixed = _load_volume(fixed, "fixed")
         moving_data = _single_frame(moving, "moving")
@@ -1292,13 +1286,8 @@ class TorchFLIRT:
         return result
 
 
-# Compatibility name retained for earlier FSLFLIRT imports.
-FSLFLIRT = TorchFLIRT
-
-
 __all__ = [
     "FSLCorrelationRatio",
-    "FSLFLIRT",
     "TorchFLIRT",
     "FSL_FLIRT_COMMIT",
     "FSL_FLIRT_VERSION",

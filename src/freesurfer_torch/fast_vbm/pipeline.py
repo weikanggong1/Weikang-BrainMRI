@@ -12,7 +12,7 @@ import surfa as sf
 import torch
 
 from ..fast import FASTResult, TorchFAST
-from .registration import VBMRegistrationResult, register_gm
+from .registration import VBMRegistrationResult, _register_gm
 from .synthmorph_backend import SynthMorphDeformRegistration
 
 
@@ -157,7 +157,7 @@ class FastVBMResult:
                 "total": (
                     "API call entry through CPU output materialization; includes "
                     "input reads and the first call's lazy SynthStrip load; excludes "
-                    "FASTVBMResult.save and output NIfTI writes"
+                    "FastVBMResult.save and output NIfTI writes"
                 ),
                 "brain_extraction": (
                     "brain extraction only; the first call includes lazy SynthStrip "
@@ -237,21 +237,16 @@ class FastVBM:
         synthstrip_weights=None,
         synthmorph_weights=None,
         bias_correction=True,
-        linear_strides=(4, 2, 1),
-        linear_steps=(80, 60, 50),
-        linear_learning_rates=(0.05, 0.025, 0.0125),
         synthmorph_extent=256,
         synthmorph_hyper=0.5,
         synthmorph_steps=7,
         registration_backend="synthmorph",
         fnirt_strides=(4, 2, 1, 1),
         fnirt_steps=(5, 5, 10, 5),
-        fnirt_learning_rates=(0.5, 0.25, 0.1, 0.05),
         fnirt_input_fwhm_mm=(6.0, 4.0, 2.0, 2.0),
         fnirt_reference_fwhm_mm=(4.0, 2.0, 0.0, 0.0),
         fnirt_warp_resolution_mm=10.0,
         fnirt_regularization=(150.0, 75.0, 50.0, 30.0),
-        fnirt_jacobian_penalty=1.0,
     ):
         self.device = torch.device(device)
         if self.device.type == "cuda" and not torch.cuda.is_available():
@@ -276,20 +271,15 @@ class FastVBM:
             bias_fwhm_mm=20.0 if bias_correction else 0.0,
         )
         self.bias_correction = bias_correction
-        self.linear_strides = tuple(linear_strides)
-        self.linear_steps = tuple(linear_steps)
-        self.linear_learning_rates = tuple(linear_learning_rates)
         self.synthmorph_extent = synthmorph_extent
         self.synthmorph_hyper = synthmorph_hyper
         self.synthmorph_steps = synthmorph_steps
         self.fnirt_strides = tuple(fnirt_strides)
         self.fnirt_steps = tuple(fnirt_steps)
-        self.fnirt_learning_rates = tuple(fnirt_learning_rates)
         self.fnirt_input_fwhm_mm = tuple(fnirt_input_fwhm_mm)
         self.fnirt_reference_fwhm_mm = tuple(fnirt_reference_fwhm_mm)
         self.fnirt_warp_resolution_mm = fnirt_warp_resolution_mm
         self.fnirt_regularization = tuple(fnirt_regularization)
-        self.fnirt_jacobian_penalty = fnirt_jacobian_penalty
 
     def _extract(self, image):
         if self.extractor is None:
@@ -352,8 +342,6 @@ class FastVBM:
         *,
         brain_mask=None,
         reference_mask=None,
-        initial_pull=None,
-        initial_pull_convention=None,
     ):
         """Run one T1 image; all returned template maps use ``template``'s grid."""
         total_started = time.perf_counter()
@@ -393,16 +381,11 @@ class FastVBM:
         fast_sec = time.perf_counter() - fast_started
 
         registration_started = time.perf_counter()
-        registration = register_gm(
+        registration = _register_gm(
             fast_result.pve_gm,
             template,
             device=self.device,
-            initial_pull=initial_pull,
-            initial_pull_convention=initial_pull_convention,
             reference_mask=reference_mask,
-            linear_strides=self.linear_strides,
-            linear_steps=self.linear_steps,
-            linear_learning_rates=self.linear_learning_rates,
             synthmorph_weights=self.synthmorph_weights,
             synthmorph_extent=self.synthmorph_extent,
             synthmorph_hyper=self.synthmorph_hyper,
@@ -410,12 +393,10 @@ class FastVBM:
             registration_backend=self.registration_backend,
             fnirt_strides=self.fnirt_strides,
             fnirt_steps=self.fnirt_steps,
-            fnirt_learning_rates=self.fnirt_learning_rates,
             fnirt_input_fwhm_mm=self.fnirt_input_fwhm_mm,
             fnirt_reference_fwhm_mm=self.fnirt_reference_fwhm_mm,
             fnirt_warp_resolution_mm=self.fnirt_warp_resolution_mm,
             fnirt_regularization=self.fnirt_regularization,
-            fnirt_jacobian_penalty=self.fnirt_jacobian_penalty,
             deform_model=self._deform_model(),
         )
         registration_sec = time.perf_counter() - registration_started
@@ -440,12 +421,6 @@ class FastVBM:
             "linear_schedule": "FSL default 8/4/2/1 mm",
             "linear_forward_convention": "moving-to-fixed-world-ras",
             "linear_pull_convention": "fixed-to-moving-world-ras",
-            "linear_strides": list(self.linear_strides),
-            "linear_steps": list(self.linear_steps),
-            "linear_learning_rates": list(self.linear_learning_rates),
-            "linear_compatibility_options_effect": (
-                "ignored by the source-derived FSL-default TorchFLIRT path"
-            ),
             "registration_backend": self.registration_backend,
             "registration_reference_mask_source": registration.qc.get(
                 "reference_mask_source", "unreported"
@@ -518,11 +493,6 @@ class FastVBM:
                 if self.registration_backend == "fnirt"
                 else None
             ),
-            "fnirt_learning_rates": (
-                list(self.fnirt_learning_rates)
-                if self.registration_backend == "fnirt"
-                else None
-            ),
             "fnirt_input_fwhm_mm": (
                 list(self.fnirt_input_fwhm_mm)
                 if self.registration_backend == "fnirt"
@@ -540,17 +510,6 @@ class FastVBM:
             ),
             "fnirt_regularization": (
                 list(self.fnirt_regularization)
-                if self.registration_backend == "fnirt"
-                else None
-            ),
-            "fnirt_jacobian_penalty": (
-                self.fnirt_jacobian_penalty
-                if self.registration_backend == "fnirt"
-                else None
-            ),
-            "fnirt_compatibility_options_effect": (
-                "fnirt_learning_rates and fnirt_jacobian_penalty are ignored "
-                "by TorchFNIRT"
                 if self.registration_backend == "fnirt"
                 else None
             ),
@@ -574,8 +533,6 @@ class FastVBM:
         *,
         brain_mask=None,
         reference_mask=None,
-        initial_pull=None,
-        initial_pull_convention=None,
         overwrite=False,
     ):
         """Run one T1 and save all outputs under ``output_dir``."""
@@ -584,14 +541,9 @@ class FastVBM:
             template,
             brain_mask=brain_mask,
             reference_mask=reference_mask,
-            initial_pull=initial_pull,
-            initial_pull_convention=initial_pull_convention,
         )
         result.save(output_dir, overwrite=overwrite)
         return result
 
 
-FASTVBMResult = FastVBMResult
-
-
-__all__ = ["FastVBMResult", "FASTVBMResult", "FastVBM", "OUTPUT_FILENAMES"]
+__all__ = ["FastVBMResult", "FastVBM", "OUTPUT_FILENAMES"]

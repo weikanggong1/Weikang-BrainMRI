@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Compatibility CLI for package-owned PyTorch VBM registration.
+"""Compatibility CLI for the retired experimental VBM registration.
 
-The implementation lives in :mod:`freesurfer_torch.fast_vbm.registration`.
-This command preserves the experimental workflow's existing file names and
-private report schema. It is not an FNIRT implementation.
+This command preserves the earlier research workflow's file names and private
+report schema. The stable package uses ``FastVBM`` and does not import this
+implementation.
 """
 
 import argparse
@@ -16,7 +16,7 @@ import nibabel as nib
 import numpy as np
 import torch
 
-from freesurfer_torch.fast_vbm.registration import (
+from _legacy_registration import (
     constrain_deformation,
     pull_jacobian,
     register,

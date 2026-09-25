@@ -83,7 +83,7 @@ mri_synthstrip -i subject_T1w.nii.gz \
 | `-f`, `--fill` | 可选背景强度 |
 | `-j`, `--threads` | Torch 线程数，统一 CLI 默认 4 |
 
-至少指定一个输出。统一 CLI 会创建输出父目录。为兼容早期脚本，还保留 `python -m freesurfer_torch.synthstrip`，其参数接近官方命令，使用 `-g` 选择 CUDA、`-t` 设线程、`--model` 传权重文件；它与统一 `fs-torch` 的参数名不同，详情见各自 `--help`。
+至少指定一个输出。统一 CLI 会创建输出父目录。
 
 ## 多被试 Python
 
@@ -134,9 +134,8 @@ U-Net 在所选设备执行。影像读写、Surfa conform/crop、归一化、SD
 | 文件 | 责任 |
 |---|---|
 | [model.py](../../src/freesurfer_torch/synthstrip/model.py) | `ConvBlock`、`StripModel`，保留官方网络和参数名 |
-| [pipeline.py](../../src/freesurfer_torch/synthstrip/pipeline.py) | `SynthStrip`、`StripResult`、`extend_sdt` 及兼容 CLI |
+| [pipeline.py](../../src/freesurfer_torch/synthstrip/pipeline.py) | `SynthStrip`、`StripResult` 和 `extend_sdt` |
 | [__init__.py](../../src/freesurfer_torch/synthstrip/__init__.py) | 功能公开导出 |
-| [__main__.py](../../src/freesurfer_torch/synthstrip/__main__.py) | 兼容模块执行入口 |
 
 ## 网络
 

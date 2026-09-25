@@ -11,15 +11,14 @@ from freesurfer_torch.fast_vbm.synthmorph_backend import (
     SynthMorphDeformRegistration,
 )
 from freesurfer_torch.fnirt import TorchFNIRT
-from freesurfer_torch.fast_vbm.linear import (
-    WORLD_PULL_CONVENTION,
+from freesurfer_torch.flirt.coordinates import (
     voxel_to_fsl_scaled_mm,
     world_to_flirt_affine,
 )
 from freesurfer_torch.fast_vbm.registration import (
+    _register_gm,
     _fsl_dense_nonlinear_jacobian,
     _pull_ras_to_fsl_fields,
-    register_gm,
 )
 
 
@@ -203,19 +202,20 @@ def test_synthmorph_and_fnirt_enter_estimator_with_identical_preparation():
     )
     common = {
         "device": "cpu",
-        "initial_pull": pull_world,
-        "initial_pull_convention": WORLD_PULL_CONVENTION,
+        "initial_pull": sf.Affine(
+            pull_world, source=fixed, target=moving, space="world"
+        ),
         "reference_mask": reference_mask,
     }
 
-    synthmorph_result = register_gm(
+    synthmorph_result = _register_gm(
         moving,
         fixed,
         registration_backend="synthmorph",
         deform_model=synthmorph,
         **common,
     )
-    fnirt_result = register_gm(
+    fnirt_result = _register_gm(
         moving,
         fixed,
         registration_backend="fnirt",
@@ -390,8 +390,8 @@ def test_real_backend_dispatch_uses_the_same_default_flirt_and_common_tail(
                 qc={"fsl_fnirt_numerically_equivalent": False},
             )
 
-    monkeypatch.setattr(registration_module, "FSLFLIRT", FakeFLIRT)
-    synth_result = register_gm(
+    monkeypatch.setattr(registration_module, "TorchFLIRT", FakeFLIRT)
+    synth_result = _register_gm(
         moving,
         fixed,
         device="cpu",
@@ -399,7 +399,7 @@ def test_real_backend_dispatch_uses_the_same_default_flirt_and_common_tail(
         registration_backend="synthmorph",
         deform_model=FakeSynthMorph(),
     )
-    fnirt_result = register_gm(
+    fnirt_result = _register_gm(
         moving,
         fixed,
         device="cpu",

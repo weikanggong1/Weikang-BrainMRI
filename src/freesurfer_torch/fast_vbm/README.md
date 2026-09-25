@@ -14,8 +14,7 @@ raw T1w
 ```
 
 线性阶段固定使用 FSL default correlation-ratio/Brent FLIRT 实现。
-旧 NCC + Adam 仿射仍保留为显式 legacy 实现，不再被这两个
-FastVBM 分支调用。
+早期 NCC + Adam 仿射和 FNIRT-style/Adam 实现已从安装包删除。
 
 非线性阶段由 `registration_backend` 选择：
 

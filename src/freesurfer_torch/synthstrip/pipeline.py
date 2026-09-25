@@ -7,7 +7,6 @@ Source: https://github.com/freesurfer/freesurfer/blob/d932c45/mri_synthstrip/mri
 SynthStrip: Hoopes et al., NeuroImage (2022), doi:10.1016/j.neuroimage.2022.119474.
 """
 
-import argparse
 from dataclasses import dataclass
 import os
 from pathlib import Path
@@ -125,36 +124,3 @@ class SynthStrip:
 
         return run_parallel(cases, self, 'synthstrip', workers, threads_per_worker,
                             make_job, run_local)
-
-
-def main(argv=None):
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("-i", "--image", required=True)
-    parser.add_argument("-o", "--out", help="stripped image")
-    parser.add_argument("-m", "--mask", help="binary brain mask")
-    parser.add_argument("-d", "--sdt", help="signed distance transform")
-    parser.add_argument("-g", "--gpu", action="store_true")
-    parser.add_argument("-b", "--border", type=float, default=1)
-    parser.add_argument("-t", "--threads", type=int)
-    parser.add_argument("-f", "--fill", type=float)
-    parser.add_argument("--no-csf", action="store_true")
-    parser.add_argument("--model", help="official .pt checkpoint")
-    parser.add_argument("-v", "--version", action="version", version="freesurfer-torch SynthStrip 1")
-    args = parser.parse_args(argv)
-    if not any((args.out, args.mask, args.sdt)):
-        parser.error("provide at least one -o, -m, or -d output")
-    model = SynthStrip(
-        weights=args.model,
-        device="cuda" if args.gpu else "cpu",
-        no_csf=args.no_csf,
-        threads=args.threads,
-    )
-    result = model(args.image, border=args.border, fill=args.fill)
-    for volume, path in ((result.image, args.out), (result.mask, args.mask), (result.distance, args.sdt)):
-        if path:
-            volume.save(path)
-            print(path)
-
-
-if __name__ == "__main__":
-    main()

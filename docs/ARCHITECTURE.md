@@ -4,7 +4,7 @@
 
 SynthStrip、SynthMorph、WMH-SynthSeg、SynthSR、TorchFAST、TorchFLIRT、TorchFNIRT、TorchApplyWarp、FastVBM 和 GPU recon-all 位于 `src/freesurfer_torch/` 的同名功能目录；33 类 SynthSeg 位于复用其皮层分区代码的 `synthseg_parc/`。每个目录包含实现及简短入口说明，完整参数、原版对应和验证位于 `docs/` 的专属页面。共享的 `cli.py` 提供单例命令行，`weights.py` 定位官方权重，`_batch_table.py` 检查 SynthStrip、SynthMorph、WMH-SynthSeg 和 SynthSR 的多被试输入表，`batch.py` 调度 Python 多进程任务。
 
-FastVBM 的活跃配准链位于 `flirt/`、`fnirt/`、`applywarp/`、`fast_vbm/registration.py` 和 `fast_vbm/synthmorph_backend.py`。`registration.py` 先执行共同 TorchFLIRT，再只在 nonlinear pull-field estimation 处分到 SynthMorph 或 TorchFNIRT，随后回到共同 FSL warp conversion、TorchApplyWarp、Jacobian 和 modulation。`fast_vbm/flirt.py`、`fast_vbm/fsl_flirt.py`、`fast_vbm/fnirt_backend.py` 和 `fast_vbm/legacy_registration.py` 保留旧导入或早期实验兼容。
+FastVBM 的活跃配准链位于 `flirt/`、`fnirt/`、`applywarp/`、`fast_vbm/registration.py` 和 `fast_vbm/synthmorph_backend.py`。`registration.py` 先执行共同 TorchFLIRT，再只在 nonlinear pull-field estimation 处分到 SynthMorph 或 TorchFNIRT，随后回到共同 FSL warp conversion、TorchApplyWarp、Jacobian 和 modulation。早期 NCC/Adam affine 与 FNIRT-style/Adam backend 不再属于公开包。
 
 | 功能 | 详细说明 | 多被试入口 |
 |---|---|---|
@@ -28,14 +28,14 @@ from freesurfer_torch import (
     TorchFAST, FastVBM, FastVBMResult, VBMRegistrationResult,
     TorchFLIRT, FLIRTResult, TorchFNIRT, TorchFNIRTResult,
     TorchApplyWarp, ApplyWarpResult,
-    PyTorchFNIRTRegistration, FNIRTVBMResult,
-    LinearRegistrationResult, register_affine, register_gm,
+    flirt_to_world_affine, flirt_to_world_pull,
+    voxel_to_fsl_scaled_mm, world_to_flirt_affine,
     BatchRunner, BatchResult, run_batch,
     apply_transform,
 )
 ```
 
-学习模型构造时加载权重并选择 `device="cpu"` 或 `device="cuda:0"`；TorchFAST、TorchFLIRT、TorchFNIRT 和 TorchApplyWarp 不加载权重。单例调用返回带几何信息的结果对象，由调用者选择保存字段。FastVBM 组合 SynthStrip、TorchFAST、TorchFLIRT 和一个可选非线性后端。`registration_backend="synthmorph"` 延迟加载官方 deform checkpoint；`registration_backend="fnirt"` 构造无 checkpoint 的 TorchFNIRT。旧导入路径 `freesurfer_torch.spatial` 和 `freesurfer_torch.synthmorph_models` 继续转导出对应实现。权重查找顺序为显式路径、`FREESURFER_TORCH_WEIGHTS`、配置脚本保存的目录、用户缓存目录、已设置的 `FREESURFER_HOME/models/`；见[权重说明](WEIGHTS.md)。
+学习模型构造时加载权重并选择 `device="cpu"` 或 `device="cuda:0"`；TorchFAST、TorchFLIRT、TorchFNIRT 和 TorchApplyWarp 不加载权重。单例调用返回带几何信息的结果对象，由调用者选择保存字段。FastVBM 组合 SynthStrip、TorchFAST、TorchFLIRT 和一个可选非线性后端。`registration_backend="synthmorph"` 延迟加载官方 deform checkpoint；`registration_backend="fnirt"` 构造无 checkpoint 的 TorchFNIRT。权重查找顺序为显式路径、`FREESURFER_TORCH_WEIGHTS`、配置脚本保存的目录、用户缓存目录、已设置的 `FREESURFER_HOME/models/`；见[权重说明](WEIGHTS.md)。
 
 ## 批量执行
 

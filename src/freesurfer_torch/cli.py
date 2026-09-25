@@ -225,21 +225,16 @@ def _run_fast_vbm(args):
         synthstrip_weights=args.synthstrip_weights,
         synthmorph_weights=args.synthmorph_weights,
         bias_correction=not args.no_bias,
-        linear_strides=tuple(args.linear_strides),
-        linear_steps=tuple(args.linear_steps),
-        linear_learning_rates=tuple(args.linear_learning_rates),
         synthmorph_extent=args.synthmorph_extent,
         synthmorph_hyper=args.synthmorph_hyper,
         synthmorph_steps=args.synthmorph_steps,
         registration_backend=args.registration_backend,
         fnirt_strides=tuple(args.fnirt_strides),
         fnirt_steps=tuple(args.fnirt_steps),
-        fnirt_learning_rates=tuple(args.fnirt_learning_rates),
         fnirt_input_fwhm_mm=tuple(args.fnirt_input_fwhm_mm),
         fnirt_reference_fwhm_mm=tuple(args.fnirt_reference_fwhm_mm),
         fnirt_warp_resolution_mm=args.fnirt_warp_resolution_mm,
         fnirt_regularization=tuple(args.fnirt_regularization),
-        fnirt_jacobian_penalty=args.fnirt_jacobian_penalty,
     )
     result = model(
         args.image,
@@ -290,7 +285,6 @@ def main(argv=None):
     apply.add_argument('transform')
     apply.add_argument('image')
     apply.add_argument('output')
-    apply.add_argument('--device', default='cpu')
     apply.add_argument('-m', '--method', choices=('linear', 'nearest'), default='linear')
     apply.add_argument('-f', '--fill', type=float, default=0)
     apply.add_argument('-t', '--dtype', choices=('uint8', 'uint16', 'int16', 'int32', 'float32'), default='float32')
@@ -432,13 +426,6 @@ def main(argv=None):
                           help='nonlinear registration backend')
     fast_vbm.add_argument('--device', default='cpu')
     fast_vbm.add_argument('--threads', type=int)
-    fast_vbm.add_argument('--linear-strides', type=int, nargs=3,
-                          default=(4, 2, 1), metavar=('COARSE', 'MIDDLE', 'FINE'))
-    fast_vbm.add_argument('--linear-steps', type=int, nargs=3,
-                          default=(80, 60, 50), metavar=('COARSE', 'MIDDLE', 'FINE'))
-    fast_vbm.add_argument('--linear-learning-rates', type=float, nargs=3,
-                          default=(0.05, 0.025, 0.0125),
-                          metavar=('COARSE', 'MIDDLE', 'FINE'))
     fast_vbm.add_argument('--synthmorph-extent', type=int, choices=(192, 256),
                           default=256)
     fast_vbm.add_argument('--synthmorph-hyper', type=float, default=0.5)
@@ -448,9 +435,6 @@ def main(argv=None):
                           metavar=('LEVEL1', 'LEVEL2', 'LEVEL3', 'LEVEL4'))
     fast_vbm.add_argument('--fnirt-steps', type=int, nargs=4,
                           default=(5, 5, 10, 5),
-                          metavar=('LEVEL1', 'LEVEL2', 'LEVEL3', 'LEVEL4'))
-    fast_vbm.add_argument('--fnirt-learning-rates', type=float, nargs=4,
-                          default=(0.5, 0.25, 0.1, 0.05),
                           metavar=('LEVEL1', 'LEVEL2', 'LEVEL3', 'LEVEL4'))
     fast_vbm.add_argument('--fnirt-input-fwhm-mm', type=float, nargs=4,
                           default=(6.0, 4.0, 2.0, 2.0),
@@ -462,7 +446,6 @@ def main(argv=None):
     fast_vbm.add_argument('--fnirt-regularization', type=float, nargs=4,
                           default=(150.0, 75.0, 50.0, 30.0),
                           metavar=('LEVEL1', 'LEVEL2', 'LEVEL3', 'LEVEL4'))
-    fast_vbm.add_argument('--fnirt-jacobian-penalty', type=float, default=1.0)
     fast_vbm.add_argument('--no-bias', action='store_true',
                           help='disable TorchFAST bias-field correction')
     fast_vbm.add_argument('--overwrite', action='store_true')
@@ -509,8 +492,14 @@ def main(argv=None):
                    (result.transform, args.trans), (result.inverse, args.inverse))
     else:
         from .synthmorph import apply_transform
-        result = apply_transform(args.image, args.transform, args.device, args.method,
-                                  args.fill, args.dtype, args.header_only)
+        result = apply_transform(
+            args.image,
+            args.transform,
+            args.method,
+            args.fill,
+            args.dtype,
+            args.header_only,
+        )
         outputs = ((result, args.output),)
     for volume, path in outputs:
         if path:

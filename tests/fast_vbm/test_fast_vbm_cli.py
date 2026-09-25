@@ -49,9 +49,6 @@ def test_fast_vbm_cli_runs_one_subject_and_prints_all_outputs(
         "--reference-mask", "reference-mask.nii.gz",
         "--synthstrip-weights", "strip.pt", "--synthmorph-weights", "morph.h5",
         "--device", "cuda:2", "--threads", "3",
-        "--linear-strides", "8", "4", "2",
-        "--linear-steps", "7", "8", "9",
-        "--linear-learning-rates", "0.1", "0.05", "0.02",
         "--synthmorph-extent", "192", "--synthmorph-hyper", "0.4",
         "--synthmorph-steps", "6", "--no-bias", "--overwrite",
     ])
@@ -62,18 +59,14 @@ def test_fast_vbm_cli_runs_one_subject_and_prints_all_outputs(
             "synthstrip_weights": "strip.pt",
             "synthmorph_weights": "morph.h5", "bias_correction": False,
             "registration_backend": "synthmorph",
-            "linear_strides": (8, 4, 2), "linear_steps": (7, 8, 9),
-            "linear_learning_rates": (0.1, 0.05, 0.02),
             "synthmorph_extent": 192, "synthmorph_hyper": 0.4,
             "synthmorph_steps": 6,
             "fnirt_strides": (4, 2, 1, 1),
             "fnirt_steps": (5, 5, 10, 5),
-            "fnirt_learning_rates": (0.5, 0.25, 0.1, 0.05),
             "fnirt_input_fwhm_mm": (6.0, 4.0, 2.0, 2.0),
             "fnirt_reference_fwhm_mm": (4.0, 2.0, 0.0, 0.0),
             "fnirt_warp_resolution_mm": 10.0,
             "fnirt_regularization": (150.0, 75.0, 50.0, 30.0),
-            "fnirt_jacobian_penalty": 1.0,
         },
         "call": (
             "T1w.nii.gz", "template.nii.gz", "mask.nii.gz",
@@ -128,3 +121,31 @@ def test_fast_vbm_cli_selects_fnirt_backend(tmp_path, monkeypatch):
     assert captured["options"]["registration_backend"] == "fnirt"
     assert captured["options"]["fnirt_warp_resolution_mm"] == 8
     assert captured["options"]["fnirt_steps"] == (4, 3, 2, 1)
+
+
+@pytest.mark.parametrize(
+    "removed_option",
+    (
+        "--linear-strides",
+        "--linear-steps",
+        "--linear-learning-rates",
+        "--fnirt-learning-rates",
+        "--fnirt-jacobian-penalty",
+    ),
+)
+def test_fast_vbm_cli_rejects_removed_legacy_options(removed_option, capsys):
+    with pytest.raises(SystemExit) as error:
+        cli.main([
+            "fast-vbm",
+            "-i",
+            "T1w.nii.gz",
+            "--template",
+            "template.nii.gz",
+            "-o",
+            "result",
+            removed_option,
+            "1",
+        ])
+
+    assert error.value.code == 2
+    assert "unrecognized arguments" in capsys.readouterr().err
