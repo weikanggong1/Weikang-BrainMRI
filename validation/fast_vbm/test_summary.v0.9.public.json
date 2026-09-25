@@ -12,33 +12,44 @@
     "fnit-recon-all": true,
     "fnit-setup-weights": true
   },
+  "conda_environment": {
+    "configuration": "environment.yml",
+    "created_from_scratch": true,
+    "cuda_calculation_passed": true,
+    "cuda_version_pin": "11.8",
+    "dependency_imports_passed": true,
+    "distribution": "fudan-neuroimaging-toolkit 0.9.0",
+    "old_cli_absent": true,
+    "old_import_absent": true,
+    "target_glibc": "2.17",
+    "verified_on_gpu": true
+  },
   "environment": {
     "cuda_runtime": "11.8",
     "device_name": "NVIDIA H100 PCIe",
     "platform": "Linux",
-    "python": "3.11.7",
+    "python": "3.11.16",
     "tf32": {
       "cudnn": true,
       "matmul": true,
-      "reduced_precision_tensor_dtype": false
+      "tensor_dtype": "float32"
     },
-    "threads": 4,
     "torch": "2.5.1"
   },
   "full_source_suite": {
     "clean_checkout": true,
     "completed": true,
-    "duration_seconds": 15.24,
+    "duration_seconds": 15.82,
     "passed": 326,
     "skipped": 12,
-    "wall_seconds": 16.55,
+    "tested_git_commit": "96250f35a9863740007b5098be291c0364a8464d",
+    "wall_seconds": 16.99,
     "warnings": 4
   },
-  "package_python_source_sha256": "2b51c1203d01651b4aa060b7e96f0a63fa483acfc11078a5f1ddecb2165e8ca3",
-  "privacy": "Aggregate-only test and build summary; no account, host, path, or subject identifier is published.",
+  "package_python_source_sha256": "26447b5995d5d37eac5666088cea37d67aad559be2bd5c762cbdfc6f1295e7c1",
+  "privacy": "Aggregate-only test, Conda, and build summary; no account, host, path, or subject identifier is published.",
   "release": "0.9.0",
-  "schema": 1,
-  "tested_git_commit": "1e1002a185fe77c067a5fb28261ee185ac6043e8",
+  "schema": 2,
   "wheel_install": {
     "isolated_target": true,
     "outside_source_tree": true,
