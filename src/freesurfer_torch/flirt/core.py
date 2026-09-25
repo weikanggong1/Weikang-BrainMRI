@@ -1249,10 +1249,11 @@ class TorchFLIRT:
             "source_commit": FSL_FLIRT_COMMIT,
             "initial_matrix_used": init is not None,
             "validation_matrix_gate_mm": 0.05,
+            "validation_matrix_metric": (
+                "FSL rmsdiff about the reference intensity-weighted COG"
+            ),
             "validation_profile": "CUDA TF32 default",
-            "validation_matrix_cases_passed": 0,
-            "validation_matrix_cases_total": 10,
-            "validation_matrix_maximum_rmsdiff_mm": 0.45672378318405493,
+            "validation_report": "validation/fast_vbm/report.v0.9.public.json",
             "validated_fsl_equivalent": False,
         }
         return FLIRTResult(
