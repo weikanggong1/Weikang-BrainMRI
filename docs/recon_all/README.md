@@ -70,6 +70,10 @@ MGH 头及仿射一致。该链输出止于 `orig.mgz`，已验证路径为 CPU�
 显示 138 项中 110 项通过：双侧有序表面顶点、面及逐顶点指标一致，
 但 SynthSeg 软体积、SynthMorph 形变场和部分统计值仍不同。
 SynthSeg 标签存储类型已改为官方的 float32；该修改仍需在连接式 GPU 推理中复验。
+连接链生成的 `nu.mgz` 已接续运行 PyTorch EntoWM：在固定 T1 上，
+[独立对照](../../validation/recon_all/python_gpu_port/CONNECTED_ENTOWM_20260926.md)
+的全部 16,777,216 个标签体素、MGH 头和体素载荷与官方归档一致，
+四个结构软体积最大差 0.0227 mm³。eTIV 统计行及其他被试尚未核验。
 
 ```python
 from fnit.recon_all.input_chain import run_input_chain

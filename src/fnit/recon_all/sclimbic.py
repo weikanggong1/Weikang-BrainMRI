@@ -230,7 +230,12 @@ def mri_sclimbic_seg(input_path: str | Path, output_path: str | Path, *,
     original = tuple(slice(int(a), int(b)) for a, b in zip(fitted_low, fitted_high))
     ras_seg[target] = conformed_seg[original]
     native = _orient(ras_seg, to_native).cpu().numpy()
-    nib.save(nib.MGHImage(np.ascontiguousarray(native), source.affine), str(output_path))
+    header = source.header.copy() if isinstance(source, nib.MGHImage) else None
+    if header is not None:
+        header.set_data_dtype(np.int32)
+    nib.save(nib.MGHImage(np.ascontiguousarray(native),
+                          source.affine if header is None else None,
+                          header=header), str(output_path))
     return Path(output_path)
 
 ENTOWM_MODEL = "entowm.fsm31.t1.nstd00-30.nstd21-108.h5"

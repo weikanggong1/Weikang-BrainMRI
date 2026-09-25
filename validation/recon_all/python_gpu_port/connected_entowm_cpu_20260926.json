@@ -1,0 +1,78 @@
+{
+  "scope": "Python nu to EntoWM isolated stage; archived official comparator",
+  "device": "cpu",
+  "seconds": 17.59163263067603,
+  "voxel_mismatches": 0,
+  "maximum_label_difference": 0,
+  "minimum_foreground_dice": 1.0,
+  "dtype_equal": true,
+  "affine_max_abs_mm": 0.0,
+  "mgh_header_equal": true,
+  "header_and_voxel_payload_equal": true,
+  "labels": [
+    {
+      "label": 0,
+      "official_voxels": 16775763,
+      "candidate_voxels": 16775763,
+      "dice": 1.0
+    },
+    {
+      "label": 3006,
+      "official_voxels": 620,
+      "candidate_voxels": 620,
+      "dice": 1.0
+    },
+    {
+      "label": 3201,
+      "official_voxels": 177,
+      "candidate_voxels": 177,
+      "dice": 1.0
+    },
+    {
+      "label": 4006,
+      "official_voxels": 505,
+      "candidate_voxels": 505,
+      "dice": 1.0
+    },
+    {
+      "label": 4201,
+      "official_voxels": 151,
+      "candidate_voxels": 151,
+      "dice": 1.0
+    }
+  ],
+  "stats_numeric": [
+    {
+      "label": 3006,
+      "official_voxels": 620,
+      "candidate_voxels": 620,
+      "official_volume_mm3": 648.0613,
+      "candidate_volume_mm3": 648.055,
+      "absolute_volume_difference_mm3": 0.006300000000010186
+    },
+    {
+      "label": 3201,
+      "official_voxels": 177,
+      "candidate_voxels": 177,
+      "official_volume_mm3": 185.2398,
+      "candidate_volume_mm3": 185.2408,
+      "absolute_volume_difference_mm3": 0.0010000000000047748
+    },
+    {
+      "label": 4006,
+      "official_voxels": 505,
+      "candidate_voxels": 505,
+      "official_volume_mm3": 542.1218,
+      "candidate_volume_mm3": 542.1445,
+      "absolute_volume_difference_mm3": 0.022699999999986176
+    },
+    {
+      "label": 4201,
+      "official_voxels": 151,
+      "candidate_voxels": 151,
+      "official_volume_mm3": 160.8523,
+      "candidate_volume_mm3": 160.8568,
+      "absolute_volume_difference_mm3": 0.004499999999978854
+    }
+  ]
+}

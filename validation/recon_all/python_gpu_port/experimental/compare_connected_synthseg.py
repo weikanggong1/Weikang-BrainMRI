@@ -46,6 +46,26 @@ def main() -> None:
         native_rows = list(csv.reader(handle))
     with args.output_volumes.open(newline="") as handle:
         candidate_rows = list(csv.reader(handle))
+    volume_differences = [
+        {"structure": name, "official_mm3": float(left),
+         "candidate_mm3": float(right), "absolute_difference_mm3": abs(float(left) - float(right))}
+        for name, left, right in zip(native_rows[0][1:], native_rows[1][1:],
+                                     candidate_rows[1][1:])
+    ] if len(native_rows) == len(candidate_rows) == 2 and native_rows[0] == candidate_rows[0] else []
+    label_metrics = []
+    if a.shape == b.shape:
+        labels_a, labels_b = a.astype(np.int32), b.astype(np.int32)
+        official_count = np.bincount(labels_a.ravel())
+        candidate_count = np.bincount(labels_b.ravel())
+        intersection = np.bincount(labels_a[labels_a == labels_b])
+        for label in np.union1d(np.unique(labels_a), np.unique(labels_b)):
+            label = int(label)
+            n_official = int(official_count[label]) if label < len(official_count) else 0
+            n_candidate = int(candidate_count[label]) if label < len(candidate_count) else 0
+            n_both = int(intersection[label]) if label < len(intersection) else 0
+            label_metrics.append({"label": label, "official_voxels": n_official,
+                                  "candidate_voxels": n_candidate,
+                                  "dice": 2 * n_both / (n_official + n_candidate)})
     report = {
         "scope": "connected Python T1 input through 33-class SynthSeg; CUDA inference",
         "input_sha256": hashlib.sha256(args.input_orig.read_bytes()).hexdigest(),
@@ -64,6 +84,10 @@ def main() -> None:
         "volume_csv_equal": native_rows == candidate_rows,
         "volume_csv_reference_rows": len(native_rows),
         "volume_csv_candidate_rows": len(candidate_rows),
+        "volume_max_abs_difference_mm3": max((row["absolute_difference_mm3"]
+                                                for row in volume_differences), default=None),
+        "volume_differences": volume_differences,
+        "label_metrics": label_metrics,
     }
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2) + "\n")

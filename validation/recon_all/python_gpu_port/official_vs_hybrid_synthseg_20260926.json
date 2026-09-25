@@ -1,0 +1,417 @@
+{
+  "reference_seg_sha256": "a1efc268781989c2c6dcad1ec10743c9c6a5305150e9503b238b47a649f3f7d3",
+  "candidate_seg_sha256": "34e2fa57d5f118b3d6de4ed66730d493f4a53b4c32d3c201ad6ef686a570123f",
+  "reference_csv_sha256": "135ff5f32b8fc1418f14f998c409a67b2af823a802c87d06f621e0e5826424cd",
+  "candidate_csv_sha256": "fbadb7bab82f1e122487d24597d9ef972614b42268e006bd9592281066f41d26",
+  "shape": [
+    256,
+    256,
+    256
+  ],
+  "dtype_equal": false,
+  "affine_max_abs_mm": 0.0,
+  "segmentation_voxel_mismatches": 0,
+  "min_foreground_dice": 1.0,
+  "label_metrics": [
+    {
+      "label": 0,
+      "reference_voxels": 15492124,
+      "candidate_voxels": 15492124,
+      "dice": 1.0
+    },
+    {
+      "label": 2,
+      "reference_voxels": 174278,
+      "candidate_voxels": 174278,
+      "dice": 1.0
+    },
+    {
+      "label": 3,
+      "reference_voxels": 201833,
+      "candidate_voxels": 201833,
+      "dice": 1.0
+    },
+    {
+      "label": 4,
+      "reference_voxels": 9301,
+      "candidate_voxels": 9301,
+      "dice": 1.0
+    },
+    {
+      "label": 5,
+      "reference_voxels": 582,
+      "candidate_voxels": 582,
+      "dice": 1.0
+    },
+    {
+      "label": 7,
+      "reference_voxels": 12993,
+      "candidate_voxels": 12993,
+      "dice": 1.0
+    },
+    {
+      "label": 8,
+      "reference_voxels": 42610,
+      "candidate_voxels": 42610,
+      "dice": 1.0
+    },
+    {
+      "label": 10,
+      "reference_voxels": 5565,
+      "candidate_voxels": 5565,
+      "dice": 1.0
+    },
+    {
+      "label": 11,
+      "reference_voxels": 3281,
+      "candidate_voxels": 3281,
+      "dice": 1.0
+    },
+    {
+      "label": 12,
+      "reference_voxels": 4227,
+      "candidate_voxels": 4227,
+      "dice": 1.0
+    },
+    {
+      "label": 13,
+      "reference_voxels": 1355,
+      "candidate_voxels": 1355,
+      "dice": 1.0
+    },
+    {
+      "label": 14,
+      "reference_voxels": 1101,
+      "candidate_voxels": 1101,
+      "dice": 1.0
+    },
+    {
+      "label": 15,
+      "reference_voxels": 1513,
+      "candidate_voxels": 1513,
+      "dice": 1.0
+    },
+    {
+      "label": 16,
+      "reference_voxels": 17032,
+      "candidate_voxels": 17032,
+      "dice": 1.0
+    },
+    {
+      "label": 17,
+      "reference_voxels": 3808,
+      "candidate_voxels": 3808,
+      "dice": 1.0
+    },
+    {
+      "label": 18,
+      "reference_voxels": 1472,
+      "candidate_voxels": 1472,
+      "dice": 1.0
+    },
+    {
+      "label": 24,
+      "reference_voxels": 327489,
+      "candidate_voxels": 327489,
+      "dice": 1.0
+    },
+    {
+      "label": 26,
+      "reference_voxels": 591,
+      "candidate_voxels": 591,
+      "dice": 1.0
+    },
+    {
+      "label": 28,
+      "reference_voxels": 3065,
+      "candidate_voxels": 3065,
+      "dice": 1.0
+    },
+    {
+      "label": 41,
+      "reference_voxels": 178521,
+      "candidate_voxels": 178521,
+      "dice": 1.0
+    },
+    {
+      "label": 42,
+      "reference_voxels": 205269,
+      "candidate_voxels": 205269,
+      "dice": 1.0
+    },
+    {
+      "label": 43,
+      "reference_voxels": 8664,
+      "candidate_voxels": 8664,
+      "dice": 1.0
+    },
+    {
+      "label": 44,
+      "reference_voxels": 559,
+      "candidate_voxels": 559,
+      "dice": 1.0
+    },
+    {
+      "label": 46,
+      "reference_voxels": 13144,
+      "candidate_voxels": 13144,
+      "dice": 1.0
+    },
+    {
+      "label": 47,
+      "reference_voxels": 43354,
+      "candidate_voxels": 43354,
+      "dice": 1.0
+    },
+    {
+      "label": 49,
+      "reference_voxels": 5479,
+      "candidate_voxels": 5479,
+      "dice": 1.0
+    },
+    {
+      "label": 50,
+      "reference_voxels": 3464,
+      "candidate_voxels": 3464,
+      "dice": 1.0
+    },
+    {
+      "label": 51,
+      "reference_voxels": 4283,
+      "candidate_voxels": 4283,
+      "dice": 1.0
+    },
+    {
+      "label": 52,
+      "reference_voxels": 1327,
+      "candidate_voxels": 1327,
+      "dice": 1.0
+    },
+    {
+      "label": 53,
+      "reference_voxels": 3892,
+      "candidate_voxels": 3892,
+      "dice": 1.0
+    },
+    {
+      "label": 54,
+      "reference_voxels": 1508,
+      "candidate_voxels": 1508,
+      "dice": 1.0
+    },
+    {
+      "label": 58,
+      "reference_voxels": 484,
+      "candidate_voxels": 484,
+      "dice": 1.0
+    },
+    {
+      "label": 60,
+      "reference_voxels": 3048,
+      "candidate_voxels": 3048,
+      "dice": 1.0
+    }
+  ],
+  "volume_csv_exact": false,
+  "volume_max_abs_difference_mm3": 464.80000000004657,
+  "volume_differences": [
+    {
+      "structure": "total intracranial",
+      "reference_mm3": 1280294.2,
+      "candidate_mm3": 1280759.0,
+      "absolute_difference_mm3": 464.80000000004657
+    },
+    {
+      "structure": "left cerebral white matter",
+      "reference_mm3": 176618.66,
+      "candidate_mm3": 176678.953125,
+      "absolute_difference_mm3": 60.29312499999651
+    },
+    {
+      "structure": "left cerebral cortex",
+      "reference_mm3": 188723.61,
+      "candidate_mm3": 188753.296875,
+      "absolute_difference_mm3": 29.68687500001397
+    },
+    {
+      "structure": "left lateral ventricle",
+      "reference_mm3": 9425.01,
+      "candidate_mm3": 9440.6796875,
+      "absolute_difference_mm3": 15.669687499999782
+    },
+    {
+      "structure": "left inferior lateral ventricle",
+      "reference_mm3": 646.426,
+      "candidate_mm3": 647.218994140625,
+      "absolute_difference_mm3": 0.7929941406249554
+    },
+    {
+      "structure": "left cerebellum white matter",
+      "reference_mm3": 14189.765,
+      "candidate_mm3": 14189.7548828125,
+      "absolute_difference_mm3": 0.010117187499417923
+    },
+    {
+      "structure": "left cerebellum cortex",
+      "reference_mm3": 40219.887,
+      "candidate_mm3": 40219.90625,
+      "absolute_difference_mm3": 0.019249999997555278
+    },
+    {
+      "structure": "left thalamus",
+      "reference_mm3": 5483.218,
+      "candidate_mm3": 5483.18115234375,
+      "absolute_difference_mm3": 0.036847656249847205
+    },
+    {
+      "structure": "left caudate",
+      "reference_mm3": 3291.105,
+      "candidate_mm3": 3291.093017578125,
+      "absolute_difference_mm3": 0.01198242187501819
+    },
+    {
+      "structure": "left putamen",
+      "reference_mm3": 4249.776,
+      "candidate_mm3": 4249.7548828125,
+      "absolute_difference_mm3": 0.02111718749983993
+    },
+    {
+      "structure": "left pallidum",
+      "reference_mm3": 1364.662,
+      "candidate_mm3": 1364.6590576171875,
+      "absolute_difference_mm3": 0.002942382812534561
+    },
+    {
+      "structure": "3rd ventricle",
+      "reference_mm3": 1066.305,
+      "candidate_mm3": 1066.303955078125,
+      "absolute_difference_mm3": 0.0010449218750636646
+    },
+    {
+      "structure": "4th ventricle",
+      "reference_mm3": 1497.181,
+      "candidate_mm3": 1497.177978515625,
+      "absolute_difference_mm3": 0.0030214843750400178
+    },
+    {
+      "structure": "brain-stem",
+      "reference_mm3": 16700.074,
+      "candidate_mm3": 16699.740234375,
+      "absolute_difference_mm3": 0.33376562500052387
+    },
+    {
+      "structure": "left hippocampus",
+      "reference_mm3": 3723.981,
+      "candidate_mm3": 3723.965087890625,
+      "absolute_difference_mm3": 0.015912109375221917
+    },
+    {
+      "structure": "left amygdala",
+      "reference_mm3": 1441.72,
+      "candidate_mm3": 1441.717041015625,
+      "absolute_difference_mm3": 0.002958984375027285
+    },
+    {
+      "structure": "csf",
+      "reference_mm3": 346910.94,
+      "candidate_mm3": 347196.6875,
+      "absolute_difference_mm3": 285.7474999999977
+    },
+    {
+      "structure": "left accumbens area",
+      "reference_mm3": 568.508,
+      "candidate_mm3": 568.5070190429688,
+      "absolute_difference_mm3": 0.0009809570312881988
+    },
+    {
+      "structure": "left ventral DC",
+      "reference_mm3": 3013.397,
+      "candidate_mm3": 3013.389892578125,
+      "absolute_difference_mm3": 0.007107421874934516
+    },
+    {
+      "structure": "right cerebral white matter",
+      "reference_mm3": 180470.39,
+      "candidate_mm3": 180492.734375,
+      "absolute_difference_mm3": 22.34437499998603
+    },
+    {
+      "structure": "right cerebral cortex",
+      "reference_mm3": 192556.17,
+      "candidate_mm3": 192602.234375,
+      "absolute_difference_mm3": 46.064374999987194
+    },
+    {
+      "structure": "right lateral ventricle",
+      "reference_mm3": 8845.799,
+      "candidate_mm3": 8849.25390625,
+      "absolute_difference_mm3": 3.4549062499991123
+    },
+    {
+      "structure": "right inferior lateral ventricle",
+      "reference_mm3": 611.715,
+      "candidate_mm3": 612.4860229492188,
+      "absolute_difference_mm3": 0.7710229492187182
+    },
+    {
+      "structure": "right cerebellum white matter",
+      "reference_mm3": 14457.709,
+      "candidate_mm3": 14457.599609375,
+      "absolute_difference_mm3": 0.10939062500074215
+    },
+    {
+      "structure": "right cerebellum cortex",
+      "reference_mm3": 40978.336,
+      "candidate_mm3": 40978.89453125,
+      "absolute_difference_mm3": 0.5585312499970314
+    },
+    {
+      "structure": "right thalamus",
+      "reference_mm3": 5396.774,
+      "candidate_mm3": 5396.7421875,
+      "absolute_difference_mm3": 0.03181250000034197
+    },
+    {
+      "structure": "right caudate",
+      "reference_mm3": 3492.768,
+      "candidate_mm3": 3492.763916015625,
+      "absolute_difference_mm3": 0.004083984375029104
+    },
+    {
+      "structure": "right putamen",
+      "reference_mm3": 4267.663,
+      "candidate_mm3": 4267.6298828125,
+      "absolute_difference_mm3": 0.03311718749955617
+    },
+    {
+      "structure": "right pallidum",
+      "reference_mm3": 1347.579,
+      "candidate_mm3": 1347.5760498046875,
+      "absolute_difference_mm3": 0.0029501953124508873
+    },
+    {
+      "structure": "right hippocampus",
+      "reference_mm3": 3827.973,
+      "candidate_mm3": 3827.9541015625,
+      "absolute_difference_mm3": 0.018898437499956344
+    },
+    {
+      "structure": "right amygdala",
+      "reference_mm3": 1469.336,
+      "candidate_mm3": 1469.333984375,
+      "absolute_difference_mm3": 0.002015625000012733
+    },
+    {
+      "structure": "right accumbens area",
+      "reference_mm3": 457.457,
+      "candidate_mm3": 457.4580078125,
+      "absolute_difference_mm3": 0.0010078125000063665
+    },
+    {
+      "structure": "right ventral DC",
+      "reference_mm3": 2980.347,
+      "candidate_mm3": 2980.337890625,
+      "absolute_difference_mm3": 0.009109375000207365
+    }
+  ]
+}
