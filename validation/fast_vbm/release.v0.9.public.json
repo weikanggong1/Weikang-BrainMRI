@@ -6,39 +6,42 @@
   },
   "distributions": {
     "sdist": {
-      "bytes": 2289772,
-      "file_count": 509,
-      "package_python_source_sha256": "8bea5a883d0043a5d1264994dddf0fcbdb88fbdf3c1d22a753107754b24b6438",
+      "bytes": 1613751,
+      "file_count": 539,
+      "filename": "fudan_neuroimaging_toolkit-0.9.0.tar.gz",
+      "package_python_source_sha256": "26447b5995d5d37eac5666088cea37d67aad559be2bd5c762cbdfc6f1295e7c1",
       "python_bytecode_file_count": 0,
-      "sha256": "6430f3d0f325251d6dc4c8c100def90ab1e72c6b1329888bd109680068476829"
+      "sha256": "9c1ecaee2097ee7a11011c320fa5207a2110054417d496e25ee13ecdc15d598d"
     },
     "wheel": {
-      "bytes": 862453,
-      "file_count": 331,
-      "package_python_source_sha256": "8bea5a883d0043a5d1264994dddf0fcbdb88fbdf3c1d22a753107754b24b6438",
+      "bytes": 798059,
+      "file_count": 313,
+      "filename": "fudan_neuroimaging_toolkit-0.9.0-py3-none-any.whl",
+      "package_python_source_sha256": "26447b5995d5d37eac5666088cea37d67aad559be2bd5c762cbdfc6f1295e7c1",
       "python_bytecode_file_count": 0,
-      "sha256": "c38eb23d1919651d7fec9c69616d4674a47045bfb0a1fe03de631e090a82e395"
+      "sha256": "b0115ff9e8567d1cb29a70c02c6a4fe77556387acdaac781c42fef28427a22c0"
     }
   },
   "evidence_sha256": {
-    "build_install_checks_json": "ea9ce1e8e41a7faf9a26c394655a64e782528551740a0d7c165fa2e1ff782b4b",
-    "direct_fnirt_json": "cb286d97dbce734732b1cd753e8781b91b390ca81e0d432266ee8689bac4f471",
+    "direct_fnirt_json": "8deb018034ebad953e0c06f552fee52d201df0fcdce68749919c59dbd10b7b73",
     "fast_vbm_csv": "0665df9e9e7c1f98e47a9d844d967a4ac98f7adca6f10e2b31dcb5723a5441f8",
-    "fast_vbm_json": "9d37f90f982fdc28e69fe39f27bdf986bde1a104f612d129ad9e25b5efb6d1d9",
-    "source_equivalence_json": "ac7fc9614a1e85947c6aa0723d80c27316b8318c4a97db14dcc748baeb4b0329",
-    "test_summary_json": "e8543687821f2eff298619683e1c2be8322b29bfc9aaa7827d68346896b155af",
-    "validation_sha256sums": "90be840230bc43f3cf87828fee2841ebc7b05d38a0a246970916f6a4eef5d848"
+    "fast_vbm_json": "efee090d60f8a6977eb71c6779b9f11a45b13c881d79c52e77dff0661cf81c48",
+    "source_equivalence_json": "93e0af276d71144b0179e340c0077ede856f6e2e615fc602fe93e38bfe290149",
+    "test_summary_json": "f63bcea0e0f3539a1d4eca951b3ab30b3c41b31b629ed3f1c04f83933de3a591",
+    "validation_sha256sums": "e49fe2e2610ebc17a2343a26f54a3ca030d7040e1b534baeaded1caadee8de44"
   },
   "gate_summary": {
     "artifact_release": {
       "archive_safety": true,
       "build": true,
       "cli_entry_point_count": 6,
+      "conda_environment_verified_on_gpu": true,
+      "environment_yml_in_sdist": true,
+      "general_batch_modules_absent": true,
+      "old_package_directory_absent": true,
       "package_python_source_digest_consistent": true,
-      "privacy": true,
       "python_bytecode_file_count": 0,
       "release_manifest_absent_from_archives": true,
-      "retired_runtime_module_count": 0,
       "source_tests": true,
       "weight_checkpoint_or_mri_file_count": 0,
       "wheel_install": true
@@ -74,24 +77,22 @@
   },
   "privacy": "Aggregate-only release record; no account, private path, subject identifier, per-case result, private host, model weight, or MRI is published.",
   "release": "0.9.0",
-  "schema": 1,
+  "schema": 2,
+  "scope": {
+    "general_batch_runtime_removed": true,
+    "non_recon_features_single_subject_only": true,
+    "recon_all_cleanup_excluded": true
+  },
   "source": {
-    "git_commit": "8e31d1707a4b755047b00712e23ba9257c7025a2",
-    "package_python_source_sha256": "8bea5a883d0043a5d1264994dddf0fcbdb88fbdf3c1d22a753107754b24b6438"
+    "distribution_git_commit": "2c3fadaf8ca90efb03e0657593b9fcc88a226f68",
+    "package_python_source_sha256": "26447b5995d5d37eac5666088cea37d67aad559be2bd5c762cbdfc6f1295e7c1",
+    "transition": "Package source is unchanged after the attested FNIT brand, path, CLI, repository, and weight-configuration rename normalization; numerical evidence is inherited through source_equivalence.v0.9.public.json."
   },
   "verification": {
     "build": {
       "backend": "setuptools.build_meta",
       "network_used": false,
       "passed": true
-    },
-    "build_install_checks": {
-      "cli_help_count": 6,
-      "commit": "8e31d1707a4b755047b00712e23ba9257c7025a2",
-      "offline_build": true,
-      "passed": true,
-      "public_import_count": 12,
-      "wheel_installed_to_isolated_target": true
     },
     "cli_help": {
       "fnit": true,
@@ -101,24 +102,29 @@
       "fnit-recon-all": true,
       "fnit-setup-weights": true
     },
-    "environment": {
+    "conda_environment": {
+      "configuration": "environment.yml",
+      "created_from_scratch": true,
+      "cuda_calculation_passed": true,
       "cuda_runtime": "11.8",
+      "cuda_version_pin": "11.8",
+      "default_tensor_dtype": "float32",
       "device_name": "NVIDIA H100 PCIe",
-      "platform": "Linux",
-      "python": "3.11.7",
-      "tf32": {
-        "cudnn": true,
-        "matmul": true,
-        "reduced_precision_tensor_dtype": false
-      },
-      "threads": 4,
+      "old_cli_absent": true,
+      "old_import_absent": true,
+      "python": "3.11.16",
+      "target_glibc": "2.17",
+      "tf32_cudnn": true,
+      "tf32_matmul": true,
       "torch": "2.5.1"
     },
     "full_source_suite": {
       "completed": true,
-      "duration_seconds": 19.54,
-      "passed": 353,
+      "duration_seconds": 15.82,
+      "passed": 326,
       "skipped": 12,
+      "tested_git_commit": "96250f35a9863740007b5098be291c0364a8464d",
+      "wall_seconds": 16.99,
       "warnings": 4
     },
     "wheel_install": {
