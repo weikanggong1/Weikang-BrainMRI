@@ -55,7 +55,17 @@ python -c "import fnit, torch; print(fnit.__version__, torch.__version__, torch.
 fnit --help
 ```
 
-该环境保持模型和影像张量为 float32，并允许 NVIDIA TF32 matmul 与 cuDNN 内核；不会自动启用 float16 或 bfloat16。修改 `environment.yml` 后可用 `conda env update -n fnit -f environment.yml --prune` 同步环境。
+`environment.yml` 同时固定 `pytorch-cuda=11.8` 和 `cuda-version=11.8`，防止 Conda 求解器混入需要更新系统 glibc 的 CUDA 组件。该环境保持模型和影像张量为 float32，并允许 NVIDIA TF32 matmul 与 cuDNN 内核；不会自动启用 float16 或 bfloat16。修改配置后可用 `conda env update -n fnit -f environment.yml --prune` 同步环境。
+
+如果联网登录节点的 glibc 比离线 GPU 节点更新，应按 GPU 节点版本在共享文件系统创建环境。例如 GPU 节点为 glibc 2.17 时，在联网节点运行：
+
+```bash
+FNIT_ENV_PREFIX=/path/on/shared-storage/fnit-conda
+CONDA_OVERRIDE_GLIBC=2.17 conda env create -p "$FNIT_ENV_PREFIX" -f environment.yml
+conda activate "$FNIT_ENV_PREFIX"
+```
+
+然后在 GPU 节点激活同一路径。这样 Conda 会按目标节点 ABI 选择二进制包；环境仍由同一份 `environment.yml` 完整构建。
 
 ## 下载和部署权重
 
