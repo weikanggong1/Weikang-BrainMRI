@@ -1,7 +1,7 @@
 {
   "scope": "Python nu to EntoWM isolated stage; archived official comparator",
   "device": "cpu",
-  "seconds": 11.497961898334324,
+  "seconds": 11.00622417870909,
   "voxel_mismatches": 0,
   "maximum_label_difference": 0,
   "minimum_foreground_dice": 1.0,
@@ -43,8 +43,8 @@
   ],
   "eTIV": {
     "official_mm3": 1310266.552537,
-    "candidate_mm3": 1310265.101954,
-    "absolute_difference_mm3": 1.4505829999689013
+    "candidate_mm3": 1310267.038702,
+    "absolute_difference_mm3": 0.48616499989293516
   },
   "stats_numeric": [
     {

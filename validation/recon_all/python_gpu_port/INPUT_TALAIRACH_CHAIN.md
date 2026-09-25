@@ -19,8 +19,10 @@ report = run_input_talairach_chain(
 
 The same function has a module CLI (`python -m
 fnit.recon_all.input_talairach_chain T1 SUBJECT_DIR --weights-dir WEIGHTS
---assets-dir ASSETS`). It requires an empty subject directory. Its source
-SHA-256 is `8043810b543078220a876c1490b7b00d6b43560c02e248dca4e4af4222bd2284`.
+--assets-dir ASSETS`). It requires an empty subject directory. The original
+CPU run used source SHA-256
+`8043810b543078220a876c1490b7b00d6b43560c02e248dca4e4af4222bd2284`;
+the current chain additionally writes a voxel-space Talairach LTA.
 
 A headcw CPU run used the original T1 SHA-256
 `f20410a4efd8e6a05cd04d55730a4a5492ecf9ad1b234fe0fd4661e448270c6a`,
@@ -45,6 +47,17 @@ contains the four image hashes and all per-file gates. The
 import, 0.035 s copy, 2.117 s conform/tag, 6.039 s SynthStrip, and 16.051 s
 Talairach. These are one CPU run's stage timings, not paired native timing or
 an end-to-end speed ratio. The new transform has not yet been propagated
-through N4 or surface generation. SynthMorph's shared model currently
-disables TF32 for its checkpoint parity; this CPU run cannot verify its
-GPU/TF32 behavior.
+through N4 or surface generation. SynthMorph's shared model enables TF32
+for CUDA matmul and cuDNN; this CPU run cannot verify its GPU/TF32 behavior.
+
+The current API also converts its saved affine LTA to
+`transforms/talairach.xfm.lta` using Surfa, without a native executable. We
+applied that conversion to the same saved Python affine from the above run,
+without repeating model inference. Relative to the unmodified official voxel
+LTA, source/target geometries were exact; the maximum matrix-element error
+was 0.00012255, and the maximum displacement across eight input-grid corners
+was 0.0004203 mm. Its determinant gives eTIV 1,310,267.038702 mm³ versus
+1,310,266.552537 mm³ officially (absolute difference 0.486165 mm³). See
+[the transform report](connected_talairach_voxel_lta_20260926.json) and
+[replay comparator](experimental/compare_talairach_voxel_lta.py). The updated
+one-call API has not been rerun from a new empty subject folder.

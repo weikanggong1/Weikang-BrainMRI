@@ -24,6 +24,7 @@ def main() -> None:
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--official-stats", type=Path)
     parser.add_argument("--talairach-xfm", type=Path)
+    parser.add_argument("--talairach-lta", type=Path)
     parser.add_argument("--report", type=Path, required=True)
     args = parser.parse_args()
     torch.set_num_threads(4)
@@ -33,7 +34,8 @@ def main() -> None:
     stats_path = args.output_entowm.with_suffix(".stats") if args.official_stats else None
     mri_entowm_seg(args.input_nu, args.output_entowm, args.weights,
                    device=args.device, stats_path=stats_path,
-                   talairach_xfm=args.talairach_xfm)
+                   talairach_xfm=args.talairach_xfm,
+                   talairach_lta=args.talairach_lta)
     elapsed = time.perf_counter() - started
     official, candidate = (nib.load(str(path)) for path in
                            (args.official_entowm, args.output_entowm))

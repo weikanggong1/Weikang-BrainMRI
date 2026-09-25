@@ -7,6 +7,8 @@ import json
 from pathlib import Path
 import time
 
+import surfa as sf
+
 from fnit.synthstrip import SynthStrip
 
 from .input_chain import run_input_chain
@@ -35,9 +37,12 @@ def run_input_talairach_chain(t1: str | Path, subject_dir: str | Path,
     started = time.perf_counter()
     register_talairach(strip_file, template, weights, xfm, lta,
                        device=device, threads=threads)
+    voxel_lta = root / "mri/transforms/talairach.xfm.lta"
+    sf.load_affine(str(lta)).convert(space="voxel").save(str(voxel_lta))
     talairach_seconds = time.perf_counter() - started
     return {**result, "synthstrip": str(strip_file), "talairach_xfm": str(xfm),
-            "talairach_affine_lta": str(lta), "threads": threads,
+            "talairach_affine_lta": str(lta),
+            "talairach_voxel_lta": str(voxel_lta), "threads": threads,
             "synthstrip_seconds": strip_seconds,
             "talairach_seconds": talairach_seconds}
 

@@ -1,0 +1,15 @@
+{
+  "official_sha256": "54596c1d5d41bc67a7882204d668f9ca05082116794c3517220e479e3833b869",
+  "candidate_sha256": "62f94ad94a09ea360aa4f3c62e43627ed887367a13e2b4ec74356aa0b8027780",
+  "official_space": "voxel",
+  "candidate_space": "voxel",
+  "source_shapes_equal": true,
+  "target_shapes_equal": true,
+  "source_affine_max_abs_mm": 0.0,
+  "target_affine_max_abs_mm": 0.0,
+  "matrix_max_abs": 0.00012254714962978142,
+  "corner_max_euclidean_mm": 0.0004202912876151704,
+  "official_eTIV_mm3": 1310266.5525367032,
+  "candidate_eTIV_mm3": 1310267.0387021275,
+  "eTIV_abs_difference_mm3": 0.48616542434319854
+}

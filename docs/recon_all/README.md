@@ -73,8 +73,8 @@ SynthSeg 标签存储类型已改为官方的 float32；该修改仍需在连接
 连接链生成的 `nu.mgz` 已接续运行 PyTorch EntoWM：在固定 T1 上，
 [独立对照](../../validation/recon_all/python_gpu_port/CONNECTED_ENTOWM_20260926.md)
 的全部 16,777,216 个标签体素、MGH 头和体素载荷与官方归档一致，
-四个结构软体积最大差 0.0227 mm³；直接从 Python 生成的 XFM 计算的
-eTIV 与官方相差 1.450583 mm³。其他被试尚未核验。
+四个结构软体积最大差 0.0227 mm³；从 Python 仿射变换生成的体素 LTA
+计算的 eTIV 与官方相差 0.486165 mm³。其他被试尚未核验。
 
 ```python
 from fnit.recon_all.input_chain import run_input_chain
@@ -85,9 +85,11 @@ report = run_input_chain("subject_T1w.nii.gz", "/scratch/sub01", device="cpu")
 进一步的 [`run_input_talairach_chain`](../../src/fnit/recon_all/input_talairach_chain.py)
 把外置权重和 MNI305 模板接入同一个 Python 进程：从原始 T1 连续生成
 `orig/001.mgz`、`rawavg.mgz`、`orig.mgz`、`synthstrip.mgz` 和
-`transforms/talairach.xfm`。同一 T1 的四个影像文件与未经修改的官方运行逐体素、
-MGH 头和仿射一致；Talairach 变换在输入网格八角点的最大位移差为
-0.000157 mm。CPU 单次各段时间及输入哈希见[连续链报告](../../validation/recon_all/python_gpu_port/INPUT_TALAIRACH_CHAIN.md)。
+`transforms/talairach.xfm` 及 `talairach.xfm.lta`。同一 T1 的四个影像文件
+与未经修改的官方运行逐体素、MGH 头和仿射一致；XFM 在输入网格八角点的最大
+位移差为 0.000157 mm。新体素 LTA 由已验证的 Python 仿射文件换算得到，
+八角点最大差 0.0004203 mm；CPU 运行与后补 LTA 对照见
+[连续链报告](../../validation/recon_all/python_gpu_port/INPUT_TALAIRACH_CHAIN.md)。
 这段调用止于仿射配准，尚未产生皮层表面或统计表。
 从该链生成的 `orig.mgz` 和 `talairach.xfm` 接续 Python/SimpleITK N4 后，
 `nu.mgz` 与 headcw 同机新跑的官方 N4 全体素一致；相对旧版完整官方归档仍有
