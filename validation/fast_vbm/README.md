@@ -319,4 +319,7 @@ registration backend 回归和安装包验收；[`cpu_cuda.v0.6.public.json`](cp
 
 公开记录不含源病例标识、私有数据路径或 PID。新组件报告中的 `case01` 至
 `case10` 是与源身份断开的顺序别名；含逐例数值的报告会明确标注该范围。运行
-`sha256sum -c SHA256SUMS` 可校验本目录纳入清单的公开记录。
+`sha256sum -c SHA256SUMS` 可校验本目录纳入清单的公开记录。0.9 的
+[detached release manifest](https://github.com/weikanggong1/Weikang-BrainMRI/blob/main/validation/fast_vbm/release.v0.9.public.json)
+在 wheel 和 sdist 构建完成后生成，用于记录两个归档本身的 SHA-256；它不写入
+sdist，也不纳入 `SHA256SUMS`，从而避免归档哈希自引用。

@@ -34,7 +34,7 @@ python -m freesurfer_torch.fnirt \
 | `--aff` | 可选 FLIRT `.mat`；方向是 input → reference，坐标是 FSL scaled-mm。代码先转换成带 source/target geometry 的 world-RAS affine，再传给 `TorchFNIRT`。省略时使用 FSL scaled-mm identity。 |
 | `--cout` | cubic B-spline residual coefficient 文件。它是 FSL intent `2007`，不是 dense warp。省略时与 FSL 一样，从 input 文件名生成 `<input>_warpcoef`。 |
 | `--iout` | 原始 `--in` 经仿射和非线性变换后，在 reference 网格上的图像。优化阶段的平滑图不会写到这里。 |
-| `--jout` | 非线性位移的 Jacobian determinant；与 FSL `fnirt::SaveJacobian` 一致，不包含 FLIRT affine determinant。 |
+| `--jout` | 非线性位移的 Jacobian determinant；定义及是否包含 affine 与 FSL `fnirt::SaveJacobian` 对应，不包含 FLIRT affine determinant。体素值差异见验证结果。 |
 | `--refmask` | reference 网格上的 binary `0/1` mask。GM 配置只在最后一级按 `applyrefmask=0,0,0,1` 使用它。省略时仅在 `FSLDIR/data/standard/` 可找到官方 mask 的情况下自动使用。 |
 | `--config` | 只接受官方、未修改的 `GM_2_MNI152GM_2mm.cnf` 或该名称。其他配置会直接报错。 |
 | `--device` | `cpu`、`cuda` 或 `cuda:N`；CLI 和 Python API 均默认优先使用可用 CUDA。 |
@@ -124,8 +124,8 @@ coefficient array 当作 `[X,Y,Z,3]` dense displacement。
 本包的 `TorchApplyWarp` 可以直接读取该文件。
 
 `--jout` 是
-`det(I + ∂d_nonlinear / ∂x_reference)`。它排除 affine determinant，正是 FSL
-FNIRT 的 `SaveJacobian` 输出和 UKB VBM 非线性 modulation 使用的量。
+`det(I + ∂d_nonlinear / ∂x_reference)`。它排除 affine determinant，对应 FSL
+FNIRT `SaveJacobian` 和 UKB VBM 非线性 modulation 使用的 nonlinear-only 量。
 
 ## 固定配置
 
@@ -145,6 +145,12 @@ FNIRT 的 `SaveJacobian` 输出和 UKB VBM 非线性 modulation 使用的量。
 
 若 `--config` 指向一个实际文件，文件名和 SHA-256 都必须与官方
 `GM_2_MNI152GM_2mm.cnf` 一致。这样不会把修改过的配置静默当成已实现配置。
+
+FSL 的 `ForceJacobianRange` 不保证最终范围严格落在 `0.2–5`。达到最大尝试次数后
+若仍有少量体素越界，原生 FNIRT 会打印 warning 并继续写出结果。本包默认采用同一
+语义，并在 `result.qc["levels"][...]["topology_projection"]` 保存实际范围与
+`succeeded` 状态。直接构造 `TorchFNIRT(strict_topology=True)` 可把该 warning
+提升为 `RuntimeError`，用于诊断；独立 CLI 和 `run_fnirt()` 使用 FSL 默认语义。
 
 ## 实现边界
 
@@ -184,9 +190,8 @@ reference mask 和 `GM_2_MNI152GM_2mm.cnf`。数值比较覆盖完整 reference 
 | nonlinear Jacobian | 0.999669 | 0.002840 | 0.005656 |
 | modulated GM | 0.999206 | 0.002818 | 0.012855 |
 
-该共享节点观测中，PyTorch CUDA 总时间为 69.32 秒，其中保持 FSL Jacobian 范围的
-topology projection
-占 62.57 秒。首两次 accepted coefficient update 对 FSL 的 MAE 为
+该共享节点观测中，PyTorch CUDA 总时间为 69.32 秒，其中用于保持 FSL Jacobian
+范围的 topology projection 占 62.57 秒。首两次 accepted coefficient update 对 FSL 的 MAE 为
 `5.45e-7` 和 `2.05e-6`；第三次开始，FSL `SpMat` 的固定稀疏列累加顺序与本包
 matrix-free Hessian 的 reduction 顺序使 1e-3 截断 PCG 走向不同 Krylov 轨迹。
 因此标量输出高度接近，但不满足“仅浮点误差”或逐体素数值等价。完整无私有路径

@@ -97,11 +97,12 @@ def test_summarize_keeps_case_details_private(tmp_path):
         "cuda_multiprocessor_count": None,
     }
     source_digest = MODULE.package_source_digest()
+    execution_harness_digest = "a" * 64
     context = MODULE.validation_context(
         args,
         inputs,
         source_digest=source_digest,
-        harness_digest=MODULE.script_digest(),
+        harness_digest=execution_harness_digest,
         tf32=recorded_tf32,
         environment=environment,
     )
@@ -111,7 +112,7 @@ def test_summarize_keeps_case_details_private(tmp_path):
         args,
         inputs,
         source_digest=source_digest,
-        harness_digest=MODULE.script_digest(),
+        harness_digest=execution_harness_digest,
         tf32=recorded_tf32,
         environment=other_environment,
     )
@@ -193,7 +194,7 @@ def test_summarize_keeps_case_details_private(tmp_path):
             "run_signature": MODULE.signature(manifest_provenance),
             "provenance_private": manifest_provenance,
             "package_source_sha256": source_digest,
-            "script_sha256": MODULE.script_digest(),
+            "script_sha256": execution_harness_digest,
             "case_count": 1,
             "case_ids_private": [case.case_id],
             "layers": args.layers,
@@ -226,10 +227,20 @@ def test_summarize_keeps_case_details_private(tmp_path):
     assert public["execution"]["batch_wall_sec"] == 2.0
     assert public["execution"]["runtime_context"] == "shared-node"
     assert not public["execution"]["candidate_timing_controlled"]
+    assert public["flirt"]["timing"]["synchronized_compute_sec"]["median"] == 1.0
+    assert public["flirt"]["timing"]["output_save_sec"]["median"] == 0.1
     assert (
         public["provenance"]["official_weights_sha256"]
         == context["weights_sha256"]
     )
+    assert public["provenance"]["execution_harness_sha256"] == (
+        execution_harness_digest
+    )
+    assert public["provenance"]["summarizer_harness_sha256"] == (
+        MODULE.script_digest()
+    )
+    assert not public["provenance"]["harness_unchanged_at_summarize"]
+    assert "exact-target" not in public_text
     assert (
         public["execution"]["backend_execution_order_policy"]
         == MODULE.BACKEND_ORDER_POLICY

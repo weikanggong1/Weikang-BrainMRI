@@ -119,7 +119,14 @@ def test_synthmorph_ras_pull_conversion_recovers_fsl_residual():
 
     np.testing.assert_allclose(recovered.numpy(), residual, atol=7e-6, rtol=0)
     np.testing.assert_allclose(recovered_fsl, fixed_fsl, atol=0, rtol=0)
-    assert dense.shape == recovered.shape
+    affine_pull = np.linalg.inv(forward)
+    affine_source_fsl = np.einsum(
+        "ab,...b->...a", affine_pull[:3, :3], target_fsl
+    ) + affine_pull[:3, 3]
+    expected_dense = affine_source_fsl + residual - target_fsl
+    np.testing.assert_allclose(
+        dense.numpy(), expected_dense, atol=7e-6, rtol=0
+    )
 
 
 def test_common_dense_jacobian_uses_fsl_residual_and_excludes_affine():
@@ -248,7 +255,17 @@ def test_real_backend_dispatch_uses_the_same_default_flirt_and_common_tail(
     monkeypatch,
 ):
     moving = _volume()
-    fixed = _volume()
+    fixed = _volume(
+        shape=(8, 7, 9),
+        affine=np.array(
+            [
+                [-1.1, 0.05, 0.0, 7.0],
+                [0.0, 1.4, 0.1, -3.0],
+                [0.0, 0.0, 2.0, 2.0],
+                [0.0, 0.0, 0.0, 1.0],
+            ]
+        ),
+    )
     reference_mask = fixed.new(
         (np.asarray(fixed.data) > 0.15).astype(np.uint8)
     )
@@ -267,8 +284,16 @@ def test_real_backend_dispatch_uses_the_same_default_flirt_and_common_tail(
                     np.asarray(fixed_value.data).copy(),
                 )
             )
+            forward_world = np.array(
+                [
+                    [1.02, 0.01, 0.00, 0.3],
+                    [0.00, 0.98, 0.02, -0.4],
+                    [0.01, 0.00, 1.01, 0.2],
+                    [0.00, 0.00, 0.00, 1.0],
+                ]
+            )
             matrix = world_to_flirt_affine(
-                np.eye(4),
+                forward_world,
                 moving_value.geom.vox2world.matrix,
                 fixed_value.geom.vox2world.matrix,
                 moving_value.shape[:3],
@@ -278,10 +303,27 @@ def test_real_backend_dispatch_uses_the_same_default_flirt_and_common_tail(
             )
             return SimpleNamespace(
                 matrix=matrix,
-                moving_to_fixed_world=np.eye(4),
-                fixed_to_moving_world=np.eye(4),
+                moving_to_fixed_world=forward_world,
+                fixed_to_moving_world=np.linalg.inv(forward_world),
                 qc={"validated_fsl_equivalent": False},
             )
+
+    def common_residual(fixed_value):
+        axes = np.stack(
+            np.meshgrid(
+                *(
+                    np.arange(size, dtype=np.float32)
+                    for size in fixed_value.shape[:3]
+                ),
+                indexing="ij",
+            ),
+            axis=-1,
+        )
+        residual = np.empty((*fixed_value.shape[:3], 3), dtype=np.float32)
+        residual[..., 0] = 0.15 + 0.012 * axes[..., 0]
+        residual[..., 1] = -0.08 + 0.009 * axes[..., 1]
+        residual[..., 2] = 0.04 - 0.006 * axes[..., 2]
+        return residual
 
     class FakeSynthMorph(SynthMorphDeformRegistration):
         def __init__(self):
@@ -303,9 +345,7 @@ def test_real_backend_dispatch_uses_the_same_default_flirt_and_common_tail(
                     moving_value.geom.voxsize,
                     fixed_value.geom.voxsize,
                 )
-                residual = np.zeros(
-                    (*fixed_value.shape[:3], 3), dtype=np.float32
-                )
+                residual = common_residual(fixed_value)
                 return SimpleNamespace(
                     transform=_pull_from_fsl_residual(
                         moving_value, fixed_value, forward, residual
@@ -339,9 +379,7 @@ def test_real_backend_dispatch_uses_the_same_default_flirt_and_common_tail(
                 moving_value.geom.voxsize,
                 fixed_value.geom.voxsize,
             )
-            residual = np.zeros(
-                (*fixed_value.shape[:3], 3), dtype=np.float32
-            )
+            residual = common_residual(fixed_value)
             return SimpleNamespace(
                 pull_transform=_pull_from_fsl_residual(
                     moving_value, fixed_value, forward, residual
@@ -393,3 +431,4 @@ def test_real_backend_dispatch_uses_the_same_default_flirt_and_common_tail(
     np.testing.assert_array_equal(
         synth_result.modulated_gm.data, fnirt_result.modulated_gm.data
     )
+    assert not np.allclose(synth_result.jacobian.data, 1.0)

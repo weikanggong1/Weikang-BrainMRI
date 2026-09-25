@@ -20,6 +20,8 @@ template、reference mask、几何和 FLIRT matrix 的 SHA-256；两后端使用
 上下文时，该签名必须完全一致。FNIRT estimator 消费 reference mask；官方
 SynthMorph deform 网络没有 mask 输入，因此该 mask 在 SynthMorph 分支用于共同
 上下文记录和配对验证，不送入网络。
+FNIRT 返回的 spline analytic Jacobian 只用于 estimator QC；三幅 VBM 图始终使用
+两分支共同计算的 dense-field Jacobian。
 
 ```mermaid
 flowchart LR
@@ -57,8 +59,8 @@ FNIRT 分支沿用 UKB GM 配置的四层下采样、输入/参考平滑、10 mm
 间距、bending-energy 权重和 0.2–5 Jacobian 范围。FastVBM 的 common
 Jacobian 对 dense residual 使用 FSL 的中心有限差分（边界单侧差分）；独立
 `TorchFNIRT` 仍保留 spline analytic Jacobian。此前的 case01 matched-input 诊断
-使用官方 intent-2007 coefficient；common dense 与 `fnirtfileutils --jout` analytic 的全图
-相关为 0.999916，MAE 0.001555，最大绝对差 0.07110；这属于 FastVBM common
+使用官方 intent-2007 coefficient；common dense 与 `fnirtfileutils --jout`
+analytic 的全图相关为 0.999916，MAE 0.001555，最大绝对差 0.07110；这属于 FastVBM common
 postprocessing 的离散化差异，不能写成逐体素相同。
 
 FNIRT 与 FSL 的配对比较必须传入官方 FNIRT 使用的同一 reference mask。已核对的 UKB 日志使用

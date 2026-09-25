@@ -32,6 +32,8 @@ reference mask；默认 `template > 0` 会在 QC 中标为非 FSL-exact。
 mask 使用属于两个 nonlinear estimator 之间的算法差异。因而，两个公开后端
 唯一影响输出的分支是 nonlinear estimator 本身，包括各自的目标函数、正则化和
 mask 使用；其余配准、重采样、Jacobian 和 modulation 步骤相同。
+FNIRT 的 spline analytic Jacobian 只作为 estimator QC 与 common dense Jacobian
+对照，不参与 warped GM、Jacobian 或 modulated GM 的生成。
 
 ## 单被试 Python
 

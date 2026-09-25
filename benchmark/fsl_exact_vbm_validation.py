@@ -84,10 +84,10 @@ from freesurfer_torch.fnirt import TorchFNIRT
 
 try:
     # Final public layout used by the 0.9 release.
-    from freesurfer_torch.flirt import TorchFLIRT as ExactTargetFLIRT
+    from freesurfer_torch.flirt import TorchFLIRT as SourceDerivedFLIRT
 except ImportError:
-    # Transitional location while the exact-target port is being validated.
-    from freesurfer_torch.fast_vbm.fsl_flirt import FSLFLIRT as ExactTargetFLIRT
+    # Transitional location while the source-derived port is being validated.
+    from freesurfer_torch.fast_vbm.fsl_flirt import FSLFLIRT as SourceDerivedFLIRT
 
 
 SCHEMA_VERSION = 1
@@ -521,7 +521,9 @@ def flirt_provenance(
     return {
         **context,
         "case_inputs_sha256": case_hashes,
-        "algorithm": "FSLFLIRT exact-target default 12-DOF correlation-ratio path",
+        "algorithm": (
+            "source-derived FSLFLIRT default 12-DOF correlation-ratio path"
+        ),
     }
 
 
@@ -607,7 +609,7 @@ def run_flirt(
     try:
         def compute():
             moving = sf.load_volume(str(case.fsl_gm))
-            return ExactTargetFLIRT(device=args.device)(moving, template)
+            return SourceDerivedFLIRT(device=args.device)(moving, template)
 
         result, compute_sec = timed(
             torch.device(args.device),
@@ -1241,7 +1243,7 @@ def evaluate_gates(
             max(flirt_values) if flirt_values else None,
             "<=",
             FLIRT_RMSDIFF_MAX_MM,
-            scope="FLIRT exact-target component",
+            scope="source-derived FLIRT component",
             note="worst case across the selected real-data cohort",
         ),
         gate_record(
@@ -1430,11 +1432,16 @@ def validated_run_manifest(args, inputs: dict[str, Any]):
         recorded_tf32.get("matmul") and recorded_tf32.get("cudnn")
     ):
         raise RuntimeError("recorded CUDA run did not enable required TF32 defaults")
+    execution_harness_digest = manifest.get("script_sha256")
+    if not isinstance(execution_harness_digest, str) or not re.fullmatch(
+        r"[0-9a-f]{64}", execution_harness_digest
+    ):
+        raise RuntimeError("run manifest has no valid execution script SHA-256")
     context = validation_context(
         args,
         inputs,
         source_digest=package_source_digest(),
-        harness_digest=script_digest(),
+        harness_digest=execution_harness_digest,
         tf32=recorded_tf32,
         environment=recorded_environment,
     )
@@ -1506,6 +1513,7 @@ def summarize(args) -> int:
     private_cases = []
     raw_metrics: dict[str, dict[str, list[dict[str, Any]]]] = {}
     raw_timings: dict[str, dict[str, list[dict[str, float]]]] = {}
+    raw_flirt_timings = []
     raw_fsl_timings = []
     flirt_values = []
     paired_signatures: dict[str, list[bool]] = {layer: [] for layer in args.layers}
@@ -1544,6 +1552,18 @@ def summarize(args) -> int:
             candidate_matrix, official_matrix, rmsdiff_reference_centre
         )
         flirt_values.append(rmsdiff)
+        raw_flirt_timings.append(
+            {
+                "synchronized_compute_sec": float(
+                    flirt_record["synchronized_compute_sec"]
+                ),
+                "output_save_sec": float(flirt_record["output_save_sec"]),
+                "compute_and_save_sec": float(
+                    flirt_record["synchronized_compute_sec"]
+                    + flirt_record["output_save_sec"]
+                ),
+            }
+        )
         execution_source_digests.add(
             flirt_record["provenance_private"]["package_source_sha256"]
         )
@@ -1684,10 +1704,18 @@ def summarize(args) -> int:
             )
 
     flirt_distribution = distribution(flirt_values)
+    flirt_timing_distribution = aggregate_metrics(raw_flirt_timings)
     append_distributions(
         rows,
         {"matrix_rmsdiff_mm": flirt_distribution},
         category="flirt_accuracy",
+        layer="matched_gm",
+        backend="pytorch_flirt",
+    )
+    append_distributions(
+        rows,
+        flirt_timing_distribution,
+        category="flirt_timing",
         layer="matched_gm",
         backend="pytorch_flirt",
     )
@@ -1809,7 +1837,9 @@ def summarize(args) -> int:
     public = {
         "schema": SCHEMA_VERSION,
         "package_version": freesurfer_torch.__version__,
-        "feature": "FSL exact-target registration and FastVBM shared-chain validation",
+        "feature": (
+            "FSL-source-derived registration and FastVBM shared-chain validation"
+        ),
         "cohort": {
             "modality": "real T1w",
             "case_count": len(inputs["cases"]),
@@ -1827,6 +1857,11 @@ def summarize(args) -> int:
             "source_unchanged_at_summarize": (
                 execution_source_digest == package_source_digest()
             ),
+            "execution_harness_sha256": run_manifest["script_sha256"],
+            "summarizer_harness_sha256": script_digest(),
+            "harness_unchanged_at_summarize": (
+                run_manifest["script_sha256"] == script_digest()
+            ),
             "fsl_source_targets": {
                 "flirt": "2111.2",
                 "fnirt": "2203.0",
@@ -1834,7 +1869,9 @@ def summarize(args) -> int:
         },
         "evaluation": {
             "candidate_implementations": {
-                "affine": "freesurfer_torch.flirt.TorchFLIRT exact-target port",
+                "affine": (
+                    "freesurfer_torch.flirt.TorchFLIRT source-derived port"
+                ),
                 "fnirt": "freesurfer_torch.fnirt.TorchFNIRT",
                 "synthmorph": (
                     "freesurfer_torch.fast_vbm.SynthMorphDeformRegistration "
@@ -1906,6 +1943,11 @@ def summarize(args) -> int:
                 "image intensity-weighted COG"
             ),
             "matrix_rmsdiff_mm": flirt_distribution,
+            "timing": flirt_timing_distribution,
+            "timing_contract": (
+                "CUDA-synchronized TorchFLIRT call; output_save_sec writes the "
+                "moved image and FSL matrix; shared-node load was not controlled"
+            ),
         },
         "reference_fsl_timing": fsl_timing_distribution,
         "reference_fsl_timing_provenance": {

@@ -112,7 +112,7 @@ The return value is a `FLIRTResult`:
 | Field | Content |
 |---|---|
 | `moved` | `surfa.Volume` containing the input resampled on the reference grid. |
-| `matrix` / `fsl_matrix` | NumPy 4 x 4 input-to-reference FSL scaled-mm matrix, matching `flirt -omat`. |
+| `matrix` / `fsl_matrix` | NumPy 4 x 4 input-to-reference matrix using the same FSL scaled-mm file contract as `flirt -omat`. |
 | `moving_to_fixed_world` | NumPy 4 x 4 input-to-reference world-RAS affine. |
 | `fixed_to_moving_world` | NumPy 4 x 4 world-RAS pull affine used for resampling. |
 | `qc` | Cost, optimizer, schedule, device, source versions, evaluation count, coordinate convention, and validation status. |
