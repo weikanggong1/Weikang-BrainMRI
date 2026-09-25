@@ -25,7 +25,7 @@
     "direct_fnirt_json": "cb286d97dbce734732b1cd753e8781b91b390ca81e0d432266ee8689bac4f471",
     "fast_vbm_csv": "0665df9e9e7c1f98e47a9d844d967a4ac98f7adca6f10e2b31dcb5723a5441f8",
     "fast_vbm_json": "9d37f90f982fdc28e69fe39f27bdf986bde1a104f612d129ad9e25b5efb6d1d9",
-    "fnirt_source_attestation_json": "ac7fc9614a1e85947c6aa0723d80c27316b8318c4a97db14dcc748baeb4b0329",
+    "source_equivalence_json": "ac7fc9614a1e85947c6aa0723d80c27316b8318c4a97db14dcc748baeb4b0329",
     "test_summary_json": "e8543687821f2eff298619683e1c2be8322b29bfc9aaa7827d68346896b155af",
     "validation_sha256sums": "90be840230bc43f3cf87828fee2841ebc7b05d38a0a246970916f6a4eef5d848"
   },

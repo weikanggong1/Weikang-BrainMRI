@@ -196,7 +196,7 @@ FLIRT matrix 和官方 reference mask，比较 coefficient-expanded residual、`
 [`fnirt_fsl_10case.v0.9.public.json`](../../../validation/fast_vbm/fnirt_fsl_10case.v0.9.public.json)。
 最终发布源码只移动了 FNIRT 使用的三个坐标函数及其 import；归一化 AST 和其余
 FNIRT Python 源码的逐字节核验见
-[`fnirt_source_equivalence.v0.9.public.json`](../../../validation/fast_vbm/fnirt_source_equivalence.v0.9.public.json)。该记录是源码继承证明，
+[`source_equivalence.v0.9.public.json`](../../../validation/fast_vbm/source_equivalence.v0.9.public.json)。该记录是源码继承证明，
 不是新的数值运行，也不改变 `fsl_fnirt_numerically_equivalent=false`。
 
 最早可定位的分叉出现在第三次 coefficient update 的截断 PCG：FSL 组装稀疏

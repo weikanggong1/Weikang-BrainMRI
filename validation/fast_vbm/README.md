@@ -15,7 +15,7 @@ PyTorch SynthMorph deform 或 source-derived `TorchFNIRT` GM config。reference 
 |---|---|---|
 | source-derived `TorchFLIRT`，默认 TF32，10 例真实 GM | 10/10 通过预设 matrix functional gate（`rmsdiff ≤ 0.05 mm`） | [`report.v0.9.public.json`](report.v0.9.public.json) |
 | source-derived `TorchFNIRT`，10 例独立 matched-input 对照 | 已完成；相关很高但不满足数值等价 | [`fnirt_fsl_10case.v0.9.public.json`](fnirt_fsl_10case.v0.9.public.json) |
-| FNIRT 最终源码继承核验 | 已完成；这是源码继承证明，不是新的数值运行 | [`fnirt_source_equivalence.v0.9.public.json`](fnirt_source_equivalence.v0.9.public.json) |
+| FNIT 最终源码继承核验 | 已完成；这是源码继承证明，不是新的数值运行 | [`source_equivalence.v0.9.public.json`](source_equivalence.v0.9.public.json) |
 | `TorchApplyWarp` 已支持子集 | 已完成 | [`../applywarp/report.json`](../applywarp/report.json) |
 | 当前共享链路的 10 例双后端 FastVBM 对照 | 已完成；正式报告只运行 `end_to_end` | [`report.v0.9.public.json`](report.v0.9.public.json) |
 
@@ -105,4 +105,4 @@ TorchFAST/FSL FAST 的 GM 估计差异。SynthMorph 分支本来就采用不同�
 当前 0.9 的正式报告、表格、测试摘要和构建清单为
 [`report.v0.9.public.json`](report.v0.9.public.json)、[`backend_comparison.v0.9.public.csv`](backend_comparison.v0.9.public.csv)、[`test_summary.v0.9.public.json`](test_summary.v0.9.public.json) 和 [`release.v0.9.public.json`](release.v0.9.public.json)。Direct FNIRT 数值在
 [`fnirt_fsl_10case.v0.9.public.json`](fnirt_fsl_10case.v0.9.public.json)，最终源码继承
-边界在 [`fnirt_source_equivalence.v0.9.public.json`](fnirt_source_equivalence.v0.9.public.json)。
+边界在 [`source_equivalence.v0.9.public.json`](source_equivalence.v0.9.public.json)。

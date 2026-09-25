@@ -19,7 +19,7 @@
   ],
   "final": {
     "package_import": "fnit",
-    "package_python_source_sha256": "03b6b2df8a020126f1978cae0d7d49b217b7ef80ab8f692028c43c1ba014dbe4"
+    "package_python_source_sha256": "26447b5995d5d37eac5666088cea37d67aad559be2bd5c762cbdfc6f1295e7c1"
   },
   "interpretation": {
     "fsl_numerical_equivalent": false,

@@ -17,7 +17,7 @@ BASELINE_PACKAGE_SHA256 = (
     "2b51c1203d01651b4aa060b7e96f0a63fa483acfc11078a5f1ddecb2165e8ca3"
 )
 CURRENT_PACKAGE_SHA256 = (
-    "03b6b2df8a020126f1978cae0d7d49b217b7ef80ab8f692028c43c1ba014dbe4"
+    "26447b5995d5d37eac5666088cea37d67aad559be2bd5c762cbdfc6f1295e7c1"
 )
 BASELINE_ATTESTATION = "validation/fast_vbm/fnirt_source_equivalence.v0.9.public.json"
 BASELINE_ATTESTATION_SHA256 = (
@@ -26,7 +26,7 @@ BASELINE_ATTESTATION_SHA256 = (
 BRAND_REPLACEMENTS = (
     (b"FREESURFER_TORCH", b"FNIT"),
     (b"freesurfer_torch", b"fnit"),
-    (b"freesurfer-torch", b"fudan-neuroimaging-toolkit"),
+    (b"freesurfer-torch", b"Fudan Neuroimaging Toolkit (FNIT)"),
     (b"fs-torch", b"fnit"),
     (b"Weikang-BrainMRI", b"Fudan-Neuroimaging-toolkit"),
 )
