@@ -1,0 +1,132 @@
+{
+  "claim_boundary": {
+    "flirt": "The ten-case matrix functional gate passed; this is not a claim of complete FSL numerical equivalence.",
+    "fnirt": "The independent ten-case matched-input report covers five metric and output-contract types, but TorchFNIRT is not numerically equivalent to FSL FNIRT.",
+    "timing": "Shared-node timings are descriptive and are not controlled speedup claims."
+  },
+  "distributions": {
+    "sdist": {
+      "bytes": 2289772,
+      "file_count": 509,
+      "package_python_source_sha256": "8bea5a883d0043a5d1264994dddf0fcbdb88fbdf3c1d22a753107754b24b6438",
+      "python_bytecode_file_count": 0,
+      "sha256": "6430f3d0f325251d6dc4c8c100def90ab1e72c6b1329888bd109680068476829"
+    },
+    "wheel": {
+      "bytes": 862453,
+      "file_count": 331,
+      "package_python_source_sha256": "8bea5a883d0043a5d1264994dddf0fcbdb88fbdf3c1d22a753107754b24b6438",
+      "python_bytecode_file_count": 0,
+      "sha256": "c38eb23d1919651d7fec9c69616d4674a47045bfb0a1fe03de631e090a82e395"
+    }
+  },
+  "evidence_sha256": {
+    "build_install_checks_json": "ea9ce1e8e41a7faf9a26c394655a64e782528551740a0d7c165fa2e1ff782b4b",
+    "direct_fnirt_json": "cb286d97dbce734732b1cd753e8781b91b390ca81e0d432266ee8689bac4f471",
+    "fast_vbm_csv": "0665df9e9e7c1f98e47a9d844d967a4ac98f7adca6f10e2b31dcb5723a5441f8",
+    "fast_vbm_json": "9d37f90f982fdc28e69fe39f27bdf986bde1a104f612d129ad9e25b5efb6d1d9",
+    "fnirt_source_attestation_json": "ac7fc9614a1e85947c6aa0723d80c27316b8318c4a97db14dcc748baeb4b0329",
+    "test_summary_json": "e8543687821f2eff298619683e1c2be8322b29bfc9aaa7827d68346896b155af",
+    "validation_sha256sums": "90be840230bc43f3cf87828fee2841ebc7b05d38a0a246970916f6a4eef5d848"
+  },
+  "gate_summary": {
+    "artifact_release": {
+      "archive_safety": true,
+      "build": true,
+      "cli_entry_point_count": 6,
+      "package_python_source_digest_consistent": true,
+      "privacy": true,
+      "python_bytecode_file_count": 0,
+      "release_manifest_absent_from_archives": true,
+      "retired_runtime_module_count": 0,
+      "source_tests": true,
+      "weight_checkpoint_or_mri_file_count": 0,
+      "wheel_install": true
+    },
+    "fast_vbm": {
+      "case_count": 10,
+      "declared_gate_count": 29,
+      "failed_gate_count": 1,
+      "flirt": {
+        "case_count": 10,
+        "claim_scope": "matrix functional gate only",
+        "complete_fsl_numerical_equivalence_claimed": false,
+        "matrix_rmsdiff_maximum_mm": 0.028983791550083453,
+        "matrix_rmsdiff_pass_count": 10,
+        "matrix_rmsdiff_threshold_mm": 0.05,
+        "outcome": "passed"
+      },
+      "not_evaluated_gate_count": 24,
+      "passed_gate_count": 4,
+      "report_release_decision": "not made by this harness"
+    },
+    "fnirt": {
+      "case_count": 10,
+      "claim": "not numerically equivalent to FSL",
+      "fsl_numerically_equivalent": false,
+      "metric_output_count": 5,
+      "output_contract_count": 5,
+      "output_contract_pass_count": 5,
+      "source_attestation_passed": true,
+      "source_evidence_inherited": true
+    },
+    "release_decision": "passed_with_scientific_claim_boundaries"
+  },
+  "privacy": "Aggregate-only release record; no account, private path, subject identifier, per-case result, private host, model weight, or MRI is published.",
+  "release": "0.9.0",
+  "schema": 1,
+  "source": {
+    "git_commit": "8e31d1707a4b755047b00712e23ba9257c7025a2",
+    "package_python_source_sha256": "8bea5a883d0043a5d1264994dddf0fcbdb88fbdf3c1d22a753107754b24b6438"
+  },
+  "verification": {
+    "build": {
+      "backend": "setuptools.build_meta",
+      "network_used": false,
+      "passed": true
+    },
+    "build_install_checks": {
+      "cli_help_count": 6,
+      "commit": "8e31d1707a4b755047b00712e23ba9257c7025a2",
+      "offline_build": true,
+      "passed": true,
+      "public_import_count": 12,
+      "wheel_installed_to_isolated_target": true
+    },
+    "cli_help": {
+      "fs-torch": true,
+      "fs-torch-applywarp": true,
+      "fs-torch-flirt": true,
+      "fs-torch-fnirt": true,
+      "fs-torch-recon-all": true,
+      "fs-torch-setup-weights": true
+    },
+    "environment": {
+      "cuda_runtime": "11.8",
+      "device_name": "NVIDIA H100 PCIe",
+      "platform": "Linux",
+      "python": "3.11.7",
+      "tf32": {
+        "cudnn": true,
+        "matmul": true,
+        "reduced_precision_tensor_dtype": false
+      },
+      "threads": 4,
+      "torch": "2.5.1"
+    },
+    "full_source_suite": {
+      "completed": true,
+      "duration_seconds": 19.54,
+      "passed": 353,
+      "skipped": 12,
+      "warnings": 4
+    },
+    "wheel_install": {
+      "isolated_target": true,
+      "outside_source_tree": true,
+      "passed": true,
+      "public_api_import": true,
+      "version": "0.9.0"
+    }
+  }
+}
