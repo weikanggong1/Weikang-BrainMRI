@@ -37,7 +37,7 @@ CPU 和 CUDA 分别进行同设备比较：原版 CPU 对本包 CPU，原版源�
 ```bash
 python -m pip install .
 python tools/setup_weights.py --model wmh-synthseg
-export WMH_WEIGHTS="$HOME/.cache/freesurfer_torch"
+export WMH_WEIGHTS="$HOME/.cache/fnit"
 export FREESURFER_HOME=/path/to/freesurfer-8.2.0-1
 
 for arm in official-cpu official-cuda torch-cpu torch-cuda; do

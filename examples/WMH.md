@@ -17,7 +17,7 @@ python tools/setup_weights.py --model wmh-synthseg
 先运行一例。下面的参数对应原版 `mri_WMHsynthseg --i ... --o ... --crop --save_lesion_probabilities --csv_vols ...`：
 
 ```bash
-fs-torch wmh-synthseg \
+fnit wmh-synthseg \
   --i examples/wmh_data/sub-04_FLAIR.nii.gz \
   --o examples/results/wmh_single/sub-04_seg.nii.gz \
   --device cuda:0 --threads 4 --crop \
@@ -31,7 +31,7 @@ Python 调用返回影像对象和体积字典，不自动写文件：
 
 ```python
 from pathlib import Path
-from freesurfer_torch import WMHSynthSeg
+from fnit import WMHSynthSeg
 
 Path("examples/results/wmh_single").mkdir(parents=True, exist_ok=True)
 model = WMHSynthSeg(device="cuda:0", threads=4)

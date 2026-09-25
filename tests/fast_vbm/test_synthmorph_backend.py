@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 import surfa as sf
 
-from freesurfer_torch.fast_vbm.synthmorph_backend import (
+from fnit.fast_vbm.synthmorph_backend import (
     SynthMorphDeformRegistration,
 )
 
@@ -92,7 +92,7 @@ def test_default_backend_builds_the_official_deform_model(monkeypatch):
             captured.update(kwargs)
 
     monkeypatch.setattr(
-        "freesurfer_torch.synthmorph.SynthMorph", FakeConstructor
+        "fnit.synthmorph.SynthMorph", FakeConstructor
     )
     model = SynthMorphDeformRegistration(
         weights="checkpoint.h5",

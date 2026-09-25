@@ -1,6 +1,6 @@
 """The three neural launchers read from the selected external model directory."""
 
-from freesurfer_torch.recon_all.gpu_tools import _models
+from fnit.recon_all.gpu_tools import _models
 
 
 def test_neural_model_directory_overrides_bundle(tmp_path, monkeypatch):

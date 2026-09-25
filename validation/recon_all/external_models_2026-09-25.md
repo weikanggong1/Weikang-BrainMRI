@@ -14,7 +14,7 @@ tree SHA-256 `17858230ba8e10302f4052be2299def0abaa0f84597fb2c4f0e5a607f03353e4`.
 | External model inventory | 13 fixed files, 3,653,914,059 bytes; each size and SHA-256 matched the certified manifest |
 | Static runtime preflight | 295 bundled files and 13 external files passed hash, ELF linkage and script resource checks; no errors |
 | Bundle directory size | 697,670,460 bytes versus 4,351,587,774 bytes for the original copy |
-| Independent `fs-torch synthseg` on the existing sub-01 `orig.mgz` | Hard-label voxels and soft-volume CSV identical to the v0.6 recon-all SynthSeg output; 0 changed voxels |
+| Independent `fnit synthseg` on the existing sub-01 `orig.mgz` | Hard-label voxels and soft-volume CSV identical to the v0.6 recon-all SynthSeg output; 0 changed voxels |
 | Recon-all `mri_synthseg` with external weights on the same `orig.mgz` | Hard-label voxels and soft-volume CSV identical to that output; 0 changed voxels |
 | Automated Python tests on headcw | 258 passed, 8 skipped |
 
@@ -30,7 +30,7 @@ during intensity correction, before surface reconstruction and the numerical
 comparison. There is **no completed 52+2+19 comparison or trace certification
 for this external-model candidate**. Its manifest remains
 `standalone_verified=false`; the default `run_recon_all` and
-`fs-torch-recon-all` entry rejects it. An explicit development invocation can
+`fnit-recon-all` entry rejects it. An explicit development invocation can
 use this candidate, but its complete outputs and run time are unverified.
 Previous [v0.6 numerical results](gpucw1_batch_integration_2026-09-24.md)
 and [v0.7 source-equivalence attestation](v06_to_v07_runtime_equivalence.json)

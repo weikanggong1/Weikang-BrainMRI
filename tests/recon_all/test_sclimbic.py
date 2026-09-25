@@ -3,7 +3,7 @@ import numpy as np
 import pytest
 import torch
 
-from freesurfer_torch.recon_all.sclimbic import LimbicUNet, _cleanup, main, mri_sclimbic_seg
+from fnit.recon_all.sclimbic import LimbicUNet, _cleanup, main, mri_sclimbic_seg
 
 
 def test_network_returns_class_probabilities():
@@ -107,7 +107,7 @@ def test_recon_all_subject_cli_writes_entowm_seg_and_stats(tmp_path, monkeypatch
 
 
 def test_entowm_launcher_assets_follow_external_model_directory(tmp_path, monkeypatch):
-    import freesurfer_torch.recon_all.sclimbic as sclimbic
+    import fnit.recon_all.sclimbic as sclimbic
     external = tmp_path / "weights"
     external.mkdir()
     selected = []

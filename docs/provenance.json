@@ -36,11 +36,11 @@
     "fsl_flirt_coordinate_faq": "https://fsl.fmrib.ox.ac.uk/fsl/docs/registration/flirt/faq.html",
     "fsl_fnirt_user_guide": "https://fsl.fmrib.ox.ac.uk/fsl/docs/registration/fnirt/user_guide.html",
     "package_feature": {
-      "pipeline": "src/freesurfer_torch/fast_vbm/pipeline.py",
-      "registration": "src/freesurfer_torch/fast_vbm/registration.py",
-      "flirt_registration": "src/freesurfer_torch/flirt/core.py",
-      "flirt_coordinates": "src/freesurfer_torch/flirt/coordinates.py",
-      "synthmorph_registration": "src/freesurfer_torch/fast_vbm/synthmorph_backend.py",
+      "pipeline": "src/fnit/fast_vbm/pipeline.py",
+      "registration": "src/fnit/fast_vbm/registration.py",
+      "flirt_registration": "src/fnit/flirt/core.py",
+      "flirt_coordinates": "src/fnit/flirt/coordinates.py",
+      "synthmorph_registration": "src/fnit/fast_vbm/synthmorph_backend.py",
       "sequence_basis": "bb_struct_init brain and GM preparation followed by bb_vbm GM-to-template registration and Jacobian modulation",
       "implementation": "SynthStrip and TorchFAST followed by the source-derived PyTorch FLIRT path and a selectable package PyTorch SynthMorph deform or source-derived PyTorch FNIRT path",
       "linear_method": "PyTorch port of the FSL FLIRT 2111.2 12-DOF correlation-ratio path; matrices use the FSL input-to-reference scaled-mm contract",
@@ -54,10 +54,10 @@
         "ukb_sequence_attribution": "licenses/Apache-2.0.txt",
         "fsl_registration_ports": "licenses/FSL-6.0.txt"
       },
-      "fnirt_registration": "src/freesurfer_torch/fnirt/registration.py",
-      "applywarp": "src/freesurfer_torch/applywarp/core.py",
+      "fnirt_registration": "src/fnit/fnirt/registration.py",
+      "applywarp": "src/fnit/applywarp/core.py",
       "fnirt_method": "PyTorch port of the FSL FNIRT 2203.0 UKB GM path with basisfield 2203.1, miscmaths 2203.2, newimage 2203.11 and warpfns 2203.0 source references",
-      "source_provenance_manifest": "src/freesurfer_torch/_vendor_fsl/manifest.json",
+      "source_provenance_manifest": "src/fnit/_vendor_fsl/manifest.json",
       "fsl_flirt_equivalence_status": "the default-TF32 ten-case reference suite passed the tolerance-based matrix functional gate 10/10 (median 0.008544 mm, IQR 0.006265-0.019436 mm, maximum 0.028984 mm; threshold 0.05 mm); runtime validated_fsl_equivalent remains false because this is not a per-input, bitwise, or complete numerical-equivalence claim",
       "fsl_fnirt_equivalence_status": "the independent ten-case matched-input report measured median warped GM r=0.998695, nonlinear Jacobian r=0.999267, and modulated GM r=0.998507 with 10/10 output-contract agreement; errors exceed rounding and fsl_fnirt_numerically_equivalent remains false",
       "fast_vbm_v0_9_validation": {
@@ -96,7 +96,7 @@
     "validated_package": "FSL 6.0.7.4; fsl-fast4 2111.3 h2bc3f7f_1",
     "license_file": "licenses/FSL-6.0.txt",
     "license_sha256": "137735ac0d0f075d58e85642972692b92073711752b273e7de7ed38c6147a8eb",
-    "distributed_source_directory": "src/freesurfer_torch/fast/upstream_fast4"
+    "distributed_source_directory": "src/fnit/fast/upstream_fast4"
   },
   "distribution_boundary": {
     "pretrained_weights_included": false,
@@ -110,7 +110,7 @@
   "fsl_registration_source_snapshots": {
     "purpose": "complete unmodified upstream sources consulted for the modified PyTorch FLIRT, FNIRT and applywarp ports",
     "validation_baseline": "FSL 6.0.7.4",
-    "manifest": "src/freesurfer_torch/_vendor_fsl/manifest.json",
+    "manifest": "src/fnit/_vendor_fsl/manifest.json",
     "manifest_sha256": "7050329ef6f6c7f695b080086dd6e0221412213563fff7446afc8489a1856e1c",
     "license_file": "licenses/FSL-6.0.txt",
     "license_sha256": "137735ac0d0f075d58e85642972692b92073711752b273e7de7ed38c6147a8eb",
@@ -122,7 +122,7 @@
         "commit": "5036b4620ea97db0050f2dc132fbb331dbba060c",
         "git_tree": "2e61f74cf42e0572a9c06d1e52c2d147a9006222",
         "git_archive_sha256": "fb292398b898ad2bb8637e55ecfea852642d25364da66dfa8a7a5d06dae670d9",
-        "directory": "src/freesurfer_torch/_vendor_fsl/sources/flirt-2111.2",
+        "directory": "src/fnit/_vendor_fsl/sources/flirt-2111.2",
         "role": "validation_target",
         "fsl_6_0_7_4_package": "fsl-flirt 2111.2"
       },
@@ -132,7 +132,7 @@
         "commit": "27f514a182b5972094e30d8ea79f4fad89cbf03d",
         "git_tree": "a8773c53a4f4b78817d0ffdd26a61db0f25ecc82",
         "git_archive_sha256": "77f955cb90f77edf8754d729c066463fc461146370e04e487032c40e7a3b1f27",
-        "directory": "src/freesurfer_torch/_vendor_fsl/sources/fnirt-2203.0",
+        "directory": "src/fnit/_vendor_fsl/sources/fnirt-2203.0",
         "role": "validation_target",
         "fsl_6_0_7_4_package": "fsl-fnirt 2203.0"
       },
@@ -142,7 +142,7 @@
         "commit": "9588bbe8eb8aa0939ddefd00df756aeb80d2305b",
         "git_tree": "724c6ba1d90c5c0892d7a7fd53c7b85ad81bea3e",
         "git_archive_sha256": "4f6548ddc8e0108d9de9b7b756821aef42fc41d27bd87f247baaaf91a4f6c2f6",
-        "directory": "src/freesurfer_torch/_vendor_fsl/sources/basisfield-2203.1",
+        "directory": "src/fnit/_vendor_fsl/sources/basisfield-2203.1",
         "role": "validation_target",
         "fsl_6_0_7_4_package": "fsl-basisfield 2203.1"
       },
@@ -152,7 +152,7 @@
         "commit": "7824d74cdfa9fb65de178f642c3c05e57c8c8868",
         "git_tree": "fbbf3b510b72663e85bf7a06331d2b3c28edcd7b",
         "git_archive_sha256": "f919465fed011a797dd8b71e27b902fd144388842d6b28c857c7ea7ca46e5f15",
-        "directory": "src/freesurfer_torch/_vendor_fsl/sources/miscmaths-2203.2",
+        "directory": "src/fnit/_vendor_fsl/sources/miscmaths-2203.2",
         "role": "validation_target",
         "fsl_6_0_7_4_package": "fsl-miscmaths 2203.2"
       },
@@ -162,7 +162,7 @@
         "commit": "19e3ddd10138d8ea1394fd522fb0770435c61ddd",
         "git_tree": "9d4eb20e376dd1bb3b15533646eb24e22705ad9e",
         "git_archive_sha256": "2a3ec7192d933b7014bac86ada0838985e0b3b3810664a7b368c09518ae9ba13",
-        "directory": "src/freesurfer_torch/_vendor_fsl/sources/newimage-2203.11",
+        "directory": "src/fnit/_vendor_fsl/sources/newimage-2203.11",
         "role": "validation_target",
         "fsl_6_0_7_4_package": "fsl-newimage 2203.11"
       },
@@ -172,7 +172,7 @@
         "commit": "50ea45cb0b9661adba7844444cb38649ae44892b",
         "git_tree": "37f2cb964efa3b028513089308bcb58b4a682722",
         "git_archive_sha256": "bc3669ed64167191284d33f8d5202f2651eacb3a93b695116039a1f895536121",
-        "directory": "src/freesurfer_torch/_vendor_fsl/sources/warpfns-2203.0",
+        "directory": "src/fnit/_vendor_fsl/sources/warpfns-2203.0",
         "role": "validation_target",
         "fsl_6_0_7_4_package": "fsl-warpfns 2203.0"
       },
@@ -182,7 +182,7 @@
         "commit": "9d815181a19c4fe1aebac74e9fa6601cde4e1ded",
         "git_tree": "df90525b206a3fd4892e8a1a67e8fd7c5b840ecb",
         "git_archive_sha256": "940796c4265c52160deb463dcd2b64a277fd80541044fb2a125d0a2e663ef017",
-        "directory": "src/freesurfer_torch/_vendor_fsl/sources/fugue-2201.3",
+        "directory": "src/fnit/_vendor_fsl/sources/fugue-2201.3",
         "role": "validation_target",
         "fsl_6_0_7_4_package": "fsl-fugue 2201.3"
       }

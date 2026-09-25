@@ -49,7 +49,7 @@ def derive(args):
             and software["package_tree_sha256"] == report["new_package_tree_sha256"],
             "The 0.7 code snapshot differs from the release source")
     require(Path(software["package_root"]).resolve() == args.new_package_root.resolve()
-            and software["versions"]["freesurfer-torch"] == report["new_version"]
+            and software["versions"]["fudan-neuroimaging-toolkit"] == report["new_version"]
             and software["cuda_available"] is True,
             "The frozen 0.7 CUDA installation does not match the release source")
 
@@ -62,9 +62,9 @@ def derive(args):
     for name in ("python", "platform", "torch_cuda", "cudnn", "cuda_available"):
         require(software[name] == old_software[name], f"Runtime environment changed: {name}")
     old_dependencies = {key: value for key, value in old_software["versions"].items()
-                        if key != "freesurfer-torch"}
+                        if key != "fudan-neuroimaging-toolkit"}
     new_dependencies = {key: value for key, value in software["versions"].items()
-                        if key != "freesurfer-torch"}
+                        if key != "fudan-neuroimaging-toolkit"}
     require(new_dependencies == old_dependencies, "Runtime dependency versions changed")
 
     derived = deepcopy(source)

@@ -1,11 +1,11 @@
 # GPU recon-all：单 T1 皮层重建与多被试调度
 
-[返回首页](../../README.md) · [Python 实现](../../src/freesurfer_torch/recon_all/) · [原生运行包构建](../../tools/recon_all_native/README.md) · [数值验收](../../validation/recon_all/README.md)
+[返回首页](../../README.md) · [Python 实现](../../src/fnit/recon_all/) · [原生运行包构建](../../tools/recon_all_native/README.md) · [数值验收](../../validation/recon_all/README.md)
 
 本入口对一幅 T1w 运行固定的 FreeSurfer 8.2 `recon-all -all` 流程，生成体积分割、
 白质与软脑膜表面、顶点指标、脑区标注及统计表。神经网络命令由本包的 PyTorch/CUDA
 实现执行，其他步骤由随本地运行包保存的 FreeSurfer 原生程序执行。单被试支持
-`fs-torch-recon-all` 命令行和 Python 调用；多被试完整流程只提供 Python 调用。
+`fnit-recon-all` 命令行和 Python 调用；多被试完整流程只提供 Python 调用。
 
 ```mermaid
 flowchart LR
@@ -48,12 +48,12 @@ python tools/setup_weights.py --model recon-all --dest /path/to/weights --verify
 `--model synthseg`；它不同于 `--model wmh-synthseg` 的 39 类模型。外置模型运行包
 的清单固定这 13 个文件的大小和 SHA-256，启动时再次校验。可显式传
 `models_dir="/path/to/weights"` / `--models-dir /path/to/weights`；省略时读取
-`FREESURFER_TORCH_WEIGHTS` 或已保存的权重目录。
+`FNIT_WEIGHTS` 或已保存的权重目录。
 
 ## 单被试 Python 调用
 
 ```python
-from freesurfer_torch.recon_all.standalone import run_recon_all
+from fnit.recon_all.standalone import run_recon_all
 
 report = run_recon_all(
     "subject_T1w.nii.gz",
@@ -78,7 +78,7 @@ print(report["subject_dir"], report["elapsed_seconds"])
 ## 单被试命令行
 
 ```bash
-fs-torch-recon-all \
+fnit-recon-all \
   -i subject_T1w.nii.gz -s sub01 -sd /results/sub01_subjects \
   --bundle /path/to/verified_native_bundle \
   --models-dir /path/to/weights \
@@ -89,12 +89,12 @@ fs-torch-recon-all \
 `run_recon_all` 相同的流程。对应的官方命令是安装并加载 FreeSurfer 后运行
 `recon-all -i subject_T1w.nii.gz -s sub01 -sd /results/sub01_subjects -all
 -parallel -openmp 4 -itkthreads 1`；本入口固定了这些处理标志和运行配置。
-完整选项以 `fs-torch-recon-all --help` 为准。
+完整选项以 `fnit-recon-all --help` 为准。
 
 ## 多被试 Python 调用
 
 ```python
-from freesurfer_torch.recon_all.standalone import run_recon_all_batch
+from fnit.recon_all.standalone import run_recon_all_batch
 
 jobs = [
     {"t1": "sub01_T1w.nii.gz", "subject": "sub01",
@@ -132,7 +132,7 @@ reports = run_recon_all_batch(
 一次运行至少检查 `mri/orig.mgz`、`aseg.mgz`、`aparc+aseg.mgz`、`ribbon.mgz`、
 `wmparc.mgz`，双侧 white/pial 表面、厚度、面积、顶点体积、DK/DKT/Destrieux
 统计、DK 标注和 `sphere.reg` 等必需文件。完整清单以
-[`REQUIRED_OUTPUTS`](../../src/freesurfer_torch/recon_all/standalone.py) 为准。
+[`REQUIRED_OUTPUTS`](../../src/fnit/recon_all/standalone.py) 为准。
 GPU 只承担上述神经网络阶段；`--device cuda:N` 不会使拓扑或表面程序改在 GPU 上运行。
 
 ## 数值与速度验证范围

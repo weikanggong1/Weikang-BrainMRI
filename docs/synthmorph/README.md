@@ -1,6 +1,6 @@
 # SynthMorph：配准与变换应用
 
-[返回首页](../../README.md) · [源码目录](../../src/freesurfer_torch/synthmorph/) · [权重](../WEIGHTS.md)
+[返回首页](../../README.md) · [源码目录](../../src/fnit/synthmorph/) · [权重](../WEIGHTS.md)
 
 本模块将指定 FreeSurfer 8.2.0 构建中的 TensorFlow/Keras SynthMorph 移植为 PyTorch，支持刚性、仿射、非线性和联合配准，直接读取官方 HDF5 权重。推理不导入 TensorFlow、VoxelMorph、Neurite，也不调用 FreeSurfer。
 
@@ -10,7 +10,7 @@
 
 ```python
 from pathlib import Path
-from freesurfer_torch import SynthMorph, apply_transform
+from fnit import SynthMorph, apply_transform
 
 out = Path("results")
 out.mkdir(exist_ok=True)
@@ -32,7 +32,7 @@ labels = apply_transform(
 labels.save(out / "labels_in_fixed.nii.gz")
 ```
 
-`from freesurfer_torch.synthmorph import SynthMorph, RegistrationResult, apply_transform` 是等价的功能模块入口。模型实例可重复用于后续影像对。
+`from fnit.synthmorph import SynthMorph, RegistrationResult, apply_transform` 是等价的功能模块入口。模型实例可重复用于后续影像对。
 
 ### 模型构造
 
@@ -92,12 +92,12 @@ labels.save(out / "labels_in_fixed.nii.gz")
 ## 命令行
 
 ```bash
-fs-torch synthmorph moving_T1w.nii.gz fixed_T1w.nii.gz \
+fnit synthmorph moving_T1w.nii.gz fixed_T1w.nii.gz \
   --model joint --device cuda:0 --weights /path/to/weights \
   -o results/moving_in_fixed.nii.gz -O results/fixed_in_moving.nii.gz \
   -t results/moving_to_fixed.mgz -T results/fixed_to_moving.mgz
 
-fs-torch apply results/moving_to_fixed.mgz moving_labels.nii.gz \
+fnit apply results/moving_to_fixed.mgz moving_labels.nii.gz \
   results/labels_in_fixed.nii.gz --method nearest --dtype int16
 ```
 
@@ -129,7 +129,7 @@ mri_synthmorph apply -m nearest -t int16 \
 | `-j`, `--threads` | Torch 线程数，CLI 默认 4 |
 | `-d`, `--output-dir` | 调试目录 |
 
-配准至少请求一个影像、变换或调试输出。统一 CLI 会创建输出父目录。`fs-torch apply` 的位置参数依次是变换、影像、输出；支持 `--method`、`--fill`、`--dtype`、`--header-only`。CLI dtype 选择为 `uint8`、`uint16`、`int16`、`int32`、`float32`，默认 `float32`。apply 使用 Surfa CPU 重采样，不接受设备参数。当前 apply CLI 与 Python 每次均处理一对 image/output。
+配准至少请求一个影像、变换或调试输出。统一 CLI 会创建输出父目录。`fnit apply` 的位置参数依次是变换、影像、输出；支持 `--method`、`--fill`、`--dtype`、`--header-only`。CLI dtype 选择为 `uint8`、`uint16`、`int16`、`int32`、`float32`，默认 `float32`。apply 使用 Surfa CPU 重采样，不接受设备参数。当前 apply CLI 与 Python 每次均处理一对 image/output。
 
 ## 权重和执行位置
 
@@ -147,10 +147,10 @@ mri_synthmorph apply -m nearest -t int16 \
 
 | 文件 | 责任 |
 |---|---|
-| [models.py](../../src/freesurfer_torch/synthmorph/models.py) | affine/rigid 特征网络、HyperVxmJoint、HDF5 读取与权重特化 |
-| [pipeline.py](../../src/freesurfer_torch/synthmorph/pipeline.py) | 图像几何、预后处理、双向结果与 apply |
-| [spatial.py](../../src/freesurfer_torch/synthmorph/spatial.py) | pull 采样、仿射/位移组合和积分 |
-| [__init__.py](../../src/freesurfer_torch/synthmorph/__init__.py) | 功能公开导出 |
+| [models.py](../../src/fnit/synthmorph/models.py) | affine/rigid 特征网络、HyperVxmJoint、HDF5 读取与权重特化 |
+| [pipeline.py](../../src/fnit/synthmorph/pipeline.py) | 图像几何、预后处理、双向结果与 apply |
+| [spatial.py](../../src/fnit/synthmorph/spatial.py) | pull 采样、仿射/位移组合和积分 |
+| [__init__.py](../../src/fnit/synthmorph/__init__.py) | 功能公开导出 |
 
 ## Source map
 

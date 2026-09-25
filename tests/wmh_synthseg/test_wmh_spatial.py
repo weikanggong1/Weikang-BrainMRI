@@ -3,7 +3,7 @@
 import numpy as np
 import torch
 
-from freesurfer_torch.wmh_synthseg.spatial import (
+from fnit.wmh_synthseg.spatial import (
     align_volume_to_ref, get_ras_axes, myzoom_torch,
 )
 

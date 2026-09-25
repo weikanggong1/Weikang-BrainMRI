@@ -23,7 +23,7 @@ from scipy.ndimage import map_coordinates
 import surfa as sf
 import torch
 
-from freesurfer_torch import SynthMorph
+from fnit import SynthMorph
 
 
 def write_json(path, value):

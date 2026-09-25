@@ -1,6 +1,6 @@
 # PyTorch FLIRT
 
-`freesurfer_torch.flirt.TorchFLIRT` is the package's public affine
+`fnit.flirt.TorchFLIRT` is the package's public affine
 registration implementation. It follows the default FSL FLIRT 2111.2 path
 used by `fsl_reg`: 12 degrees of freedom, correlation-ratio cost, the
 8/4/2/1 mm search schedule, and the MISCMATHS Brent coordinate optimizer.
@@ -24,14 +24,14 @@ suite, rather than equivalence for the image currently being processed.
 The port is derived from FSL source and is covered by the non-commercial FSL
 Software Licence. See [the FSL licence](../../licenses/FSL-6.0.txt),
 [third-party notices](../../THIRD_PARTY_NOTICES.md), and the vendored source
-manifest in `src/freesurfer_torch/_vendor_fsl/manifest.json`.
+manifest in `src/fnit/_vendor_fsl/manifest.json`.
 
 ## Command line
 
 The dedicated command is:
 
 ```bash
-fs-torch-flirt \
+fnit-flirt \
   -in subject_GM.nii.gz \
   -ref template_GM.nii.gz \
   -out subject_GM_to_template.nii.gz \
@@ -44,7 +44,7 @@ fs-torch-flirt \
 The same operation is available through the package command:
 
 ```bash
-fs-torch flirt \
+fnit flirt \
   -in subject_GM.nii.gz \
   -ref template_GM.nii.gz \
   -out subject_GM_to_template.nii.gz \
@@ -95,7 +95,7 @@ and are rejected rather than approximated.
 Use `run_flirt` when paths and atomic output handling are needed:
 
 ```python
-from freesurfer_torch.flirt import run_flirt
+from fnit.flirt import run_flirt
 
 result = run_flirt(
     "subject_GM.nii.gz",                      # FSL -in
@@ -123,7 +123,7 @@ The return value is a `FLIRTResult`:
 For in-memory work, call the model directly:
 
 ```python
-from freesurfer_torch.flirt import TorchFLIRT
+from fnit.flirt import TorchFLIRT
 
 model = TorchFLIRT(device="cuda:0")
 result = model(moving_volume, reference_volume, init=None)
@@ -179,6 +179,6 @@ The QC string
 `reference_validation_report="validation/fast_vbm/report.v0.9.public.json"`
 is an artifact identifier relative to the source repository. The root
 `validation/` directory is not included in the installed wheel. Wheel users
-can open the [public report on GitHub](https://github.com/weikanggong1/Weikang-BrainMRI/blob/main/validation/fast_vbm/report.v0.9.public.json); a source checkout can
+can open the [public report on GitHub](https://github.com/weikanggong1/Fudan-Neuroimaging-toolkit/blob/main/validation/fast_vbm/report.v0.9.public.json); a source checkout can
 use the relative link
 [`report.v0.9.public.json`](../../validation/fast_vbm/report.v0.9.public.json).

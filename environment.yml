@@ -1,0 +1,18 @@
+name: fnit
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip>=23
+  - pytorch=2.5.1
+  - pytorch-cuda=11.8
+  - numpy<2
+  - scipy>=1.9
+  - h5py>=3.8
+  - nibabel>=5
+  - pyyaml>=6
+  - pip:
+      - surfa==0.6.3
+      - -e .

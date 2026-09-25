@@ -30,10 +30,10 @@
   },
   "evaluation": {
     "candidate_implementations": {
-      "affine": "freesurfer_torch.flirt.TorchFLIRT source-derived port",
-      "fnirt": "freesurfer_torch.fnirt.TorchFNIRT",
-      "synthmorph": "freesurfer_torch.fast_vbm.synthmorph_backend.SynthMorphDeformRegistration using the package PyTorch SynthMorph model",
-      "pipeline": "freesurfer_torch.fast_vbm.FastVBM"
+      "affine": "fnit.flirt.TorchFLIRT source-derived port",
+      "fnirt": "fnit.fnirt.TorchFNIRT",
+      "synthmorph": "fnit.fast_vbm.synthmorph_backend.SynthMorphDeformRegistration using the package PyTorch SynthMorph model",
+      "pipeline": "fnit.fast_vbm.FastVBM"
     },
     "layers": {
       "matched_affine": "FSL FAST GM plus official FSL FLIRT matrix",

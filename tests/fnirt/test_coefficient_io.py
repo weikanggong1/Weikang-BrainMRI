@@ -4,13 +4,13 @@ from pathlib import Path
 import nibabel as nib
 import numpy as np
 
-from freesurfer_torch.fnirt.io import (
+from fnit.fnirt.io import (
     FSL_CUBIC_SPLINE_COEFFICIENTS,
     load_fsl_coefficients,
     make_fsl_coefficient_image,
     save_fsl_coefficients,
 )
-from freesurfer_torch.fnirt.spline import fsl_control_shape
+from fnit.fnirt.spline import fsl_control_shape
 
 
 ORACLE = (

@@ -5,7 +5,7 @@ import io
 
 import pytest
 
-from freesurfer_torch import weights
+from fnit import weights
 
 
 class Response(io.BytesIO):
@@ -23,7 +23,7 @@ def tiny_weight(tmp_path, monkeypatch):
         "https://surfer.nmr.mgh.harvard.edu/test/tiny.pt", len(content),
         hashlib.sha256(content).hexdigest()))
     monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))
-    monkeypatch.delenv("FREESURFER_TORCH_WEIGHTS", raising=False)
+    monkeypatch.delenv("FNIT_WEIGHTS", raising=False)
     monkeypatch.delenv("FREESURFER_HOME", raising=False)
     return name, content
 
@@ -140,7 +140,7 @@ def test_env_and_explicit_paths_override_saved_config(tmp_path, monkeypatch, tin
         directory.mkdir()
         (directory / name).write_bytes(b"path selection only")
     weights.save_config(configured)
-    monkeypatch.setenv("FREESURFER_TORCH_WEIGHTS", str(environment))
+    monkeypatch.setenv("FNIT_WEIGHTS", str(environment))
     assert weights.resolve_weights(name) == environment / name
     assert weights.resolve_weights(name, explicit=explicit) == explicit / name
 
@@ -153,7 +153,7 @@ def test_wmh_selection_downloads_only_its_official_checkpoint(tmp_path, monkeypa
     monkeypatch.setitem(weights.WEIGHT_FILES, name,
                         (url, len(content), hashlib.sha256(content).hexdigest()))
     monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))
-    monkeypatch.delenv("FREESURFER_TORCH_WEIGHTS", raising=False)
+    monkeypatch.delenv("FNIT_WEIGHTS", raising=False)
     requested = []
 
     def fetch(request, timeout):

@@ -25,7 +25,7 @@ mri_synthsr --i case_FLAIR.nii.gz --o case_synthsr.nii.gz --threads 4
 ## Python 输入与输出
 
 ```python
-from freesurfer_torch import SynthSR
+from fnit import SynthSR
 
 sr = SynthSR(device="cuda:0")
 result = sr("case_FLAIR.nii.gz")
@@ -50,7 +50,7 @@ print(result.image.data.shape, result.image.affine)
 ## 单例命令行
 
 ```bash
-fs-torch synthsr --i case_FLAIR.nii.gz --o case_synthsr.nii.gz \
+fnit synthsr --i case_FLAIR.nii.gz --o case_synthsr.nii.gz \
   --device cuda:0 --threads 4
 ```
 

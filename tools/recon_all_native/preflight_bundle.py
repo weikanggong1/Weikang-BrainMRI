@@ -86,7 +86,7 @@ def main():
     parser.add_argument("--bundle", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--package-python", type=Path,
-                        help="Python interpreter used by the installed freesurfer-torch package")
+                        help="Python interpreter used by the installed fudan-neuroimaging-toolkit package")
     parser.add_argument("--models-dir", type=Path,
                         help="Directory containing files listed as models/name in external_models")
     args = parser.parse_args()

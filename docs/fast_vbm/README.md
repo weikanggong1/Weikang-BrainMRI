@@ -1,6 +1,6 @@
 # FastVBM：原始 T1w 到 modulated GM
 
-[返回首页](../../README.md) · [源码目录](../../src/freesurfer_torch/fast_vbm/) · [TorchFAST](../fast/README.md) · [权重](../WEIGHTS.md) · [验证记录](../../validation/fast_vbm/README.md)
+[返回首页](../../README.md) · [源码目录](../../src/fnit/fast_vbm/) · [TorchFAST](../fast/README.md) · [权重](../WEIGHTS.md) · [验证记录](../../validation/fast_vbm/README.md)
 
 `FastVBM` 接收一幅原始 3D T1w 和一幅 GM 模板，输出脑提取、三组织 PVE、偏置场校正结果，以及模板空间 warped GM、nonlinear-only Jacobian 和 modulated GM。整条流程在 Python 内运行，不调用 FreeSurfer 或 FSL 可执行文件。
 
@@ -44,7 +44,7 @@ flowchart LR
 
 | 项目 | `registration_backend="synthmorph"` | `registration_backend="fnirt"` |
 |---|---|---|
-| 实现 | 本包 `freesurfer_torch.synthmorph.SynthMorph(model="deform")` | 本包 `freesurfer_torch.fnirt.TorchFNIRT` |
+| 实现 | 本包 `fnit.synthmorph.SynthMorph(model="deform")` | 本包 `fnit.fnirt.TorchFNIRT` |
 | 形变模型 | 官方 SynthMorph 网络；外部仿射作为 `init`；`mid_space=False` | 固定网格上的 cubic B-spline residual displacement |
 | 优化坐标 | SynthMorph/Surfa world-RAS pull | 内部为 FSL scaled-mm；输出转换为 world-RAS pull |
 | 图像目标 | 由官方 SynthMorph checkpoint 定义 | 全局线性强度拟合后的 SSD |
@@ -79,7 +79,7 @@ python tools/setup_weights.py --model fast-vbm
 然后构造一个可复用实例并运行一例：
 
 ```python
-from freesurfer_torch import FastVBM
+from fnit import FastVBM
 
 pipeline = FastVBM(
     device="cuda:0",
@@ -98,7 +98,7 @@ result = pipeline.run(
 
 各行作用：
 
-1. `from freesurfer_torch import FastVBM` 导入完整 raw-T1-to-VBM pipeline。
+1. `from fnit import FastVBM` 导入完整 raw-T1-to-VBM pipeline。
 2. `device="cuda:0"` 让 SynthStrip、TorchFAST、仿射、非线性配准和 Jacobian 计算使用第一张可见 GPU。
 3. `threads=4` 设置当前进程的 PyTorch CPU 线程数。
 4. `registration_backend="synthmorph"` 选择 PyTorch SynthMorph；改为 `"fnirt"` 即选择本包 PyTorch FNIRT 分支。
@@ -210,7 +210,7 @@ FastVBM(
 SynthMorph 分支：
 
 ```bash
-fs-torch fast-vbm \
+fnit fast-vbm \
   -i subject_T1w.nii.gz \
   --template template_GM.nii.gz \
   -o results/sub-01 \
@@ -223,7 +223,7 @@ fs-torch fast-vbm \
 `TorchFNIRT` 分支只需更换后端和输出目录：
 
 ```bash
-fs-torch fast-vbm \
+fnit fast-vbm \
   -i subject_T1w.nii.gz \
   --template template_GM.nii.gz \
   -o results/sub-01-fnirt \
@@ -235,7 +235,7 @@ fs-torch fast-vbm \
 
 各行作用：
 
-1. `fs-torch fast-vbm` 选择单被试 raw-T1-to-VBM 入口。
+1. `fnit fast-vbm` 选择单被试 raw-T1-to-VBM 入口。
 2. `-i` 指定单帧 3D raw T1w。
 3. `--template` 指定 fixed GM template，并定义三幅模板空间结果的 shape、方向和体素尺寸。
 4. `-o` 是完整输出目录。
@@ -257,7 +257,7 @@ fs-torch fast-vbm \
 | `--no-bias` | 关闭 TorchFAST bias correction，用于消融 |
 | `--overwrite` | 允许覆盖同名输出 |
 
-完整参数以 `fs-torch fast-vbm --help` 为准。
+完整参数以 `fnit fast-vbm --help` 为准。
 
 ## 独立 PyTorch FLIRT 接口
 
@@ -269,7 +269,7 @@ MISCMATHS Brent coordinate optimizer；运行时不调用 FSL executable。
 
 ```python
 from pathlib import Path
-from freesurfer_torch import TorchFLIRT
+from fnit import TorchFLIRT
 
 Path("results").mkdir(exist_ok=True)
 flirt = TorchFLIRT(device="cuda:0")
@@ -286,7 +286,7 @@ result = flirt.run(
 ### 命令行
 
 ```bash
-fs-torch flirt \
+fnit flirt \
   -in subject_GM.nii.gz \
   -ref template_GM.nii.gz \
   -out results/subject_to_template.nii.gz \

@@ -1,6 +1,6 @@
 # SynthStrip：脑提取
 
-[返回首页](../../README.md) · [源码目录](../../src/freesurfer_torch/synthstrip/) · [权重](../WEIGHTS.md)
+[返回首页](../../README.md) · [源码目录](../../src/fnit/synthstrip/) · [权重](../WEIGHTS.md)
 
 SynthStrip 从脑影像预测有符号距离场，生成脑掩膜和去除背景的影像。官方模型已使用 PyTorch。本模块沿用其网络、权重和影像处理流程，提供可重复调用的 Python API；模型未重新训练。
 
@@ -10,7 +10,7 @@ SynthStrip 从脑影像预测有符号距离场，生成脑掩膜和去除背景
 
 ```python
 from pathlib import Path
-from freesurfer_torch import SynthStrip
+from fnit import SynthStrip
 
 out = Path("results")
 out.mkdir(exist_ok=True)
@@ -22,7 +22,7 @@ result.distance.save(out / "subject_sdt.nii.gz")
 # 可继续 extract("another_T1w.nii.gz")，复用模型。
 ```
 
-`from freesurfer_torch.synthstrip import SynthStrip, StripResult` 是等价的功能模块入口。
+`from fnit.synthstrip import SynthStrip, StripResult` 是等价的功能模块入口。
 
 ### 模型构造
 
@@ -55,7 +55,7 @@ result.distance.save(out / "subject_sdt.nii.gz")
 ## 命令行
 
 ```bash
-fs-torch synthstrip -i subject_T1w.nii.gz \
+fnit synthstrip -i subject_T1w.nii.gz \
   -o results/subject_brain.nii.gz -m results/subject_mask.nii.gz \
   -d results/subject_sdt.nii.gz --weights /path/to/weights --device cuda:0
 ```
@@ -100,9 +100,9 @@ U-Net 在所选设备执行。影像读写、Surfa conform/crop、归一化、SD
 
 | 文件 | 责任 |
 |---|---|
-| [model.py](../../src/freesurfer_torch/synthstrip/model.py) | `ConvBlock`、`StripModel`，保留官方网络和参数名 |
-| [pipeline.py](../../src/freesurfer_torch/synthstrip/pipeline.py) | `SynthStrip`、`StripResult` 和 `extend_sdt` |
-| [__init__.py](../../src/freesurfer_torch/synthstrip/__init__.py) | 功能公开导出 |
+| [model.py](../../src/fnit/synthstrip/model.py) | `ConvBlock`、`StripModel`，保留官方网络和参数名 |
+| [pipeline.py](../../src/fnit/synthstrip/pipeline.py) | `SynthStrip`、`StripResult` 和 `extend_sdt` |
+| [__init__.py](../../src/fnit/synthstrip/__init__.py) | 功能公开导出 |
 
 ## 网络
 
@@ -136,7 +136,7 @@ U-Net 在所选设备执行。影像读写、Surfa conform/crop、归一化、SD
 
 ## 功能差异与验证
 
-官方脚本集成了参数解析和执行流程，本包允许导入并缓存模型；文件格式和几何处理仍使用独立的 Surfa 库。日志、版本和帮助格式由本包维护，未要求与 FreeSurfer 逐字一致。当前统一 CLI 名称为 `fs-torch synthstrip`，不会替换系统 `mri_synthstrip`。
+官方脚本集成了参数解析和执行流程，本包允许导入并缓存模型；文件格式和几何处理仍使用独立的 Surfa 库。日志、版本和帮助格式由本包维护，未要求与 FreeSurfer 逐字一致。当前统一 CLI 名称为 `fnit synthstrip`，不会替换系统 `mri_synthstrip`。
 
 仓库当前保留的 12 例单被试 benchmark 使用同一官方权重，分别运行 FreeSurfer 与本包的 CPU/CUDA 路径。同设备比较中，脑图、掩膜和距离场逐元素一致；跨 CPU/GPU 时仅一个病例出现 1 个掩膜体素差异，最低 Dice 为 `0.999999858562`。
 

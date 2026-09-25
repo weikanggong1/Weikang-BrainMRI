@@ -11,7 +11,7 @@ float32/float64 dtype；不自动使用 float16 或 bfloat16。实际开关记�
 ## Python 调用
 
 ```python
-from freesurfer_torch.applywarp import TorchApplyWarp
+from fnit.applywarp import TorchApplyWarp
 
 result = TorchApplyWarp("cuda:0")(
     input="subject_GM.nii.gz",
@@ -40,10 +40,10 @@ TorchApplyWarp("cuda:0").run(
 )
 ```
 
-函数形式从子包导入，避免与 `freesurfer_torch.applywarp` 模块同名：
+函数形式从子包导入，避免与 `fnit.applywarp` 模块同名：
 
 ```python
-from freesurfer_torch.applywarp import applywarp
+from fnit.applywarp import applywarp
 
 result = applywarp(
     "subject_GM.nii.gz",
@@ -58,7 +58,7 @@ result = applywarp(
 以下两行执行同一操作：
 
 ```bash
-fs-torch-applywarp \
+fnit-applywarp \
   --in subject_GM.nii.gz \
   --ref GM_template.nii.gz \
   --warp subject_to_template_coef.nii.gz \
@@ -67,7 +67,7 @@ fs-torch-applywarp \
   --device cuda:0 \
   --out subject_GM_to_template.nii.gz
 
-fs-torch applywarp \
+fnit applywarp \
   --in subject_GM.nii.gz \
   --ref GM_template.nii.gz \
   --warp subject_to_template_coef.nii.gz \

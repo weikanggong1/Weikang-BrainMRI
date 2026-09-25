@@ -5,10 +5,10 @@ import pytest
 import surfa as sf
 import torch
 
-import freesurfer_torch
-from freesurfer_torch.flirt import FLIRTResult, TorchFLIRT
-from freesurfer_torch.flirt import core as flirt_core
-from freesurfer_torch.flirt.coordinates import (
+import fnit
+from fnit.flirt import FLIRTResult, TorchFLIRT
+from fnit.flirt import core as flirt_core
+from fnit.flirt.coordinates import (
     flirt_to_world_affine,
     world_to_flirt_affine,
 )
@@ -51,9 +51,9 @@ def test_world_and_flirt_matrix_conversions_are_exact_inverses():
     )
 
     np.testing.assert_allclose(recovered, world, atol=1e-12, rtol=1e-12)
-    assert freesurfer_torch.TorchFLIRT is TorchFLIRT
-    assert freesurfer_torch.FLIRTResult is FLIRTResult
-    assert freesurfer_torch.world_to_flirt_affine is world_to_flirt_affine
+    assert fnit.TorchFLIRT is TorchFLIRT
+    assert fnit.FLIRTResult is FLIRTResult
+    assert fnit.world_to_flirt_affine is world_to_flirt_affine
 
 
 def test_flirt_result_rejects_one_path_for_image_and_matrix(tmp_path):

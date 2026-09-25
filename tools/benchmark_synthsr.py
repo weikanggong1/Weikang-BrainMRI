@@ -94,7 +94,7 @@ def main():
             parser.error(f"Official source not found: {source}")
         prefix = [executable(args.tf_python), str(source)]
     else:
-        prefix = [executable(args.torch_python), "-m", "freesurfer_torch.cli", "synthsr"]
+        prefix = [executable(args.torch_python), "-m", "fnit.cli", "synthsr"]
 
     allowed = sorted(os.sched_getaffinity(0))
     if len(allowed) < args.threads:

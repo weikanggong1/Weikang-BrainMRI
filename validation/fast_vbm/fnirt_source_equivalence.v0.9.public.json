@@ -1,77 +1,48 @@
 {
-  "attestation": "FNIRT source-equivalence inheritance",
+  "attestation": "FNIT rename source-equivalence inheritance",
   "baseline": {
-    "git_commit": "aece9c7e4cc2c030a8ebb925c4d670f7c841a8ea",
-    "package_python_source_sha256": "ab87e9fdc53f1c70991fd038b5abef0cebff6b288a76a1d202bd9756198c325c"
-  },
-  "checks": {
-    "coordinate_definitions_ast_identical": true,
-    "expected_package_digests": true,
-    "fnirt_python_file_sets_equal": true,
-    "import_relocations_normalized_ast_identical": true,
-    "passed": true,
-    "unchanged_fnirt_files_byte_identical": true
-  },
-  "coordinate_source_relocation": {
-    "baseline_file": "fast_vbm/linear.py",
-    "definition_ast_sha256": {
-      "_numpy_affine": "4525dba6ead2ed32d2ce243c10ea791e3992c378b9e4ff063e9035ddf1074faa",
-      "flirt_to_world_affine": "548800d22377d181fe2d8e6c60a48bc55b429c841a55e95f3460178661868c29",
-      "voxel_to_fsl_scaled_mm": "c559cbc3ad75d15255c430500a732b112ab984d3710d7276d2f61cf01a7f5c45",
-      "world_to_flirt_affine": "279644987ec768c27768030792b9b6e203b27c9c08e82ffcc01f0933bb472510"
-    },
-    "final_file": "flirt/coordinates.py",
-    "functions": [
-      "voxel_to_fsl_scaled_mm",
-      "flirt_to_world_affine",
-      "world_to_flirt_affine"
-    ],
-    "support_definitions": [
-      "_numpy_affine"
-    ]
-  },
-  "evidence_inherited_from": "fnirt_fsl_10case.v0.9.public.json",
-  "final": {
+    "fnirt_source_attestation_sha256": "65a80f1cf5572371bb5756fbbc834eb902b999fee9195e58eb94bddbe2e60d25",
+    "git_commit": "6a408c8e10d2e0c3dcfe49d9ffe651e4da3b7470",
+    "package_import": "freesurfer_torch",
     "package_python_source_sha256": "2b51c1203d01651b4aa060b7e96f0a63fa483acfc11078a5f1ddecb2165e8ca3"
   },
-  "fnirt_python_sources": {
-    "byte_identical_files": [
-      "fnirt/__init__.py",
-      "fnirt/__main__.py",
-      "fnirt/_topology_triton.py",
-      "fnirt/cli.py",
-      "fnirt/io.py",
-      "fnirt/optimizer.py",
-      "fnirt/spline.py",
-      "fnirt/topology.py"
-    ],
-    "file_count": 10,
-    "import_relocations": [
-      {
-        "baseline_module": "fast_vbm.linear",
-        "file": "fnirt/registration.py",
-        "final_module": "flirt.coordinates",
-        "imported_names": [
-          "voxel_to_fsl_scaled_mm",
-          "world_to_flirt_affine"
-        ],
-        "normalized_ast_sha256": "a9c3f52b3446dbae73ca270a22d69171072f3cdcb0386edd499b1f92943b1a89"
-      },
-      {
-        "baseline_module": "fast_vbm.linear",
-        "file": "fnirt/standalone.py",
-        "final_module": "flirt.coordinates",
-        "imported_names": [
-          "flirt_to_world_affine"
-        ],
-        "normalized_ast_sha256": "756bef44e73aeb36a6804b411bb826de96313117f3e782eada4de7c355050d61"
-      }
-    ]
+  "checks": {
+    "all_python_sources_identical_after_brand_normalization": true,
+    "baseline_fnirt_attestation_passed": true,
+    "expected_package_digests": true,
+    "passed": true,
+    "python_file_sets_equal_after_package_rename": true
+  },
+  "evidence_inherited_from": [
+    "report.v0.9.public.json",
+    "fnirt_fsl_10case.v0.9.public.json"
+  ],
+  "final": {
+    "package_import": "fnit",
+    "package_python_source_sha256": "03b6b2df8a020126f1978cae0d7d49b217b7ef80ab8f692028c43c1ba014dbe4"
   },
   "interpretation": {
     "fsl_numerical_equivalent": false,
     "new_numerical_run": false,
-    "scope": "The final package inherits the baseline FNIRT numerical results because FNIRT executable source is unchanged apart from verified import and coordinate-function relocation. This attestation is not a new numerical run."
+    "scope": "The FNIT package inherits the published single-subject numerical evidence because every Python source file is unchanged after normalizing the package, distribution, CLI, repository, and weight configuration names."
   },
-  "schema_version": 1
+  "python_sources": {
+    "branding_changed_file_count": 12,
+    "branding_changed_files": [
+      "applywarp/cli.py",
+      "cli.py",
+      "fast_vbm/pipeline.py",
+      "fast_vbm/registration.py",
+      "flirt/__main__.py",
+      "flirt/cli.py",
+      "fnirt/cli.py",
+      "recon_all/aux_seg.py",
+      "recon_all/compare_subject.py",
+      "recon_all/sclimbic.py",
+      "recon_all/standalone.py",
+      "weights.py"
+    ],
+    "file_count": 61
+  },
+  "schema_version": 2
 }

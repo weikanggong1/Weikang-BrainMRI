@@ -70,18 +70,18 @@ import numpy as np
 import surfa as sf
 import torch
 
-import freesurfer_torch
-from freesurfer_torch.fast_vbm import FastVBM
-from freesurfer_torch.flirt import (
+import fnit
+from fnit.fast_vbm import FastVBM
+from fnit.flirt import (
     TorchFLIRT as SourceDerivedFLIRT,
     flirt_to_world_pull,
     voxel_to_fsl_scaled_mm,
 )
-from freesurfer_torch.fast_vbm.registration import _register_gm
-from freesurfer_torch.fast_vbm.synthmorph_backend import (
+from fnit.fast_vbm.registration import _register_gm
+from fnit.fast_vbm.synthmorph_backend import (
     SynthMorphDeformRegistration,
 )
-from freesurfer_torch.fnirt import TorchFNIRT
+from fnit.fnirt import TorchFNIRT
 
 
 SCHEMA_VERSION = 1
@@ -197,7 +197,7 @@ def sha256(path: Path) -> str:
 
 
 def package_source_digest() -> str:
-    root = Path(freesurfer_torch.__file__).resolve().parent
+    root = Path(fnit.__file__).resolve().parent
     digest = hashlib.sha256()
     for path in sorted(root.rglob("*.py")):
         digest.update(path.relative_to(root).as_posix().encode("utf-8"))
@@ -498,7 +498,7 @@ def validation_context(
         "schema": SCHEMA_VERSION,
         "script_sha256": harness_digest,
         "package_source_sha256": source_digest,
-        "package_version": freesurfer_torch.__version__,
+        "package_version": fnit.__version__,
         "template_sha256": sha256(inputs["template"]),
         "official_reference_mask_sha256": sha256(inputs["reference_mask"]),
         "official_reference_mask_array_sha256": inputs["mask_array_sha256"],
@@ -895,7 +895,7 @@ def run(args) -> int:
             "status": "running",
             "schema": SCHEMA_VERSION,
             "started_at": time.time(),
-            "package_version": freesurfer_torch.__version__,
+            "package_version": fnit.__version__,
             "package_source_sha256": source_digest,
             "script_sha256": harness_digest,
             "layers": list(args.layers),
@@ -1015,7 +1015,7 @@ def run(args) -> int:
     manifest = {
         "status": "success",
         "schema": SCHEMA_VERSION,
-        "package_version": freesurfer_torch.__version__,
+        "package_version": fnit.__version__,
         "package_source_sha256": source_digest,
         "script_sha256": harness_digest,
         "run_signature": signature(manifest_provenance),
@@ -1837,7 +1837,7 @@ def summarize(args) -> int:
     }
     public = {
         "schema": SCHEMA_VERSION,
-        "package_version": freesurfer_torch.__version__,
+        "package_version": fnit.__version__,
         "feature": (
             "FSL-source-derived registration and FastVBM shared-chain validation"
         ),
@@ -1871,15 +1871,15 @@ def summarize(args) -> int:
         "evaluation": {
             "candidate_implementations": {
                 "affine": (
-                    "freesurfer_torch.flirt.TorchFLIRT source-derived port"
+                    "fnit.flirt.TorchFLIRT source-derived port"
                 ),
-                "fnirt": "freesurfer_torch.fnirt.TorchFNIRT",
+                "fnirt": "fnit.fnirt.TorchFNIRT",
                 "synthmorph": (
-                    "freesurfer_torch.fast_vbm.synthmorph_backend."
+                    "fnit.fast_vbm.synthmorph_backend."
                     "SynthMorphDeformRegistration "
                     "using the package PyTorch SynthMorph model"
                 ),
-                "pipeline": "freesurfer_torch.fast_vbm.FastVBM",
+                "pipeline": "fnit.fast_vbm.FastVBM",
             },
             "layers": {
                 "matched_affine": "FSL FAST GM plus official FSL FLIRT matrix",

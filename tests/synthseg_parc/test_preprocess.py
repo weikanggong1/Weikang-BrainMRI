@@ -4,7 +4,7 @@ import nibabel as nib
 import numpy as np
 import pytest
 
-from freesurfer_torch.synthseg_parc.preprocess import preprocess_t1
+from fnit.synthseg_parc.preprocess import preprocess_t1
 
 
 def test_preprocess_orients_and_center_pads_nifti(tmp_path):

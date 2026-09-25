@@ -7,10 +7,10 @@ import numpy as np
 import pytest
 import surfa as sf
 
-from freesurfer_torch.fast import FASTConfig, FASTResult
-from freesurfer_torch.fast_vbm import FastVBM, FastVBMResult, OUTPUT_FILENAMES
-from freesurfer_torch.fast_vbm import pipeline as pipeline_module
-from freesurfer_torch.fast_vbm.registration import VBMRegistrationResult
+from fnit.fast import FASTConfig, FASTResult
+from fnit.fast_vbm import FastVBM, FastVBMResult, OUTPUT_FILENAMES
+from fnit.fast_vbm import pipeline as pipeline_module
+from fnit.fast_vbm.registration import VBMRegistrationResult
 
 
 def _volume(shape=(8, 9, 10), affine=None):
@@ -128,7 +128,7 @@ def test_explicit_mask_pipeline_returns_input_and_template_grid_outputs(
     assert result.settings["bias_correction"] is True
     assert result.settings["nonlinear_backend"] == "pytorch-synthmorph-deform"
     assert result.settings["synthmorph_implementation"] == (
-        "freesurfer_torch.synthmorph.SynthMorph"
+        "fnit.synthmorph.SynthMorph"
     )
     assert result.settings["fast"]["bias_fwhm_mm"] == 20.0
     for name in (

@@ -13,8 +13,8 @@ import nibabel as nib
 import numpy as np
 import torch
 
-from freesurfer_torch.applywarp import TorchApplyWarp
-from freesurfer_torch.applywarp.core import _expand_cubic_coefficients
+from fnit.applywarp import TorchApplyWarp
+from fnit.applywarp.core import _expand_cubic_coefficients
 
 
 def save(image, path):

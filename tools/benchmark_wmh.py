@@ -81,7 +81,7 @@ def main():
             source = args.freesurfer_home / "python/packages/WMHSynthSeg/inference.py"
             command = [sys.executable, str(source)]
         else:
-            command = [sys.executable, "-m", "freesurfer_torch.cli", "wmh-synthseg"]
+            command = [sys.executable, "-m", "fnit.cli", "wmh-synthseg"]
         command += ["--i", str(image), "--o", str(seg), "--csv_vols", str(csv_file),
                     "--device", "cuda:0" if cuda else "cpu", "--threads", str(args.threads),
                     "--crop", "--save_lesion_probabilities"]

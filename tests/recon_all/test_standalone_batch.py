@@ -5,7 +5,7 @@ import time
 
 import pytest
 
-from freesurfer_torch.recon_all import standalone
+from fnit.recon_all import standalone
 
 
 def jobs_in(tmp_path, count):

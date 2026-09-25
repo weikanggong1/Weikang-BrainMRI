@@ -137,7 +137,7 @@ def main() -> None:
                 "-sd", str(official_subjects), "-all", "-parallel",
                 "-openmp", "4", "-itkthreads", "1"]
     candidate = [str(candidate_python), "-I", "-m",
-                 "freesurfer_torch.recon_all.standalone", "-i", str(t1),
+                 "fnit.recon_all.standalone", "-i", str(t1),
                  "-s", "c_candidate", "-sd", str(candidate_subjects),
                  "--bundle", str(bundle), "--license", str(license_file),
                  "--device", "cuda:1", "--threads", "4"]
@@ -174,7 +174,7 @@ def main() -> None:
         raise FileNotFoundError("nvidia-smi and /usr/bin/time are required for the benchmark")
     inventory = gpu_sample()
     count = subprocess.run([str(candidate_python), "-I", "-c",
-                            "import torch, freesurfer_torch.recon_all.standalone; "
+                            "import torch, fnit.recon_all.standalone; "
                             "print(torch.cuda.device_count())"],
                            capture_output=True, text=True, check=True, timeout=120)
     if int(count.stdout.strip()) < 2:

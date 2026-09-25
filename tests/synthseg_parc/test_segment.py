@@ -8,8 +8,8 @@ import numpy as np
 import pytest
 import torch
 
-from freesurfer_torch.synthseg_parc import SynthSegParc
-from freesurfer_torch.synthseg_parc.segment import SynthSegSegmenter, run_synthseg_parc_t1
+from fnit.synthseg_parc import SynthSegParc
+from fnit.synthseg_parc.segment import SynthSegSegmenter, run_synthseg_parc_t1
 
 
 @pytest.mark.parametrize("initial_enabled", [False, True])

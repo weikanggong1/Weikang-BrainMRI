@@ -1,6 +1,6 @@
 # PyTorch single-channel T1 tissue segmentation
 
-[返回首页](../../README.md) · [代码目录](../../src/freesurfer_torch/fast/)
+[返回首页](../../README.md) · [代码目录](../../src/fnit/fast/)
 
 该功能在 PyTorch 中实现三组织 HMRF-EM 分割、平滑乘性 bias field 估计和
 partial-volume estimation。它不调用 FSL，也不需要模型权重。输入应为已经完成脑
@@ -9,7 +9,7 @@ partial-volume estimation。它不调用 FSL，也不需要模型权重。输入
 ## Python 调用
 
 ```python
-from freesurfer_torch.fast import TorchFAST
+from fnit.fast import TorchFAST
 
 fast = TorchFAST(device="cuda:0", threads=1)
 result = fast("T1_brain.nii.gz")
@@ -54,7 +54,7 @@ result = fast("T1w.nii.gz", mask="brain_mask.nii.gz")
 ## 命令行与 FSL 对应
 
 ```bash
-fs-torch fast -i T1_brain.nii.gz -o results/T1_brain \
+fnit fast -i T1_brain.nii.gz -o results/T1_brain \
   --device cuda:0 --threads 1 -b -B
 ```
 
@@ -127,7 +127,7 @@ Gaussian 卷积边界、分位数计算和浮点归约顺序也不同。因此�
 完全相同的 brain-only 输入上分别比较三张 PVE、bias field 和校正图。
 
 FAST4 2111.3 标签的完整、未改动源码随包保存在
-[`upstream_fast4/`](../../src/freesurfer_torch/fast/upstream_fast4/)，只用于许可和溯源，
+[`upstream_fast4/`](../../src/fnit/fast/upstream_fast4/)，只用于许可和溯源，
 不会被编译或导入。该部分及本改写受 [FSL 6.0 许可](../../licenses/FSL-6.0.txt)
 约束，只允许非商业使用；来源提交和逐文件 SHA-256 见
 [`provenance.json`](../provenance.json)。
@@ -154,7 +154,7 @@ FAST 与 TorchFAST，差值列在完整三维 GM PVE 上计算；右侧两列显
 低层接口不读取影像文件：
 
 ```python
-from freesurfer_torch.fast import FASTConfig, segment_t1
+from fnit.fast import FASTConfig, segment_t1
 
 result = segment_t1(t1_tensor, mask_tensor, voxel_size=(1.0, 1.0, 1.0),
                     config=FASTConfig())

@@ -91,9 +91,9 @@ def attest(old_manifest_path, bundle_manifest_path, old_root, new_root,
         "                'LinearRegistrationResult', 'register_affine', 'register_gm'):")
     if new_init != expected_init:
         raise ValueError("Root package initializer has more than the allowed version/lazy-export change")
-    if software["versions"]["freesurfer-torch"] != "0.6.0":
+    if software["versions"]["fudan-neuroimaging-toolkit"] != "0.6.0":
         raise ValueError("Certified package version is not 0.6.0")
-    if new_software["versions"]["freesurfer-torch"] != "0.7.0" or \
+    if new_software["versions"]["fudan-neuroimaging-toolkit"] != "0.7.0" or \
             project_version(new_pyproject_path) != "0.7.0":
         raise ValueError("v0.7 package snapshot and pyproject versions do not agree")
 

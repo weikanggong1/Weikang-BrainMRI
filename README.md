@@ -1,6 +1,6 @@
-# Weikang-BrainMRI
+# Fudan Neuroimaging Toolkit (FNIT)
 
-`freesurfer-torch` 是独立的脑 MRI 推理包，在 CPU 或 CUDA 上运行。单项推理无需安装 FreeSurfer、FSL、TensorFlow、VoxelMorph 或 Neurite。GPU recon-all 需要预先准备的 FreeSurfer 8.2 原生运行包和个人 license，运行时无需安装系统 FreeSurfer。Python 导入名为 `freesurfer_torch`，单项功能的命令行入口为 `fs-torch`。
+`fudan-neuroimaging-toolkit` 是独立的脑 MRI 推理包，在 CPU 或 CUDA 上运行。单项推理无需安装 FreeSurfer、FSL、TensorFlow、VoxelMorph 或 Neurite。GPU recon-all 需要预先准备的 FreeSurfer 8.2 原生运行包和个人 license，运行时无需安装系统 FreeSurfer。Python 导入名为 `fnit`，单项功能的命令行入口为 `fnit`。
 
 | 功能 | 输出与用途 | 用法、原版对照与验证 |
 |---|---|---|
@@ -18,7 +18,7 @@
 
 本轮接口清理不覆盖 GPU recon-all；其独立文档和实现保持原状。本轮覆盖的其余功能只提供单被试 Python 和单被试命令行接口；需要处理多个病例时，由调用方在包外组织任务与设备。仓库提供 [T1w 样例](examples/README.md)和 [FLAIR 样例](examples/WMH.md)。
 
-GPU recon-all 的 SynthStrip、33 类 SynthSeg、SynthMorph 及三项辅助神经分割使用 PyTorch/CUDA；影像转换、强度校正、皮层拓扑、表面生成和统计运行于打包的原生 CPU 程序。公开用法只说明 `fs-torch-recon-all` 单被试命令行和 Python 调用。
+GPU recon-all 的 SynthStrip、33 类 SynthSeg、SynthMorph 及三项辅助神经分割使用 PyTorch/CUDA；影像转换、强度校正、皮层拓扑、表面生成和统计运行于打包的原生 CPU 程序。公开用法只说明 `fnit-recon-all` 单被试命令行和 Python 调用。
 
 相关 CUDA 路径允许 NVIDIA TF32 matmul 和 cuDNN 内核；模型与影像张量仍保持 float32，本包不会自动改用 float16 或 bfloat16。各验证报告记录实际开关。
 
@@ -34,13 +34,28 @@ FLIRT、FNIRT 和 applywarp 的移植代码及随包提供的 FSL 上游源码�
 需要 Python ≥ 3.10。使用 GPU 时，请安装与本机驱动兼容的 CUDA 版 PyTorch。
 
 ```bash
-git clone https://github.com/weikanggong1/Weikang-BrainMRI.git
-cd Weikang-BrainMRI
+git clone https://github.com/weikanggong1/Fudan-Neuroimaging-toolkit.git
+cd Fudan-Neuroimaging-toolkit
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install .
 python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
 ```
+
+### Conda GPU 环境
+
+仓库提供独立的 [`environment.yml`](environment.yml)，固定本项目在 gpucw1 验证的 Python 3.11、PyTorch 2.5.1 和 CUDA 11.8 组合。必须从仓库根目录创建环境，因为配置最后以 editable 模式安装当前源码：
+
+```bash
+git clone https://github.com/weikanggong1/Fudan-Neuroimaging-toolkit.git
+cd Fudan-Neuroimaging-toolkit
+conda env create -f environment.yml
+conda activate fnit
+python -c "import fnit, torch; print(fnit.__version__, torch.__version__, torch.cuda.is_available())"
+fnit --help
+```
+
+该环境保持模型和影像张量为 float32，并允许 NVIDIA TF32 matmul 与 cuDNN 内核；不会自动启用 float16 或 bfloat16。修改 `environment.yml` 后可用 `conda env update -n fnit -f environment.yml --prune` 同步环境。
 
 ## 下载和部署权重
 
@@ -57,9 +72,9 @@ GPU recon-all 还需要与固定 FreeSurfer 8.2 流程匹配的本地原生运�
 
 GPU recon-all 的 13 个权重和辅助资源文件可单独配置：`python tools/setup_weights.py --model recon-all`。该组复用 SynthStrip 和 SynthMorph 的通用权重，也包含 33 类 SynthSeg、EntoWM、MCA 和静脉窦模型及其查找表；原生运行包仍需单独准备。
 
-独立使用 33 类 SynthSeg 时只需 `python tools/setup_weights.py --model synthseg`，随后运行 `fs-torch synthseg --i T1.nii.gz --o seg.nii.gz --csv-vols seg.vol.csv`，或使用 Python 的 `SynthSeg` 类；详见[独立接口](docs/synthseg/README.md)。
+独立使用 33 类 SynthSeg 时只需 `python tools/setup_weights.py --model synthseg`，随后运行 `fnit synthseg --i T1.nii.gz --o seg.nii.gz --csv-vols seg.vol.csv`，或使用 Python 的 `SynthSeg` 类；详见[独立接口](docs/synthseg/README.md)。
 
-`--all` 下载全部模型变体；`--dest /path/to/weights` 指定本地目录；`--verify-only` 检查已有文件。安装后也可使用 `fs-torch-setup-weights`。SynthStrip、SynthMorph、WMH-SynthSeg、33 类 SynthSeg 和 SynthSR 可通过 Python 的 `weights=`、CLI 的 `--weights` 或 `FREESURFER_TORCH_WEIGHTS` 指定权重；FastVBM 分别使用 `synthstrip_weights=` / `--synthstrip-weights` 和 `synthmorph_weights=` / `--synthmorph-weights`。官方地址、文件大小、SHA-256、许可和离线部署方法见[权重说明](docs/WEIGHTS.md)。
+`--all` 下载全部模型变体；`--dest /path/to/weights` 指定本地目录；`--verify-only` 检查已有文件。安装后也可使用 `fnit-setup-weights`。SynthStrip、SynthMorph、WMH-SynthSeg、33 类 SynthSeg 和 SynthSR 可通过 Python 的 `weights=`、CLI 的 `--weights` 或 `FNIT_WEIGHTS` 指定权重；FastVBM 分别使用 `synthstrip_weights=` / `--synthstrip-weights` 和 `synthmorph_weights=` / `--synthmorph-weights`。官方地址、文件大小、SHA-256、许可和离线部署方法见[权重说明](docs/WEIGHTS.md)。
 
 ## 项目资料
 

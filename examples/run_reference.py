@@ -10,7 +10,7 @@ data = root / "data"
 output = root / "results/reference"
 output.mkdir(parents=True, exist_ok=True)
 fs = Path(os.environ["FREESURFER_HOME"])
-weights = Path(os.environ["FREESURFER_TORCH_WEIGHTS"])
+weights = Path(os.environ["FNIT_WEIGHTS"])
 env = {**os.environ, "CUDA_VISIBLE_DEVICES": "", "NVIDIA_TF32_OVERRIDE": "0"}
 
 for case in ("sub-01", "sub-02"):

@@ -31,7 +31,7 @@ python tools/setup_weights.py --model wmh-synthseg
 Python 模型构造一次即可复用；输入可为 3D `.nii`、`.nii.gz`、`.mgz` 路径或 `surfa.Volume`，返回 `WMHResult`。`crop` 和 `save_lesion_probabilities` 默认均为 `False`，下面显式开启二者以适应 GPU 并保存概率图。
 
 ```python
-from freesurfer_torch import WMHSynthSeg
+from fnit import WMHSynthSeg
 
 model = WMHSynthSeg(device="cuda:0")
 result = model("case_FLAIR.nii.gz", crop=True, save_lesion_probabilities=True)
@@ -53,7 +53,7 @@ print(result.volumes_mm3)
 对应的新命令为：
 
 ```bash
-fs-torch wmh-synthseg --i case_FLAIR.nii.gz --o case_seg.nii.gz \
+fnit wmh-synthseg --i case_FLAIR.nii.gz --o case_seg.nii.gz \
   --device cuda:0 --threads 4 --crop \
   --save_lesion_probabilities --csv_vols case_volumes.csv
 ```

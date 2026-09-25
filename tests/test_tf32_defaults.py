@@ -3,10 +3,10 @@
 import pytest
 import torch
 
-from freesurfer_torch.applywarp import TorchApplyWarp
-from freesurfer_torch.fast import TorchFAST
-from freesurfer_torch.flirt import TorchFLIRT
-from freesurfer_torch.fnirt import TorchFNIRT
+from fnit.applywarp import TorchApplyWarp
+from fnit.fast import TorchFAST
+from fnit.flirt import TorchFLIRT
+from fnit.fnirt import TorchFNIRT
 
 
 @pytest.mark.parametrize(

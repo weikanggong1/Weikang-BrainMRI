@@ -143,7 +143,7 @@ def validate_launch(path, cwd, args, run):
     require(index > 1, "Trace launch lacks strace")
     require(all("=" in item and item.split("=", 1)[0] in {"HOME", "LANG", "LC_ALL", "PATH", "TMPDIR", "CUDA_VISIBLE_DEVICES"}
                 for item in tokens[2:index]), "Unexpected clean launch environment assignment")
-    entry = next((i for i in range(index + 1, len(tokens)) if Path(tokens[i]).name == "fs-torch-recon-all"), -1)
+    entry = next((i for i in range(index + 1, len(tokens)) if Path(tokens[i]).name == "fnit-recon-all"), -1)
     require(entry > index, "Trace launch lacks the package recon-all entry")
     trace_args = tokens[index + 1:entry]
     require("-f" in trace_args and "trace=file,process" in trace_args, "Trace must follow children and file/process calls")
@@ -167,12 +167,12 @@ def validate_launch(path, cwd, args, run):
 def collect_software(python):
     code = '''import hashlib,importlib.metadata,json,platform,sys
 from pathlib import Path
-import freesurfer_torch,torch
-root=Path(freesurfer_torch.__file__).resolve().parent
+import fnit,torch
+root=Path(fnit.__file__).resolve().parent
 files={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(root.rglob("*.py"))}
 print(json.dumps({"python_executable":sys.executable,"python":platform.python_version(),
 "platform":platform.platform(),"versions":{n:importlib.metadata.version(n) for n in
-["freesurfer-torch","torch","numpy","scipy","surfa","nibabel","h5py","PyYAML"]},
+["fudan-neuroimaging-toolkit","torch","numpy","scipy","surfa","nibabel","h5py","PyYAML"]},
 "torch_cuda":torch.version.cuda,"cudnn":torch.backends.cudnn.version(),
 "cuda_available":torch.cuda.is_available(),"package_root":str(root),"package_files_sha256":files}))'''
     completed = subprocess.run([str(python.absolute()), "-I", "-c", code], text=True, capture_output=True, check=True)

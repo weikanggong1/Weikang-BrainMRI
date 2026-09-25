@@ -64,7 +64,7 @@ class ExternalModelsPreflight(unittest.TestCase):
                 self.assertFalse(report["hash_and_linkage_passed"])
 
     def test_fixed_inventory_matches_runner(self):
-        runner = Path(__file__).resolve().parents[2] / "src/freesurfer_torch/recon_all/standalone.py"
+        runner = Path(__file__).resolve().parents[2] / "src/fnit/recon_all/standalone.py"
         spec = importlib.util.spec_from_file_location("standalone_model_inventory", runner)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)

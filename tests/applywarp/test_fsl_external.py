@@ -7,7 +7,7 @@ import nibabel as nib
 import numpy as np
 import pytest
 
-from freesurfer_torch.applywarp import TorchApplyWarp
+from fnit.applywarp import TorchApplyWarp
 
 
 @pytest.mark.skipif(shutil.which("applywarp") is None, reason="FSL applywarp unavailable")

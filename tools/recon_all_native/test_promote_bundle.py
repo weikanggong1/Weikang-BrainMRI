@@ -84,7 +84,7 @@ def evidence_fixture():
                               f'1 openat(AT_FDCWD, "{license_file}", O_RDONLY) = 3\n')
         args.trace_command_file = root / "command.txt"
         command = ["env", "-i", "HOME=$HOME", "strace", "-f", "-qq", "-e", "trace=file,process", "-s", "256",
-                   "-o", str(args.trace), "fs-torch-recon-all", "-i", str(image), "-s", "sub01", "-sd", str(candidate.parent),
+                   "-o", str(args.trace), "fnit-recon-all", "-i", str(image), "-s", "sub01", "-sd", str(candidate.parent),
                    "--bundle", str(bundle), "--license", str(license_file), "--device", "cuda:1", "--threads", "4", "--development-bundle"]
         args.trace_command_file.write_text(shlex.join(command))
         yield args, manifest, preflight, software
@@ -202,7 +202,7 @@ class PromoteBundle(unittest.TestCase):
             with args.trace.open("a") as stream:
                 stream.write('2 openat(AT_FDCWD, "/opt/fsl/absent", O_RDONLY) = -1 ENOENT\n'
                              '2 execve("/bin/echo", ["echo", "/opt/FreeSurfer"], 0x1) = 0\n'
-                             '3 openat(AT_FDCWD, "/project/freesurfer_torch/module.py", O_RDONLY <unfinished ...>\n'
+                             '3 openat(AT_FDCWD, "/project/fnit/module.py", O_RDONLY <unfinished ...>\n'
                              '3 <... openat resumed>) = 5\n'
                              '4 openat(AT_FDCWD, "/env/site-packages/nibabel/freesurfer/io.py", O_RDONLY) = 6\n')
             self.assertTrue(promotion.validate(args, manifest, preflight, software)["trace_audit"]["passed"])

@@ -3,7 +3,7 @@ from pathlib import Path
 
 import torch
 
-from freesurfer_torch.fnirt.spline import (
+from fnit.fnirt.spline import (
     BendingOperator,
     fsl_control_shape,
     zoom_coefficients,

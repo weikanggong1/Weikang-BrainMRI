@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 import torch
 
-from freesurfer_torch.fast.algorithm import FASTConfig, segment_t1
+from fnit.fast.algorithm import FASTConfig, segment_t1
 
 
 def _phantom(device="cpu"):

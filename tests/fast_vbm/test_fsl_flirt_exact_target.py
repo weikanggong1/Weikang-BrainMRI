@@ -6,9 +6,9 @@ import numpy as np
 import pytest
 import torch
 
-import freesurfer_torch
-from freesurfer_torch.flirt import TorchFLIRT
-from freesurfer_torch.flirt.core import (
+import fnit
+from fnit.flirt import TorchFLIRT
+from fnit.flirt.core import (
     _DefaultFLIRTEngine,
     _centre_of_gravity,
     _coordinates_from_fsl_coefficients,
@@ -40,7 +40,7 @@ def _synthetic_pair():
 
 
 def test_torch_flirt_is_the_exact_target_public_api():
-    assert freesurfer_torch.TorchFLIRT is TorchFLIRT
+    assert fnit.TorchFLIRT is TorchFLIRT
     assert TorchFLIRT(device="cpu").angular_search is True
 
 

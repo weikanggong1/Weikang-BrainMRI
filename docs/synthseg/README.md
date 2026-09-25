@@ -1,12 +1,12 @@
 # 独立 33 类 SynthSeg
 
-[返回首页](../../README.md) · [源码目录](../../src/freesurfer_torch/synthseg_parc/) · [权重](../WEIGHTS.md) · [验证记录](../../validation/recon_all/)
+[返回首页](../../README.md) · [源码目录](../../src/fnit/synthseg_parc/) · [权重](../WEIGHTS.md) · [验证记录](../../validation/recon_all/)
 
 `SynthSeg` 使用 FreeSurfer 8.2 的非 robust、非 parcellated SynthSeg 2.0 模型，从单幅 T1 生成 33 类结构标签和各结构软体积。它与 WMH-SynthSeg 是不同模型；本入口不输出 WMH 标签，也不生成皮层分区。推理使用 PyTorch，不需要安装 FreeSurfer、FSL 或 TensorFlow。
 
 ## 下载模型
 
-在仓库根目录运行，或安装后用 `fs-torch-setup-weights` 代替 `python tools/setup_weights.py`。配置脚本下载固定的 `.h5` 和三个 `.npy` 文件，逐个核对大小与 SHA-256，然后记录权重目录。推理本身不联网。
+在仓库根目录运行，或安装后用 `fnit-setup-weights` 代替 `python tools/setup_weights.py`。配置脚本下载固定的 `.h5` 和三个 `.npy` 文件，逐个核对大小与 SHA-256，然后记录权重目录。推理本身不联网。
 
 ```bash
 python tools/setup_weights.py --model synthseg --dest /path/to/weights
@@ -17,7 +17,7 @@ python tools/setup_weights.py --model synthseg --dest /path/to/weights
 ## Python API
 
 ```python
-from freesurfer_torch import SynthSeg
+from fnit import SynthSeg
 
 model = SynthSeg(device="cuda:0", threads=4)
 result = model("sub-01_T1w.nii.gz")
@@ -26,7 +26,7 @@ result.write_volumes_csv("sub-01_T1w.nii.gz", "sub-01_synthseg.vol.csv")
 print(result.total_intracranial_mm3, result.volumes_mm3)
 ```
 
-`SynthSeg(weights=None, device="cpu", threads=None)` 在构造时加载一次模型；每次调用接收一幅图像。`weights` 可传包含四个文件的目录，或直接传 `synthseg_2.0.h5` 路径；三个 `.npy` 必须与这份 `.h5` 位于同一目录。省略 `weights` 时先查 `FREESURFER_TORCH_WEIGHTS`、配置脚本记录的目录，再查默认缓存。输入是单幅 3D `.nii`、`.nii.gz` 或 `.mgz` T1 路径。
+`SynthSeg(weights=None, device="cpu", threads=None)` 在构造时加载一次模型；每次调用接收一幅图像。`weights` 可传包含四个文件的目录，或直接传 `synthseg_2.0.h5` 路径；三个 `.npy` 必须与这份 `.h5` 位于同一目录。省略 `weights` 时先查 `FNIT_WEIGHTS`、配置脚本记录的目录，再查默认缓存。输入是单幅 3D `.nii`、`.nii.gz` 或 `.mgz` T1 路径。
 
 `result.segmentation` 是 `surfa.Volume`，默认位于 SynthSeg 预处理后的 RAS 方向、约 1 mm 网格。`model(image, keep_geometry=True)` 会将标签以最近邻法重采样到输入网格。`color_lut="/path/to/FreeSurferColorLUT.txt"` 可选地附加色表；默认不读取 FreeSurfer 文件。
 
@@ -45,7 +45,7 @@ mri_synthseg --i sub-01_T1w.nii.gz --o sub-01_synthseg.nii.gz \
 本包执行同一输入输出角色的命令为：
 
 ```bash
-fs-torch synthseg --i sub-01_T1w.nii.gz --o sub-01_synthseg.nii.gz \
+fnit synthseg --i sub-01_T1w.nii.gz --o sub-01_synthseg.nii.gz \
   --csv-vols sub-01_synthseg.vol.csv --device cuda:0 --threads 4
 ```
 
@@ -66,7 +66,7 @@ fs-torch synthseg --i sub-01_T1w.nii.gz --o sub-01_synthseg.nii.gz \
 ## 命令行
 
 ```bash
-fs-torch synthseg --i sub-01_T1w.nii.gz --o sub-01_synthseg.nii.gz \
+fnit synthseg --i sub-01_T1w.nii.gz --o sub-01_synthseg.nii.gz \
   --csv-vols sub-01_synthseg.vol.csv --device cuda:0 --threads 4
 ```
 

@@ -9,7 +9,7 @@ import nibabel.freesurfer as fs
 import numpy as np
 import pytest
 
-from freesurfer_torch.recon_all.compare_subject import ANNOTATIONS, MAP_SURFACES, SURFACES, compare_subject, main
+from fnit.recon_all.compare_subject import ANNOTATIONS, MAP_SURFACES, SURFACES, compare_subject, main
 
 
 def _subject(path):

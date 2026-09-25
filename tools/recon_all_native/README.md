@@ -45,7 +45,7 @@ The procedure:
   Hashes and original paths remain in `metadata/source_inventory.json`.
 - Installs three explicit PyTorch launchers: `mri_synthstrip`, `mri_synthseg`,
   and `mri_synthmorph`. Each runs
-  `"$FS_TORCH_PYTHON" -m freesurfer_torch.recon_all.gpu_tools TOOL "$@"`.
+  `"$FS_TORCH_PYTHON" -m fnit.recon_all.gpu_tools TOOL "$@"`.
   Replacement and original hashes are recorded in `neural_replacements`.
 - With `--tcsh`, bundles that interpreter and its libraries. Executable tcsh
   and csh scripts are preserved verbatim under `upstream_scripts/`, while launchers
@@ -168,7 +168,7 @@ replaced with independently validated package implementations. The three Synth
 launchers alone do not replace every neural stage in the reference workflow.
 
 `package_candidate.py --replace-entowm` additionally replaces `mri_entowm_seg`
-with `python -m freesurfer_torch.recon_all.sclimbic`, passing the bundled EntoWM
+with `python -m fnit.recon_all.sclimbic`, passing the bundled EntoWM
 model/ctab directory and selected GPU. Subject arguments pass through unchanged.
 The original script is preserved and both hashes are recorded. This opt-in is
 disabled by default; enable it only after validating the CLI in the intended
@@ -361,11 +361,11 @@ python tools/recon_all_native/externalize_models.py \
 The copied bundle must initially have a byte-identical manifest and its model
 files. `external_models` records their names, sizes and hashes; old verification
 is retained only as provenance. Static preflight and promotion both take
-`--models-dir /path/to/weights`. The clean traced `fs-torch-recon-all` run must
+`--models-dir /path/to/weights`. The clean traced `fnit-recon-all` run must
 also pass that argument. All 52 primary, two auxiliary voxel and 19 aggregate
 checks, plus trace and source checks, must pass before promoting the new bundle.
 The default runner accepts a thin bundle only after that promotion; the model
-directory is selected by `--models-dir`, `FREESURFER_TORCH_WEIGHTS`, or the
+directory is selected by `--models-dir`, `FNIT_WEIGHTS`, or the
 saved weight configuration, then rehashed at startup. A thin bundle still
 contains the native CPU programs, scripts, atlases, templates, interpreter and
 libraries needed for the fixed FreeSurfer 8.2 workflow.

@@ -68,7 +68,7 @@ if a.backend == "tf":
             results[name] = value.numpy().transpose(0, 4, 1, 2, 3)
 else:
     import torch
-    from freesurfer_torch.synthmorph.models import AffineNetwork, SynthMorphNetwork
+    from fnit.synthmorph.models import AffineNetwork, SynthMorphNetwork
     torch.set_num_threads(4)
     torch.backends.cuda.matmul.allow_tf32 = False
     torch.backends.cudnn.allow_tf32 = False

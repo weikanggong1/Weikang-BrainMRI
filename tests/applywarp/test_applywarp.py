@@ -4,9 +4,9 @@ import numpy as np
 import nibabel as nib
 import pytest
 
-import freesurfer_torch
-from freesurfer_torch import cli
-from freesurfer_torch.applywarp import ApplyWarpResult, TorchApplyWarp
+import fnit
+from fnit import cli
+from fnit.applywarp import ApplyWarpResult, TorchApplyWarp
 
 
 def _image(data, affine):
@@ -181,7 +181,7 @@ def test_reference_header_and_input_dtype_define_output_contract():
     result = TorchApplyWarp("cpu")(moving, reference, warp=field)
 
     assert isinstance(result, ApplyWarpResult)
-    assert freesurfer_torch.TorchApplyWarp is TorchApplyWarp
+    assert fnit.TorchApplyWarp is TorchApplyWarp
     assert result.image.shape == reference_shape
     assert result.image.get_data_dtype() == np.dtype("float64")
     np.testing.assert_allclose(result.image.affine, reference.affine)

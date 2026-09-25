@@ -3,7 +3,7 @@
 import numpy as np
 from scipy.ndimage import gaussian_filter
 
-from freesurfer_torch.synthsr.spatial import (
+from fnit.synthsr.spatial import (
     align_volume_to_ref,
     crop_volume_with_idx,
     pad_volume,

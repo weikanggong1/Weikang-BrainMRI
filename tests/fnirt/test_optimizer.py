@@ -1,6 +1,6 @@
 import torch
 
-from freesurfer_torch.fnirt.optimizer import (
+from fnit.fnirt.optimizer import (
     preconditioned_conjugate_gradient,
 )
 

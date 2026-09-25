@@ -8,8 +8,8 @@ import numpy as np
 import pytest
 import torch
 
-from freesurfer_torch.synthseg_parc import SynthSegParc
-from freesurfer_torch.synthseg_parc.model import ParcUNet
+from fnit.synthseg_parc import SynthSegParc
+from fnit.synthseg_parc.model import ParcUNet
 
 
 def test_unet_has_69_normalized_channels():

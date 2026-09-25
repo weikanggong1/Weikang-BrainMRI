@@ -3,8 +3,8 @@ import pytest
 import surfa as sf
 import torch
 
-import freesurfer_torch.fnirt.registration as registration_module
-from freesurfer_torch.fnirt.registration import (
+import fnit.fnirt.registration as registration_module
+from fnit.fnirt.registration import (
     GMFNIRTConfig,
     TorchFNIRT,
     _fsl_affine_grid,
@@ -14,7 +14,7 @@ from freesurfer_torch.fnirt.registration import (
     _trilinear_sample,
     spm_like_mean,
 )
-from freesurfer_torch.fnirt.spline import fsl_control_shape
+from fnit.fnirt.spline import fsl_control_shape
 
 
 def _volume(shape=(8, 8, 8)):

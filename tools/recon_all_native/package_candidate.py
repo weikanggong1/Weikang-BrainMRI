@@ -2,7 +2,7 @@
 """Create an unverified runtime candidate from a trusted FS8.2 installation.
 
 Official prebuilt provenance is retained. Three named neural commands are
-replaced by explicit freesurfer-torch launchers. Personal licenses are excluded.
+replaced by explicit fudan-neuroimaging-toolkit launchers. Personal licenses are excluded.
 """
 
 import argparse
@@ -95,7 +95,7 @@ def expand_literal_script_files(root, selected):
 def launcher(tool):
     return ("#!/bin/sh\n"
             ': "${FS_TORCH_PYTHON:?set FS_TORCH_PYTHON to the package Python}"\n'
-            f'exec "$FS_TORCH_PYTHON" -m freesurfer_torch.recon_all.gpu_tools {tool} "$@"\n')
+            f'exec "$FS_TORCH_PYTHON" -m fnit.recon_all.gpu_tools {tool} "$@"\n')
 
 
 def main():
@@ -231,7 +231,7 @@ def main():
         path.chmod(0o755)
         row = {"path": relative, "sha256": sha256(path), "bytes": path.stat().st_size,
                "kind": "generated_script", "staged": True,
-               "implementation": "freesurfer_torch.recon_all.gpu_tools"}
+               "implementation": "fnit.recon_all.gpu_tools"}
         if prior:
             manifest["files"].remove(prior)
         manifest["files"].append(row)
@@ -245,7 +245,7 @@ def main():
         script = ("#!/bin/sh\n"
                   ': "${FS_TORCH_PYTHON:?set FS_TORCH_PYTHON to the package Python}"\n'
                   ': "${FREESURFER_HOME:?set FREESURFER_HOME to the package runtime}"\n'
-                  'exec "$FS_TORCH_PYTHON" -m freesurfer_torch.recon_all.sclimbic '
+                  'exec "$FS_TORCH_PYTHON" -m fnit.recon_all.sclimbic '
                   '--assets "$FREESURFER_HOME/models" --device "${FS_TORCH_DEVICE:-cuda:0}" "$@"\n')
         replacement = replace_script(output, manifest, relative, script,
                                      "Opt-in PyTorch EntoWM subject-mode dispatch")

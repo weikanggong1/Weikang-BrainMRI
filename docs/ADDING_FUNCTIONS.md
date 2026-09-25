@@ -9,7 +9,7 @@
 以 `new_function` 为占位名称：
 
 ```text
-src/freesurfer_torch/new_function/
+src/fnit/new_function/
 ├── __init__.py
 ├── pipeline.py
 └── README.md

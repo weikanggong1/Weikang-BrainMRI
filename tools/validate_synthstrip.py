@@ -18,7 +18,7 @@ import surfa as sf
 import torch
 from torch import nn
 
-from freesurfer_torch.synthstrip import StripModel, SynthStrip
+from fnit.synthstrip import StripModel, SynthStrip
 
 
 def sha256(path):

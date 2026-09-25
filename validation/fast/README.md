@@ -13,7 +13,7 @@ FSL 与 TorchFAST 都读取每例同一份 `T1_brain.nii.gz`。参考命令为�
 ```bash
 fast -b -o T1_fast/T1_brain T1_brain.nii.gz
 
-fs-torch fast -i T1_brain.nii.gz -o torch/T1_brain \
+fnit fast -i T1_brain.nii.gz -o torch/T1_brain \
   --device cuda:0 --threads 1 -b
 ```
 

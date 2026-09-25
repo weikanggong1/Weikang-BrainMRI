@@ -261,10 +261,10 @@ def replace_auxiliary(bundle, manifest, modes):
         path.write_text('#!/bin/sh\n'
                         ': "${FS_TORCH_PYTHON:?set FS_TORCH_PYTHON to the package Python}"\n'
                         ': "${FREESURFER_HOME:?set FREESURFER_HOME to the package runtime}"\n'
-                        'exec "$FS_TORCH_PYTHON" -m freesurfer_torch.recon_all.aux_seg '
+                        'exec "$FS_TORCH_PYTHON" -m fnit.recon_all.aux_seg '
                         f'{mode} --assets "$FREESURFER_HOME" --device "${{FS_TORCH_DEVICE:-cuda:0}}" "$@"\n')
         path.chmod(0o755)
-        generated = file_row(bundle, path, "generated_script", implementation="freesurfer_torch.recon_all.aux_seg")
+        generated = file_row(bundle, path, "generated_script", implementation="fnit.recon_all.aux_seg")
         manifest["files"].append(generated)
         manifest.setdefault("neural_replacements", []).append({
             "path": relative, "upstream_saved_path": original["path"],

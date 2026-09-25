@@ -1,11 +1,11 @@
 import torch
 
-from freesurfer_torch.fnirt.spline import (
+from fnit.fnirt.spline import (
     expand_coefficients,
     fit_field_coefficients,
     spline_bases,
 )
-from freesurfer_torch.fnirt.topology import (
+from fnit.fnirt.topology import (
     constrain_topology,
     jacobian_check,
 )

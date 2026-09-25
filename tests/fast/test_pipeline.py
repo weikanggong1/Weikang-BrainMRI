@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 import surfa as sf
 
-from freesurfer_torch.fast import FASTResult, TorchFAST
+from fnit.fast import FASTResult, TorchFAST
 
 
 def _volume(shape=(12, 11, 10), affine=None):

@@ -1,7 +1,7 @@
 import torch
 
-from freesurfer_torch.fnirt.optimizer import preconditioned_conjugate_gradient
-from freesurfer_torch.fnirt.spline import (
+from fnit.fnirt.optimizer import preconditioned_conjugate_gradient
+from fnit.fnirt.spline import (
     BendingOperator,
     adjoint_field,
     cubic_bspline_basis,

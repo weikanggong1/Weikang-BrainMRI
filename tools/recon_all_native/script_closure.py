@@ -170,8 +170,8 @@ def scan_scripts(bundle, files, *, python_executable=None, required_resources=()
                            "error": interpreter_status})
         is_python = name.startswith("python") or path.suffix == ".py"
         modules, parse_error = python_imports(text) if is_python else ([], None)
-        if "-m freesurfer_torch." in text:
-            modules.append("freesurfer_torch")
+        if "-m fnit." in text:
+            modules.append("fnit")
         all_modules.update(modules)
         if parse_error:
             errors.append({"script": relative, "error": parse_error})

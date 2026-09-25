@@ -2,7 +2,7 @@
 import pytest
 import torch
 
-from freesurfer_torch.synthmorph.spatial import compose, transform
+from fnit.synthmorph.spatial import compose, transform
 
 
 DEVICES = ["cpu"] + (["cuda"] if torch.cuda.is_available() else [])

@@ -6,16 +6,16 @@ import numpy as np
 import surfa as sf
 import torch
 
-import freesurfer_torch.fast_vbm.registration as registration_module
-from freesurfer_torch.fast_vbm.synthmorph_backend import (
+import fnit.fast_vbm.registration as registration_module
+from fnit.fast_vbm.synthmorph_backend import (
     SynthMorphDeformRegistration,
 )
-from freesurfer_torch.fnirt import TorchFNIRT
-from freesurfer_torch.flirt.coordinates import (
+from fnit.fnirt import TorchFNIRT
+from fnit.flirt.coordinates import (
     voxel_to_fsl_scaled_mm,
     world_to_flirt_affine,
 )
-from freesurfer_torch.fast_vbm.registration import (
+from fnit.fast_vbm.registration import (
     _register_gm,
     _fsl_dense_nonlinear_jacobian,
     _pull_ras_to_fsl_fields,
@@ -240,7 +240,7 @@ def test_synthmorph_and_fnirt_enter_estimator_with_identical_preparation():
     assert synthmorph_result.qc["fsl_reference_mask_exact"] is None
     assert synthmorph_result.qc["fsl_fnirt_numerically_equivalent"] is None
     assert synthmorph_result.qc["resampling"] == (
-        "freesurfer_torch.applywarp.TorchApplyWarp"
+        "fnit.applywarp.TorchApplyWarp"
     )
     np.testing.assert_allclose(synthmorph_result.jacobian.data, 1, atol=3e-6)
     np.testing.assert_array_equal(

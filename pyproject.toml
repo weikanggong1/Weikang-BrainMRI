@@ -3,7 +3,7 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "freesurfer-torch"
+name = "fudan-neuroimaging-toolkit"
 version = "0.9.0"
 description = "Standalone PyTorch brain MRI inference with single-subject Python and CLI APIs"
 readme = "README.md"
@@ -18,13 +18,17 @@ dependencies = [
   "PyYAML>=6",
 ]
 
+[project.urls]
+Repository = "https://github.com/weikanggong1/Fudan-Neuroimaging-toolkit"
+Documentation = "https://github.com/weikanggong1/Fudan-Neuroimaging-toolkit#readme"
+
 [project.scripts]
-fs-torch = "freesurfer_torch.cli:main"
-fs-torch-setup-weights = "freesurfer_torch.weights:main"
-fs-torch-recon-all = "freesurfer_torch.recon_all.standalone:main"
-fs-torch-applywarp = "freesurfer_torch.applywarp.cli:main"
-fs-torch-flirt = "freesurfer_torch.flirt.cli:main"
-fs-torch-fnirt = "freesurfer_torch.fnirt.cli:main"
+fnit = "fnit.cli:main"
+fnit-setup-weights = "fnit.weights:main"
+fnit-recon-all = "fnit.recon_all.standalone:main"
+fnit-applywarp = "fnit.applywarp.cli:main"
+fnit-flirt = "fnit.flirt.cli:main"
+fnit-fnirt = "fnit.fnirt.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -33,7 +37,7 @@ where = ["src"]
 license-files = ["licenses/*.txt", "THIRD_PARTY_NOTICES.md"]
 
 [tool.setuptools.package-data]
-freesurfer_torch = [
+fnit = [
   "_vendor_fsl/*.md",
   "_vendor_fsl/*.json",
   "_vendor_fsl/sources/**/*",

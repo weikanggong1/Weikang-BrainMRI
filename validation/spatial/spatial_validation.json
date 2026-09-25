@@ -796,7 +796,7 @@
       "versions": {
         "torch": "2.5.1",
         "device": "cuda",
-        "spatial_source": "<PROJECT>/src/freesurfer_torch/spatial.py",
+        "spatial_source": "<PROJECT>/src/fnit/spatial.py",
         "spatial_source_sha256": "9c629a94827a987fcc4880cbf18f36aa79f347270585b8c4b92b3fc1660104ee",
         "geometry_backend": "surfa 0.6.3"
       },

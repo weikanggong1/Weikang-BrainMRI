@@ -2,7 +2,7 @@
 
 import torch
 
-from freesurfer_torch.recon_all.gpu_tools import (
+from fnit.recon_all.gpu_tools import (
     SYNTHSEG_TIE_EPSILON, _synthseg_index_with_numerical_ties,
 )
 

@@ -116,7 +116,7 @@ def validate_manifest(manifest, cases):
 
 def provenance(args):
     weights = {name: sha256(Path(args.weights) / name) for name in WEIGHTS[args.function]}
-    package = Path(__file__).resolve().parents[1] / "src" / "freesurfer_torch"
+    package = Path(__file__).resolve().parents[1] / "src" / "fnit"
     sources = {path.relative_to(package).as_posix(): sha256(path) for path in sorted(package.rglob("*.py"))}
     fs_home = Path(args.freesurfer_home) if args.freesurfer_home else None
     official = None if fs_home is None else fs_home / "python" / "scripts" / f"mri_synth{args.function}"
@@ -131,7 +131,7 @@ def command_for(args, arm, case, template, outputs, provenance_data):
     candidate = arm.startswith("candidate")
     weights = Path(args.weights).resolve()
     if candidate:
-        command = [args.python, "-m", "freesurfer_torch.cli", f"synth{args.function}"]
+        command = [args.python, "-m", "fnit.cli", f"synth{args.function}"]
         command += ["--weights", str(weights), "--device", "cuda:0" if gpu else "cpu", "-j", str(args.threads)]
     elif args.function == "strip" and gpu:
         source = provenance_data["official_script"]

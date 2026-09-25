@@ -48,8 +48,8 @@ import nibabel as nib
 import numpy as np
 import torch
 
-import freesurfer_torch
-from freesurfer_torch.fnirt.standalone import (
+import fnit
+from fnit.fnirt.standalone import (
     DEFAULT_REFERENCE_MASK,
     SUPPORTED_CONFIG,
     SUPPORTED_CONFIG_SHA256,
@@ -133,7 +133,7 @@ def sha256(path: Path) -> str:
 
 
 def package_source_digest() -> str:
-    root = Path(freesurfer_torch.__file__).resolve().parent
+    root = Path(fnit.__file__).resolve().parent
     digest = hashlib.sha256()
     for path in sorted(root.rglob("*.py")):
         digest.update(path.relative_to(root).as_posix().encode("utf-8"))
@@ -353,7 +353,7 @@ def case_provenance(
     return {
         "schema": SCHEMA_VERSION,
         "script_sha256": inputs["script_sha256"],
-        "package_version": freesurfer_torch.__version__,
+        "package_version": fnit.__version__,
         "package_source_sha256": inputs["package_source_sha256"],
         "torch_version": torch.__version__,
         "cuda_runtime": torch.version.cuda,

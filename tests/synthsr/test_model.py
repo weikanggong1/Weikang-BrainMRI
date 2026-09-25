@@ -6,8 +6,8 @@ import numpy as np
 import pytest
 import torch
 
-from freesurfer_torch.synthsr.model import SynthSRUNet, load_h5_weights
-from freesurfer_torch.synthsr.pipeline import SynthSRImage, _load_image
+from fnit.synthsr.model import SynthSRUNet, load_h5_weights
+from fnit.synthsr.pipeline import SynthSRImage, _load_image
 
 
 def test_unet_output_shape():

@@ -14,7 +14,7 @@ def refresh_new_manifest(root, path):
     path.write_text(json.dumps({"software": {
         "package_files_sha256": files,
         "package_tree_sha256": attestation.tree_hash(files),
-        "versions": {"freesurfer-torch": "0.7.0"},
+        "versions": {"fudan-neuroimaging-toolkit": "0.7.0"},
     }}))
 
 
@@ -51,7 +51,7 @@ def fixture():
         files = attestation.package_files(old)
         software = {"package_files_sha256": files,
                     "package_tree_sha256": attestation.tree_hash(files),
-                    "versions": {"freesurfer-torch": "0.6.0"}}
+                    "versions": {"fudan-neuroimaging-toolkit": "0.6.0"}}
         code = root / "code.json"
         code.write_text(json.dumps({"software": software}))
         bundle = root / "bundle.json"

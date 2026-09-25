@@ -6,9 +6,9 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from freesurfer_torch import cli as root_cli
-from freesurfer_torch.flirt import TorchFLIRT
-from freesurfer_torch.flirt import cli, standalone
+from fnit import cli as root_cli
+from fnit.flirt import TorchFLIRT
+from fnit.flirt import cli, standalone
 
 
 class _Moved:
@@ -29,7 +29,7 @@ def _fake_model(captured):
 
 
 def test_public_name_selects_the_source_derived_backend():
-    assert TorchFLIRT.__module__ == "freesurfer_torch.flirt.core"
+    assert TorchFLIRT.__module__ == "fnit.flirt.core"
 
 
 def test_run_flirt_writes_both_outputs_atomically(tmp_path, monkeypatch):

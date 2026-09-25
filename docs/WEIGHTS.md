@@ -3,14 +3,14 @@
 Git 仓库和 wheel 均不包含权重。SynthStrip、SynthMorph、33 类 SynthSeg、
 WMH-SynthSeg、SynthSR 和 GPU recon-all 辅助分割使用 FreeSurfer 官方发布的文件；
 配置脚本下载文件、核对大小与 SHA-256，并
-保存权重目录。此后 Python API 和 `fs-torch` 命令会自动查找它，下载过程无需安装
+保存权重目录。此后 Python API 和 `fnit` 命令会自动查找它，下载过程无需安装
 FreeSurfer。TorchFAST、TorchFLIRT 和 TorchFNIRT 是数值算法，
 不使用模型权重。FastVBM 的默认 SynthMorph 分支使用 `synthstrip.1.pt` 和官方
 `synthmorph.deform.3.h5`；TorchFNIRT 分支只在 raw T1 脑提取时使用 SynthStrip。
 
 ## 一次配置，后续自动使用
 
-在仓库根目录运行。默认下载下表 19 个文件到 `~/.cache/freesurfer_torch/`；SynthMorph 最大的文件约 3.51 GB，可通过 HTTP Range 续传。脚本先写 `.part`，完整校验后才更名为正式权重文件。
+在仓库根目录运行。默认下载下表 19 个文件到 `~/.cache/fnit/`；SynthMorph 最大的文件约 3.51 GB，可通过 HTTP Range 续传。脚本先写 `.part`，完整校验后才更名为正式权重文件。
 
 ```bash
 python tools/setup_weights.py --all
@@ -49,9 +49,9 @@ python tools/setup_weights.py --all --dest /path/to/models
 python tools/setup_weights.py --all --verify-only
 ```
 
-`--verify-only` 只检查当前权重目录，不下载或修改配置。已从联网机器复制了权重时，运行 `python tools/setup_weights.py --all --dest /path/to/copied/models`：现有文件校验成功后直接保存目录，无需重新下载。安装 wheel 后也可使用相同选项的 `fs-torch-setup-weights` 命令。
+`--verify-only` 只检查当前权重目录，不下载或修改配置。已从联网机器复制了权重时，运行 `python tools/setup_weights.py --all --dest /path/to/copied/models`：现有文件校验成功后直接保存目录，无需重新下载。安装 wheel 后也可使用相同选项的 `fnit-setup-weights` 命令。
 
-可选模型名：`synthstrip`、`synthstrip-nocsf`、`synthmorph-rigid`、`synthmorph-affine`、`synthmorph-deform`、`synthmorph-joint`、`synthseg`、`wmh-synthseg`、`recon-all`、`synthsr`、`synthsr-lowfield`、`synthsr-v1` 和 `fast-vbm`。`recon-all` 包含已有的 SynthStrip/SynthMorph 权重及十个专用资源，重复选择时只下载一次。`fast-vbm` 是 `synthstrip.1.pt` 与 `synthmorph.deform.3.h5` 的依赖别名，覆盖 FastVBM 两个后端可能使用的权重。只运行 `registration_backend="fnirt"` 可选择 `--model synthstrip`；若调用时还提供显式脑 mask，则该分支不需要任何 checkpoint。`--model` 可重复；不写 `--model` 时等同 `--all`。显式 API/CLI 权重路径优先，其次是 `FREESURFER_TORCH_WEIGHTS` 环境变量，再次是脚本保存的目录，然后是默认缓存和现有 FreeSurfer 模型目录。`XDG_CACHE_HOME` 可改变缓存根目录。模型推理不会联网，只有运行配置脚本才会下载。
+可选模型名：`synthstrip`、`synthstrip-nocsf`、`synthmorph-rigid`、`synthmorph-affine`、`synthmorph-deform`、`synthmorph-joint`、`synthseg`、`wmh-synthseg`、`recon-all`、`synthsr`、`synthsr-lowfield`、`synthsr-v1` 和 `fast-vbm`。`recon-all` 包含已有的 SynthStrip/SynthMorph 权重及十个专用资源，重复选择时只下载一次。`fast-vbm` 是 `synthstrip.1.pt` 与 `synthmorph.deform.3.h5` 的依赖别名，覆盖 FastVBM 两个后端可能使用的权重。只运行 `registration_backend="fnirt"` 可选择 `--model synthstrip`；若调用时还提供显式脑 mask，则该分支不需要任何 checkpoint。`--model` 可重复；不写 `--model` 时等同 `--all`。显式 API/CLI 权重路径优先，其次是 `FNIT_WEIGHTS` 环境变量，再次是脚本保存的目录，然后是默认缓存和现有 FreeSurfer 模型目录。`XDG_CACHE_HOME` 可改变缓存根目录。模型推理不会联网，只有运行配置脚本才会下载。
 
 原有九个链接、HTTP 状态和文件大小于 **2026-09-23** 核验；新增十个 GPU recon-all 专用文件于 **2026-09-25** 从 FreeSurfer `v8.2.0` 官方源码/git-annex 完整下载，逐一核对大小和 SHA-256，且与已验证的运行包清单完全一致。SynthStrip/SynthMorph 的 SHA-256 来自本包已完成数值验证的权重，并与 FreeSurfer 官方仓库的 git-annex 指针一致；WMH-SynthSeg 和 SynthSR v1 的 SHA-256 来自官方文件的完整下载校验。SynthSR v2 两份文件的大小和 SHA-256 与 FreeSurfer git-annex 对象名一致；配置脚本下载后还会逐字节校验。此处的版本号固定，不会自动跟随上游替换为新模型。
 
@@ -120,20 +120,20 @@ printf '%s  %s\n' \
   '37417f802196186441aae3e7f385d94f8a98c64a88acaeaa2723af995c653e33' \
   'weights/synthstrip.1.pt.part' | sha256sum --check - && \
   mv weights/synthstrip.1.pt.part weights/synthstrip.1.pt
-export FREESURFER_TORCH_WEIGHTS="$PWD/weights"
+export FNIT_WEIGHTS="$PWD/weights"
 ```
 
 `pip install`、导入模块和推理不下载权重。离线计算节点可从联网机器复制已校验的权重目录。
 
 ## TorchFAST 不需要权重
 
-`TorchFAST` 和 `fs-torch fast` 直接运行 HMRF-EM、
+`TorchFAST` 和 `fnit fast` 直接运行 HMRF-EM、
 bias field 和 PVE 数值计算，不读取 checkpoint，也不需要执行
 `tools/setup_weights.py`。只有从原始、未去颅骨 T1 开始并先调用 SynthStrip 时，
 才需要配置 `synthstrip.1.pt`。`setup_weights.py --all` 的 19 个文件属于上表
 学习模型及其查找表，不含 TorchFAST 文件。
 
-`FastVBM` / `fs-torch fast-vbm` 从原始 T1w 开始，默认调用 SynthStrip，因此需要
+`FastVBM` / `fnit fast-vbm` 从原始 T1w 开始，默认调用 SynthStrip，因此需要
 `synthstrip.1.pt`。`registration_backend="synthmorph"` 还读取
 `synthmorph.deform.3.h5`；该分支传入外部线性初始化并设置 `mid_space=False`，因此
 不需要 `synthmorph.affine.2.h5`。`registration_backend="fnirt"` 使用本包 PyTorch

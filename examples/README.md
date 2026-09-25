@@ -9,14 +9,14 @@
 在仓库根目录安装；已安装本包可跳过：
 
 ```bash
-git clone https://github.com/weikanggong1/Weikang-BrainMRI.git
-cd Weikang-BrainMRI
+git clone https://github.com/weikanggong1/Fudan-Neuroimaging-toolkit.git
+cd Fudan-Neuroimaging-toolkit
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install .
 ```
 
-下载并校验 SynthStrip 与 joint SynthMorph 所需的三个官方权重。脚本会记录存放目录，供 `fs-torch` 后续调用：
+下载并校验 SynthStrip 与 joint SynthMorph 所需的三个官方权重。脚本会记录存放目录，供 `fnit` 后续调用：
 
 ```bash
 python tools/setup_weights.py --model synthstrip --model synthmorph-joint
@@ -27,11 +27,11 @@ python tools/setup_weights.py --model synthstrip --model synthmorph-joint
 ## CPU 单例：检查每个函数的基本输出
 
 ```bash
-fs-torch synthstrip -i examples/data/sub-01_T1w.nii.gz \
+fnit synthstrip -i examples/data/sub-01_T1w.nii.gz \
   -o examples/results/cpu/sub-01_brain.nii.gz \
   -m examples/results/cpu/sub-01_mask.nii.gz --device cpu
 
-fs-torch synthmorph examples/data/sub-02_T1w.nii.gz \
+fnit synthmorph examples/data/sub-02_T1w.nii.gz \
   examples/data/sub-01_T1w.nii.gz --model joint \
   -o examples/results/cpu/sub-02_in_sub-01.nii.gz \
   -t examples/results/cpu/sub-02_to_sub-01.mgz --device cpu

@@ -1,7 +1,7 @@
 """FSL scaled-mm and world-RAS coordinate conversion tests."""
 
 import numpy as np
-from freesurfer_torch.flirt.coordinates import (
+from fnit.flirt.coordinates import (
     flirt_to_world_affine,
     flirt_to_world_pull,
     voxel_to_fsl_scaled_mm,

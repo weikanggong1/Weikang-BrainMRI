@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 import surfa as sf
 
-from freesurfer_torch.fast_vbm.registration import (
+from fnit.fast_vbm.registration import (
     _displacement_qc,
     _register_gm,
 )

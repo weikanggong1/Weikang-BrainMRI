@@ -6,11 +6,11 @@ from types import SimpleNamespace
 import numpy as np
 import torch
 
-from freesurfer_torch import SynthSeg
-from freesurfer_torch import cli
-from freesurfer_torch.recon_all import gpu_tools
-from freesurfer_torch import synthseg_parc
-from freesurfer_torch.synthseg_parc import synthseg
+from fnit import SynthSeg
+from fnit import cli
+from fnit.recon_all import gpu_tools
+from fnit import synthseg_parc
+from fnit.synthseg_parc import synthseg
 
 
 def _models(tmp_path):

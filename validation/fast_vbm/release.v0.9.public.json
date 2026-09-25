@@ -94,12 +94,12 @@
       "wheel_installed_to_isolated_target": true
     },
     "cli_help": {
-      "fs-torch": true,
-      "fs-torch-applywarp": true,
-      "fs-torch-flirt": true,
-      "fs-torch-fnirt": true,
-      "fs-torch-recon-all": true,
-      "fs-torch-setup-weights": true
+      "fnit": true,
+      "fnit-applywarp": true,
+      "fnit-flirt": true,
+      "fnit-fnirt": true,
+      "fnit-recon-all": true,
+      "fnit-setup-weights": true
     },
     "environment": {
       "cuda_runtime": "11.8",

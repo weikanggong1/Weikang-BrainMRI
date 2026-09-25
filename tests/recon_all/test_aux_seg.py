@@ -4,7 +4,7 @@ import nibabel as nib
 import numpy as np
 import torch
 
-from freesurfer_torch.recon_all import aux_seg
+from fnit.recon_all import aux_seg
 
 
 def _lta(path: Path):

@@ -26,11 +26,11 @@ class DerivedBundle(unittest.TestCase):
         environment = {"python": "3.11.0", "platform": "Linux-test",
                        "torch_cuda": "12.4", "cudnn": 90100, "cuda_available": True}
         old_software = {**environment, "package_tree_sha256": old_tree,
-                        "versions": {"freesurfer-torch": "0.6.0", "torch": "2.5.1"}}
+                        "versions": {"fudan-neuroimaging-toolkit": "0.6.0", "torch": "2.5.1"}}
         new_software = {**environment, "package_root": str(new_root),
                         "package_files_sha256": new_files,
                         "package_tree_sha256": new_tree,
-                        "versions": {"freesurfer-torch": "0.7.0", "torch": "2.5.1"}}
+                        "versions": {"fudan-neuroimaging-toolkit": "0.7.0", "torch": "2.5.1"}}
         source = {"standalone_verified": True, "files": [{"path": "bin/recon-all", "sha256": "b" * 64}],
                   "verification": {"profile_id": "fixed-profile", "software": old_software,
                                    "evidence": {"comparison": {"sha256": "c" * 64}}}}

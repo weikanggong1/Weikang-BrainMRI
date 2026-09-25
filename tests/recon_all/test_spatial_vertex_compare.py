@@ -6,8 +6,8 @@ import nibabel.freesurfer as fs
 import numpy as np
 import pytest
 
-from freesurfer_torch.recon_all.compare_subject import MAP_SURFACES
-from freesurfer_torch.recon_all.spatial_vertex_compare import compare_spatial_vertices, main
+from fnit.recon_all.compare_subject import MAP_SURFACES
+from fnit.recon_all.spatial_vertex_compare import compare_spatial_vertices, main
 
 
 VERTICES = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float32)

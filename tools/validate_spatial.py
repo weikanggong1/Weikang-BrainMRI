@@ -122,7 +122,7 @@ def backend_run(args):
         unpack = lambda value: value.numpy()
     else:
         import torch
-        from freesurfer_torch.synthmorph import spatial
+        from fnit.synthmorph import spatial
         torch.set_num_threads(2)
         version = dict(torch=torch.__version__, device=args.device)
         cast = lambda value: torch.as_tensor(value, dtype=torch.float32, device=args.device)
@@ -195,7 +195,7 @@ def backend_run(args):
                     # with different nearest ties and boundary rules from TF.
                     result = source.transform(transformation, method=case["method"], fill=0)
                 else:
-                    from freesurfer_torch.synthmorph import apply_transform
+                    from fnit.synthmorph import apply_transform
                     result = apply_transform(source, transformation, method=case["method"])
                 version["geometry_backend"] = f"surfa {getattr(sf, '__version__', 'unknown')}"
                 outputs[name] = result.data[..., None]

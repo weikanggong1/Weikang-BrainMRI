@@ -12,7 +12,7 @@ float32/float64 张量；不使用 float16 或 bfloat16。实际开关写入
 ## 命令行调用
 
 ```bash
-python -m freesurfer_torch.fnirt \
+python -m fnit.fnirt \
   --in subject_GM.nii.gz \
   --ref template_GM.nii.gz \
   --aff subject_GM_to_template_GM.mat \
@@ -28,7 +28,7 @@ python -m freesurfer_torch.fnirt \
 
 | 参数 | 作用 |
 |---|---|
-| `python -m freesurfer_torch.fnirt` | 启动本包的单被试 PyTorch FNIRT，不调用外部 `fnirt` executable。 |
+| `python -m fnit.fnirt` | 启动本包的单被试 PyTorch FNIRT，不调用外部 `fnirt` executable。 |
 | `--in` | moving/input 灰质概率图；配准要把它变换到 `--ref`。 |
 | `--ref` | fixed/reference 灰质模板；决定 `--iout` 和 `--jout` 的 shape、voxel size 和空间网格。 |
 | `--aff` | 可选 FLIRT `.mat`；方向是 input → reference，坐标是 FSL scaled-mm。代码先转换成带 source/target geometry 的 world-RAS affine，再传给 `TorchFNIRT`。省略时使用 FSL scaled-mm identity。 |
@@ -66,7 +66,7 @@ fnirt \
 ## Python 调用
 
 ```python
-from freesurfer_torch.fnirt.standalone import run_fnirt
+from fnit.fnirt.standalone import run_fnirt
 
 result = run_fnirt(
     "subject_GM.nii.gz",                 # input/moving GM
@@ -167,7 +167,7 @@ DCT basis 或 quadratic spline。CLI 遇到这些参数会报告未识别参数�
 [`FSL Software Licence, Release 6.0`](../../licenses/FSL-6.0.txt) 约束，仅限
 该许可允许的非商业用途。本项目不是官方 FSL 发布。未修改的上游源码和版本、
 commit、文件哈希保存在
-[`_vendor_fsl`](../../src/freesurfer_torch/_vendor_fsl/README.md)。
+[`_vendor_fsl`](../../src/fnit/_vendor_fsl/README.md)。
 
 intent-2007 header、ZoomField 和 bending energy 使用 FSL 生成的 oracle fixture；
 B-spline expansion 与 Jacobian 有解析/组件测试。topology 路径目前覆盖 identity 和

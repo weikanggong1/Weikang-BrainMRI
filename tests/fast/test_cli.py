@@ -5,8 +5,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from freesurfer_torch import cli
-from freesurfer_torch import fast as fast_module
+from fnit import cli
+from fnit import fast as fast_module
 
 
 OUTPUTS = {

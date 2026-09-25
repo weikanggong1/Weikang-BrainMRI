@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from freesurfer_torch import cli
-from freesurfer_torch import fast_vbm as fast_vbm_module
+from fnit import cli
+from fnit import fast_vbm as fast_vbm_module
 
 
 def _fake_pipeline(captured):

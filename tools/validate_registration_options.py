@@ -18,7 +18,7 @@ import numpy as np
 import surfa as sf
 import torch
 
-from freesurfer_torch import SynthMorph, apply_transform
+from fnit import SynthMorph, apply_transform
 from validate_synthmorph import errors, geometry, write_json
 
 

@@ -5,7 +5,7 @@ import json
 
 import pytest
 
-from freesurfer_torch.recon_all import standalone
+from fnit.recon_all import standalone
 
 
 REQUIRED = (
@@ -158,9 +158,9 @@ def test_external_models_are_verified_and_passed_to_recon_all(tmp_path, monkeypa
     with pytest.raises(ValueError, match="source FreeSurfer installation"):
         standalone._check_bundle(bundle, development=False, models_dir=models)
     manifest_file.write_text(original_manifest)
-    from freesurfer_torch import weights
+    from fnit import weights
     monkeypatch.setattr(weights, "configured_dir", lambda: None)
-    monkeypatch.delenv("FREESURFER_TORCH_WEIGHTS", raising=False)
+    monkeypatch.delenv("FNIT_WEIGHTS", raising=False)
     with pytest.raises(ValueError, match="Configure weights"):
         standalone._check_bundle(bundle, development=False)
     assert standalone._check_bundle(bundle, development=False,

@@ -53,7 +53,7 @@ the boolean masks match.
 From the repository root, using the same Python environment as `standalone.py`:
 
 ```bash
-PYTHONPATH=src python -m freesurfer_torch.recon_all.compare_subject \
+PYTHONPATH=src python -m fnit.recon_all.compare_subject \
   /absolute/reference/subject /absolute/candidate/subject \
   --tolerances tests/recon_all/tolerances_numeric.json \
   --min-label-dice 0.995 --min-annotation-dice 0.995 \
@@ -71,7 +71,7 @@ For an existing validation checkout, run this from the repository root,
 substituting its runtime interpreter and the candidate subject directory:
 
 ```bash
-PYTHONPATH=src "$FS_TORCH_PYTHON" -m freesurfer_torch.recon_all.compare_subject \
+PYTHONPATH=src "$FS_TORCH_PYTHON" -m fnit.recon_all.compare_subject \
   work/reconall_reference_gpucw1/fs_sub01 "$CANDIDATE_SUBJECT_DIR" \
   --tolerances tests/recon_all/tolerances_numeric.json \
   --min-label-dice 0.995 --min-annotation-dice 0.995 \

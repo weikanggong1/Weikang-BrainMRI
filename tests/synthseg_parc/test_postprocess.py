@@ -5,7 +5,7 @@ import pytest
 import torch
 from scipy.ndimage import label as scipy_label
 
-from freesurfer_torch.synthseg_parc.postprocess import (
+from fnit.synthseg_parc.postprocess import (
     largest_connected_component, postprocess_segmentation,
 )
 
