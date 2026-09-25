@@ -56,8 +56,8 @@ flowchart LR
 FNIRT 分支沿用 UKB GM 配置的四层下采样、输入/参考平滑、10 mm 控制点
 间距、bending-energy 权重和 0.2–5 Jacobian 范围。FastVBM 的 common
 Jacobian 对 dense residual 使用 FSL 的中心有限差分（边界单侧差分）；独立
-`TorchFNIRT` 仍保留 spline analytic Jacobian。case01 官方 intent-2007
-coefficient 的对照中，common dense 与 `fnirtfileutils --jout` analytic 的全图
+`TorchFNIRT` 仍保留 spline analytic Jacobian。此前的 case01 matched-input 诊断
+使用官方 intent-2007 coefficient；common dense 与 `fnirtfileutils --jout` analytic 的全图
 相关为 0.999916，MAE 0.001555，最大绝对差 0.07110；这属于 FastVBM common
 postprocessing 的离散化差异，不能写成逐体素相同。
 
@@ -322,8 +322,8 @@ fs-torch flirt \
 | `-cost corratio` | correlation ratio | 当前唯一支持值；使用 source-derived FSL default cost 和 Brent 路径 |
 
 该实现来自 FSL 默认路径源码，但当前验证不支持
-“仅有浮点误差”的结论：10 例真实 GM 中 9 例通过预设的 0.05 mm matrix gate，
-最大 matrix RMS difference 为 0.0541455 mm，因此
+“仅有浮点误差”的结论。当前默认 TF32 的十例报告使用 FSL reference image
+intensity-weighted COG 和 80 mm radius 计算 `rmsdiff`，汇总完成前不发布数值；
 `validated_fsl_equivalent=false`。支持范围、许可和完整数值见
 [PyTorch FLIRT 页面](../flirt/README.md)。官方 FLIRT 对 input/reference、
 `-omat` 和 reference-defined output grid 的定义见
@@ -394,10 +394,10 @@ fslmaths T1_GM_to_template_GM -mul T1_GM_JAC_nl \
 |---|---|---|---|
 | 脑提取 | UKB 前序流程的 BET 与标准 mask | SynthStrip，或显式 input-grid mask | 输出角色一致；算法不同 |
 | GM 与 bias | FSL FAST，GM 为 `T1_brain_pve_1` | TorchFAST，bias 默认开启 | 文件角色和组织顺序对应；数值算法独立 |
-| affine | `fsl_reg` 内部 FLIRT | source-derived `TorchFLIRT`：12-DOF、correlation ratio、FSL default schedule 与 Brent | input/reference、FSL scaled-mm `.mat` 和算法路径对应；当前 10 例 matrix gate 为 9/10，不能标为数值等价 |
+| affine | `fsl_reg` 内部 FLIRT | source-derived `TorchFLIRT`：12-DOF、correlation ratio、FSL default schedule 与 Brent | input/reference、FSL scaled-mm `.mat` 和算法路径对应；当前仍不能标为数值等价 |
 | affine 文件 | `T1_GM_to_template_GM.mat` | 独立 `TorchFLIRT(...).run(omat=...)` 可写；FastVBM 不单独保存 | 4×4 input → reference FSL scaled-mm contract 对应 |
 | nonlinear，SynthMorph 分支 | FNIRT | PyTorch SynthMorph deform | 共同生成 template-grid warped GM；模型不同 |
-| nonlinear，FNIRT 分支 | cubic B-spline FNIRT | source-derived `TorchFNIRT` GM config | schedule、FSL scaled-mm residual、coefficient header 和输出用途对应；当前 case01 高相关但仍标记 `fsl_fnirt_numerically_equivalent=false` |
+| nonlinear，FNIRT 分支 | cubic B-spline FNIRT | source-derived `TorchFNIRT` GM config | schedule、FSL scaled-mm residual、coefficient header 和输出用途对应；此前的单例 matched-input 诊断仍标记 `fsl_fnirt_numerically_equivalent=false` |
 | nonlinear warp 文件 | `_warp.nii.gz` 是带专用 header/intent 的 FSL coefficient file | FastVBM 在内存中保留 Surfa `disp_ras` 并转换为 FSL dense field；独立 `TorchFNIRT` 可写 intent-2007 coefficient | FastVBM 不另存 warp；不同表示不能直接逐元素比较 |
 | 重采样 | `applywarp` | 两分支共用 GPU `TorchApplyWarp` | 两分支使用同一 full relative FSL field contract、template grid 和 trilinear 路径；与 FSL 的数值范围以 `TorchApplyWarp` 已验证子集为准 |
 | Jacobian | FNIRT nonlinear-only `--jout` | 两分支共用 FSL scaled-mm residual 的 dense finite-difference determinant | 文件角色、template grid 与 modulation 用途对应 |
@@ -492,14 +492,14 @@ SynthMorph 批量分支只需把 `model["registration_backend"]` 改成 `"synthm
 
 ![FastVBM 从原始 T1w 到 modulated GM](figures/fast_vbm_pipeline.png)
 
-当前 0.9 FastVBM 使用本页所述共享链路。组件级验证已完成 source-derived
-`TorchFLIRT` 的 10 例对照，以及 source-derived `TorchFNIRT` 的 case01 严格诊断；
-两者的数值等价标志目前都为 `false`。当前共享链路的正式 10 例双后端结果尚未完成，
-因此这里不把旧数值移植到 0.9。已有证据见
+当前 0.9 FastVBM 使用本页所述共享链路。默认 TF32 的 source-derived
+`TorchFLIRT` 十例报告正在按 FSL reference-centred `rmsdiff` 重新汇总；
+source-derived `TorchFNIRT` 目前只有此前的单例 matched-input 诊断。当前共享链路的
+正式十例双后端结果和 FNIRT 十例汇总均待完成，因此这里不填入旧版本指标。已有证据见
 [PyTorch FLIRT](../flirt/README.md)、[TorchFNIRT](../fnirt/README.md) 和
 [TorchApplyWarp](../applywarp/README.md)。
 
-0.8 的 10 例报告属于 **historical legacy**：其中 affine 是旧 NCC/Adam，
+0.8 的 10 例报告属于**历史记录**：其中 affine 是旧 NCC/Adam，
 FNIRT-style 也是旧非线性实现，未经过当前统一的 `TorchFLIRT`、`TorchFNIRT` 和
 `TorchApplyWarp` 链路。旧报告仍保留用于版本追溯，不能作为 0.9 的准确度或计时结果：
 [`report.v0.8.public.json`](../../validation/fast_vbm/report.v0.8.public.json)、

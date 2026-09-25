@@ -68,3 +68,7 @@ if __name__ == "__main__":
 方法为每例保存分割图、病灶概率图和软体积 CSV，并按表行顺序返回含三项路径的字典。两幅影像输出位于处理后的 RAS/1 mm 网格。接口字段和路径规则见[批量执行说明](../docs/ARCHITECTURE.md#批量执行)。
 
 两版程序使用同一份发布输入的比较结果及并排图制作步骤见 [WMH 图示](../docs/figures/README.md) 和 [12 例对照](../validation/wmh/README.md)。这些公开图像没有人工 WMH 真值；这里的检查用于比较接口与输出，不能评价临床检测精度。
+
+仓库中的 `wmh_jobs.json` 是早期 `BatchRunner` 任务字典示例，当前页面的
+`predict_batch()` 代码不会读取它。包没有 WMH 多被试命令行；如需复用该 JSON，
+须在自己的 Python 脚本中读取并显式传给 `BatchRunner`。

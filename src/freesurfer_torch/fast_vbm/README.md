@@ -95,8 +95,9 @@ fs-torch flirt -in moving.nii.gz -ref fixed.nii.gz \
 `moved` 与 reference 的 shape/geometry 一致；`.mat` 是 input → reference 的
 FSL scaled-mm matrix。当前 `TorchFLIRT` 来自 FSL 2111.2 默认
 correlation-ratio/Brent 路径源码，不是旧
-NCC/Adam 实现。10 例真实 GM 的预设 0.05 mm matrix gate 通过 9 例，因此当前仍
-标记 `validated_fsl_equivalent=false`；详见
+NCC/Adam 实现。当前十例验证使用 FSL reference image intensity-weighted COG
+和 80 mm radius 计算 `rmsdiff`；汇总完成前仍标记
+`validated_fsl_equivalent=false`。详见
 [`docs/flirt/README.md`](../../../docs/flirt/README.md)。
 
 ## 输出
@@ -132,8 +133,9 @@ python tools/setup_weights.py --model fast-vbm
 不需要 checkpoint。TorchFAST、`TorchFLIRT`、`TorchFNIRT`、`TorchApplyWarp`、
 Jacobian 和 modulation 都没有模型权重。
 
-当前 0.9 共享链路的正式 10 例双后端结果尚未完成。验证目录中的 0.8
-FNIRT-style/NCC-Adam 数值是 historical legacy，只用于追溯旧版本，不能作为当前
+当前 0.9 共享链路的正式 10 例双后端结果和 FNIRT 10 例汇总均待完成。
+验证目录中的 0.8
+FNIRT-style/NCC-Adam 数值是历史记录，只用于追溯旧版本，不能作为当前
 实现的准确度或计时结果。
 
 完整参数、坐标与 Jacobian 约定、Python BatchRunner 多 GPU 示例、FSL/UKB 对应和验证入口见 [`docs/fast_vbm/README.md`](../../../docs/fast_vbm/README.md)。公开统计只以 [`validation/fast_vbm`](../../../validation/fast_vbm/README.md) 为准。

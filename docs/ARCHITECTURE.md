@@ -2,7 +2,7 @@
 
 [返回首页](../README.md) · [新增功能](ADDING_FUNCTIONS.md)
 
-SynthStrip、SynthMorph、WMH-SynthSeg、33 类 SynthSeg、SynthSR、TorchFAST、TorchFLIRT、TorchFNIRT、TorchApplyWarp 和 FastVBM 分别位于 `src/freesurfer_torch/` 的功能目录；每个目录包含实现及说明。共享的 `cli.py` 提供单例命令行，`weights.py` 定位官方权重，`_batch_table.py` 检查 SynthStrip、SynthMorph、WMH-SynthSeg 和 SynthSR 的多被试输入表，`batch.py` 调度 Python 多进程任务。各功能的参数、原版对应和验证见专属页面。
+SynthStrip、SynthMorph、WMH-SynthSeg、SynthSR、TorchFAST、TorchFLIRT、TorchFNIRT、TorchApplyWarp、FastVBM 和 GPU recon-all 位于 `src/freesurfer_torch/` 的同名功能目录；33 类 SynthSeg 位于复用其皮层分区代码的 `synthseg_parc/`。每个目录包含实现及简短入口说明，完整参数、原版对应和验证位于 `docs/` 的专属页面。共享的 `cli.py` 提供单例命令行，`weights.py` 定位官方权重，`_batch_table.py` 检查 SynthStrip、SynthMorph、WMH-SynthSeg 和 SynthSR 的多被试输入表，`batch.py` 调度 Python 多进程任务。
 
 FastVBM 的活跃配准链位于 `flirt/`、`fnirt/`、`applywarp/`、`fast_vbm/registration.py` 和 `fast_vbm/synthmorph_backend.py`。`registration.py` 先执行共同 TorchFLIRT，再只在 nonlinear pull-field estimation 处分到 SynthMorph 或 TorchFNIRT，随后回到共同 FSL warp conversion、TorchApplyWarp、Jacobian 和 modulation。`fast_vbm/flirt.py`、`fast_vbm/fsl_flirt.py`、`fast_vbm/fnirt_backend.py` 和 `fast_vbm/legacy_registration.py` 保留旧导入或早期实验兼容。
 
@@ -14,10 +14,11 @@ FastVBM 的活跃配准链位于 `flirt/`、`fnirt/`、`applywarp/`、`fast_vbm/
 | 33 类 SynthSeg | [T1 结构分割](synthseg/README.md) | Python 复用 `SynthSeg` 逐例处理 |
 | SynthSR | [合成 T1w](synthsr/README.md) | 两列表 `predict_batch()` |
 | TorchFAST | [三组织分割及偏置校正](fast/README.md) | Python `BatchRunner` |
-| TorchFLIRT | [FSL 12-DOF affine](flirt/README.md) | 单被试 Python/CLI |
-| TorchFNIRT | [FSL GM nonlinear registration](fnirt/README.md) | 单被试 Python/CLI |
-| TorchApplyWarp | [FSL warp application](applywarp/README.md) | 单被试 Python/CLI |
+| TorchFLIRT | [FSL 12-DOF affine](flirt/README.md) | 无专用多被试封装；可在 Python 中自行调度 |
+| TorchFNIRT | [FSL GM nonlinear registration](fnirt/README.md) | 无专用多被试封装；可在 Python 中自行调度 |
+| TorchApplyWarp | [FSL warp application](applywarp/README.md) | 无专用多被试封装；可在 Python 中自行调度 |
 | FastVBM | [原始 T1w 到 modulated GM](fast_vbm/README.md) | Python `BatchRunner` |
+| GPU recon-all | [单 T1 皮层重建](recon_all/README.md) | Python `run_recon_all_batch()` |
 
 ## 公开 API 与兼容性
 
@@ -38,7 +39,7 @@ from freesurfer_torch import (
 
 ## 批量执行
 
-多被试仅通过 Python 调用。前四项功能的 `predict_batch()` 接受 pandas `DataFrame`，列名必须恰好为 `input`、`output`，一行对应一例。`input` 填入输入影像路径；`output` 必须是不带扩展名的绝对路径前缀，含被试的 base name，例如 `/results/sub-01`。它不是输出目录或完整文件名。模型按下表追加后缀并创建父目录；方法按表的行顺序返回 `list[dict[str, pathlib.Path]]`。同一表中不能重复使用输出前缀。
+多被试仅通过 Python 调用。SynthStrip、SynthMorph、WMH-SynthSeg 和 SynthSR 的 `predict_batch()` 接受 pandas `DataFrame`，列名必须恰好为 `input`、`output`，一行对应一例。`input` 填入输入影像路径；`output` 必须是不带扩展名的绝对路径前缀，含被试的 base name，例如 `/results/sub-01`。它不是输出目录或完整文件名。模型按下表追加后缀并创建父目录；方法按表的行顺序返回 `list[dict[str, pathlib.Path]]`。同一表中不能重复使用输出前缀。
 
 ```python
 from pathlib import Path

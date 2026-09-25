@@ -349,7 +349,11 @@ def main(argv=None):
     fast.add_argument('-B', '--save-restored', action='store_true')
     fast.add_argument('--overwrite', action='store_true')
     flirt = commands.add_parser(
-        'flirt', help='PyTorch exact-target FLIRT 12-DOF correlation-ratio path',
+        'flirt',
+        help=(
+            'Source-derived PyTorch implementation of the supported FLIRT '
+            '12-DOF correlation-ratio path'
+        ),
         allow_abbrev=False)
     flirt.add_argument('-in', '--in', dest='input', required=True,
                        help='moving/input image')

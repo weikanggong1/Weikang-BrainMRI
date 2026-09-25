@@ -10,7 +10,7 @@ def build_parser():
     parser = argparse.ArgumentParser(
         prog="python -m freesurfer_torch.fnirt",
         description=(
-            "Run the PyTorch exact-target implementation of FSL's "
+            "Run the source-derived PyTorch implementation of FSL's supported "
             "GM_2_MNI152GM_2mm FNIRT path. Other FNIRT configurations and "
             "options are rejected."
         ),

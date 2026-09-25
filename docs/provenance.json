@@ -59,8 +59,8 @@
       "applywarp": "src/freesurfer_torch/applywarp/core.py",
       "fnirt_method": "PyTorch port of the FSL FNIRT 2203.0 UKB GM path with basisfield 2203.1, miscmaths 2203.2, newimage 2203.11 and warpfns 2203.0 source references",
       "source_provenance_manifest": "src/freesurfer_torch/_vendor_fsl/manifest.json",
-      "fsl_flirt_equivalence_status": "exact-target; with CUDA TF32 default the fixed 0.05 mm ten-case matrix gate passed 0 of 10, so validated_fsl_equivalent is false",
-      "fsl_fnirt_equivalence_status": "exact-target components pass; real case01 warped GM r=0.999089, nonlinear Jacobian r=0.999669, and modulated GM r=0.999206, but truncated-PCG reduction-order divergence keeps validated_fsl_equivalent false",
+      "fsl_flirt_equivalence_status": "source-derived implementation of the supported FSL path; validated_fsl_equivalent remains false pending the current ten-case FSL reference-centred rmsdiff report",
+      "fsl_fnirt_equivalence_status": "source-derived implementation of the supported FSL path; an earlier matched-input case01 diagnostic measured warped GM r=0.999089, nonlinear Jacobian r=0.999669, and modulated GM r=0.999206, but truncated-PCG reduction-order divergence keeps fsl_fnirt_numerically_equivalent false; the current ten-case report is pending",
       "legacy_fnirt_style_registration": "src/freesurfer_torch/fast_vbm/fnirt_backend.py"
     },
     "upstream_license": "Apache-2.0",

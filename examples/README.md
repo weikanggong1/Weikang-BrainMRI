@@ -64,3 +64,7 @@ if __name__ == "__main__":
 方法按表的行顺序返回每例的路径字典，生成三例脑图、掩膜和距离场，共 9 个文件。SynthMorph 的多被试用法见[功能说明](../docs/synthmorph/README.md#多被试-python)。`examples/results/` 不纳入 Git。完整命名规则见[批量执行说明](../docs/ARCHITECTURE.md#批量执行)。
 
 只运行三例 SynthStrip 的短脚本见 [run_batch.py](run_batch.py)：从仓库根目录执行 `python examples/run_batch.py`。
+
+仓库中的 `jobs.json` 是早期 `BatchRunner` 任务字典示例，当前 `run_batch.py` 和本页
+的 `predict_batch()` 示例都不读取它。包没有多被试命令行；如需复用该 JSON，须在
+自己的 Python 脚本中读取并显式传给 `BatchRunner`。

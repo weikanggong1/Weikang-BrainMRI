@@ -10,8 +10,8 @@ def build_parser(prog="fs-torch-flirt"):
     parser = argparse.ArgumentParser(
         prog=prog,
         description=(
-            "Run the PyTorch exact-target implementation of FLIRT's default "
-            "12-DOF correlation-ratio registration path. Other FLIRT "
+            "Run the source-derived PyTorch implementation of FLIRT's supported "
+            "default 12-DOF correlation-ratio registration path. Other FLIRT "
             "optimizers, costs, and degrees of freedom are rejected."
         ),
         allow_abbrev=False,

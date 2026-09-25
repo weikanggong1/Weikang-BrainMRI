@@ -1,8 +1,12 @@
 import numpy as np
+import pytest
+import surfa as sf
 import torch
 
+import freesurfer_torch.fnirt.registration as registration_module
 from freesurfer_torch.fnirt.registration import (
     GMFNIRTConfig,
+    TorchFNIRT,
     _fsl_affine_grid,
     _fsl_displacement_coordinates,
     _spline_jacobian,
@@ -11,6 +15,42 @@ from freesurfer_torch.fnirt.registration import (
     spm_like_mean,
 )
 from freesurfer_torch.fnirt.spline import fsl_control_shape
+
+
+def _volume(shape=(8, 8, 8)):
+    coordinates = np.indices(shape, dtype=np.float32)
+    center = (np.asarray(shape, dtype=np.float32) - 1) / 2
+    data = np.exp(
+        -sum((axis - center[index]) ** 2 for index, axis in enumerate(coordinates))
+        / 8
+    ).astype(np.float32)
+    return sf.Volume(data, geometry=sf.ImageGeometry(shape, vox2world=np.eye(4)))
+
+
+def _single_level_config():
+    return GMFNIRTConfig(
+        subsampling=(1,),
+        maximum_iterations=(0,),
+        input_fwhm_mm=(0.0,),
+        reference_fwhm_mm=(0.0,),
+        regularization=(0.0,),
+        estimate_intensity=(False,),
+        apply_reference_mask=(False,),
+        warp_resolution_mm=(4.0, 4.0, 4.0),
+    )
+
+
+def _failed_topology_projection(coefficients, shape, *_):
+    jacobian = torch.ones(
+        shape, dtype=coefficients.dtype, device=coefficients.device
+    )
+    qc = {
+        "required": True,
+        "calls": [],
+        "range": [0.204623, 5.04025],
+        "succeeded": False,
+    }
+    return coefficients, jacobian, qc
 
 
 def test_spm_like_mean_uses_one_eighth_of_whole_image_mean():
@@ -114,6 +154,55 @@ def test_gm_config_rejects_mismatched_schedules():
         assert "same" in str(error)
     else:
         raise AssertionError("invalid schedule was accepted")
+
+
+def test_failed_topology_projection_warns_and_continues_by_default(monkeypatch):
+    monkeypatch.setattr(
+        registration_module,
+        "_force_jacobian_range",
+        _failed_topology_projection,
+    )
+    moving = _volume()
+    fixed = moving.copy()
+    initial = sf.Affine(
+        np.eye(4), source=moving, target=fixed, space="world"
+    )
+
+    with pytest.warns(
+        RuntimeWarning,
+        match=r"Jacobian range was 0\.204623--5\.04025.*continuing as FSL FNIRT",
+    ):
+        result = TorchFNIRT(device="cpu", config=_single_level_config())(
+            moving, fixed, initial
+        )
+
+    assert result.qc["strict_topology"] is False
+    topology_qc = result.qc["levels"][0]["topology_projection"]
+    assert topology_qc["succeeded"] is False
+    assert topology_qc["range"] == [0.204623, 5.04025]
+
+
+def test_failed_topology_projection_raises_in_explicit_strict_mode(monkeypatch):
+    monkeypatch.setattr(
+        registration_module,
+        "_force_jacobian_range",
+        _failed_topology_projection,
+    )
+    moving = _volume()
+    fixed = moving.copy()
+    initial = sf.Affine(
+        np.eye(4), source=moving, target=fixed, space="world"
+    )
+
+    with pytest.raises(
+        RuntimeError,
+        match=r"Jacobian range was 0\.204623--5\.04025",
+    ):
+        TorchFNIRT(
+            device="cpu",
+            config=_single_level_config(),
+            strict_topology=True,
+        )(moving, fixed, initial)
 
 
 def test_spline_jacobian_matches_reproduced_linear_field():

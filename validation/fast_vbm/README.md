@@ -13,17 +13,27 @@ PyTorch SynthMorph deform 或 source-derived `TorchFNIRT` GM config。reference 
 
 | 记录 | 状态 | 文件 |
 |---|---|---|
-| source-derived `TorchFLIRT`，10 例真实 GM | 已完成；0.05 mm matrix gate 为 9/10，`validated_fsl_equivalent=false` | [`flirt_exact_target_10case.public.json`](flirt_exact_target_10case.public.json) |
-| source-derived `TorchFNIRT`，严格 case01 | 已完成；输出高度相关，`fsl_fnirt_numerically_equivalent=false` | [`fnirt_fsl_6074_real_case_01.public.json`](fnirt_fsl_6074_real_case_01.public.json) |
+| source-derived `TorchFLIRT`，默认 TF32，10 例真实 GM | 待汇总；使用 reference intensity-weighted COG 和 80 mm radius 的 FSL `rmsdiff` | — |
+| source-derived `TorchFNIRT`，此前的单例 matched-input 诊断 | 已完成；不满足端到端数值等价，`fsl_fnirt_numerically_equivalent=false` | [`fnirt_fsl_6074_real_case_01.public.json`](fnirt_fsl_6074_real_case_01.public.json) |
+| source-derived `TorchFNIRT`，10 例汇总 | 待完成；不填入单例或旧后端指标 | — |
 | `TorchApplyWarp` 已支持子集 | 已完成 | [`../applywarp/report.json`](../applywarp/report.json) |
-| 当前共享链路的 10 例双后端 FastVBM 对照 | 尚未完成；本页不填入旧版本数值 | — |
+| 当前共享链路的 10 例双后端 FastVBM 对照 | 待完成；本页不填入旧版本数值 | — |
 
 这些状态把“接口/组件已验证”和“当前端到端 10 例已完成”分开。前两项都不满足
 “仅有浮点误差”的数值等价门；完整解释见
 [PyTorch FLIRT](../../docs/flirt/README.md)、[TorchFNIRT](../../docs/fnirt/README.md)
 和 [TorchApplyWarp](../../docs/applywarp/README.md)。
 
-## Historical legacy 记录
+### 历史记录：关闭 TF32 的 FLIRT 执行
+
+此前关闭 TF32 的同一 10 例 FLIRT 执行通过 9/10，matrix RMS difference 中位数为
+0.00875803 mm、最大值为 0.0541455 mm。该结果只用于历史追溯，不与当前默认 TF32
+结果合并。记录见
+[`flirt_exact_target_10case.public.json`](flirt_exact_target_10case.public.json)；
+单例 CPU/GPU 组件检查见
+[`flirt_exact_target_case01.public.json`](flirt_exact_target_case01.public.json)。
+
+## 历史版本记录
 
 下列 0.8、0.7 和 0.6 结果均用于版本追溯，不是当前 0.9 共享链路的验证结果。
 0.8 使用旧 NCC/Adam affine 和旧 FNIRT-style nonlinear backend；0.7 只含当时的
@@ -47,7 +57,7 @@ Pearson、MAE、RMSE 和 Dice@0.2；计时区分 CUDA-synchronized API 计算、
 | 0.7 FSL scaled-mm 与 world-RAS 坐标转换 | 历史版本已完成 | [`warp_coordinates.v0.7.public.json`](warp_coordinates.v0.7.public.json) |
 | 0.6 的 10 例、CPU/CUDA 与安装包验收 | 历史结果 | [`report.v0.6.public.json`](report.v0.6.public.json)、[`cpu_cuda.v0.6.public.json`](cpu_cuda.v0.6.public.json) |
 
-## Historical legacy：0.8 的 10 例双后端对照
+## 历史记录：0.8 的 10 例双后端对照
 
 验证使用 10 例真实 T1w 和 UKB GM template。评估 mask 在处理前固定为
 `template_GM > 0.01`，共 207,268 个体素；所有 scalar output 均先检查 shape 和
@@ -142,7 +152,7 @@ FSL 相似性；FSL 不是人工解剖真值，因此不能据此推断 FNIRT-st
 同一聚合的表格形式。0.7 章节使用全模板网格计算旧指标，不能与本节固定前景 mask 的
 数值直接比较。
 
-## Historical legacy：0.8 TorchFLIRT 输入输出合同
+## 历史记录：0.8 TorchFLIRT 输入输出合同
 
 本节检查的是 0.8 的旧 NCC/Adam `TorchFLIRT`，不是 0.9 source-derived
 `TorchFLIRT`。一例真实 T1w-derived GM 用于检查其文件合同。package output 与 FSL
@@ -169,7 +179,7 @@ output 对齐 UKB `fsl_reg` 最终使用的 `applywarp` trilinear 路径；与
 header、scaled-mm matrix 和 `applywarp` 采样坐标一致；`TorchFLIRT` 仍使用独立 NCC +
 Adam，不能据此声称与 FSL FLIRT 优化器或所有 `-applyxfm` 插值模式数值等价。
 
-## Historical legacy：0.7 线性配准后端对照
+## 历史记录：0.7 线性配准后端对照
 
 匹配实验使用同一幅常驻内存的真实 GM 图像、同一幅 group GM template 和零初始化。
 LibTorch C++/ATen CUDA 与 Python/PyTorch 都执行 12 DOF、NCC 加同一正则项、
@@ -202,7 +212,7 @@ CPU/GPU 后端。统一重采样到 template 网格后，FSL 与 C++ GPU 的 Pea
 template 的相关分别为 0.808364、0.717773 和 0.717664。这些数值用于界定实现差异，
 不构成后端速度的因果比较。
 
-## Historical legacy：0.8 坐标和 warp 约定
+## 历史记录：0.8 坐标和 warp 约定
 
 FSL 与 FreeSurfer/SynthMorph 的变换不能按数组元素直接比较：
 
@@ -231,7 +241,7 @@ FNIRT-style 分支按 FSL residual 定义输出 nonlinear-only Jacobian，但不
 `--fout`。双后端报告比较同一 template 网格上的最终影像，不直接逐元素比较这些 raw
 warp 表示。
 
-## Historical legacy：0.7 的 10 例真实 T1w
+## 历史记录：0.7 的 10 例真实 T1w
 
 10 例均通过 Python `BatchRunner` 完成。运行时另一张 GPU 被占用，因此两个 worker
 同驻 `cuda:1`，每个 worker 处理 5 例。130/130 个有限值检查和 130/130 个输入或
@@ -251,7 +261,7 @@ modulated GM 分别为 0.74673、0.07043、0.22203 和 0.82138。FastVBM 的仿�
 SynthMorph 非线性模型与 FSL/FNIRT 不同，这些数值描述两条完整 pipeline 的输出差异，
 不表示 FNIRT warp 与 SynthMorph warp 可以直接互换。
 
-## Historical legacy：0.7 SynthMorph 一致性
+## 历史记录：0.7 SynthMorph 一致性
 
 FastVBM 在运行时直接调用本包
 `freesurfer_torch.synthmorph.SynthMorph(model="deform")`。FreeSurfer
@@ -269,7 +279,7 @@ warp。
 FreeSurfer 外部参考冷启动为 475.07 s，本次观测比值为 24.35。两个命令都是共享、
 严重争用 GPU 节点上的单次冷进程，这一比值不能作为隔离硬件加速倍数。
 
-## Historical legacy：0.8 与 0.7 测试和安装包验收
+## 历史记录：0.8 与 0.7 测试和安装包验收
 
 0.8.0 在 gpucw1 完成 70 项 FastVBM/批量/API 定向测试，并完成全量源码测试：
 210 passed、9 skipped。16 条 warning 来自 Surfa 对弃用 NumPy binary `fromstring` 用法的

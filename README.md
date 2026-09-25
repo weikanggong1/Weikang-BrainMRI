@@ -22,7 +22,10 @@ GPU recon-all 的 SynthStrip、33 类 SynthSeg、SynthMorph 及三项辅助神�
 
 CUDA 路径默认允许 NVIDIA TF32 matmul 和 cuDNN 内核，模型与影像张量仍保持 float32；本包不会自动改用 float16 或 bfloat16。验证报告会记录实际 TF32 开关。
 
-FastVBM 的两个分支共用 TorchFLIRT、FSL 坐标转换、GPU applywarp、nonlinear-only Jacobian 和 modulation，只替换 nonlinear pull-field estimator。FLIRT 的固定 0.05 mm matrix 门通过 9/10 例；FNIRT 的 case01 warped GM、Jacobian 和 modulated GM 与 FSL 的相关均高于 0.999，但 coefficient 优化仍会因 PCG reduction 顺序分叉。FLIRT 保留 `validated_fsl_equivalent=false`，FNIRT 保留 `fsl_fnirt_numerically_equivalent=false`；具体数值见各自子页。
+FastVBM 的两个分支共用仿射配准、FSL 坐标转换、GPU 重采样、仅非线性
+Jacobian 和调制步骤；差别只在非线性形变由 SynthMorph 或 TorchFNIRT 估计。
+
+当前 0.9 的 FLIRT、FNIRT 和 FastVBM 十例验证状态、数值边界与计时条件见 [FastVBM 验证页](validation/fast_vbm/README.md)；各算法的输入、输出和原命令对应关系见上表子页。
 
 FLIRT、FNIRT 和 applywarp 的移植代码及随包提供的 FSL 上游源码受 [FSL Software Licence 6.0](licenses/FSL-6.0.txt) 的非商业使用条款约束。运行这些 PyTorch 接口无需安装 FSL。
 
@@ -52,7 +55,7 @@ FastVBM 的 SynthMorph 分支从原始 T1w 开始时需要 `synthstrip.1.pt` 和
 
 GPU recon-all 还需要与固定 FreeSurfer 8.2 流程匹配的本地原生运行包；上述权重命令不提供它。运行包和个人 license 均不随仓库或 wheel 发布。构建、调用、输出和验收见[GPU recon-all 文档](docs/recon_all/README.md)。
 
-GPU recon-all 的全部 13 个模型与辅助资源可单独配置：`python tools/setup_weights.py --model recon-all`。该组复用 SynthStrip 和 SynthMorph 的通用权重，也包含 33 类 SynthSeg、EntoWM、MCA 和静脉窦模型及其查找表；原生运行包仍需单独准备。
+GPU recon-all 的 13 个权重和辅助资源文件可单独配置：`python tools/setup_weights.py --model recon-all`。该组复用 SynthStrip 和 SynthMorph 的通用权重，也包含 33 类 SynthSeg、EntoWM、MCA 和静脉窦模型及其查找表；原生运行包仍需单独准备。
 
 独立使用 33 类 SynthSeg 时只需 `python tools/setup_weights.py --model synthseg`，随后运行 `fs-torch synthseg --i T1.nii.gz --o seg.nii.gz --csv-vols seg.vol.csv`，或使用 Python 的 `SynthSeg` 类；详见[独立接口](docs/synthseg/README.md)。
 

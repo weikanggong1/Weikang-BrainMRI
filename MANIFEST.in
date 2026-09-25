@@ -5,6 +5,7 @@ recursive-include docs *.md *.json *.png
 recursive-include tools *.py *.md
 recursive-include tests *.py *.json
 recursive-include validation/recon_all *.py *.md *.json *.cu
+recursive-include validation/fast_vbm README.md SHA256SUMS *.public.json *.public.csv *.py
 
 # Runtime checkpoints, MRI templates, and generated images are external data.
 global-exclude *.pt *.pth *.h5 *.hdf5 *.ckpt

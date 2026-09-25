@@ -167,11 +167,11 @@ matrix 和官方 reference mask；逐例比较 coefficient-expanded residual、`
 `TorchFNIRT.qc["fsl_fnirt_numerically_equivalent"]` 仍为 `False`，文档不把组件
 级 oracle 通过写成端到端等价。
 
-### FSL 6.0.7.4 实例诊断
+### 此前的 FSL 6.0.7.4 单例 matched-input 诊断
 
-同一幅真实 FAST GM、同一模板、官方 FLIRT matrix、官方 reference mask 和
-`GM_2_MNI152GM_2mm.cnf` 的严格 case01 对照结果如下。数值比较覆盖完整 reference
-grid；运行时间在 H100 上同步 CUDA 后测量。
+此前的 case01 使用同一幅真实 FAST GM、同一模板、官方 FLIRT matrix、官方
+reference mask 和 `GM_2_MNI152GM_2mm.cnf`。数值比较覆盖完整 reference grid；
+运行时间是在共享 H100 节点上同步 CUDA 后得到的观测值。
 
 | 输出 | Pearson r | MAE | RMSE |
 |---|---:|---:|---:|
@@ -180,7 +180,8 @@ grid；运行时间在 H100 上同步 CUDA 后测量。
 | nonlinear Jacobian | 0.999669 | 0.002840 | 0.005656 |
 | modulated GM | 0.999206 | 0.002818 | 0.012855 |
 
-PyTorch CUDA 总时间为 69.32 秒，其中保持 FSL Jacobian 范围的 topology projection
+该共享节点观测中，PyTorch CUDA 总时间为 69.32 秒，其中保持 FSL Jacobian 范围的
+topology projection
 占 62.57 秒。首两次 accepted coefficient update 对 FSL 的 MAE 为
 `5.45e-7` 和 `2.05e-6`；第三次开始，FSL `SpMat` 的固定稀疏列累加顺序与本包
 matrix-free Hessian 的 reduction 顺序使 1e-3 截断 PCG 走向不同 Krylov 轨迹。

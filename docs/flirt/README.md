@@ -11,10 +11,12 @@ CUDA execution enables TF32 matrix kernels by default while retaining the
 declared float32/float64 tensor dtypes. It does not use float16 or bfloat16;
 the active flags are written to `result.qc["tf32"]`.
 
-This is an exact-target port, not a claim of complete numerical equivalence.
-The fixed 0.05 mm matrix gate passed 9 of 10 real GM registrations. The one
-failure measured 0.0541455 mm, so `result.qc["validated_fsl_equivalent"]` is
-`False`.
+This source-derived PyTorch port implements the supported default FSL path; it
+is not a claim of complete numerical equivalence.
+`result.qc["validated_fsl_equivalent"]` is `False`. The current ten-case
+report uses FSL `rmsdiff` about the reference image intensity-weighted COG
+with an 80 mm radius; its aggregate values are published only after that run
+completes.
 
 The port is derived from FSL source and is covered by the non-commercial FSL
 Software Licence. See [the FSL licence](../../licenses/FSL-6.0.txt),
@@ -162,9 +164,21 @@ world-RAS transform.
 
 ## Validation against FSL 6.0.7.4
 
-The public validation used 10 real T1-derived FSL FAST GM maps and one UKB
-VBM group GM template. FSL 6.0.7.4 was the executable oracle. CUDA reductions
-were made deterministic before the final run.
+The validation uses 10 real T1-derived FSL FAST GM maps and one UKB VBM group
+GM template. FSL 6.0.7.4 is the executable oracle.
+
+### Current default: TF32 enabled
+
+The current ten-case report is pending. It computes the official FSL
+reference-centred `rmsdiff`, rather than a zero-centred displacement surrogate,
+and records the reference COG and 80 mm radius. The status remains
+`validated_fsl_equivalent=false` until every declared gate passes.
+
+### Historical run: TF32 disabled
+
+The earlier public run disabled TF32 and made CUDA reductions deterministic.
+Its results are retained for provenance and are not combined with the current
+default-TF32 result.
 
 | Check | Result | Gate |
 |---|---:|---:|
@@ -176,7 +190,7 @@ were made deterministic before the final run.
 | CUDA time, median | 21.59 s | descriptive |
 
 The same-matrix resampling gate passed all 10 cases. The matrix gate failed
-one case by 0.0041455 mm. The final public status therefore remains
+one case by 0.0041455 mm. The historical public status therefore remains
 `validated_fsl_equivalent=false`; the residual exceeds the declared threshold
 and is not relabeled as floating-point noise.
 
@@ -189,8 +203,8 @@ node:
 | PyTorch CPU | 90.71 s | 0.00399667 mm |
 | PyTorch H100 CUDA | 22.22 s | 0.0103038 mm |
 
-These timings describe shared-node runs, not isolated throughput. The complete
-aggregate record is in
+These timings describe the historical TF32-off shared-node runs, not isolated
+throughput. The historical aggregate record is in
 [`flirt_exact_target_10case.public.json`](../../validation/fast_vbm/flirt_exact_target_10case.public.json),
 with the CPU/GPU component checks in
 [`flirt_exact_target_case01.public.json`](../../validation/fast_vbm/flirt_exact_target_case01.public.json).

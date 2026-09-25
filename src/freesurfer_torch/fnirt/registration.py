@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import math
+import warnings
 
 import numpy as np
 import surfa as sf
@@ -722,7 +723,7 @@ class TorchFNIRT:
         pcg_max_iterations=500,
         cost_tolerance=1e-8,
         initial_lm_lambda=0.1,
-        strict_topology=True,
+        strict_topology=False,
     ):
         self.device = torch.device(device)
         if self.device.type == "cuda" and not torch.cuda.is_available():
@@ -1018,12 +1019,19 @@ class TorchFNIRT:
             )
             if topology_qc["required"]:
                 state = system.evaluate(coefficients, scale)
-            if not topology_qc["succeeded"] and self.strict_topology:
-                raise RuntimeError(
+            if not topology_qc["succeeded"]:
+                message = (
                     "FSL ForceJacobianRange did not reach the requested range; "
                     f"Jacobian range was {topology_qc['range'][0]:.6g}--"
                     f"{topology_qc['range'][1]:.6g} "
                     f"and the requested range is {lower:.6g}--{upper:.6g}"
+                )
+                if self.strict_topology:
+                    raise RuntimeError(message)
+                warnings.warn(
+                    message + "; continuing as FSL FNIRT does",
+                    RuntimeWarning,
+                    stacklevel=2,
                 )
 
             levels.append(

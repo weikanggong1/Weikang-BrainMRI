@@ -1130,11 +1130,11 @@ def _resample_output(
 
 
 class TorchFLIRT:
-    """FSL 6.0.7.4 FLIRT-equivalence target implemented with PyTorch.
+    """Source-derived PyTorch implementation of the supported FLIRT path.
 
     This class ports the FLIRT default correlation-ratio and coordinate-search
-    path. ``qc['validated_fsl_equivalent']`` remains false because the default
-    TF32 run did not pass the fixed 0.05 mm ten-case matrix gate.
+    path. Numerical equivalence is reported only after the external FSL
+    validation gate passes.
     """
 
     def __init__(self, device=None, *, angular_search=True):
@@ -1225,7 +1225,7 @@ class TorchFLIRT:
         pull_world = np.linalg.inv(forward_world)
         pull_world[3] = (0, 0, 0, 1)
         qc = {
-            "backend": "pytorch-fsl-flirt-2111.2-exact-target",
+            "backend": "pytorch-fsl-flirt-2111.2-source-derived",
             "device": str(self.device),
             "tf32": {
                 "matmul": bool(torch.backends.cuda.matmul.allow_tf32),
@@ -1292,7 +1292,7 @@ class TorchFLIRT:
         return result
 
 
-# Compatibility name retained for pre-release exact-target imports.
+# Compatibility name retained for earlier FSLFLIRT imports.
 FSLFLIRT = TorchFLIRT
 
 
