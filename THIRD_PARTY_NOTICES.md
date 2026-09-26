@@ -1,5 +1,12 @@
 # Third-party notices
 
+`src/fnit/mshbm/` is a modified CPU Python adaptation of CBIG's Kong2019
+MS-HBM single-subject parcellation and its 17-network HCP_40 fsLR32k prior.
+Original source and templates: Thomas Yeo Lab / CBIG, commit
+`b69b822a15e2a94f1e439606552fc44b6858cf3c`. Copyright (c) 2016
+Computational Brain Imaging Group (CBIG). The original MIT license is
+preserved in `licenses/CBIG-MIT.txt`.
+
 All or portions of this licensed product (such portions are the "Software") have been obtained under license from The General Hospital Corporation "MGH" and are subject to the following terms and conditions:
 
 The complete FreeSurfer Software License terms appear in [`licenses/FreeSurfer.txt`](licenses/FreeSurfer.txt).

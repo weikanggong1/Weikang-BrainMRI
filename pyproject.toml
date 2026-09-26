@@ -29,6 +29,7 @@ fnit-recon-all = "fnit.recon_all.standalone:main"
 fnit-applywarp = "fnit.applywarp.cli:main"
 fnit-flirt = "fnit.flirt.cli:main"
 fnit-fnirt = "fnit.fnirt.cli:main"
+fnit-mshbm = "fnit.mshbm.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -54,4 +55,6 @@ fnit = [
   "fast/upstream_fast4/*",
   "fast_vbm/*.md",
   "recon_all/*.md",
+  "mshbm/*.md",
+  "mshbm/assets/*.npz",
 ]

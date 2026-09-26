@@ -15,6 +15,7 @@
 | PyTorch FNIRT | CPU/CUDA GM 配准；输出 intent-2007 coefficients、warped image 和 nonlinear Jacobian | [FNIRT 文档](docs/fnirt/README.md) |
 | GPU applywarp | 应用 FSL dense warp、FNIRT coefficient、premat 和 postmat | [applywarp 文档](docs/applywarp/README.md) |
 | GPU recon-all | T1w 到结构分割、皮层表面、顶点指标和脑区统计 | [GPU recon-all 文档](docs/recon_all/README.md) |
+| MS-HBM 17 网络 | fsLR32k 皮层静息态时序到个体网络划分，纯 CPU | [MS-HBM 文档](src/fnit/mshbm/README.md) |
 
 本轮接口清理不覆盖 GPU recon-all；其独立文档和实现保持原状。本轮覆盖的其余功能只提供单被试 Python 和单被试命令行接口；需要处理多个病例时，由调用方在包外组织任务与设备。仓库提供 [T1w 样例](examples/README.md)和 [FLAIR 样例](examples/WMH.md)。
 
