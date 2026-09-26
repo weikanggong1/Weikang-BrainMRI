@@ -65,8 +65,9 @@ MGH 头及仿射一致。该链输出止于 `orig.mgz`，已验证路径为 CPU�
 逐体素匹配官方 `synthstrip.mgz`，见[连续输入对照](../../validation/recon_all/python_gpu_port/connected_synthstrip_fs_sub01_report.json)。
 33 类 SynthSeg 在同一 Python 输入上完成 H100 GPU 对照：关闭该阶段 cuDNN TF32 后，
 16,777,216 个硬分割体素、float32 类型和 MGH 头/体素载荷均与官方一致；
-经单体素临界阈值修正后，33 个软体积列最大差 0.05 mm³，仍有 7 列未达到
-现有 0.005 mm³ 统计表门槛；该修正仅在此输入上验证。
+经单体素临界阈值修正及按官方 `float32` 格式重写已保存 CSV 后，33 个软体积列
+最大差 0.04 mm³，仍有 6 列未达到现有 0.005 mm³ 统计表门槛；格式检查未重跑 GPU
+推理，阈值修正仅在此输入上验证。
 详情见[连接式 GPU 验证](../../validation/recon_all/python_gpu_port/CONNECTED_SYNTHSEG_GPU_20260926.md)。
 headcw CPU 测试受 PyTorch `Conv3d` 故障及内存占用阻断，未重复。
 [现有混合版与未经修改的官方 FreeSurfer 被试比较](../../validation/recon_all/python_gpu_port/TRUE_OFFICIAL_BASELINE_20260926.md)

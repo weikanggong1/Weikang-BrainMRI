@@ -77,8 +77,8 @@ class SynthSegResult:
             writer.writerow(["subject", "total intracranial",
                              *(self.label_names[label] for label in self.volumes_mm3)])
             writer.writerow([Path(source).name.replace(".nii.gz", ""),
-                             str(self.total_intracranial_mm3),
-                             *(str(value) for value in self.volumes_mm3.values())])
+                             str(np.float32(self.total_intracranial_mm3)),
+                             *(str(np.float32(value)) for value in self.volumes_mm3.values())])
 
 
 class SynthSeg:

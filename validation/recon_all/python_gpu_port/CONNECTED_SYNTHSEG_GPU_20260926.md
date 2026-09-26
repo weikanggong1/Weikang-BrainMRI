@@ -25,11 +25,20 @@ one voxel whose PyTorch foreground probability is approximately 0.25000009,
 at the official 0.25 component-mask boundary. Applying a small internal
 threshold margin (`0.2500001`) reduced the largest posterior error from
 0.2401 to 9.90 × 10⁻⁶, with no entries above 10⁻⁴ among 553,648,128
-probabilities. All hard labels remain exact. The soft-volume maximum is now
-**0.05 mm³**; 26/33 columns are within 0.005 mm³ and seven still exceed that
-existing statistic tolerance. **The strict CSV gate remains open.** This
-margin is an empirical same-input FP32 parity correction and has not been
-validated on other subjects.
+probabilities. All hard labels remain exact. In the saved candidate CSV,
+the maximum printed difference is **0.05 mm³**; 26/33 columns fall within
+0.005 mm³. The official writer renders NumPy `float32` scalars, whereas the
+candidate had rendered Python `float` scalars. Re-rendering the same saved
+candidate values with the official `float32` string form reduces the maximum
+printed difference to **0.04 mm³**, with 27/33 columns within 0.005 mm³.
+The two `float32` values match bitwise for 19/33 columns; the maximum genuine
+`float32` difference is 0.03125 mm³ (CSF). This deterministic serialization
+check is in the [CSV representation report](synthseg_csv_repr_20260926.json)
+and its [replay script](experimental/audit_synthseg_csv_repr.py); the writer
+code now uses that format, with a focused API regression test. GPU inference
+was not repeated for a formatting-only change. **Six CSV columns still fail
+the 0.005 mm³ gate.** The threshold margin is an empirical same-input FP32
+parity correction and has not been validated on other subjects.
 
 The official script sums float32 foreground posteriors with NumPy after
 restoring the input orientation, then multiplies by the input header's voxel

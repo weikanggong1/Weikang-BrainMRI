@@ -65,9 +65,11 @@ Python-generated `orig.mgz`. Full float32 cuDNN inference matched the true
 official segmentation at all 16,777,216 voxels, including dtype and MGH
 header/payload. With TF32 enabled, 166 labels differed. After matching the
 official NumPy posterior reduction order, the 33 soft-volume columns differ
-by at most 0.05 mm³ after an isolated foreground-threshold correction;
-seven exceed the existing 0.005 mm³ stats tolerance. The strict CSV gate
-remains open; the correction has been tested on this one input only. The independent headcw CPU attempt had
+by at most 0.04 mm³ after an isolated foreground-threshold correction and
+source-style float32 CSV rendering; six exceed the existing 0.005 mm³ stats
+tolerance. The CSV rendering check reused saved values without new inference.
+The strict CSV gate remains open; the correction has been tested on this one
+input only. The independent headcw CPU attempt had
 previously failed or consumed excessive RAM; it was not repeated. See the
 [connected GPU report](CONNECTED_SYNTHSEG_GPU_20260926.md) and
 [CPU diagnostic](connected_synthseg_cpu_headcw_20260926.json).

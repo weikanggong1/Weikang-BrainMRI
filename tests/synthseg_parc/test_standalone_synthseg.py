@@ -65,6 +65,9 @@ def test_independent_api_uses_one_weight_directory_and_recon_soft_volumes(tmp_pa
     lines = csv_path.read_text().splitlines()
     assert lines[0].startswith("subject,total intracranial,label-1,label-2")
     assert lines[1].startswith("case,16.0,15.0,1.0")
+    result.total_intracranial_mm3 = 1280294.25
+    result.write_volumes_csv("case.nii.gz", csv_path)
+    assert csv_path.read_text().splitlines()[1].startswith("case,1280294.2,")
 
 
 def test_public_cli_and_recon_wrapper_call_same_api(tmp_path, monkeypatch):
