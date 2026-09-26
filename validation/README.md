@@ -10,10 +10,11 @@
 - TorchApplyWarp：[`applywarp/report.json`](applywarp/report.json)。
 - FLIRT：[`flirt/report.public.json`](flirt/report.public.json)。
 - FNIRT 与 FastVBM：[`fast_vbm/README.md`](fast_vbm/README.md) 及 0.9 正式文件。
+- TOPUP：[`topup/report.public.json`](topup/report.public.json) 与[功能页](../docs/topup/README.md)。
 
 ## 功能子页面审计
 
-本表不包含 recon-all 和 fsLR32k MS-HBM；这两项不在本轮审计范围。每个“有”都表示该材料直接出现在对应功能子页面，而不只是
+本表不包含 recon-all 和 fsLR32k MS-HBM；这两项按项目范围单独维护。每个“有”都表示该材料直接出现在对应功能子页面，而不只是
 保存在机器可读报告中。
 
 | 功能子页面 | 原软件对照 | 输出一致性 | 运行时间 | example image |
@@ -28,5 +29,6 @@
 | [FLIRT](../docs/flirt/README.md) | FSL 6.0.7.4，10 例 | 有：`.mat` 与 reference-grid 图像 | 有：FSL CPU / 本包 H100 | 有：十例平均配准 GM 与差值 |
 | [FNIRT](../docs/fnirt/README.md) | FSL 6.0.7.4，10 例 matched input | 有：coefficient、field、iout、jout、modulated GM | 有：FSL CPU / 本包 H100 | 有：十例平均 warped GM 和 Jacobian |
 | [applywarp](../docs/applywarp/README.md) | FSL 6.0.7.4，11 项 | 有：dense/coefficient、linear/nearest、header/dtype | 有：FSL CPU / 本包 CPU 与 H100 | 有：相同 warp 的输出与差值 |
+| [TOPUP](../docs/topup/README.md) | FSL 6.0.7.4，1 例真实 UKB 格式 dMRI | 有：field、corrected images、Jacobian、coefficient/movement/header | 有：FSL CPU / 本包 H100，各 3 次 | 有：原始 AP/PA、校正均值、field 与差值 |
 
 公开记录不含账号、私有绝对路径、源病例 ID、权重或临床原图。公开样例及其来源校验见 [T1w 示例](../examples/README.md)和 [FLAIR 示例](../examples/WMH.md)。没有人工真值的报告只衡量与参考实现的一致性。
