@@ -1,0 +1,14 @@
+{
+  "smoothwm_sha256": "b67ceb95069d865bb11f6c2b20bac99eab9f19982b73d3c9c43735b7bedbe7ca",
+  "native_raw_curvature_sha256": "820582a7731addfb50c7453bbce534ed4fb314a590b4749191fee06af04031a1",
+  "predicted_raw_sha256": "820582a7731addfb50c7453bbce534ed4fb314a590b4749191fee06af04031a1",
+  "vertices": 105541,
+  "raw_mean": -0.017662430374945,
+  "raw_std": 0.24611008261956607,
+  "exact_vertices": 105541,
+  "max_abs_error": 0.0,
+  "median_abs_error": 0.0,
+  "p95_abs_error": 0.0,
+  "correlation": 1.0,
+  "seconds_excluding_io": 10.658634879626334
+}

@@ -1,0 +1,24 @@
+{
+  "smoothwm_sha256": "b67ceb95069d865bb11f6c2b20bac99eab9f19982b73d3c9c43735b7bedbe7ca",
+  "native_raw_sha256": "820582a7731addfb50c7453bbce534ed4fb314a590b4749191fee06af04031a1",
+  "predicted_raw_sha256": "820582a7731addfb50c7453bbce534ed4fb314a590b4749191fee06af04031a1",
+  "vertices": 105541,
+  "eigen_mean": true,
+  "exact_vertices": 105541,
+  "first_different_vertex": null,
+  "max_abs_error": 0.0,
+  "median_abs_error": 0.0,
+  "p95_abs_error": 0.0,
+  "fallback_vertices": 0,
+  "seconds_excluding_io": 12.251090969890356,
+  "selected": {
+    "0": {
+      "candidate": -0.6379879713058472,
+      "native": -0.6379879713058472
+    },
+    "57378": {
+      "candidate": -3.9725027084350586,
+      "native": -3.9725027084350586
+    }
+  }
+}

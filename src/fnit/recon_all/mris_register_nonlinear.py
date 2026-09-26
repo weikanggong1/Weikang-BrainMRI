@@ -148,11 +148,12 @@ def registration_total_area() -> float:
 def first_distance_gradient(input_sphere: torch.Tensor,
                             original_surface: torch.Tensor,
                             registered_sphere: torch.Tensor,
-                            faces: torch.Tensor) -> torch.Tensor:
+                            faces: torch.Tensor, *, project: bool = True) -> torch.Tensor:
     """First distance-force gradient from the frozen registration surface inputs."""
     input_sphere = input_sphere.float()
     original_surface = original_surface.float()
-    registered_sphere = project_sphere(registered_sphere.float())
+    registered_sphere = (project_sphere(registered_sphere.float()) if project
+                         else registered_sphere.float())
     neighbors, degrees = ordered_neighbors_from_faces(faces, len(input_sphere))
     normals = sphere_vertex_normals(registered_sphere, faces)
     current = sphere_arc_distances(registered_sphere, neighbors, degrees)
@@ -238,11 +239,13 @@ def area_gradient_add(gradient: torch.Tensor, positions: torch.Tensor,
 def first_area_gradient(input_sphere: torch.Tensor,
                         original_surface: torch.Tensor,
                         registered_sphere: torch.Tensor, faces: torch.Tensor,
-                        gradient_after_distance: torch.Tensor) -> torch.Tensor:
+                        gradient_after_distance: torch.Tensor, *,
+                        project: bool = True) -> torch.Tensor:
     """First area-force update following the native-free distance gradient."""
     input_sphere = input_sphere.float()
     original_surface = original_surface.float()
-    positions = project_sphere(registered_sphere.float())
+    positions = (project_sphere(registered_sphere.float()) if project
+                 else registered_sphere.float())
     current_areas, face_normals = face_area_normals(positions, faces, signed_sphere=True)
     original_areas, _ = face_area_normals(original_surface, faces)
     return area_gradient_add(gradient_after_distance, positions, faces,
@@ -269,6 +272,21 @@ def average_gradients(gradient: torch.Tensor, neighbors: torch.Tensor,
     for _ in range(iterations):
         gradient = average_gradients_once(gradient, neighbors, degrees)
     return gradient
+
+
+
+@torch.no_grad()
+def spring_gradient_add(gradient: torch.Tensor, positions: torch.Tensor,
+                        neighbors: torch.Tensor, degrees: torch.Tensor,
+                        dist_scale: torch.Tensor, l_spring: float) -> torch.Tensor:
+    """Add the smoothwm registration spring after gradient averaging."""
+    displacement = torch.zeros_like(positions)
+    for index in range(neighbors.shape[1]):
+        active = degrees > index
+        delta = positions[neighbors[:, index]] - positions
+        displacement = torch.where(active[:, None], displacement + delta, displacement)
+    displacement = ((dist_scale * displacement) / degrees[:, None].float()).float()
+    return gradient + (displacement.double() * _float32(l_spring)).float()
 
 
 def _float32(value: float) -> float:
@@ -399,14 +417,14 @@ def correlation_gradient_add(gradient: torch.Tensor,
                              positions: torch.Tensor, curvature: torch.Tensor,
                              e1: torch.Tensor, e2: torch.Tensor,
                              target_mean: torch.Tensor, target_variance: torch.Tensor,
-                             avg_vertex_dist: float) -> torch.Tensor:
-    """First scalar curvature-correlation force at sigma 4."""
+                             avg_vertex_dist: float, *, l_corr: float = 1.0) -> torch.Tensor:
+    """Scalar curvature-correlation force with the active registration weight."""
     d_dist = 0.1 * avg_vertex_dist
     target = sample_correlation_atlas(target_mean, positions)
     std = sample_correlation_atlas(target_variance, positions).double().sqrt().float()
     std = torch.where(std.abs() < torch.finfo(torch.float32).eps,
                       torch.full_like(std, 4.0), std)
-    coef = ((target.double() - curvature.double()) / std.double()).float()
+    coef = (((target.double() - curvature.double()) * _float32(l_corr)) / std.double()).float()
     u = (e1.double() * d_dist).float()
     v = (e2.double() * d_dist).float()
     up = sample_correlation_atlas(target_mean, positions + u)

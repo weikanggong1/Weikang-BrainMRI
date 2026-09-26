@@ -1,0 +1,338 @@
+{
+  "smoothwm_sha256": "b67ceb95069d865bb11f6c2b20bac99eab9f19982b73d3c9c43735b7bedbe7ca",
+  "native_fit_sha256": "266c696621bb631145b4074b9716fdfcf082dcefbb1b520789c34f4c7b172beb",
+  "vertices": {
+    "0": {
+      "stages": {
+        "position": {
+          "shape": [
+            3
+          ],
+          "exact_elements": 3,
+          "first_different_flat_index": null,
+          "candidate_at_first_difference": null,
+          "native_at_first_difference": null,
+          "max_abs_error": 0.0
+        },
+        "normal": {
+          "shape": [
+            3
+          ],
+          "exact_elements": 3,
+          "first_different_flat_index": null,
+          "candidate_at_first_difference": null,
+          "native_at_first_difference": null,
+          "max_abs_error": 0.0
+        },
+        "tangent_e1": {
+          "shape": [
+            3
+          ],
+          "exact_elements": 3,
+          "first_different_flat_index": null,
+          "candidate_at_first_difference": null,
+          "native_at_first_difference": null,
+          "max_abs_error": 0.0
+        },
+        "tangent_e2": {
+          "shape": [
+            3
+          ],
+          "exact_elements": 3,
+          "first_different_flat_index": null,
+          "candidate_at_first_difference": null,
+          "native_at_first_difference": null,
+          "max_abs_error": 0.0
+        },
+        "neighbors": {
+          "shape": [
+            36
+          ],
+          "exact_elements": 36,
+          "first_different_flat_index": null,
+          "candidate_at_first_difference": null,
+          "native_at_first_difference": null,
+          "max_abs_error": 0.0
+        },
+        "design": {
+          "shape": [
+            36,
+            3
+          ],
+          "exact_elements": 108,
+          "first_different_flat_index": null,
+          "candidate_at_first_difference": null,
+          "native_at_first_difference": null,
+          "max_abs_error": 0.0
+        },
+        "height": {
+          "shape": [
+            36,
+            1
+          ],
+          "exact_elements": 36,
+          "first_different_flat_index": null,
+          "candidate_at_first_difference": null,
+          "native_at_first_difference": null,
+          "max_abs_error": 0.0
+        },
+        "gram": {
+          "shape": [
+            3,
+            3
+          ],
+          "exact_elements": 9,
+          "first_different_flat_index": null,
+          "candidate_at_first_difference": null,
+          "native_at_first_difference": null,
+          "max_abs_error": 0.0
+        },
+        "rhs": {
+          "shape": [
+            3,
+            1
+          ],
+          "exact_elements": 3,
+          "first_different_flat_index": null,
+          "candidate_at_first_difference": null,
+          "native_at_first_difference": null,
+          "max_abs_error": 0.0
+        },
+        "inverse": {
+          "shape": [
+            3,
+            3
+          ],
+          "exact_elements": 1,
+          "first_different_flat_index": 0,
+          "candidate_at_first_difference": 0.0657578706741333,
+          "native_at_first_difference": 0.0657578855752945,
+          "max_abs_error": 3.5390257835388184e-08
+        },
+        "coefficients": {
+          "shape": [
+            3,
+            1
+          ],
+          "exact_elements": 0,
+          "first_different_flat_index": 0,
+          "candidate_at_first_difference": -0.48780357837677,
+          "native_at_first_difference": -0.4878034293651581,
+          "max_abs_error": 1.4901161193847656e-07
+        },
+        "raw_curvature": {
+          "shape": [
+            1
+          ],
+          "exact_elements": 0,
+          "first_different_flat_index": 0,
+          "candidate_at_first_difference": -0.6379880905151367,
+          "native_at_first_difference": -0.6379879713058472,
+          "max_abs_error": 1.1920928955078125e-07
+        }
+      },
+      "native_condition_number": 19.388187408447266,
+      "candidate_condition_number": 19.388193130493164,
+      "candidate_gram": [
+        [
+          28.318008422851562,
+          -41.76557540893555,
+          33.26654815673828
+        ],
+        [
+          -41.76557540893555,
+          133.06619262695312,
+          -106.99081420898438
+        ],
+        [
+          33.26654815673828,
+          -106.99081420898438,
+          143.29806518554688
+        ]
+      ],
+      "native_gram": [
+        [
+          28.318008422851562,
+          -41.76557540893555,
+          33.26654815673828
+        ],
+        [
+          -41.76557540893555,
+          133.06619262695312,
+          -106.99081420898438
+        ],
+        [
+          33.26654815673828,
+          -106.99081420898438,
+          143.29806518554688
+        ]
+      ]
+    },
+    "57378": {
+      "stages": {
+        "position": {
+          "shape": [
+            3
+          ],
+          "exact_elements": 3,
+          "first_different_flat_index": null,
+          "candidate_at_first_difference": null,
+          "native_at_first_difference": null,
+          "max_abs_error": 0.0
+        },
+        "normal": {
+          "shape": [
+            3
+          ],
+          "exact_elements": 3,
+          "first_different_flat_index": null,
+          "candidate_at_first_difference": null,
+          "native_at_first_difference": null,
+          "max_abs_error": 0.0
+        },
+        "tangent_e1": {
+          "shape": [
+            3
+          ],
+          "exact_elements": 3,
+          "first_different_flat_index": null,
+          "candidate_at_first_difference": null,
+          "native_at_first_difference": null,
+          "max_abs_error": 0.0
+        },
+        "tangent_e2": {
+          "shape": [
+            3
+          ],
+          "exact_elements": 3,
+          "first_different_flat_index": null,
+          "candidate_at_first_difference": null,
+          "native_at_first_difference": null,
+          "max_abs_error": 0.0
+        },
+        "neighbors": {
+          "shape": [
+            37
+          ],
+          "exact_elements": 37,
+          "first_different_flat_index": null,
+          "candidate_at_first_difference": null,
+          "native_at_first_difference": null,
+          "max_abs_error": 0.0
+        },
+        "design": {
+          "shape": [
+            37,
+            3
+          ],
+          "exact_elements": 111,
+          "first_different_flat_index": null,
+          "candidate_at_first_difference": null,
+          "native_at_first_difference": null,
+          "max_abs_error": 0.0
+        },
+        "height": {
+          "shape": [
+            37,
+            1
+          ],
+          "exact_elements": 37,
+          "first_different_flat_index": null,
+          "candidate_at_first_difference": null,
+          "native_at_first_difference": null,
+          "max_abs_error": 0.0
+        },
+        "gram": {
+          "shape": [
+            3,
+            3
+          ],
+          "exact_elements": 9,
+          "first_different_flat_index": null,
+          "candidate_at_first_difference": null,
+          "native_at_first_difference": null,
+          "max_abs_error": 0.0
+        },
+        "rhs": {
+          "shape": [
+            3,
+            1
+          ],
+          "exact_elements": 3,
+          "first_different_flat_index": null,
+          "candidate_at_first_difference": null,
+          "native_at_first_difference": null,
+          "max_abs_error": 0.0
+        },
+        "inverse": {
+          "shape": [
+            3,
+            3
+          ],
+          "exact_elements": 0,
+          "first_different_flat_index": 0,
+          "candidate_at_first_difference": 3.132612466812134,
+          "native_at_first_difference": 3.132692575454712,
+          "max_abs_error": 8.0108642578125e-05
+        },
+        "coefficients": {
+          "shape": [
+            3,
+            1
+          ],
+          "exact_elements": 0,
+          "first_different_flat_index": 0,
+          "candidate_at_first_difference": -3.60585355758667,
+          "native_at_first_difference": -3.605940818786621,
+          "max_abs_error": 8.726119995117188e-05
+        },
+        "raw_curvature": {
+          "shape": [
+            1
+          ],
+          "exact_elements": 0,
+          "first_different_flat_index": 0,
+          "candidate_at_first_difference": -3.9724106788635254,
+          "native_at_first_difference": -3.9725027084350586,
+          "max_abs_error": 9.202957153320312e-05
+        }
+      },
+      "native_condition_number": 808.558837890625,
+      "candidate_condition_number": 808.5382080078125,
+      "candidate_gram": [
+        [
+          5.726079940795898,
+          21.417280197143555,
+          21.884113311767578
+        ],
+        [
+          21.417280197143555,
+          87.53644561767578,
+          100.4251480102539
+        ],
+        [
+          21.884113311767578,
+          100.4251480102539,
+          158.4936981201172
+        ]
+      ],
+      "native_gram": [
+        [
+          5.726079940795898,
+          21.417280197143555,
+          21.884113311767578
+        ],
+        [
+          21.417280197143555,
+          87.53644561767578,
+          100.4251480102539
+        ],
+        [
+          21.884113311767578,
+          100.4251480102539,
+          158.4936981201172
+        ]
+      ]
+    }
+  }
+}

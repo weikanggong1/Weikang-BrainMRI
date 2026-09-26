@@ -335,9 +335,11 @@ The independent default-schedule Python replay now starts at the original
 `inflated` and `smoothwm` inputs. Its LH updates 0–3 and RH updates 0–6 match
 every saved native float32 coordinate component bitwise at every update,
 including LH negative-area repair and the transition to 256 gradient averages.
-The next LH/RH updates, complete unfolding, and final `sphere` files remain
-open. This validated path is CPU/Numba; upstream topology repair also remains
-open. See the [LH prefix](standard_sphere_full_default_prefix_lh_256.json),
+SHA-checked resumes from those Python checkpoints also match LH updates 4–5
+and RH updates 7–8 component by component. The next LH/RH updates, complete
+unfolding, and final `sphere` files remain open. This validated path is
+CPU/Numba; upstream topology repair also remains open. See the
+[LH prefix](standard_sphere_full_default_prefix_lh_256.json),
 [RH prefix](standard_sphere_full_default_prefix_rh_seven.json), and
 [status](SPHERE_STANDARD_STATUS.md).
 
@@ -392,19 +394,28 @@ This is an intermediate installed-versus-source comparison, not the final
 `area.pial` map or a Python optimizer result; see the
 [area impact report](pial_source_vs_installed_vertex_area_20260926.json) and
 [comparison script](experimental/compare_pial_intermediate_area.py).
-The complete white and pial Python optimizers remain open; see
-[`PLACE_SURFACE_WHITE_PIAL.md`](PLACE_SURFACE_WHITE_PIAL.md).
+The later independent LH pial replay now computes its own dt/reject schedule
+through all 41 steps from frozen official white/MRI inputs. All 41 decisions
+and 14 installed RAM checkpoints match; final pial ordered vertices and faces
+are exact, and every area, thickness, vertex-volume and pial-curvature map has
+zero outliers. Three of 12 rejected-trial SSE log values differ by 0.1 at
+printed precision without changing decisions. RH final geometry matches only
+under a native dt/reject diagnostic schedule. Independent white placement,
+RH pial decisions and connected orchestration remain open; see
+[`PLACE_SURFACE_WHITE_PIAL.md`](PLACE_SURFACE_WHITE_PIAL.md) and the
+[LH full summary](place_surface_installed_lh_independent_decision_full_summary.json).
 
 For spherical registration, the independent PyTorch sigma-4 rigid search
-matches every ordered vertex and face on both hemispheres. The complete first
-nonlinear pre-average gradient, including distance, angle/area and
-curvature-correlation forces, now matches every native vertex from the fixed
-sphere, `smoothwm`, `sulc` and atlas inputs. The isolated 16,384-iteration
-gradient average is also exact with that same gradient. The independent first
-nonlinear line search selects the native step exactly on both sides and its
-first updated surface matches all 106,622/105,541 ordered vertices. Later
-nonlinear epochs and final `sphere.reg` remain open; see
-[`MRIS_REGISTER_STATUS.md`](MRIS_REGISTER_STATUS.md).
+matches every ordered vertex and face on both hemispheres. The default sulc
+nonlinear epochs match every saved ordered vertex checkpoint through LH
+`debug0056` and RH `debug0055`. The RH raw smoothwm curvature now matches
+105,541/105,541 vertices bitwise using the source-order VNL inverse and
+Hessian eigenvalue mean; its independently computed first smoothwm update,
+`debug0056`, also matches every ordered vertex. LH first smoothwm update is
+exact only when native raw curvature is supplied as a diagnostic input.
+Later updates and final `sphere.reg` remain open; see
+[`MRIS_REGISTER_STATUS.md`](MRIS_REGISTER_STATUS.md) and the
+[RH SVD correction](MRIS_REGISTER_RH_RAW_H_SVD_MATCH.md).
 
 The complete isolated `mris_ca_label` Python CPU stage now reads all six fixed
 GCS atlases and produces LH/RH DK, Destrieux and DKT annotation files byte

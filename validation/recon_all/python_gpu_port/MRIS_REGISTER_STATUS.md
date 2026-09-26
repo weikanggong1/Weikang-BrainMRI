@@ -1,4 +1,4 @@
-# Fixed FreeSurfer 8.2 `mris_register`: first five nonlinear updates exact, later epochs open
+# Fixed FreeSurfer 8.2 `mris_register`: partial exact checkpoints and default-path boundary
 
 ## Reference call and inputs
 
@@ -690,13 +690,342 @@ hashes. The final reference hashes are
 LH and `0e2a10093721f2f75f7460c559aa982560abd44662a9dac16865d42cb419fa8b`
 RH.
 
-## Remaining registration work
+## Official schedule replay through the first smoothwm update
 
-The rigid-only diagnostic remains far from the official final `sphere.reg`:
-**zero** exact vertices in either hemisphere, with median ordered-vertex
-distances of 25.39 mm LH and 26.96 mm RH. Subsequent nonlinear calls (starting
-with sigma-4, **16 averages**) across four sigmas and negative-face repair
-remain to be ported and paired. No integrated Python final `sphere.reg`
-producer or CUDA parity result exists yet. The first five update calls were
-validated on CPU; full registration timing and downstream vertex/ROI metric
-parity cannot be claimed until the ordered final surfaces match.
+The [schedule probe](probe_mris_register_schedule.py) continued from the
+independently matched `debug0006` surface. It parsed each official
+`-N 1 -W 1 -remove_negative 0` diagnostic update's averaging count and sigma,
+recomputed the source sulc and atlas parameterizations when the sigma changed,
+and compared the output to every saved official surface **in original vertex
+order**. At the next segment boundary, it started from the independently
+matched `debug0017` surface. Saved native surfaces were comparison references
+and segment seeds only; within each segment, the Python state and selected
+step were propagated independently. The first five updates, `debug0002` to
+`debug0006`, were validated above. Thus `debug0002` through `debug0038`
+contain **37 consecutive exact updates on both hemispheres**.
+
+| Saved updates | Source / sigma | LH exact updates | RH exact updates | LH/RH Python CPU kernel seconds, excluding I/O |
+| --- | --- | ---: | ---: | ---: |
+| 0002–0006 | sulc / 4 | 5/5 | 5/5 | connected five-update probes 264.30 / 204.48 s wall |
+| 0007–0017 | sulc / 4 | 11/11 | 11/11 | 168.12 / 160.33 s |
+| 0018–0024 | sulc / 2 | 7/7 | 7/7 | 114.28 / 135.94 s |
+| 0025–0031 | sulc / 1 | 7/7 | 7/7 | 114.63 / 106.84 s |
+| 0032–0038 | sulc / 0.5 | 7/7 | 7/7 | 114.99 / 106.07 s |
+| 0039 | smoothwm / 4 | 0/1 | 0/1 | 37.66 / 34.30 s attempted |
+
+Every passing update matched all 106,622 LH or 105,541 RH ordered vertices,
+with maximum coordinate error **0 mm**. The per-update full-precision Python
+`dt`, native log's three-decimal `dt`, native surface SHA-256, exact count,
+maximum error and force/average/line timing are in the compact
+[LH](mris_register_lh_schedule_summary_headcw.json) and
+[RH](mris_register_rh_schedule_summary_headcw.json) manifests. Full objective
+trial samples, input hashes, seed hashes, reference surface hashes and timings
+are in the [LH 7–17](mris_register_lh_schedule_sigma4_only_headcw.json),
+[RH 7–17](mris_register_rh_schedule_sigma4_only_headcw.json),
+[LH 18–39](mris_register_lh_schedule_to_sno2_headcw.json) and
+[RH 18–39](mris_register_rh_schedule_to_sno2_headcw.json) reports. The
+archived [LH](mris_register_lh_n1_debug_out_headcw.log) and
+[RH](mris_register_rh_n1_debug_out_headcw.log) official diagnostic logs have
+SHA-256 `d03b2eab334facdef1710f11d0cff1648898ddb9412637e202c245b3e8b83cde`
+and `8fa7d833f346771618a2389cd16de3771c7ace31112c714ca523ba00700668b6`.
+The first LH 7–17 run used an earlier native log with a different file hash;
+its averaging counts were checked again against this archived official log.
+The current schedule probe has SHA-256
+`7cc9f6c80183fb6bed6fc0a9990770bc52dcf7ce965ee7e3693f0214e55c8a06`.
+The installed official binary has SHA-256
+`75137b92fcbed63b441e6214b5b923d7664f05d00c454b62da724dec26636f80`.
+
+The installed complete `-N 1` diagnostic took **92.97 s LH** and **120.89 s
+RH** with four CPU threads, including rigid and all later calls. Its
+[LH](mris_register_lh_n1_native_run_headcw.log) and
+[RH](mris_register_rh_n1_native_run_headcw.log) logs retain the complete diagnostic through `debug0071`. The segmented Python CPU replay has different setup and incomplete
+work, so these numbers are **not** a matched full-stage speed benchmark or a
+GPU result. The selected Python `dt` after update 6 is recorded at full
+precision, but the official log rounds it to three decimals; exact native
+floating-point `dt` has not been separately captured for updates 7–38.
+The exact ordered output surface is the parity criterion for those updates.
+
+### First differing operator at update 39
+
+The installed binary switches from sulc to `smoothwm` curvature and atlas
+frames 6/7 at this boundary. Its source recomputes the subject mean curvature
+on `smoothwm`, normalizes it, reduces `l_corr` by 20, and adds a spring term of
+0.5 after gradient averaging. The original Python schedule continuation still used sulc curvature,
+atlas frames 3/4, the original correlation weight and no spring term. A read-only [GDB capture](capture_mris_register_sno2_first_epoch.gdb)
+compared its first `MRISintegrate` call with the Python
+[diagnostic probe](probe_mris_register_schedule_diagnostic.py):
+
+| Checkpoint at update 39 | LH exact vertices / maximum error | RH exact vertices / maximum error |
+| --- | ---: | ---: |
+| Starting positions | 106,622 / 0 | 105,541 / 0 |
+| Normals | 106,622 / 0 | 105,541 / 0 |
+| Curvature input | 0 / 3.113 | 0 / 2.870 |
+| Distance force | 106,622 / 0 | 105,541 / 0 |
+| Area force | 106,622 / 0 | 105,541 / 0 |
+| Correlation force | 0 / 2.164 | 0 / 2.359 |
+| After 1,024 gradient averages, before spring | 0 / 0.0205 | 0 / 0.0293 |
+
+Errors in this table are maximum absolute float32 values, in millimeters for
+coordinates and in native numeric units for curvature and force. The first
+different input is the smoothwm curvature; the first differing force is the
+correlation term. The stage comparison, both predicted/native array hashes
+and NPZ hashes are retained in the [LH](mris_register_lh_sno2_first_operator_headcw.json)
+and [RH](mris_register_rh_sno2_first_operator_headcw.json) reports, with
+[LH](mris_register_lh_sno2_capture_headcw.log) and
+[RH](mris_register_rh_sno2_capture_headcw.log) GDB logs. The comparison
+script is [here](compare_mris_register_sno2_checkpoint.py). The native
+update-39 log prints `dt=2.827` LH and `dt=2.580` RH, whereas the incomplete
+Python branch selects 0.003348 and 0.048077 respectively. The candidate
+saved surface matches zero ordered vertices in either hemisphere; maximum
+coordinate errors are **1.061 mm LH** and **0.672 mm RH** in the continuous
+schedule run. A separate smoothwm probe now isolates this boundary, as reported below.
+Continuous later updates and negative-face repair remain open.
+
+### Paired first smoothwm update, with independent raw curvature boundary
+
+The new `mris_register_smoothwm.py` computes three-hop quadratic-form mean
+curvature from each frozen `smoothwm` in PyTorch. The probe compares **every
+raw H value** with the installed FreeSurfer 8.2 array captured immediately
+before normalization. Both input surface SHA-256 values and native/predicted
+raw-array hashes are in the linked [LH](mris_register_lh_sno2_raw_sequential_headcw.json)
+and [RH](mris_register_rh_sno2_raw_sequential_headcw.json) reports. Their source
+surface hashes are `36e199e4d971a39457a4ad1d0b8eed3a84feb236ada29c05e297ffdd865a5002`
+LH and `b67ceb95069d865bb11f6c2b20bac99eab9f19982b73d3c9c43735b7bedbe7ca`
+RH. The native raw-array hashes are `319c755b667a04331ef0c545714aaf5897c9a04e0c08a882b69b48542f0ab39c`
+and `820582a7731addfb50c7453bbce534ed4fb314a590b4749191fee06af04031a1`.
+
+| Side | Raw H exact | Raw H median / max absolute error | PyTorch CPU raw H only |
+| --- | ---: | ---: | ---: |
+| LH | 14,692 / 106,622 | 1.86e-8 / 0.000165939 | 6.48 s |
+| RH | 14,713 / 105,541 | 1.49e-8 / 0.000091553 | 6.59 s |
+
+`mris_register_nonlinear.py` now applies `l_corr=0.05` in the source's
+float32 arithmetic order and provides the reusable post-average spring
+operator. Given the exact native post-average gradient as an operator-level
+input, that PyTorch spring matches **all 106,622 LH and 105,541 RH vertices
+exactly**, maximum error 0. The paired
+[LH](mris_register_lh_sno2_spring_production_headcw.json) and
+[RH](mris_register_rh_sno2_spring_production_headcw.json) reports include
+input/output hashes and 1.01/0.87 s single-run CPU times.
+
+The complete one-update probe started from the native-exact `debug0038`
+geometry and recomputed the atlas frames 6/7, sigma-4 source/target grids,
+weighted correlation force, 1,024 gradient averages, spring, line search and
+saved `debug0039`. **Conditional diagnostic:** when its only injected native
+intermediate was raw smoothwm H, both hemispheres matched native positions,
+normals, blurred source curvature, area and correlation force, post-average
+and post-spring force, and saved surface at every ordered vertex with maximum
+error zero. The selected `dt` was exactly `2.826995849609375` LH and
+`2.5797934532165527` RH. Paired input/output SHA-256, all checkpoint
+errors and per-operation single-run CPU timings are in the
+[LH](mris_register_lh_sno2_epoch_native_raw_headcw.json) and
+[RH](mris_register_rh_sno2_epoch_native_raw_headcw.json) reports. This
+conditional result proves the downstream operators at the same checkpoint;
+it does not establish an independent full-stage match.
+
+With the independently computed raw H, the first non-exact checkpoint is the
+sigma-4 blurred source curve (maximum absolute error 3.34e-6 LH and
+5.84e-6 RH). The resulting `debug0039` coordinate maximum error is
+**0.000123 mm LH / 0.000355 mm RH** across all ordered vertices. Only
+3,996/106,622 LH and 228/105,541 RH vertices are bitwise exact; the selected
+`dt` changes to `2.8273253440856934` and `2.578439712524414`.
+The [LH](mris_register_lh_sno2_epoch_sequential_headcw.json) and
+[RH](mris_register_rh_sno2_epoch_sequential_headcw.json) reports retain
+these full-array comparisons, all input/native-output hashes and individual
+setup, force, average, spring and line-search CPU times. Those times cover
+one isolated update, exclude I/O and were measured under shared-host load;
+no matched native per-update timing or GPU speedup is asserted. The precise
+remaining first difference is the raw H float32 neighborhood/matrix solution.
+
+The `-N 1` diagnostic changes the official iteration count and is distinct
+from the default recon-all call. Even the **complete official** `-N 1` surface
+matches zero ordered vertices of the archived default official `sphere.reg`:
+its median per-vertex distance is 1.602 mm LH and 1.844 mm RH. The paired
+[LH](mris_register_lh_n1_final_vs_default_headcw.json) and
+[RH](mris_register_rh_n1_final_vs_default_headcw.json) reports retain both
+file hashes and all-vertex comparison. The default final reference hashes are
+`801d345eb11c4b02e64aa453bc388f18e8cd47e8bb0beed7d75868d92276b8f8`
+LH and `0e2a10093721f2f75f7460c559aa982560abd44662a9dac16865d42cb419fa8b`
+RH.
+
+## Paired default-parameter official registration reference
+
+A fresh, isolated installed FreeSurfer 8.2 run used the **default**
+`mris_register -curv -threads 4 -W 1` schedule on the same frozen sphere,
+sulc, smoothwm and atlas inputs. `-W 1` saved every registration checkpoint;
+the output geometry, ordered vertices and faces were then compared with the
+archived default `sphere.reg` from the completed official recon-all.
+The binary SHA-256 is again
+`75137b92fcbed63b441e6214b5b923d7664f05d00c454b62da724dec26636f80`.
+
+| Side | Default saved checkpoints | Installed native wall time | Final ordered vertices exact vs archived default | Max coordinate error |
+| --- | ---: | ---: | ---: | ---: |
+| LH | 107 | 154.01 s | 106,622 / 106,622 | 0 mm |
+| RH | 97 | 147.07 s | 105,541 / 105,541 | 0 mm |
+
+Both face arrays are equal. The newly written surface files have different
+SHA-256 hashes because their headers differ; the geometry comparison above is
+on decoded original-order coordinates. The paired
+[LH](mris_register_lh_default_reference_check_headcw.json) and
+[RH](mris_register_rh_default_reference_check_headcw.json) reports include
+all frozen input, binary, native log, checkpoint log and final-output hashes.
+These native wall times were observed on a shared headcw host and should not
+be interpreted as a matched speed comparison with the earlier gpucw1 archive.
+
+Default registration retains up to 25 iterations per integration call,
+whereas `-N 1` uses one. Their first saved update (`debug0002`) is identical
+at every vertex on both sides, but `debug0003` has zero exactly matching
+vertices between the two official schedules (maximum difference 4.347 mm LH,
+3.176 mm RH). This is a control-flow difference, so the earlier 37 exact
+`-N 1` updates do not establish default final parity.
+
+The initial default LH PyTorch continuous replay matched native `debug0002`
+at all 106,622 ordered vertices, selected `dt=70.93703089944263`. At
+`debug0003`, its original implementation selected `dt=198.3500518798828`
+versus the native log's rounded `196.340` and differed by a maximum
+0.0734673 mm. The [initial report](mris_register_lh_default_first_difference_headcw.json)
+retains paired input, output and candidate-array hashes plus timings.
+Read-only [GDB checkpoints](mris_register_lh_default_second_capture_headcw.log)
+showed the first different operator: native `MRISintegrate` projects only once
+at the start of a call, whereas the candidate projected again on every
+iteration. At the second iteration, native pre-force positions equal the
+saved `debug0002` at all vertices; the extra candidate projection matched
+only 101,966/106,622 vertices with maximum start error 7.63e-6 mm.
+The GDB capture took 21.81 s to reach the second update on the shared host.
+
+The registration force APIs now accept an explicit `project=False` for
+iterations inside the same `MRISintegrate` call, and the default schedule
+probe tracks those call boundaries. A fixed conditional second-update probe
+used the exact native `debug0002` coordinates as its starting array; those
+coordinates had already been produced independently and matched all ordered
+vertices in the first update. **Every** checkpoint at `debug0003` then matched
+all 106,622 vertices exactly: starting positions, normals, distance, area and
+correlation gradients, 16,384-average gradient, and saved surface. Its
+`dt=196.33958435058594` agrees with the installed log's rounded value.
+The paired [before](mris_register_lh_default_second_operator_initial_headcw.json)
+and [after](mris_register_lh_default_second_operator_fixed_headcw.json)
+reports retain all native/predicted array hashes and per-operation CPU times.
+The post-fix LH 16,384-average kernel took 89.57 s under shared-host load.
+
+The same paired default RH second update also matched **all 105,541 ordered
+vertices exactly** at each GDB checkpoint and saved `debug0003`, selecting
+`dt=135.03231811523438` (installed log: `135.032`). Its
+[checkpoint report](mris_register_rh_default_second_operator_fixed_headcw.json)
+and read-only [capture](mris_register_rh_default_second_capture_headcw.log)
+retain source, reference and predicted hashes, each force/gradient comparison
+and individual CPU timings. This confirms two default updates per side, not
+the full default sequence. Focused nonlinear and line-search tests passed
+10/10 in the same remote PyTorch environment after the projection-state fix.
+
+The next bounded LH default continuation started from the independently
+matched `debug0003` geometry and stayed inside the same 16,384-average
+integration call. It selected `dt=64.76956939697266` and matched the installed
+`debug0004` at **106,622/106,622 ordered vertices**, maximum error 0 mm.
+The saved Python candidate surface was reopened and also matched all vertices
+and faces exactly. Its [report](mris_register_lh_default_epoch0004_headcw.json)
+records the frozen input, native output, predicted array and serialized
+candidate SHA-256 values. Single-run CPU times excluding I/O were 13.93 s
+force, 89.42 s averaging and 0.33 s line search under shared-host load.
+The next bounded LH continuation used the reopened independent candidate
+`debug0004` and stayed in the same 16,384-average call. It selected
+`dt=170.02264404296875`; the installed `debug0005` and the saved Python
+candidate match at **106,622/106,622 ordered vertices and all faces**, maximum
+error 0 mm. The [epoch-5 report](mris_register_lh_default_epoch0005_headcw.json)
+includes input/native-output, predicted-array, serialized-output SHA-256,
+readback comparison and per-operation time: force 16.19 s, averaging 105.22 s,
+line search 0.38 s excluding I/O. This run shared headcw CPU with the RH
+pial validation; its timing is an observation, not a matched speed ratio.
+
+### Default sulcal continuation and first smoothwm difference
+
+The bounded schedule probe then propagated each saved candidate surface to the
+next native checkpoint and stopped at the first mismatch. LH `debug0006` starts
+a new 4,096-average integration call; RH `debug0004` stays inside the original
+16,384-average call. The RH `debug0003` seed was the installed surface whose
+complete predicted coordinate array had independently matched at every vertex;
+all later segment seeds were serialized Python candidate surfaces. The probe
+reopened each seed, retained native face order, and recorded every full-precision
+`dt`, comparison, input/reference/candidate SHA-256 and CPU force, averaging,
+line-search and scale-setup time in its JSON reports. Native `dt` lines are
+stderr-buffered ahead of the stdout scale log; the probe now assigns sigma by
+the **ordered saved checkpoint writes**. Its scale map covered all 107 LH and
+97 RH installed saved checkpoints, including the actual sulc-to-smoothwm switch.
+
+| Hemisphere | Continuous exact sulc checkpoints | Exact ordered vertices at every update | Last sigma-0.5 checkpoint |
+| --- | --- | ---: | --- |
+| LH | `debug0002`–`debug0056` (55 updates) | 106,622 / 106,622; maximum error 0 mm | `debug0056` |
+| RH | `debug0002`–`debug0055` (54 updates) | 105,541 / 105,541; maximum error 0 mm | `debug0055` |
+
+The newly paired LH segment reports are [0006](mris_register_lh_default_epoch0006_headcw.json),
+[0007–0009](mris_register_lh_default_epoch0007_0009_headcw.json),
+[0010–0012](mris_register_lh_default_epoch0010_0012_headcw.json),
+[0013–0026](mris_register_lh_default_epoch0013_0026_headcw.json),
+[0027–0033](mris_register_lh_default_epoch0027_0033_headcw.json),
+[0034–0041](mris_register_lh_default_epoch0034_0041_headcw.json),
+[0042–0048](mris_register_lh_default_epoch0042_0048_headcw.json) and
+[0049–0056](mris_register_lh_default_epoch0049_0056_headcw.json).
+The RH reports are [0004](mris_register_rh_default_epoch0004_headcw.json),
+[0005](mris_register_rh_default_epoch0005_headcw.json),
+[0006–0009](mris_register_rh_default_epoch0006_0009_headcw.json),
+[0010–0026](mris_register_rh_default_epoch0010_0026_headcw.json),
+[0027–0033](mris_register_rh_default_epoch0027_0033_headcw.json),
+[0034–0041](mris_register_rh_default_epoch0034_0041_headcw.json),
+[0042–0048](mris_register_rh_default_epoch0042_0048_headcw.json) and
+[0049–0055](mris_register_rh_default_epoch0049_0055_headcw.json).
+The 53 LH and 52 RH newly paired numbered updates have no gaps and every
+comparison is exact. The last serialized sulc seeds were separately reopened and matched
+all ordered vertices and faces exactly on both sides; their file hashes are in
+the [readback report](mris_register_default_sulc_last_seed_readback_headcw.json).
+These CPU times were observed under varying shared headcw load and are not an
+end-to-end matched benchmark.
+
+The next installed update changes the source from sulc to `smoothwm` curvature:
+LH `debug0057`, RH `debug0056`. The same `smoothwm` files and the previously
+captured native raw-curvature arrays were paired by SHA-256. Starting from the
+independent exact last sulc candidate, substituting **only native raw H** into
+the PyTorch smoothwm force, 1,024-average, spring and line search gives the
+installed saved output at every ordered vertex: LH 106,622/106,622 with
+`dt=2.721714973449707`, RH 105,541/105,541 with
+`dt=2.542891502380371`; maximum error 0 mm. The conditional reports are
+[LH](mris_register_lh_default_epoch0057_native_raw_headcw.json) and
+[RH](mris_register_rh_default_epoch0056_native_raw_headcw.json).
+
+Replacing that one input with the independent PyTorch raw H identifies the
+first native-free default output difference. LH `debug0057` matches
+106,455/106,622 vertices exactly, with maximum coordinate error
+7.62939453125e-6 mm and unchanged `dt`. RH `debug0056` matches 253/105,541
+exactly; 12,639 vertices are within 1e-5 mm, the maximum coordinate error is
+3.452301025390625e-4 mm, and `dt` becomes 2.544266700744629. The paired
+independent-input reports are [LH](mris_register_lh_default_epoch0057_independent_raw_headcw.json)
+and [RH](mris_register_rh_default_epoch0056_independent_raw_headcw.json).
+This conditional intervention located the initial difference at the raw
+`smoothwm` curvature input. The RH correction below supersedes that failed
+independent-input trial; later default-stage and final `sphere.reg` parity
+remain open.
+
+## RH correction and remaining registration work
+
+The following source SHA-256 values identify the pre-correction probe:
+`9944484056d08df18c95fef8dc70262c18bd44e2695fdea950ab93d812e16b1c`
+for `mris_register_smoothwm.py`,
+`4b9f8faff6da19abb6fb6e1c687ad7d631d38630b47cf34018b9dc583967b9e9`
+for `mris_register_nonlinear.py`, and
+`29172196286139b740391a2995f764a95199e6a2ac7b6aea37d3ecd5cf7b840f`
+for the bounded default schedule probe, and
+`e5d40a7279c6d3bec240b76f9c001c052d0d7424b8a98611f217da8a4ee3d705`
+for the conditional smoothwm probe. Input and native/predicted output SHA-256
+values are recorded per hemisphere in the linked JSON reports.
+
+The [RH raw H SVD audit](MRIS_REGISTER_RH_RAW_H_SVD_MATCH.md) locates the
+first numerical difference at the 3×3 SVD inverse: both selected vertices
+match the installed neighborhood, tangent axes, design, Gram and RHS bitwise.
+The source-order VNL inverse plus FreeSurfer's 2×2 Hessian eigenvalue mean
+now matches **105,541/105,541** RH raw H values, identical array SHA-256.
+From the independently exact last sulc seed, the corrected first RH default
+smoothwm update (`debug0056`) matches **105,541/105,541** native saved vertices
+with maximum error 0 mm and identical `dt=2.542891502380371`.
+
+The corrected RH raw H fit uses CPU Numba inside the Python/PyTorch stage;
+its independent LH counterpart has not been rerun. Later default updates,
+negative-face repair, final `sphere.reg`, vertex and ROI metrics, and a full
+GPU speed claim remain unaccepted.

@@ -48,13 +48,15 @@ fnit-setup-recon-all-assets --dest /path/to/recon_all_assets --verify-only
 首轮下载约 796.17 MiB，实际使用文件共 328.73 MiB；安装器逐文件校验大小与
 SHA-256，数据保存在包外。此资产入口尚未接入完整 Python recon-all 调度。
 [常规球面](../../validation/recon_all/python_gpu_port/SPHERE_STANDARD_STATUS.md)
-已完成双侧距离表对照；从原始输入连续计算的 LH 更新 0–3、RH 更新 0–6 在
-每一轮与原生检查点的全部 `float32` 顶点坐标逐位一致。剩余更新及最终
-`sphere` 文件仍未验收；当前实现为 CPU/Numba。
-拓扑修复、完整表面优化与配准、
-原生无依赖调度仍待完成。[pial 安装版首差报告](../../validation/recon_all/python_gpu_port/place_surface_installed_first_difference_report.json)
-已定位第 1 步的 1 ULP 接受坐标差及后续近零邻点判定放大；官方最终
-pial 网格和逐顶点指标尚未通过。[T1 输入转换](../../validation/recon_all/python_gpu_port/NIFTI_IMPORT.md)、
+已完成双侧距离表对照；从原始输入连续计算的 LH 更新 0–3、RH 更新 0–6，
+以及从这些 Python 检查点按哈希续跑的 LH 更新 4–5、RH 更新 7–8，全部
+`float32` 顶点坐标与原生检查点逐位一致。其余更新和最终 `sphere` 文件
+仍未验收；当前实现为 CPU/Numba。
+拓扑修复、白质表面独立优化、双侧完整球面与配准、原生无依赖调度仍待完成。
+[左侧 pial 独立回放](../../validation/recon_all/python_gpu_port/place_surface_installed_lh_independent_decision_full_summary.json)
+已自行决定 41/41 步，并从冻结的官方白质表面生成与原生逐位一致的最终 pial；
+面积、厚度、顶点体积和曲率逐点均无超容差。右侧最终 pial 目前仍使用
+原生日志控制步长与拒绝决策；双侧均未接入端到端链。[T1 输入转换](../../validation/recon_all/python_gpu_port/NIFTI_IMPORT.md)、
 [conform 阶段](../../validation/recon_all/python_gpu_port/CONFORM.md)
 和 [N4 完整包装](N4_WRAPPER_VALIDATION.md)也已分别与原生代码配对验证。
 [单 T1 连续输入链](../../validation/recon_all/python_gpu_port/input_chain_fs_sub01_report.json)
@@ -149,7 +151,9 @@ report = run_input_ca_normalize_chain(
 尚未接入完整入口。
 [皮层脑区标注](../../validation/recon_all/python_gpu_port/MRIS_CA_LABEL_STATUS.md)
 的六次 `mris_ca_label` 调用也已从冻结网格、球面配准及 GCS 输入由 Python 逐字节复现；
-上游 `sphere.reg` 仍依赖尚未移植的配准阶段。
+上游 `sphere.reg` 仍依赖尚未完成的配准阶段；双侧 sulc 阶段及右侧首个独立
+`smoothwm` 更新已通过，[左侧独立曲率和后续更新](../../validation/recon_all/python_gpu_port/MRIS_REGISTER_RH_RAW_H_SVD_MATCH.md)
+仍待验收。
 [脑区曲率四列](../../validation/recon_all/python_gpu_port/ROI_CURVATURE.md)
 在已有网格和标注上通过 346 行对照；
 [白质到球面 Jacobian](../../validation/recon_all/python_gpu_port/SURFACE_JACOBIAN.md)
