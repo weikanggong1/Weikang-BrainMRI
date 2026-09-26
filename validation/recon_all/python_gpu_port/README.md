@@ -435,9 +435,13 @@ meshes. A separate callable Python/CLI stage generates both final registered
 spheres with exact ordered geometry and matching volume
 geometry from exact sulc seeds. Its 4-thread CPU calls took 876.99 s LH and
 797.29 s RH; a direct CUDA force trial showed no speed gain. The independent
-sulc runner now also produces exact bilateral sulc seeds and an exact-input
-connection proof to the smoothwm stage. A fresh one-call registration test and
-connected full reconstruction remain open; see
+sulc runner now also produces exact bilateral sulc seeds. A fresh one-call
+CPU/Numba registration from conventional `sphere` to `sphere.reg` matches new
+unmodified FreeSurfer 8.2 bilateral surfaces at every ordered vertex and face,
+with matching volume geometry and all selected steps. The one-call calls took
+2,029.73/2,037.06 s LH/RH, versus 157.62/161.62 s for the fresh native
+controls on the same shared host under concurrent load. Connected full
+reconstruction remains open; see
 [`MRIS_REGISTER_STATUS.md`](MRIS_REGISTER_STATUS.md), the
 [RH SVD correction](MRIS_REGISTER_RH_RAW_H_SVD_MATCH.md), and the
 [LH continuation boundary](MRIS_REGISTER_LH_SMOOTHWM_BOUNDARY.md).
@@ -448,7 +452,7 @@ for byte equal to native on frozen subject meshes, sphere registrations,
 aseg and cortex labels. Six same-input native calls independently reproduced
 the official files. Python took 21.49–33.71 s per call versus 5.17–8.48 s
 native, so this stage is slower. It is not connected to the main runner;
-upstream `sphere.reg` generation remains open. See
+connection to the complete native-free runner remains open. See
 [`MRIS_CA_LABEL_STATUS.md`](MRIS_CA_LABEL_STATUS.md) and the
 [`six-atlas report`](gcsa_label_six_atlas_headcw.json).
 

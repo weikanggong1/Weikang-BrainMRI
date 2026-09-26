@@ -12,12 +12,13 @@ import numpy as np
 import tifffile
 import torch
 
+from .mris_register_average_numba import average_gradients_exact_cpu
 from .mris_register_atlas import sample_atlas_on_canonical_sphere
 from .mris_register_blur import blur_atlas_frame
 from .mris_register_kernels import center_sphere, normalize_mean_curvature, project_sphere
 from .mris_register_line_search import first_registration_line_search, first_registration_sse
 from .mris_register_nonlinear import (
-    apply_spherical_gradient, average_gradients, correlation_gradient_add,
+    apply_spherical_gradient, correlation_gradient_add,
     face_area_normals, first_area_gradient, first_distance_gradient,
     ordered_neighbors_from_faces, original_chord_distances,
     registration_orig_area, registration_total_area, sphere_arc_distances,
@@ -35,7 +36,7 @@ def run_register_sulc(sphere: str | Path, smoothwm: str | Path,
                       output: str | Path, *, max_updates: int = 1024) -> dict:
     """Create the sulc-pass sphere from the ordered conventional sphere.
 
-    This CPU PyTorch stage produces the seed for ``run_register_smoothwm``.
+    This CPU PyTorch/Numba stage produces the seed for ``run_register_smoothwm``.
     It uses the FreeSurfer 8.2 default rigid search and source-derived scale
     schedule; no native registration executable or snapshot is read.
     """
@@ -98,7 +99,7 @@ def run_register_sulc(sphere: str | Path, smoothwm: str | Path,
         e1, e2 = tangent_basis(normals)
         force = correlation_gradient_add(force, projected, curvature, e1, e2,
                                          mean_grid, variance_grid, avg_vertex_dist)
-        averaged = average_gradients(force, neighbors, degrees, averages)
+        averaged = average_gradients_exact_cpu(force, neighbors, degrees, averages)
 
         def objective(trial: torch.Tensor) -> float:
             return first_registration_sse(

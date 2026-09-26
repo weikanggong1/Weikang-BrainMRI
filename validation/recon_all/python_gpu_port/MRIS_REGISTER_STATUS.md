@@ -1165,9 +1165,9 @@ used the independently computed raw smoothwm curvature and matched native
 `debug0057`–`debug0060` at all 106,622 vertices; the three new decisions were
 `1024 → 256 → 64 → 64`. See the
 [LH runtime report](mris_register_lh_source_schedule_first4_headcw.json).
-Three focused scheduler tests pass. The source-scheduled mode has not yet run
-continuously through the final bilateral `sphere.reg` files. The older
-bounded geometry replays retain their logged schedule by default.
+Three focused scheduler tests passed at this intermediate checkpoint. The
+continuous bilateral run and final one-call validation are reported below.
+The older bounded geometry replays retain their logged schedule by default.
 
 ## Continuous source-scheduled smoothwm stage and callable API
 
@@ -1218,10 +1218,9 @@ excluding tensor transfer. The maximum force difference was 1.55e-5;
 has not been adopted. Force construction repeatedly builds ordered topology
 and is the measured optimization target.
 
-This is an exact **smoothwm continuation from a sulc seed**, not a connected
-`sphere`-to-`sphere.reg` entry point or T1-to-metrics pipeline. The sulc pass
-still needs a production native-free runner with independent stopping, and the
-upstream topology, white/pial and whole-subject acceptance gates remain open.
+This isolated validation starts from a sulc seed. The independent sulc runner
+and one-call `sphere`-to-`sphere.reg` result are reported below. The upstream
+topology, white/pial and whole-subject acceptance gates remain open.
 
 ## Source-scheduled sulc stage and sphere-to-registration connection
 
@@ -1256,11 +1255,10 @@ The [LH](mris_register_lh_stage_connection_attestation_headcw.json) and
 [RH](mris_register_rh_stage_connection_attestation_headcw.json) connection
 checks prove the new sulc seeds have the same ordered geometry, face order,
 source `sphere`/`smoothwm`/atlas file hashes and iteration numbers as the
-inputs of the previously exact smoothwm API. This is a source-equivalent
-connection proof; the one-call
+inputs of the previously exact smoothwm API. The one-call
 [`run_register_sphere` wrapper](../../../src/fnit/recon_all/mris_register_run.py)
-has been built and imported but has not had a fresh combined numerical run.
-It is not a T1-to-metrics reconstruction.
+has now also passed a fresh bilateral numerical run, detailed below. It is
+not a T1-to-metrics reconstruction.
 
 The standalone sulc calls took 1,465.67 s LH and 1,336.97 s RH on headcw
 with four PyTorch CPU threads; the prior standalone smoothwm calls took
@@ -1272,3 +1270,64 @@ separate process setups, so they are not a controlled full-stage benchmark.
 The first four 16,384-average updates alone took 477.96 s LH and 429.03 s
 RH. Gradient averaging and repeatedly rebuilt force topology are the next
 speed targets; no registration-wide GPU speedup is established.
+
+## Fresh one-call bilateral registration with exact CPU gradient averaging
+
+The production sulc and smoothwm runners now call
+[`average_gradients_exact_cpu`](../../../src/fnit/recon_all/mris_register_average_numba.py).
+Its Numba loop retains each ordered neighbor and float32 addition/multiplication.
+On a saved real LH gradient, 16,384 iterations matched the PyTorch source-order
+result at all 106,622 vertices, with zero maximum error, in 28.67 s versus
+98.16 s for the previous PyTorch loop (3.42× for this kernel alone). The
+1,024-iteration checks were also exact at all 106,622 LH and 105,541 RH
+vertices; the production wrapper passed an additional exact LH 64-iteration
+check. The [benchmark script](experimental/benchmark_mris_register_average_numba.py)
+and [16,384-iteration report](mris_register_lh_average_numba_16384_headcw.json)
+retain input shape, timings and error. These are CPU measurements on headcw;
+no GPU speed claim follows from them.
+
+A fresh **one-call** `run_register_sphere` execution then started from the
+unchanged conventional `sphere`, `smoothwm`, `sulc` and external folding atlas
+for each hemisphere. Both independently generated temporary sulc seeds were
+observed before cleanup to have byte hashes identical to the previously
+validated seeds: LH `26c48f477b9596c6128cf2d138d0590379e23979cde61e2186db0914e39a46ab`,
+RH `92b6e45701cc946a5274750f9bccd6743098dcb252ea7458e86855107739de96`.
+The snapshot wrapper used for this execution predates the repository wrapper's
+report-only SHA fields; its numerical stage calls are identical by direct
+source diff. Consequently the machine comparison records the seed-hash field
+as `null`, rather than claiming it read a missing report field.
+
+A new unmodified FreeSurfer 8.2 `mris_register -curv -threads 4` run on the
+same inputs and headcw host generated fresh LH/RH references. They reproduced
+the archived official ordered geometry and faces exactly. The independent
+[full-stage comparator](experimental/compare_mris_register_full_api.py)
+checked the Python output against those fresh references and the previously
+validated PyTorch stage schedules:
+
+| Hemisphere | Exact ordered vertices | Faces / volume geometry | Sulc / smoothwm selected steps | Python one-call | Fresh native |
+| --- | ---: | --- | --- | ---: | ---: |
+| LH | 106,622 / 106,622 | equal / equal | 55 / 51, all equal | 2,029.73 s | 157.62 s |
+| RH | 105,541 / 105,541 | equal / equal | 54 / 42, all equal | 2,037.06 s | 161.62 s |
+
+The Python sulc and smoothwm portions took 1,102.74/926.98 s LH and
+1,273.81/763.09 s RH. Full reports are
+[LH](mris_register_lh_numba_full_headcw.json) and
+[RH](mris_register_rh_numba_full_headcw.json); exact comparisons are
+[LH](mris_register_lh_numba_full_compare_headcw.json) and
+[RH](mris_register_rh_numba_full_compare_headcw.json). The native
+[LH](mris_register_native_pair_lh_headcw.log) and
+[RH](mris_register_native_pair_rh_headcw.log) logs retain the commands and
+`/usr/bin/time` wall times. Both Python jobs ran concurrently, and the native
+controls ran during those jobs on a shared host. These numbers are descriptive
+same-host observations, not controlled paired speed ratios. The current Python
+registration is substantially slower than native despite the exact averaging
+kernel improvement.
+
+A [real LH force profile](mris_register_lh_force_profile_headcw.json) found
+8.03 s for one distance-force call and 5.22 s for one area-force call. The
+distance force repeatedly rebuilt vertex normals (5.18 s), three-hop
+neighbor counts (1.42 s) and ordered neighbors (1.30 s) even though face
+order is fixed. Caching these structures without changing arithmetic order is
+the next performance target. This completed one-call registration still starts
+from supplied surface inputs; full topology repair, white/pial placement and
+T1-to-metrics native-free orchestration remain open.

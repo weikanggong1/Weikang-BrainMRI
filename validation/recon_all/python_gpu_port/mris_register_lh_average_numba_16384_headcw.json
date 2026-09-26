@@ -1,0 +1,9 @@
+{
+  "vertices": 106622,
+  "iterations": 16384,
+  "exact_vertices": 106622,
+  "max_abs_error": 0.0,
+  "p95_abs_error": 0.0,
+  "pytorch_seconds": 98.1621908750385,
+  "numba_seconds": 28.669972066767514
+}
