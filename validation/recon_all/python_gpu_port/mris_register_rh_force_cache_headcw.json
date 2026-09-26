@@ -1,0 +1,45 @@
+{
+  "vertices": 105541,
+  "faces": 211078,
+  "cache_setup_seconds": 7.816419140435755,
+  "cases": [
+    {
+      "project": false,
+      "reference_seconds": 17.213315008208156,
+      "cached_seconds": 0.13063931744545698,
+      "comparisons": {
+        "normals": {
+          "exact_vertices": 105541,
+          "max_abs_error": 0.0
+        },
+        "distance": {
+          "exact_vertices": 105541,
+          "max_abs_error": 0.0
+        },
+        "area": {
+          "exact_vertices": 105541,
+          "max_abs_error": 0.0
+        }
+      }
+    },
+    {
+      "project": true,
+      "reference_seconds": 18.23767056595534,
+      "cached_seconds": 0.1540690865367651,
+      "comparisons": {
+        "normals": {
+          "exact_vertices": 105541,
+          "max_abs_error": 0.0
+        },
+        "distance": {
+          "exact_vertices": 105541,
+          "max_abs_error": 0.0
+        },
+        "area": {
+          "exact_vertices": 105541,
+          "max_abs_error": 0.0
+        }
+      }
+    }
+  ]
+}

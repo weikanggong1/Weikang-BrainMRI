@@ -19,10 +19,9 @@ from .mris_register_kernels import center_sphere, normalize_mean_curvature, proj
 from .mris_register_line_search import first_registration_line_search, first_registration_sse
 from .mris_register_nonlinear import (
     apply_spherical_gradient, correlation_gradient_add,
-    face_area_normals, first_area_gradient, first_distance_gradient,
-    ordered_neighbors_from_faces, original_chord_distances,
-    registration_orig_area, registration_total_area, sphere_arc_distances,
-    sphere_vertex_normals, tangent_basis,
+    first_area_gradient, first_distance_gradient,
+    prepare_registration_force_cache, registration_total_area,
+    sphere_arc_distances, sphere_vertex_normals, tangent_basis,
 )
 from .mris_register_parameterization import parameterize_curvature
 from .mris_register_rigid import register_rigid
@@ -62,10 +61,10 @@ def run_register_sulc(sphere: str | Path, smoothwm: str | Path,
         vertices, sulc_values, raw_mean, raw_variance)
     rigid_seconds = time.perf_counter() - rigid_start
     normalized_sulc = normalize_mean_curvature(sulc_values)
-    neighbors, degrees = ordered_neighbors_from_faces(triangles, len(vertices))
-    original_distances = original_chord_distances(original, neighbors, degrees)
-    original_areas, _ = face_area_normals(original, triangles)
-    original_area = registration_orig_area(vertices, triangles)
+    cache = prepare_registration_force_cache(vertices, original, triangles)
+    neighbors, degrees = cache.neighbors, cache.degrees
+    original_distances, original_areas = cache.original_distances, cache.original_areas
+    original_area = cache.orig_area
     total_area = registration_total_area()
     setup_seconds = time.perf_counter() - started
 
@@ -89,13 +88,14 @@ def run_register_sulc(sphere: str | Path, smoothwm: str | Path,
             variance_grid = blur_atlas_frame(raw_variance, sigma)
         integration_start = previous is None or state[:3] != previous[:3]
         projected = project_sphere(current) if integration_start else current
-        normals = sphere_vertex_normals(projected, triangles)
+        normals = sphere_vertex_normals(projected, triangles, incidence=cache.incidence)
         distances = sphere_arc_distances(projected, neighbors, degrees)
         avg_vertex_dist = float(distances.double().sum() / degrees.sum())
         force = first_area_gradient(
             vertices, original, projected, triangles,
             first_distance_gradient(vertices, original, projected, triangles,
-                                    project=False), project=False)
+                                    project=False, cache=cache),
+            project=False, cache=cache)
         e1, e2 = tangent_basis(normals)
         force = correlation_gradient_add(force, projected, curvature, e1, e2,
                                          mean_grid, variance_grid, avg_vertex_dist)

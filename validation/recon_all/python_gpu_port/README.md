@@ -438,9 +438,10 @@ geometry from exact sulc seeds. Its 4-thread CPU calls took 876.99 s LH and
 sulc runner now also produces exact bilateral sulc seeds. A fresh one-call
 CPU/Numba registration from conventional `sphere` to `sphere.reg` matches new
 unmodified FreeSurfer 8.2 bilateral surfaces at every ordered vertex and face,
-with matching volume geometry and all selected steps. The one-call calls took
-2,029.73/2,037.06 s LH/RH, versus 157.62/161.62 s for the fresh native
-controls on the same shared host under concurrent load. Connected full
+with matching volume geometry and all selected steps. An exact ordered-topology
+cache reduced the one-call CPU/Numba times from 2,029.73/2,037.06 s to
+372.85/347.36 s LH/RH; fresh native controls took 157.62/161.62 s on the
+same shared host under different concurrent loads. Connected full
 reconstruction remains open; see
 [`MRIS_REGISTER_STATUS.md`](MRIS_REGISTER_STATUS.md), the
 [RH SVD correction](MRIS_REGISTER_RH_RAW_H_SVD_MATCH.md), and the

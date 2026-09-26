@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 import struct
+from dataclasses import dataclass
 
 import torch
 
@@ -28,6 +29,37 @@ def ordered_neighbors_from_faces(faces: torch.Tensor, nvertices: int
     for vertex, row in enumerate(rows):
         neighbors[vertex, :len(row)] = torch.tensor(row, dtype=torch.int64)
     return neighbors.to(faces.device), degrees.to(faces.device)
+
+
+@dataclass(frozen=True)
+class RegistrationForceCache:
+    neighbors: torch.Tensor
+    degrees: torch.Tensor
+    original_distances: torch.Tensor
+    original_areas: torch.Tensor
+    three_hop_neighbors: float
+    orig_area: float
+    incidence: tuple[torch.Tensor, torch.Tensor, torch.Tensor]
+
+
+@torch.no_grad()
+def ordered_face_incidence(faces: torch.Tensor, nvertices: int
+                           ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    """Keep the input face and corner order for every vertex."""
+    rows: list[list[tuple[int, int]]] = [[] for _ in range(nvertices)]
+    for face_no, face in enumerate(faces.cpu().tolist()):
+        for corner, vertex in enumerate(face):
+            rows[vertex].append((face_no, corner))
+    degrees = torch.tensor([len(row) for row in rows], dtype=torch.int64,
+                           device=faces.device)
+    width = int(degrees.max())
+    face_indices = torch.zeros((len(rows), width), dtype=torch.int64)
+    corner_indices = torch.zeros_like(face_indices)
+    for vertex, row in enumerate(rows):
+        for index, (face_no, corner) in enumerate(row):
+            face_indices[vertex, index] = face_no
+            corner_indices[vertex, index] = corner
+    return face_indices.to(faces.device), corner_indices.to(faces.device), degrees
 
 
 @torch.no_grad()
@@ -66,7 +98,9 @@ def sphere_arc_distances(positions: torch.Tensor, neighbors: torch.Tensor,
 
 @torch.no_grad()
 def sphere_vertex_normals(positions: torch.Tensor,
-                          faces: torch.Tensor) -> torch.Tensor:
+                          faces: torch.Tensor, *,
+                          incidence: tuple[torch.Tensor, torch.Tensor, torch.Tensor] | None = None
+                          ) -> torch.Tensor:
     """Default FreeSurfer metric-properties corner normals in face order."""
     corner0 = faces[:, [2, 0, 1]]
     corner1 = faces[:, [1, 2, 0]]
@@ -85,20 +119,12 @@ def sphere_vertex_normals(positions: torch.Tensor,
     corner_normals[..., 2] = -second[..., 0] * first[..., 1] + first[..., 0] * second[..., 1]
     corner_normals = unit(corner_normals)
 
-    rows: list[list[tuple[int, int]]] = [[] for _ in range(len(positions))]
-    for face_no, face in enumerate(faces.cpu().tolist()):
-        for corner, vertex in enumerate(face):
-            rows[vertex].append((face_no, corner))
-    degrees = torch.tensor([len(row) for row in rows], dtype=torch.int64, device=positions.device)
-    width = int(degrees.max())
-    face_indices = torch.zeros((len(rows), width), dtype=torch.int64)
-    corner_indices = torch.zeros_like(face_indices)
-    for vertex, row in enumerate(rows):
-        for index, (face_no, corner) in enumerate(row):
-            face_indices[vertex, index] = face_no
-            corner_indices[vertex, index] = corner
-    face_indices = face_indices.to(positions.device)
-    corner_indices = corner_indices.to(positions.device)
+    if incidence is None:
+        face_indices, corner_indices, degrees = ordered_face_incidence(
+            faces.to(positions.device), len(positions))
+    else:
+        face_indices, corner_indices, degrees = incidence
+    width = face_indices.shape[1]
     normals = torch.zeros_like(positions)
     for index in range(width):
         normals = torch.where((degrees > index)[:, None],
@@ -149,20 +175,29 @@ def first_distance_gradient(input_sphere: torch.Tensor,
                             original_surface: torch.Tensor,
                             registered_sphere: torch.Tensor,
                             faces: torch.Tensor, *, project: bool = True,
-                            weight: float = 5.0) -> torch.Tensor:
+                            weight: float = 5.0,
+                            cache: RegistrationForceCache | None = None) -> torch.Tensor:
     """Distance-force gradient from the frozen registration surface inputs."""
     input_sphere = input_sphere.float()
     original_surface = original_surface.float()
     registered_sphere = (project_sphere(registered_sphere.float()) if project
                          else registered_sphere.float())
-    neighbors, degrees = ordered_neighbors_from_faces(faces, len(input_sphere))
-    normals = sphere_vertex_normals(registered_sphere, faces)
-    current = sphere_arc_distances(registered_sphere, neighbors, degrees)
-    original = original_chord_distances(original_surface, neighbors, degrees)
-    return distance_gradient(registered_sphere, normals, neighbors, degrees,
-                             current, original, three_hop_avg_nbrs(neighbors, degrees),
-                             registration_orig_area(input_sphere, faces),
-                             registration_total_area(), weight)
+    if cache is None:
+        neighbors, degrees = ordered_neighbors_from_faces(faces, len(input_sphere))
+        normals = sphere_vertex_normals(registered_sphere, faces)
+        current = sphere_arc_distances(registered_sphere, neighbors, degrees)
+        original = original_chord_distances(original_surface, neighbors, degrees)
+        return distance_gradient(registered_sphere, normals, neighbors, degrees,
+                                 current, original, three_hop_avg_nbrs(neighbors, degrees),
+                                 registration_orig_area(input_sphere, faces),
+                                 registration_total_area(), weight)
+    normals = sphere_vertex_normals(
+        registered_sphere, faces, incidence=cache.incidence)
+    current = sphere_arc_distances(registered_sphere, cache.neighbors, cache.degrees)
+    return distance_gradient(
+        registered_sphere, normals, cache.neighbors, cache.degrees,
+        current, cache.original_distances, cache.three_hop_neighbors,
+        cache.orig_area, registration_total_area(), weight)
 
 
 @torch.no_grad()
@@ -190,7 +225,9 @@ def area_gradient_add(gradient: torch.Tensor, positions: torch.Tensor,
                       faces: torch.Tensor, current_areas: torch.Tensor,
                       original_areas: torch.Tensor, face_normals: torch.Tensor,
                       orig_area: float, total_area: float, *,
-                      l_nlarea: float = 1.0, l_parea: float = 0.2) -> torch.Tensor:
+                      l_nlarea: float = 1.0, l_parea: float = 0.2,
+                      incidence: tuple[torch.Tensor, torch.Tensor, torch.Tensor] | None = None
+                      ) -> torch.Tensor:
     """Add nonlinear and percentage area forces in native face order."""
     first = positions[faces[:, 1]] - positions[faces[:, 0]]
     second = positions[faces[:, 2]] - positions[faces[:, 0]]
@@ -215,20 +252,12 @@ def area_gradient_add(gradient: torch.Tensor, positions: torch.Tensor,
     percent = torch.stack((corner0 * delta_percent[:, None],
                            second_cross * (-delta_percent)[:, None],
                            first_cross * delta_percent[:, None]), dim=1)
-    rows: list[list[tuple[int, int]]] = [[] for _ in range(len(positions))]
-    for face_no, face in enumerate(faces.cpu().tolist()):
-        for corner, vertex in enumerate(face):
-            rows[vertex].append((face_no, corner))
-    degrees = torch.tensor([len(row) for row in rows], dtype=torch.int64, device=positions.device)
-    width = int(degrees.max())
-    face_indices = torch.zeros((len(rows), width), dtype=torch.int64)
-    corner_indices = torch.zeros_like(face_indices)
-    for vertex, row in enumerate(rows):
-        for index, (face_no, corner) in enumerate(row):
-            face_indices[vertex, index] = face_no
-            corner_indices[vertex, index] = corner
-    face_indices = face_indices.to(positions.device)
-    corner_indices = corner_indices.to(positions.device)
+    if incidence is None:
+        face_indices, corner_indices, degrees = ordered_face_incidence(
+            faces.to(positions.device), len(positions))
+    else:
+        face_indices, corner_indices, degrees = incidence
+    width = face_indices.shape[1]
     for contributions in (nonlinear, percent):
         for index in range(width):
             gradient = torch.where((degrees > index)[:, None],
@@ -243,19 +272,41 @@ def first_area_gradient(input_sphere: torch.Tensor,
                         registered_sphere: torch.Tensor, faces: torch.Tensor,
                         gradient_after_distance: torch.Tensor, *,
                         project: bool = True, l_nlarea: float = 1.0,
-                        l_parea: float = 0.2) -> torch.Tensor:
+                        l_parea: float = 0.2,
+                        cache: RegistrationForceCache | None = None) -> torch.Tensor:
     """First area-force update following the native-free distance gradient."""
     input_sphere = input_sphere.float()
     original_surface = original_surface.float()
     positions = (project_sphere(registered_sphere.float()) if project
                  else registered_sphere.float())
     current_areas, face_normals = face_area_normals(positions, faces, signed_sphere=True)
-    original_areas, _ = face_area_normals(original_surface, faces)
+    if cache is None:
+        original_areas, _ = face_area_normals(original_surface, faces)
+        orig_area = registration_orig_area(input_sphere, faces)
+        incidence = None
+    else:
+        original_areas, orig_area = cache.original_areas, cache.orig_area
+        incidence = cache.incidence
     return area_gradient_add(gradient_after_distance, positions, faces,
                              current_areas, original_areas, face_normals,
-                             registration_orig_area(input_sphere, faces),
-                             registration_total_area(),
-                             l_nlarea=l_nlarea, l_parea=l_parea)
+                             orig_area, registration_total_area(),
+                             l_nlarea=l_nlarea, l_parea=l_parea,
+                             incidence=incidence)
+
+
+@torch.no_grad()
+def prepare_registration_force_cache(input_sphere: torch.Tensor,
+                                     original_surface: torch.Tensor,
+                                     faces: torch.Tensor) -> RegistrationForceCache:
+    """Prepare static topology and original-surface terms once per hemisphere."""
+    neighbors, degrees = ordered_neighbors_from_faces(faces, len(input_sphere))
+    original_distances = original_chord_distances(original_surface, neighbors, degrees)
+    original_areas, _ = face_area_normals(original_surface, faces)
+    return RegistrationForceCache(
+        neighbors, degrees, original_distances, original_areas,
+        three_hop_avg_nbrs(neighbors, degrees),
+        registration_orig_area(input_sphere, faces),
+        ordered_face_incidence(faces, len(input_sphere)))
 
 
 @torch.no_grad()

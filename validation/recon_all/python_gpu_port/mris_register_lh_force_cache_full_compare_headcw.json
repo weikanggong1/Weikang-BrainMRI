@@ -1,0 +1,21 @@
+{
+  "candidate_sha256": "f303cd186995b088efc08fd0f2360c579dc6cf4ac2c4073b8f388dc41f2cf66e",
+  "native_final_sha256": "2414ac34f64c7821e764355156fd364fa1f6867c677165113e6be4574beb29b5",
+  "combined_report_sha256": "6dfa99d5da6ae37674c1badb999ba1631e0fcc6b06d9084720f2061eb7ca9db7",
+  "reference_sulc_report_sha256": "503cb4c6c0ee1d6419c1c2e323e6fcbcdfc6c24e30e707be79b8c7e0bc388f6a",
+  "reference_smoothwm_report_sha256": "ccfea1a1f9ca493db510a40359eff24dd9c394a57952263cb7d9223cad57de00",
+  "vertices": 106622,
+  "exact_vertices": 106622,
+  "max_abs_error_mm": 0.0,
+  "ordered_faces_equal": true,
+  "volume_geometry_equal": true,
+  "input_hashes_equal": true,
+  "sulc_seed_file_equal": true,
+  "sulc_selected_dt_equal": true,
+  "smoothwm_selected_dt_equal": true,
+  "sulc_updates": 55,
+  "smoothwm_updates": 51,
+  "total_seconds_including_io": 372.84595623612404,
+  "sulc_seconds_including_io": 283.7044281279668,
+  "smoothwm_seconds_including_io": 89.09803556837142
+}

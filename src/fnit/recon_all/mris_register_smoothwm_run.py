@@ -21,9 +21,9 @@ from .mris_register_line_search import first_registration_line_search, first_reg
 from .mris_register_nonlinear import (
     apply_spherical_gradient, correlation_gradient_add,
     face_area_normals, first_area_gradient, first_distance_gradient,
-    ordered_neighbors_from_faces, original_chord_distances,
-    registration_orig_area, registration_total_area, sphere_arc_distances,
-    sphere_vertex_normals, spring_gradient_add, tangent_basis,
+    prepare_registration_force_cache, registration_total_area,
+    sphere_arc_distances, sphere_vertex_normals, spring_gradient_add,
+    tangent_basis,
 )
 from .mris_register_overlap import remove_overlap_sphere
 from .mris_register_parameterization import parameterize_curvature
@@ -57,10 +57,10 @@ def run_register_smoothwm(sphere: str | Path, smoothwm: str | Path,
     triangles = torch.from_numpy(faces.astype(np.int64))
     raw = smoothwm_mean_curvature(original, triangles)
     normalized = normalize_mean_curvature(raw)
-    neighbors, degrees = ordered_neighbors_from_faces(triangles, len(current))
-    original_distances = original_chord_distances(original, neighbors, degrees)
-    original_areas, _ = face_area_normals(original, triangles)
-    original_area = registration_orig_area(vertices, triangles)
+    cache = prepare_registration_force_cache(vertices, original, triangles)
+    neighbors, degrees = cache.neighbors, cache.degrees
+    original_distances, original_areas = cache.original_distances, cache.original_areas
+    original_area = cache.orig_area
     total_area = registration_total_area()
     area_scale = float(np.float32(original_area / total_area))
     dist_scale = torch.tensor(math.sqrt(area_scale), dtype=torch.float32)
@@ -95,19 +95,20 @@ def run_register_smoothwm(sphere: str | Path, smoothwm: str | Path,
         l_spring = float(np.float32(np.float32(0.5) / 100)) if fold else 0.5
         integration_start = previous is None or state[:3] != previous[:3]
         projected = project_sphere(current) if integration_start else current
-        normals = sphere_vertex_normals(projected, triangles)
+        normals = sphere_vertex_normals(projected, triangles, incidence=cache.incidence)
         distances = sphere_arc_distances(projected, neighbors, degrees)
         avg_vertex_dist = float(distances.double().sum() / degrees.sum())
         if index == 0:
             force = first_area_gradient(
                 vertices, original, current, triangles,
-                first_distance_gradient(vertices, original, current, triangles))
+                first_distance_gradient(vertices, original, current, triangles,
+                                        cache=cache), cache=cache)
         else:
             force = first_area_gradient(
                 vertices, original, projected, triangles,
                 first_distance_gradient(vertices, original, projected, triangles,
-                                        project=False, weight=l_dist),
-                project=False, l_nlarea=l_nlarea, l_parea=l_parea)
+                                        project=False, weight=l_dist, cache=cache),
+                project=False, l_nlarea=l_nlarea, l_parea=l_parea, cache=cache)
         e1, e2 = tangent_basis(normals)
         force = correlation_gradient_add(force, projected, curvature, e1, e2,
                                          mean_grid, variance_grid, avg_vertex_dist,

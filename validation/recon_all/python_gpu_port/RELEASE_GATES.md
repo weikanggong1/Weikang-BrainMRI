@@ -57,8 +57,10 @@ generates both final registered spheres from exact sulc seeds. The sulc stage
 now independently generates those exact bilateral seeds from `sphere`. A fresh
 one-call bilateral CPU/Numba registration from `sphere` matches new unmodified
 FreeSurfer 8.2 final registered surfaces at every ordered vertex, face and
-volume geometry field; its input hashes and all selected steps also agree.
-The final LH overlap repair matches on both CPU and H100 CUDA. See
+volume geometry field; its input/seed hashes and all selected steps also agree.
+Exact ordered-topology caching reduced the observed one-call times to
+372.85/347.36 s LH/RH, still slower than fresh native controls on the shared
+host. The final LH overlap repair matches on both CPU and H100 CUDA. See
 [the stage report](MRIS_REGISTER_STATUS.md). The stage inventory in
 [README.md](README.md) states which individual boundaries already pass.
 
