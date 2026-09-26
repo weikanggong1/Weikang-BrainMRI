@@ -442,7 +442,8 @@ matched speed comparison.
 
 The next saved RH update, index 6, also matches: its input and output are
 both exact in 316,623 / 316,623 float32 coordinate components; Python
-selects `dt=4875.181640625`. The first RH update not compared is index 7.
+selects `dt=4875.181640625`. Index 7 was the next boundary for that
+no-injection run.
 For LH, the native verbose log switches from `navgs=1024` to `navgs=256`
 after update 2 (`tol=2.505e-01`). Treating index 3 as another 1024-average
 update incorrectly selected `dt=0` and missed the native surface by up to
@@ -454,8 +455,43 @@ used copied inputs, ended after the fourth `sses:` line in 17.10 s, and its
 log SHA256 is `d48f9399baa9c577c51815303fedbffcfcb1b9da068a010a3a2941b110e3de7c`.
 The paired LH index-3 checkpoint SHA256 values are `850f08e2be639d2fe2c2f617d32bb31ec9732d154505831ee70cae332132145b`
 and `71a897f12406d5600e425f1b1fdd15a33a3d2c0d232d65518870cb14d8360a9f`.
-The first LH update not compared is index 4. The timing is again a shared-node
-observation, not a benchmark.
+The next bounded update uses a checkpoint whose file SHA256 and ordered
+coordinate SHA256 equal the previous verified Python output. The probe
+rebuilds the same original metric from `smoothwm`, then computes only that
+one update; it does not rerun the already verified prefix. The
+[LH index-4](standard_sphere_full_default_resume_lh_index4.json) and
+[RH index-7](standard_sphere_full_default_resume_rh_index7.json) reports
+record this explicit resume boundary and each source hash. The
+[candidate and decision audit](standard_sphere_full_default_resume_next_decisions.json)
+pairs every native `FREESURFER_logSSE` candidate with Python:
+
+| Checkpoint-resumed update | Native / Python average count | Selected Python dt / native printed | Maximum absolute candidate SSE difference against native six-decimal log | Exact output components |
+| --- | ---: | ---: | ---: | ---: |
+| LH index 4 | 256 / 256 | 40628.629297542 / 40628.629 | 3.42e-7 | 319,866 / 319,866 |
+| RH index 7 | 1024 / 1024 | 2491.848144531 / 2491.848 | 3.95e-7 | 316,623 / 316,623 |
+
+The isolated native captures stopped after five LH and eight RH line-search
+decisions, respectively. No complete native sphere was rerun for this audit.
+The next [checkpoint-resumed LH index-5](standard_sphere_full_default_resume_lh_index5.json)
+and [RH index-8](standard_sphere_full_default_resume_rh_index8.json) updates
+also pass. Their original `inflated` and `smoothwm` SHA256 hashes match the
+prior reports; each resumed checkpoint file SHA256 and ordered-coordinate
+SHA256 match the previous Python output. Native logs confirm LH remains at
+`navgs=256` and RH at `navgs=1024`. The [candidate audit](standard_sphere_full_default_resume_indices5_8_decisions.json)
+records every native `logSSE` block, the matching Python candidate, capture
+and input hashes, and per-step timings:
+
+| Checkpoint-resumed update | Native / Python average count | Selected Python dt / native printed | Maximum absolute candidate SSE difference against native six-decimal log | Exact output components |
+| --- | ---: | ---: | ---: | ---: |
+| LH index 5 | 256 / 256 | 0 / 0.000 | 4.42e-7 | 319,866 / 319,866 |
+| RH index 8 | 1024 / 1024 | 6436.5712890625 / 6436.571 | 4.32e-7 | 316,623 / 316,623 |
+
+The bounded native captures ended after six LH and nine RH line-search
+decisions, in 18.89 s and 20.86 s under shared headcw load. The next
+unverified updates are LH index 6 and RH index 9. Independent no-injection
+propagation from the original input remains measured through LH index 3
+and RH index 6; the later one-step replays have SHA-proven exact coordinate
+entry states. None of these timings is a matched benchmark.
 
 The corrected Python CPU observations under shared headcw load include the
 original distance-matrix construction and one-ring setup times plus each
@@ -463,8 +499,8 @@ step's gradient, averaging, line-search, and projection times in the linked
 reports. These bounded prefixes do not establish a full-stage speed ratio.
 The isolated native full-stage LH/RH reference takes `252.20 s` / `113.20 s`
 on headcw and has bitwise-identical final ordered vertices, faces, and volume
-geometry to the archived official surfaces. The continuous Python path
-remains **open at RH update 7 and beyond LH update 3**; final Python spheres
+geometry to the archived official surfaces. The checkpoint-resumed Python path
+remains **open at RH update 9 and beyond LH update 5**; final Python spheres
 and downstream vertex measurements are not validated here. This sphere
 implementation runs on CPU Numba, not GPU.
 

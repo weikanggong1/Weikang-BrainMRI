@@ -1,0 +1,175 @@
+{
+  "reference_commit": "d932c45",
+  "native_command": "mris_sphere -threads 4 -seed 1234 surf/{hemi}.inflated {hemi}.sphere; isolated copied inputs; FREESURFER_logSSE=1 DIAG=0x10000040 DIAG_VERBOSE=1; terminated at requested decision",
+  "native_capture_script_sha256": "532b6a74cfbe5b548ff6d229d602e9eff7198b7dfec190ae6577ab3ba27215e7",
+  "resume_probe_sha256": "9364aa9474d35f95a3a78b79a5138475ea52481afdbbd461cfc2a73cc954c76b",
+  "hemispheres": {
+    "lh": {
+      "update_index": 5,
+      "previous_exact_report_sha256": "ad95a94f55e512c11ea5cc69312f5bbe5212bd5d9ca9b6e294e3b638c0414b46",
+      "resume_report": "standard_sphere_full_default_resume_lh_index5.json",
+      "resume_report_sha256": "cac93f728b07e78a183c43ea2e33e861a882fa10ee853419431b1f43a9d5ed06",
+      "input_sha256": {
+        "inflated": "a8ff9644b5ef8183d08daaedff69c6ae74ef3270f0b54d9db88aaf788a9e52ed",
+        "smoothwm": "36e199e4d971a39457a4ad1d0b8eed3a84feb236ada29c05e297ffdd865a5002"
+      },
+      "before_checkpoint_sha256": "8a5de8ad70f197ae72bdda39d68a85d27ff2e3e3f930792fff22371dac098546",
+      "after_checkpoint_sha256": "a02c270b18bbd1100e416f0a106f67fd9a46a79848c68daefe036d1287e4fd65",
+      "previous_python_coordinate_sha256": "dba21efcdbbcb7f240b7a30dde8c6da592a65f4cc9d3edd7b2580347ecbafea4",
+      "python_after_coordinate_sha256": "b7e8770fd62d741bd2c718e13c50160d3138fd4e40f6b51ac923fe1014545168",
+      "native_log_sha256": "1db539fa7b6a7109e96af08d5667273b86fb19f426324be4c095d9f8b5b9726b",
+      "native_log_location": "full_lh_six_logsse/native_logsse.log",
+      "native_decisions_captured": 6,
+      "native_capture_wall_seconds": 18.89495,
+      "native_average_count": 256,
+      "native_decision_line": "sses: 26.99  26.99  26.99  26.99  min 3 (0.000)",
+      "native_selected_index": 3,
+      "python_selected_index": 3,
+      "python_selected_dt": 0.0,
+      "candidate_sse": [
+        {
+          "candidate_index": 0,
+          "native_logSSE_id": 64,
+          "dt_python": 223.1068802234331,
+          "native_total_sse_six_decimals": 26.991964,
+          "python_total_sse": 26.991964441554664,
+          "native_minus_python_total_sse": -4.4155466483175587e-07,
+          "native_weighted_distance_sse": 26.81863,
+          "native_negative_area_sse": 0.173334
+        },
+        {
+          "candidate_index": 1,
+          "native_logSSE_id": 63,
+          "dt_python": 446.2137604468662,
+          "native_total_sse_six_decimals": 26.991922,
+          "python_total_sse": 26.991922128961814,
+          "native_minus_python_total_sse": -1.2896181544874707e-07,
+          "native_weighted_distance_sse": 26.818583,
+          "native_negative_area_sse": 0.173339
+        },
+        {
+          "candidate_index": 2,
+          "native_logSSE_id": 65,
+          "dt_python": 669.3206406702993,
+          "native_total_sse_six_decimals": 26.991911,
+          "python_total_sse": 26.991911260195426,
+          "native_minus_python_total_sse": -2.6019542431754417e-07,
+          "native_weighted_distance_sse": 26.818567,
+          "native_negative_area_sse": 0.173344
+        },
+        {
+          "candidate_index": 3,
+          "native_logSSE_id": 54,
+          "dt_python": 0.0,
+          "native_total_sse_six_decimals": 26.986292,
+          "python_total_sse": 26.986292304329513,
+          "native_minus_python_total_sse": -3.043295144777858e-07,
+          "native_weighted_distance_sse": 26.81875,
+          "native_negative_area_sse": 0.167543
+        }
+      ],
+      "max_abs_native_printed_minus_python_total_sse": 4.4155466483175587e-07,
+      "input_exact_components": 319866,
+      "output_exact_components": 319866,
+      "total_components": 319866,
+      "max_vertex_error_mm": 0.0,
+      "python_cpu_observed_seconds": {
+        "original_metric_build_including_jit": 16.907654740847647,
+        "gradient_including_jit": 1.809063132852316,
+        "average_including_jit": 0.1280603352934122,
+        "line_search_including_jit": 0.6962991198524833,
+        "coordinate_update": 0.003739580512046814
+      },
+      "next_unverified_update": 6
+    },
+    "rh": {
+      "update_index": 8,
+      "previous_exact_report_sha256": "2cf7d54b27675fe56c862e14c69d7e52cdf36d492b92f82e0bbcbe1a8f1744d4",
+      "resume_report": "standard_sphere_full_default_resume_rh_index8.json",
+      "resume_report_sha256": "8ca13ac6a7766ca6defc7cfb11543fe66d4bc38e2020f8e347458acf49ad1ce7",
+      "input_sha256": {
+        "inflated": "27c87284c27be6ef65ad1d71bfb922dd1b31b9a4ca352d04c55c1cad30fe41c3",
+        "smoothwm": "b67ceb95069d865bb11f6c2b20bac99eab9f19982b73d3c9c43735b7bedbe7ca"
+      },
+      "before_checkpoint_sha256": "b797c0b783454322e5f24965d445a2dd4ccbf9ded9d593f17b101719396e9659",
+      "after_checkpoint_sha256": "c3c6d5a61a523efe9184fdbc6f36cc283e68ad1be6c45a07a7ff75e181153a7e",
+      "previous_python_coordinate_sha256": "31976d48670f1cca7aa1b6e18f901e28ced1d115a15ba6dd4196ca116d8afb87",
+      "python_after_coordinate_sha256": "3ab3a628d9d9c966ba67a6cbd957ae22c8cc205df052925acad33d35920c44e6",
+      "native_log_sha256": "b3f07156e27d405ea05ded32d931a34b8dea17c54b65eeb9c5f44a2cc019210a",
+      "native_log_location": "full_rh_nine_logsse/native_logsse.log",
+      "native_decisions_captured": 9,
+      "native_capture_wall_seconds": 20.86049,
+      "native_average_count": 1024,
+      "native_decision_line": "sses: 745109.54  743151.20  742479.85  748356.05  742479.44  min 4 (6436.571)",
+      "native_selected_index": 4,
+      "python_selected_index": 4,
+      "python_selected_dt": 6436.5712890625,
+      "candidate_sse": [
+        {
+          "candidate_index": 0,
+          "native_logSSE_id": 97,
+          "dt_python": 2107.8805055330886,
+          "native_total_sse_six_decimals": 745109.537335,
+          "python_total_sse": 745109.537335375,
+          "native_minus_python_total_sse": -3.7497375160455704e-07,
+          "native_weighted_distance_sse": 745109.527161,
+          "native_negative_area_sse": 0.010175
+        },
+        {
+          "candidate_index": 1,
+          "native_logSSE_id": 95,
+          "dt_python": 4215.761011066177,
+          "native_total_sse_six_decimals": 743151.20486,
+          "python_total_sse": 743151.2048595677,
+          "native_minus_python_total_sse": 4.323665052652359e-07,
+          "native_weighted_distance_sse": 743151.194678,
+          "native_negative_area_sse": 0.010182
+        },
+        {
+          "candidate_index": 2,
+          "native_logSSE_id": 98,
+          "dt_python": 6323.641516599266,
+          "native_total_sse_six_decimals": 742479.848508,
+          "python_total_sse": 742479.8485082074,
+          "native_minus_python_total_sse": -2.073356881737709e-07,
+          "native_weighted_distance_sse": 742479.83832,
+          "native_negative_area_sse": 0.010189
+        },
+        {
+          "candidate_index": 3,
+          "native_logSSE_id": 88,
+          "dt_python": 0.0,
+          "native_total_sse_six_decimals": 748356.046478,
+          "python_total_sse": 748356.046477998,
+          "native_minus_python_total_sse": 1.979060471057892e-09,
+          "native_weighted_distance_sse": 748356.03631,
+          "native_negative_area_sse": 0.010168
+        },
+        {
+          "candidate_index": 4,
+          "native_logSSE_id": 99,
+          "dt_python": 6436.5712890625,
+          "native_total_sse_six_decimals": 742479.439885,
+          "python_total_sse": 742479.4398846292,
+          "native_minus_python_total_sse": 3.707828000187874e-07,
+          "native_weighted_distance_sse": 742479.429696,
+          "native_negative_area_sse": 0.010189
+        }
+      ],
+      "max_abs_native_printed_minus_python_total_sse": 4.323665052652359e-07,
+      "input_exact_components": 316623,
+      "output_exact_components": 316623,
+      "total_components": 316623,
+      "max_vertex_error_mm": 0.0,
+      "python_cpu_observed_seconds": {
+        "original_metric_build_including_jit": 16.26087095402181,
+        "gradient_including_jit": 1.7297860272228718,
+        "average_including_jit": 0.4212220050394535,
+        "line_search_including_jit": 0.6408874588087201,
+        "coordinate_update": 0.0028119832277297974
+      },
+      "next_unverified_update": 9
+    }
+  },
+  "scope": "One update per hemisphere resumed from SHA-proven bitwise-exact Python/native coordinate state, with original smoothwm metric rebuilt. Original-input no-injection prefix remains LH 0\u20133 and RH 0\u20136. No complete sphere or recon-all run. Times are shared-node observations, not matched benchmarks."
+}

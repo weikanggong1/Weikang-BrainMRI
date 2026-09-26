@@ -1,0 +1,139 @@
+{
+  "reference_commit": "d932c45",
+  "hemisphere": "lh",
+  "native_capture": "threads=4 seed=1234 default niterations=25 write_iterations=1",
+  "input_sha256": {
+    "inflated": "a8ff9644b5ef8183d08daaedff69c6ae74ef3270f0b54d9db88aaf788a9e52ed",
+    "smoothwm": "36e199e4d971a39457a4ad1d0b8eed3a84feb236ada29c05e297ffdd865a5002"
+  },
+  "native_log_sha256": "1db539fa7b6a7109e96af08d5667273b86fb19f426324be4c095d9f8b5b9726b",
+  "schedule_sha256": "804797a70d0dff8c52d488f17ad0be146a7b67167f599ecbbeea1d983463bf24",
+  "implementation_sha256": {
+    "average": "f79dc72a574d3bef756f06b97ab2546d35662c1d6acbd769e034fa542d84bd78",
+    "metric": "04a10a70277301cbf337b97513e6cfe9957845e89ca6a0c4045eea2dce70fb1d",
+    "gradient": "7bcc38e10fd08475d7894fba38ca8e71a67c8590103ca77daf82e9ec53462c4f",
+    "line_search": "68cb48f89f4ceaa59e7238e81314bb12777182e599f705c042bbd056fe786d34",
+    "nonlinear": "6af16329a6f3432b315a3eedd7df92acf9072fa2f19c2bed6a41bef74bfbc601",
+    "probe": "9364aa9474d35f95a3a78b79a5138475ea52481afdbbd461cfc2a73cc954c76b"
+  },
+  "projection_seconds": 0.0,
+  "resume_from": {
+    "report_sha256": "ad95a94f55e512c11ea5cc69312f5bbe5212bd5d9ca9b6e294e3b638c0414b46",
+    "checkpoint_sha256": "8a5de8ad70f197ae72bdda39d68a85d27ff2e3e3f930792fff22371dac098546",
+    "python_coordinate_sha256": "dba21efcdbbcb7f240b7a30dde8c6da592a65f4cc9d3edd7b2580347ecbafea4",
+    "next_index": 5
+  },
+  "resume_load_seconds": 0.02117739152163267,
+  "matrix_seconds_including_jit": 13.099244417622685,
+  "one_ring_seconds": 3.8084103232249618,
+  "steps": [
+    {
+      "index": 5,
+      "stage": "initial_repair",
+      "distance_weight": 1e-06,
+      "entry_projection_applied": false,
+      "gradient_averages": 256,
+      "native_before_sha256": "8a5de8ad70f197ae72bdda39d68a85d27ff2e3e3f930792fff22371dac098546",
+      "native_after_sha256": "a02c270b18bbd1100e416f0a106f67fd9a46a79848c68daefe036d1287e4fd65",
+      "python_before_xyz_sha256": "dba21efcdbbcb7f240b7a30dde8c6da592a65f4cc9d3edd7b2580347ecbafea4",
+      "input_comparison": {
+        "exact_components": 319866,
+        "total_components": 319866,
+        "vertices_le_1e-5_mm": 106622,
+        "vertices": 106622,
+        "max_error_mm": 0.0,
+        "rms_error_mm": 0.0,
+        "worst_vertex": 0
+      },
+      "projection_seconds": 0.013329430483281612,
+      "geometry": {
+        "negative_faces": 40,
+        "original_area_mm2": 67085.6484375,
+        "current_positive_face_area_mm2": 125654.5703125,
+        "sphere_metric_total_area_mm2": 125663.703125,
+        "distance_scale": 0.7306508421897888,
+        "area_scale": 0.5338506698608398,
+        "distance_weight": 1e-06
+      },
+      "raw_gradient_l2": 0.0664582934836931,
+      "averaged_gradient_l2": 0.0003589002414454884,
+      "line_search": {
+        "mean_delta": 2.2410783544607362e-07,
+        "max_delta": 1.977815876573938e-05,
+        "min_dt": 4462.137604468662,
+        "max_dt": 54438078.77451767,
+        "starting_sse": {
+          "total": 26.986292304329513,
+          "weighted_distance": 26.818749679465448,
+          "negative_area": 0.16754262486406424,
+          "negative_faces": 40,
+          "metric_negative_area_mm2": 0.010727312415838242,
+          "distance_scale": 0.7306508535961892,
+          "area_scale": 0.5338506698608398
+        },
+        "initial_candidates": [
+          {
+            "dt": 4462.137604468662,
+            "sse": 26.992237704427748
+          },
+          {
+            "dt": 44621.37604468662,
+            "sse": 27.153595095761123
+          },
+          {
+            "dt": 446213.7604468662,
+            "sse": 30.000215894142215
+          },
+          {
+            "dt": 4462137.604468662,
+            "sse": 274.62078937330637
+          },
+          {
+            "dt": 44621376.04468662,
+            "sse": 5124.392393956561
+          }
+        ],
+        "quadratic": {
+          "a": 8.381903171539307e-09,
+          "b": -2.384185791015625e-07,
+          "c": 26.990234375,
+          "predicted_dt": 28.44444465637207
+        },
+        "candidates": [
+          {
+            "dt": 223.1068802234331,
+            "sse": 26.991964441554664
+          },
+          {
+            "dt": 446.2137604468662,
+            "sse": 26.991922128961814
+          },
+          {
+            "dt": 669.3206406702993,
+            "sse": 26.991911260195426
+          },
+          {
+            "dt": 0.0,
+            "sse": 26.986292304329513
+          }
+        ],
+        "selected_index": 3,
+        "selected_dt": 0.0
+      },
+      "gradient_seconds_including_jit": 1.809063132852316,
+      "average_seconds_including_jit": 0.1280603352934122,
+      "search_seconds_including_jit": 0.6962991198524833,
+      "update_seconds": 0.003739580512046814,
+      "python_after_xyz_sha256": "b7e8770fd62d741bd2c718e13c50160d3138fd4e40f6b51ac923fe1014545168",
+      "output_comparison": {
+        "exact_components": 319866,
+        "total_components": 319866,
+        "vertices_le_1e-5_mm": 106622,
+        "vertices": 106622,
+        "max_error_mm": 0.0,
+        "rms_error_mm": 0.0,
+        "worst_vertex": 0
+      }
+    }
+  ]
+}

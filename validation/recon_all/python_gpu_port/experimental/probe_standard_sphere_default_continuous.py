@@ -52,6 +52,7 @@ def main() -> None:
     parser.add_argument("--full-default-prefix", type=int)
     parser.add_argument("--report", type=Path)
     parser.add_argument("--native-log", type=Path)
+    parser.add_argument("--resume-from-report", type=Path)
     args = parser.parse_args()
     inflated, faces = fsio.read_geometry(str(args.inflated))
     smoothwm, smoothwm_faces = fsio.read_geometry(str(args.smoothwm))
@@ -68,15 +69,51 @@ def main() -> None:
         schedule = [(stage, weight, 1024)] * args.full_default_prefix
         if args.hemisphere == "lh" and args.full_default_prefix >= 4:
             # The frozen -n25 native log switches to navgs=256 after update 2.
-            if args.full_default_prefix > 4:
-                parser.error("LH full-default schedule is verified only through update 3")
-            schedule[3] = (stage, weight, 256)
+            if args.full_default_prefix > 6:
+                parser.error("LH full-default schedule is verified only through update 5")
+            for index in range(3, args.full_default_prefix):
+                schedule[index] = (stage, weight, 256)
+        if args.hemisphere == "rh" and args.full_default_prefix > 9:
+            parser.error("RH full-default schedule is verified only through update 8")
         native_capture = "threads=4 seed=1234 default niterations=25 write_iterations=1"
     if args.max_steps is not None:
         schedule = schedule[:args.max_steps]
+    resume_index = 0
+    resume = None
     t0 = time.perf_counter()
-    xyz = project_radially(project_before_standard_unfold(inflated), already_sphere=True)
-    projection_seconds = time.perf_counter() - t0
+    if args.resume_from_report:
+        if args.full_default_prefix is None:
+            parser.error("--resume-from-report requires --full-default-prefix")
+        previous = json.loads(args.resume_from_report.read_text())
+        if previous["hemisphere"] != args.hemisphere or not previous["steps"]:
+            raise ValueError("resume report has the wrong hemisphere or no steps")
+        if previous["input_sha256"] != {"inflated": _sha256(args.inflated),
+                                        "smoothwm": _sha256(args.smoothwm)}:
+            raise ValueError("resume report has different original inputs")
+        if any(step["output_comparison"]["exact_components"] !=
+               step["output_comparison"]["total_components"]
+               for step in previous["steps"]):
+            raise ValueError("resume report contains an unmatched update")
+        last = previous["steps"][-1]
+        resume_index = last["index"] + 1
+        if resume_index >= len(schedule):
+            raise ValueError("resume report already reaches the requested boundary")
+        checkpoint = Path(f"{args.snapshot_prefix}{resume_index:04d}")
+        xyz, checkpoint_faces = fsio.read_geometry(str(checkpoint))
+        if not np.array_equal(faces, checkpoint_faces):
+            raise ValueError("resume checkpoint has different ordered faces")
+        if (_sha256(checkpoint) != last["native_after_sha256"] or
+                _coordinate_sha(xyz) != last["python_after_xyz_sha256"]):
+            raise ValueError("resume checkpoint differs from proven Python state")
+        resume = {"report_sha256": _sha256(args.resume_from_report),
+                  "checkpoint_sha256": _sha256(checkpoint),
+                  "python_coordinate_sha256": _coordinate_sha(xyz),
+                  "next_index": resume_index}
+        projection_seconds = 0.0
+    else:
+        xyz = project_radially(project_before_standard_unfold(inflated), already_sphere=True)
+        projection_seconds = time.perf_counter() - t0
+    resume_load_seconds = time.perf_counter() - t0 if resume else 0.0
     t0 = time.perf_counter()
     offsets, neighbors, raw, _ = sample_standard_metric_matrix(smoothwm, faces)
     distances, _, _ = average_standard_metric(offsets, neighbors, raw)
@@ -102,9 +139,11 @@ def main() -> None:
                   "nonlinear": _sha256(Path(nonlinear_epoch_gradient.__code__.co_filename)),
                   "probe": _sha256(Path(__file__))},
               "projection_seconds": projection_seconds,
+              "resume_from": resume, "resume_load_seconds": resume_load_seconds,
               "matrix_seconds_including_jit": matrix_seconds,
               "one_ring_seconds": one_ring_seconds, "steps": []}
-    for index, (stage, weight, averages) in enumerate(schedule):
+    for index in range(resume_index, len(schedule)):
+        stage, weight, averages = schedule[index]
         before_path = Path(f"{args.snapshot_prefix}{index:04d}")
         after_path = Path(f"{args.snapshot_prefix}{index + 1:04d}")
         if not before_path.exists() or not after_path.exists():

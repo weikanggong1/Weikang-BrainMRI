@@ -1,0 +1,173 @@
+{
+  "reference_commit": "d932c45",
+  "native_command": "mris_sphere -threads 4 -seed 1234 surf/{hemi}.inflated {hemi}.sphere; isolated copied inputs; FREESURFER_logSSE=1 DIAG=0x10000040 DIAG_VERBOSE=1; terminated at requested decision",
+  "resume_probe_sha256": "733d2d3c29cc62e73887161ea68cd6b8f4a7ee1c5cabeb4ef2c84a791db8f3d1",
+  "native_capture_script_sha256": "532b6a74cfbe5b548ff6d229d602e9eff7198b7dfec190ae6577ab3ba27215e7",
+  "hemispheres": {
+    "lh": {
+      "update_index": 4,
+      "previous_exact_report_sha256": "681702000478bb1ff9cd10922e4069f7e8657b85873c5604df9775f964a63ca8",
+      "resume_report": "standard_sphere_full_default_resume_lh_index4.json",
+      "resume_report_sha256": "ad95a94f55e512c11ea5cc69312f5bbe5212bd5d9ca9b6e294e3b638c0414b46",
+      "input_sha256": {
+        "inflated": "a8ff9644b5ef8183d08daaedff69c6ae74ef3270f0b54d9db88aaf788a9e52ed",
+        "smoothwm": "36e199e4d971a39457a4ad1d0b8eed3a84feb236ada29c05e297ffdd865a5002"
+      },
+      "before_checkpoint_sha256": "71a897f12406d5600e425f1b1fdd15a33a3d2c0d232d65518870cb14d8360a9f",
+      "after_checkpoint_sha256": "8a5de8ad70f197ae72bdda39d68a85d27ff2e3e3f930792fff22371dac098546",
+      "previous_python_coordinate_sha256": "a6740812ca77def3d1617d47cf137283f9ab3ee499d6e4b9f0f00bee91736610",
+      "native_log_sha256": "4e198daf1f11e83dc1d2de6853aa3e2fb73174f850be397487c20d4e52ab667e",
+      "native_log_location": "full_lh_five_logsse/native_logsse.log",
+      "native_average_count": 256,
+      "native_tolerance": 0.2505,
+      "native_decision_line": "sses: 27.00  26.99  26.99  27.12  min 2 (40628.629)",
+      "native_selected_index": 2,
+      "native_selected_dt_printed": 40628.629,
+      "python_selected_index": 2,
+      "python_selected_dt": 40628.629297542255,
+      "candidate_sse": [
+        {
+          "candidate_index": 0,
+          "native_logSSE_id": 53,
+          "dt_python": 13542.876432514084,
+          "native_total_sse_six_decimals": 27.003386,
+          "python_total_sse": 27.003385658126607,
+          "native_minus_python_total_sse": 3.4187339181812604e-07,
+          "native_weighted_distance_sse": 26.822817,
+          "native_negative_area_sse": 0.180569
+        },
+        {
+          "candidate_index": 1,
+          "native_logSSE_id": 49,
+          "dt_python": 27085.752865028167,
+          "native_total_sse_six_decimals": 26.987676,
+          "python_total_sse": 26.987675690015628,
+          "native_minus_python_total_sse": 3.099843723930462e-07,
+          "native_weighted_distance_sse": 26.820719,
+          "native_negative_area_sse": 0.166957
+        },
+        {
+          "candidate_index": 2,
+          "native_logSSE_id": 54,
+          "dt_python": 40628.629297542255,
+          "native_total_sse_six_decimals": 26.986292,
+          "python_total_sse": 26.986292304329513,
+          "native_minus_python_total_sse": -3.043295144777858e-07,
+          "native_weighted_distance_sse": 26.81875,
+          "native_negative_area_sse": 0.167543
+        },
+        {
+          "candidate_index": 3,
+          "native_logSSE_id": 45,
+          "dt_python": 0.0,
+          "native_total_sse_six_decimals": 27.115873,
+          "python_total_sse": 27.115873242229046,
+          "native_minus_python_total_sse": -2.4222904571047366e-07,
+          "native_weighted_distance_sse": 26.825045,
+          "native_negative_area_sse": 0.290829
+        }
+      ],
+      "max_abs_native_printed_minus_python_total_sse": 3.4187339181812604e-07,
+      "input_exact_components": 319866,
+      "output_exact_components": 319866,
+      "total_components": 319866,
+      "max_vertex_error_mm": 0.0,
+      "python_cpu_observed_seconds": {
+        "original_metric_build_including_jit": 15.15781133249402,
+        "gradient_including_jit": 1.8643662240356207,
+        "average_including_jit": 0.11854913923889399,
+        "line_search_including_jit": 0.6364445248618722,
+        "coordinate_update": 0.003091258928179741
+      },
+      "next_unverified_update": 5
+    },
+    "rh": {
+      "update_index": 7,
+      "previous_exact_report_sha256": "00d3e9d2a3c74b8e524ee87e88d9717b4ae96b466456ec6594193c7645269b67",
+      "resume_report": "standard_sphere_full_default_resume_rh_index7.json",
+      "resume_report_sha256": "2cf7d54b27675fe56c862e14c69d7e52cdf36d492b92f82e0bbcbe1a8f1744d4",
+      "input_sha256": {
+        "inflated": "27c87284c27be6ef65ad1d71bfb922dd1b31b9a4ca352d04c55c1cad30fe41c3",
+        "smoothwm": "b67ceb95069d865bb11f6c2b20bac99eab9f19982b73d3c9c43735b7bedbe7ca"
+      },
+      "before_checkpoint_sha256": "2c0ce998e6c7abade21db7304d81fe8cae4e5000b462f32f494c3b9b29470d45",
+      "after_checkpoint_sha256": "b797c0b783454322e5f24965d445a2dd4ccbf9ded9d593f17b101719396e9659",
+      "previous_python_coordinate_sha256": "dfeb406c7b5042fa20d0011a87b40a2919f37fa8908c587b36e4ce85664ff8e8",
+      "native_log_sha256": "0763f7f96cd9286cff2eacf0cbb6e3644339ab634efb6068c7f158a8d0cd292f",
+      "native_log_location": "full_rh_eight_logsse/native_logsse.log",
+      "native_average_count": 1024,
+      "native_tolerance": 0.5002,
+      "native_decision_line": "sses: 749505.84  748475.63  751474.02  754567.75  748356.05  min 4 (2491.848)",
+      "native_selected_index": 4,
+      "native_selected_dt_printed": 2491.848,
+      "python_selected_index": 4,
+      "python_selected_dt": 2491.84814453125,
+      "candidate_sse": [
+        {
+          "candidate_index": 0,
+          "native_logSSE_id": 86,
+          "dt_python": 1425.4437110197637,
+          "native_total_sse_six_decimals": 749505.838879,
+          "python_total_sse": 749505.8388793154,
+          "native_minus_python_total_sse": -3.153691068291664e-07,
+          "native_weighted_distance_sse": 749505.828718,
+          "native_negative_area_sse": 0.010161
+        },
+        {
+          "candidate_index": 1,
+          "native_logSSE_id": 84,
+          "dt_python": 2850.8874220395273,
+          "native_total_sse_six_decimals": 748475.627322,
+          "python_total_sse": 748475.6273223953,
+          "native_minus_python_total_sse": -3.9534643292427063e-07,
+          "native_weighted_distance_sse": 748475.617153,
+          "native_negative_area_sse": 0.01017
+        },
+        {
+          "candidate_index": 2,
+          "native_logSSE_id": 87,
+          "dt_python": 4276.3311330592915,
+          "native_total_sse_six_decimals": 751474.018188,
+          "python_total_sse": 751474.0181880919,
+          "native_minus_python_total_sse": -9.19681042432785e-08,
+          "native_weighted_distance_sse": 751474.00801,
+          "native_negative_area_sse": 0.010178
+        },
+        {
+          "candidate_index": 3,
+          "native_logSSE_id": 78,
+          "dt_python": 0.0,
+          "native_total_sse_six_decimals": 754567.752474,
+          "python_total_sse": 754567.7524738993,
+          "native_minus_python_total_sse": 1.0069925338029861e-07,
+          "native_weighted_distance_sse": 754567.742321,
+          "native_negative_area_sse": 0.010153
+        },
+        {
+          "candidate_index": 4,
+          "native_logSSE_id": 88,
+          "dt_python": 2491.84814453125,
+          "native_total_sse_six_decimals": 748356.046478,
+          "python_total_sse": 748356.046477998,
+          "native_minus_python_total_sse": 1.979060471057892e-09,
+          "native_weighted_distance_sse": 748356.03631,
+          "native_negative_area_sse": 0.010168
+        }
+      ],
+      "max_abs_native_printed_minus_python_total_sse": 3.9534643292427063e-07,
+      "input_exact_components": 316623,
+      "output_exact_components": 316623,
+      "total_components": 316623,
+      "max_vertex_error_mm": 0.0,
+      "python_cpu_observed_seconds": {
+        "original_metric_build_including_jit": 15.13593923393637,
+        "gradient_including_jit": 2.2750744223594666,
+        "average_including_jit": 0.4045440945774317,
+        "line_search_including_jit": 0.7049462702125311,
+        "coordinate_update": 0.0038682259619235992
+      },
+      "next_unverified_update": 8
+    }
+  },
+  "scope": "One update per hemisphere resumed from a SHA-proven bitwise-exact Python/native checkpoint; original metric rebuilt from identical smoothwm; no complete sphere or recon-all run. Times were shared-node observations, not matched benchmarks."
+}
