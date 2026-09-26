@@ -1026,10 +1026,23 @@ smoothwm update (`debug0056`) matches **105,541/105,541** native saved vertices
 with maximum error 0 mm and identical `dt=2.542891502380371`.
 
 The corrected raw H fit uses CPU Numba inside the Python/PyTorch stage.
-The [LH independent retest](MRIS_REGISTER_LH_SMOOTHWM_BOUNDARY.md) now
-matches all 106,622 raw H values and all 106,622 vertices of the first
-`debug0057` update. Its continuously propagated next update, `debug0058`,
-is the first current mismatch: 18/106,622 ordered vertices exact, maximum
-coordinate error 0.00157928466796875 mm. Later default updates,
-negative-face repair, final `sphere.reg`, vertex and ROI metrics, and a full
-GPU speed claim remain unaccepted.
+The [LH continuation audit](MRIS_REGISTER_LH_SMOOTHWM_BOUNDARY.md) now matches
+all 106,622 raw H values and all 45 consecutive normal smoothwm surfaces,
+`debug0057`–`debug0101`, at every ordered vertex and face. The stage schedule
+is read from the native log; independent stopping remains unverified. The
+right hemisphere matches `debug0056`–`debug0057` at all 105,541 vertices but
+diverges at the first 256-average update, `debug0058`. Its Python quadratic
+candidate is `1.7613636255264282` versus the native step
+`1.8571428060531616`; the resulting surface has 0/105,541 exact vertices
+and a maximum 0.0137939453125 mm coordinate difference. At the native
+float32 step, the independently generated Python gradient and projection
+recover all 105,541 native vertices exactly; see the
+[continuation report](mris_register_rh_default_epoch0056_0058_continuous_headcw.json)
+and [step diagnostic](mris_register_rh_default_epoch0058_gradient_fit_headcw.json).
+This isolates the first RH mismatch to line-search scoring or its fitted
+step. The Python SSE evaluated on native `debug0058` coordinates is
+1,420,802.5928, while the native log prints 1,420,801.6. Changing the
+3×3 determinant summation order can happen to produce this one step, but
+regresses 9 of 10 earlier exact native fits; it is not a valid correction.
+Negative-face repair, final `sphere.reg`, vertex and ROI metrics, and a
+connected GPU reconstruction remain unaccepted.

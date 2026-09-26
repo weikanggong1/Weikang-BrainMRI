@@ -52,11 +52,21 @@ def main():
     parser.add_argument('--native-line-gradient', type=Path)
     parser.add_argument('--skip-native-checkpoints', action='store_true')
     parser.add_argument('--native-prefix', type=Path)
+    parser.add_argument('--hemisphere', choices=('lh', 'rh'), default='lh')
     parser.add_argument('--first-epoch', type=int)
-    parser.add_argument('--next-epochs', type=int, choices=(0, 1), default=0)
+    parser.add_argument('--next-epochs', type=int, choices=range(45), default=0)
+    parser.add_argument('--resume-epoch', type=int)
+    parser.add_argument('--resume-report', type=Path)
+    parser.add_argument('--dump-mismatch', type=Path)
     args = parser.parse_args()
     if args.next_epochs and (args.native_prefix is None or args.first_epoch not in (56, 57)):
         parser.error('--next-epochs requires --native-prefix and first smoothwm epoch 56 or 57')
+    if args.next_epochs and args.first_epoch != (57 if args.hemisphere == 'lh' else 56):
+        parser.error('continuation must start at the hemisphere first smoothwm epoch')
+    if args.hemisphere == 'rh' and args.next_epochs > 41:
+        parser.error('RH fixed schedule ends at epoch 97')
+    if (args.resume_epoch is None) != (args.resume_report is None):
+        parser.error('--resume-epoch and --resume-report must be supplied together')
     torch.set_num_threads(4)
     start = perf_counter()
     sphere, faces = fsio.read_geometry(str(args.sphere))
@@ -157,35 +167,100 @@ def main():
     report['continuation'] = []
     current = predicted
     first_epoch = args.first_epoch or 0
-    for epoch in range(first_epoch + 1, first_epoch + args.next_epochs + 1):
+    start_epoch = first_epoch + 1
+    if args.resume_report is not None:
+        previous = json.loads(args.resume_report.read_text())
+        last = previous['continuation'][-1]
+        if (last['epoch'] != args.resume_epoch or
+                last['saved_surface']['exact_vertices'] != len(current) or
+                previous['input_sha256'] != report['input_sha256']):
+            raise ValueError('resume report does not prove an exact matching input')
+        checkpoint = Path(f'{args.native_prefix}{args.resume_epoch:04d}')
+        resumed, resumed_faces = fsio.read_geometry(str(checkpoint))
+        resumed = resumed.astype(np.float32)
+        resumed_hash = hashlib.sha256(resumed.tobytes()).hexdigest()
+        if (not np.array_equal(faces, resumed_faces) or
+                resumed_hash != last['saved_surface']['predicted_array_sha256'] or
+                hashlib.sha256(checkpoint.read_bytes()).hexdigest() !=
+                last['saved_surface']['reference_sha256']):
+            raise ValueError('resume checkpoint differs from the verified Python state')
+        current = torch.from_numpy(resumed)
+        start_epoch = args.resume_epoch + 1
+        report['resume'] = {'report_sha256': hashlib.sha256(args.resume_report.read_bytes()).hexdigest(),
+                            'checkpoint_sha256': hashlib.sha256(checkpoint.read_bytes()).hexdigest(),
+                            'coordinate_sha256': resumed_hash, 'epoch': args.resume_epoch}
+    for epoch in range(start_epoch, first_epoch + args.next_epochs + 1):
         epoch_start = perf_counter()
-        projected = current
+        sigma_starts = ({81: 2.0, 88: 1.0, 95: 0.5} if args.hemisphere == 'lh'
+                        else {77: 2.0, 84: 1.0, 91: 0.5})
+        if epoch in sigma_starts:
+            sigma = sigma_starts[epoch]
+            source_grid = parameterize_curvature(current, normalized)
+            curvature = normalize_mean_curvature(sample_atlas_on_canonical_sphere(
+                current, blur_atlas_frame(source_grid, sigma)))
+            mean_curve = normalize_mean_curvature(sample_atlas_on_canonical_sphere(
+                current, blur_atlas_frame(raw_mean, sigma)))
+            mean_grid = parameterize_curvature(current, mean_curve)
+            variance_grid = blur_atlas_frame(raw_variance, sigma)
+        if args.hemisphere == 'lh':
+            integration_start = epoch in (59, 60, 69, 75, 78, 80) or 81 <= epoch <= 101
+        else:
+            integration_start = epoch in (58, 59, 67, 70, 73, 75) or 77 <= epoch <= 97
+        projected = project_sphere(current) if integration_start else current
         normals = sphere_vertex_normals(projected, triangles)
         distances = sphere_arc_distances(projected, neighbors, degrees)
         avg_vertex_dist = float(distances.double().sum() / degrees.sum())
-        force = first_area_gradient(vertices, original, current, triangles,
-                                    first_distance_gradient(vertices, original, current, triangles))
+        force = first_area_gradient(vertices, original, projected, triangles,
+                                    first_distance_gradient(vertices, original, projected,
+                                                            triangles, project=False), project=False)
         e1, e2 = tangent_basis(normals)
         force = correlation_gradient_add(force, projected, curvature, e1, e2,
                                          mean_grid, variance_grid, avg_vertex_dist, l_corr=0.05)
         force_seconds = perf_counter() - epoch_start
-        averaged = average_gradients(force, neighbors, degrees, 1024)
+        if args.hemisphere == 'lh':
+            if epoch >= 81:
+                gradient_averages = (1024, 256, 64, 16, 4, 1, 0)[(epoch - 81) % 7]
+            else:
+                gradient_averages = (1024 if epoch == 58 else 256 if epoch == 59 else
+                                     64 if epoch <= 68 else 16 if epoch <= 74 else
+                                     4 if epoch <= 77 else 1 if epoch <= 79 else 0)
+        elif epoch >= 77:
+            gradient_averages = (1024, 256, 64, 16, 4, 1, 0)[(epoch - 77) % 7]
+        else:
+            gradient_averages = (1024 if epoch == 57 else 256 if epoch == 58 else
+                                 64 if epoch <= 66 else 16 if epoch <= 69 else
+                                 4 if epoch <= 72 else 1 if epoch <= 74 else 0)
+        averaged = average_gradients(force, neighbors, degrees, gradient_averages)
         force = spring_gradient_add(averaged, projected, neighbors, degrees,
                                     dist_scale, 0.5)
         average_seconds = perf_counter() - epoch_start - force_seconds
         first_sample = len(trial_terms)
         dt, samples = first_registration_line_search(projected, force, objective)
         current = apply_spherical_gradient(projected, force, dt)
+        line_seconds = perf_counter() - epoch_start - force_seconds - average_seconds
         reference = Path(f'{args.native_prefix}{epoch:04d}')
         result = compare(current, reference)
+        line_sample_terms = trial_terms[first_sample:]
+        reference_vertices, reference_faces = fsio.read_geometry(str(reference))
+        assert np.array_equal(faces, reference_faces)
+        native_reference_sse = objective(torch.from_numpy(reference_vertices))
+        native_reference_terms = trial_terms[-1]
         report['continuation'].append({
-            'epoch': epoch, 'dt': dt, 'line_samples': samples,
-            'line_sample_terms': trial_terms[first_sample:],
+            'epoch': epoch, 'dt': dt, 'gradient_averages': gradient_averages,
+            'integration_start_projection': integration_start, 'line_samples': samples,
+            'line_sample_terms': line_sample_terms,
+            'native_reference_sse': native_reference_sse,
+            'native_reference_terms': native_reference_terms,
             'seconds_excluding_io': {'force': force_seconds, 'average_and_spring': average_seconds,
-                                     'line': perf_counter() - epoch_start - force_seconds - average_seconds},
+                                     'line': line_seconds},
             'saved_surface': result})
         print(json.dumps({'epoch': epoch, 'dt': dt, 'saved_surface': result}), flush=True)
         if result['exact_vertices'] != len(current):
+            if args.dump_mismatch is not None:
+                np.savez_compressed(args.dump_mismatch,
+                                    projected=projected.cpu().numpy(),
+                                    gradient=force.cpu().numpy(),
+                                    reference=reference_vertices.astype(np.float32))
             break
     args.report.write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps({'dt': dt, 'seconds': report['seconds_excluding_io'],

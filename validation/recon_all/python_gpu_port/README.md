@@ -408,12 +408,15 @@ RH pial decisions and connected orchestration remain open; see
 For spherical registration, the independent PyTorch sigma-4 rigid search
 matches every ordered vertex and face on both hemispheres. The default sulc
 nonlinear epochs match every saved ordered vertex checkpoint through LH
-`debug0056` and RH `debug0055`. Both independently computed raw smoothwm curvature arrays match native
-bitwise: 106,622/106,622 LH and 105,541/105,541 RH values. The first
-smoothwm updates, LH `debug0057` and RH `debug0056`, match every ordered
-vertex. The continuously propagated LH `debug0058` differs at 106,604/106,622
-vertices, maximum coordinate error 0.00157928466796875 mm. Later updates
-and final `sphere.reg` remain open; see
+`debug0056` and RH `debug0055`. Both independently computed raw smoothwm
+curvature arrays match native bitwise: 106,622/106,622 LH and 105,541/105,541
+RH values. The LH normal smoothwm path matches all 45 consecutive saved
+surfaces, `debug0057`–`debug0101`, at every ordered vertex and face. RH
+matches `debug0056`–`debug0057` and first diverges at the `debug0058`
+line-search step; applying the native float32 step to the independently
+computed force reproduces all RH vertices exactly. The native averaging
+schedule is supplied to this bounded probe. Negative-face repair, final
+`sphere.reg`, and independent stopping remain open; see
 [`MRIS_REGISTER_STATUS.md`](MRIS_REGISTER_STATUS.md), the
 [RH SVD correction](MRIS_REGISTER_RH_RAW_H_SVD_MATCH.md), and the
 [LH continuation boundary](MRIS_REGISTER_LH_SMOOTHWM_BOUNDARY.md).

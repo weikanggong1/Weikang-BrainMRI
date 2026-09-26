@@ -1,0 +1,40 @@
+{
+  "capture_sha256": "49251b7ce3d1f2b9630734c967c1c34058ca70bfbbbba004b9c9362efffead64",
+  "input_vertices": 105541,
+  "best_fit_dt": 1.8571427932252518,
+  "best_fit": {
+    "exact_vertices": 105466,
+    "max_abs_error_mm": 7.62939453125e-06,
+    "squared_error": 1.8872651488548213e-10
+  },
+  "float32_dt_neighbors": [
+    {
+      "dt": 1.857142686843872,
+      "exact_vertices": 105024,
+      "max_abs_error_mm": 7.62939453125e-06,
+      "squared_error": 1.529495360722595e-09
+    },
+    {
+      "dt": 1.8571428060531616,
+      "exact_vertices": 105541,
+      "max_abs_error_mm": 0.0,
+      "squared_error": 0.0
+    },
+    {
+      "dt": 1.8571429252624512,
+      "exact_vertices": 105040,
+      "max_abs_error_mm": 7.62939453125e-06,
+      "squared_error": 1.4910221209729778e-09
+    }
+  ],
+  "python_selected": {
+    "exact_vertices": 0,
+    "max_abs_error_mm": 0.0137939453125,
+    "squared_error": 0.48263596365372685
+  },
+  "native_printed": {
+    "exact_vertices": 20995,
+    "max_abs_error_mm": 2.288818359375e-05,
+    "squared_error": 2.291356819205739e-06
+  }
+}
