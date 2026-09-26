@@ -1222,3 +1222,53 @@ This is an exact **smoothwm continuation from a sulc seed**, not a connected
 `sphere`-to-`sphere.reg` entry point or T1-to-metrics pipeline. The sulc pass
 still needs a production native-free runner with independent stopping, and the
 upstream topology, white/pial and whole-subject acceptance gates remain open.
+
+## Source-scheduled sulc stage and sphere-to-registration connection
+
+The source rule for the default sulc pass starts with one sigma-4
+16,384-average epoch, then a normal 1,024-average epoch at sigma 4 and
+normal epochs at sigmas 2, 1 and 0.5. Each average count divides by four
+through zero; the native tolerance is `0.5 × sqrt((averages + 1) / 1024)`.
+The [`next_sulc_scale` implementation](../../../src/fnit/recon_all/mris_register_schedule.py)
+uses its own selected Python SSE and step, including the 25-update cap.
+The [reproducible source audit](experimental/audit_mris_register_sulc_source_schedule.py)
+reads the newly published exact sulc reports from this directory. Its
+[result](mris_register_sulc_source_schedule_audit.json) matches all 53 LH
+and 52 RH saved post-initial decisions, including next-scale projection and
+termination. These reports cover `debug0004`–`debug0056` LH and
+`debug0004`–`debug0055` RH; the initial two nonlinear updates and rigid
+search have their separate exact checks above.
+
+The new [`run_register_sulc` API and CLI](../../../src/fnit/recon_all/mris_register_sulc_run.py)
+starts from `sphere`, `smoothwm`, `sulc`, and the external folding-atlas TIFF.
+It performs the independent rigid search and every source-scheduled sulc
+update without reading an installed FreeSurfer mesh or log. Its bilateral
+[LH](mris_register_lh_sulc_api_headcw.json) and
+[RH](mris_register_rh_sulc_api_headcw.json) headcw calls selected 55 and 54
+updates and terminated at native iteration numbers 56 and 55. The
+[LH final comparator](mris_register_lh_sulc_api_final_compare_headcw.json)
+and [RH final comparator](mris_register_rh_sulc_api_final_compare_headcw.json)
+found all 106,622 and 105,541 ordered vertices exact, all ordered faces and
+volume geometry equal, and all 53/52 previously saved selected steps equal.
+The file hashes differ due to the Python writer's provenance stamp.
+
+The [LH](mris_register_lh_stage_connection_attestation_headcw.json) and
+[RH](mris_register_rh_stage_connection_attestation_headcw.json) connection
+checks prove the new sulc seeds have the same ordered geometry, face order,
+source `sphere`/`smoothwm`/atlas file hashes and iteration numbers as the
+inputs of the previously exact smoothwm API. This is a source-equivalent
+connection proof; the one-call
+[`run_register_sphere` wrapper](../../../src/fnit/recon_all/mris_register_run.py)
+has been built and imported but has not had a fresh combined numerical run.
+It is not a T1-to-metrics reconstruction.
+
+The standalone sulc calls took 1,465.67 s LH and 1,336.97 s RH on headcw
+with four PyTorch CPU threads; the prior standalone smoothwm calls took
+876.99 s and 797.29 s. Their separate-call sums are 2,342.67 s LH and
+2,134.26 s RH. The earlier installed FreeSurfer logs report about 154.08 s
+LH and 146.88 s RH for the complete native registration. These observations
+were under different shared-host loads and the Python values include two
+separate process setups, so they are not a controlled full-stage benchmark.
+The first four 16,384-average updates alone took 477.96 s LH and 429.03 s
+RH. Gradient averaging and repeatedly rebuilt force topology are the next
+speed targets; no registration-wide GPU speedup is established.

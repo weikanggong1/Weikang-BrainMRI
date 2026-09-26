@@ -1,0 +1,23 @@
+{
+  "candidate_sha256": "92b6e45701cc946a5274750f9bccd6743098dcb252ea7458e86855107739de96",
+  "native_seed_sha256": "d379000f40f022d0b62492187528369f870d54c14a3497276062f1c2828d30db",
+  "api_report_sha256": "528344732c192a89deea9c8b6dc36006a6fea8f1e10ecb8959677f851d027d80",
+  "schedule_audit_sha256": "230fc20832e0e5a94751fc40d52ad900f41c6436c0e5962b2c817dada0f9ba63",
+  "input_sha256": {
+    "sphere": "744e8d937f942a3a8d5f0ee739342762288e6824386aaa8a558065c92de84efc",
+    "smoothwm": "b67ceb95069d865bb11f6c2b20bac99eab9f19982b73d3c9c43735b7bedbe7ca",
+    "sulc": "dc213c473326a0fe4d860a668f843fa8eeba2f494878afc7086a2b1ca4af6d06",
+    "atlas": "1064e4c0ae0440f5071b4369f29a09860f1abf6eddc90a271d10cd0ff7e60043"
+  },
+  "exact_vertices": 105541,
+  "total_vertices": 105541,
+  "first_mismatch_vertex": null,
+  "max_abs_error_mm": 0.0,
+  "ordered_faces_equal": true,
+  "volume_geometry_equal": true,
+  "api_updates": 54,
+  "last_iteration": 55,
+  "audited_dt_equal": true,
+  "audited_dt_count": 52,
+  "api_total_seconds_including_io": 1336.9693717695773
+}

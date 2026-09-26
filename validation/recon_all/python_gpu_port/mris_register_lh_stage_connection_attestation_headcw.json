@@ -1,0 +1,16 @@
+{
+  "python_seed_sha256": "26c48f477b9596c6128cf2d138d0590379e23979cde61e2186db0914e39a46ab",
+  "previous_seed_sha256": "48acc66241941979b33dabd430d2d61025124d8af30e4722023e8fe73cd75d9c",
+  "sulc_report_sha256": "503cb4c6c0ee1d6419c1c2e323e6fcbcdfc6c24e30e707be79b8c7e0bc388f6a",
+  "smoothwm_report_sha256": "ccfea1a1f9ca493db510a40359eff24dd9c394a57952263cb7d9223cad57de00",
+  "smoothwm_final_compare_sha256": "7d412f28d2ff32b5e6240dcf41720d9314a05dab350ff8de9fcc40eda20232ab",
+  "exact_seed_vertices": 106622,
+  "seed_vertices": 106622,
+  "ordered_faces_equal": true,
+  "sphere_smoothwm_atlas_file_hashes_equal": true,
+  "seed_iteration_equal": true,
+  "previous_seed_file_equal": true,
+  "previous_final_mesh_exact": true,
+  "previous_final_selected_dt_equal": true,
+  "equivalent_smoothwm_inputs": true
+}

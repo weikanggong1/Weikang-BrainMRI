@@ -431,11 +431,13 @@ the native averaging schedule. A source-rule audit predicts all 91 saved
 bilateral smoothwm decisions, and a short LH runtime check reproduces the
 first four meshes with Python-selected averages. A continuous bilateral
 source-scheduled smoothwm invocation now matches all 51 LH and 42 RH saved
-meshes. A separate callable Python/CLI stage generates
-both final registered spheres with exact ordered geometry and matching volume
+meshes. A separate callable Python/CLI stage generates both final registered
+spheres with exact ordered geometry and matching volume
 geometry from exact sulc seeds. Its 4-thread CPU calls took 876.99 s LH and
-797.29 s RH; a direct CUDA force trial showed no speed gain. The production
-sulc runner and connected full reconstruction remain open; see
+797.29 s RH; a direct CUDA force trial showed no speed gain. The independent
+sulc runner now also produces exact bilateral sulc seeds and an exact-input
+connection proof to the smoothwm stage. A fresh one-call registration test and
+connected full reconstruction remain open; see
 [`MRIS_REGISTER_STATUS.md`](MRIS_REGISTER_STATUS.md), the
 [RH SVD correction](MRIS_REGISTER_RH_RAW_H_SVD_MATCH.md), and the
 [LH continuation boundary](MRIS_REGISTER_LH_SMOOTHWM_BOUNDARY.md).

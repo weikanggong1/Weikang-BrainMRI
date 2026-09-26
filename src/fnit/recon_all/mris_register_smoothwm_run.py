@@ -35,7 +35,7 @@ from .sphere_standard_python import write_standard_sphere_surface
 def run_register_smoothwm(sphere: str | Path, smoothwm: str | Path,
                           sulc_seed: str | Path, atlas_file: str | Path,
                           output: str | Path, *, seed_iteration: int,
-                          overlap_device: str = "cpu", max_updates: int = 150) -> dict:
+                          overlap_device: str = "cpu", max_updates: int = 1024) -> dict:
     """Continue an already registered sulc sphere through smoothwm and repair.
 
     The optimizer uses source-order PyTorch/Numba CPU arithmetic. The final

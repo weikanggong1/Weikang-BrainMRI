@@ -1,0 +1,199 @@
+{
+  "input_sha256": {
+    "sphere": "d28a3d49a26984a8044a6b44bd7666059bf434c764b97adbd776e4f93804c6ed",
+    "smoothwm": "36e199e4d971a39457a4ad1d0b8eed3a84feb236ada29c05e297ffdd865a5002",
+    "sulc": "49801953491d37a6fac016bbd0342c5dc46d2524f1872416cee339469839481a",
+    "atlas": "92f1dc820d778a67c143d4ea82597fd71a89ddc738dfa555b7ca32ed21e95c97",
+    "seed": "ee3e029d3154a0fb52fc7d0e80b161a8991a649a6b637374c71d1e6eb89b3dfa",
+    "native_log": "bc70cd13a96a1f9efb546caf412ff19b75897eb9a12cbfd9a6eccb72998ea35d"
+  },
+  "final_surface_sha256": "d7bf2b0b95edae32ed584137d0a93d136787f0320fb7bc7444561a049cbc7191",
+  "start_epoch": 7,
+  "continue_integration_call": true,
+  "setup_seconds": 21.845217457972467,
+  "epochs": [
+    {
+      "epoch": 7,
+      "navgs": 4096,
+      "sigma": 4.0,
+      "starts_integration_call": false,
+      "dt": 42.35342788696289,
+      "line_samples": [
+        [
+          0.0,
+          1094625.2263640196
+        ],
+        [
+          0.046091998699733676,
+          1094586.4742065107
+        ],
+        [
+          0.4609199869973368,
+          1094219.923205643
+        ],
+        [
+          4.609199869973367,
+          1090748.0284448564
+        ],
+        [
+          46.09199869973367,
+          1075460.5867464407
+        ],
+        [
+          460.9199869973367,
+          2646067.170671253
+        ],
+        [
+          23.045999349866836,
+          1079506.78428155
+        ],
+        [
+          69.13799804960051,
+          1083433.4715119302
+        ],
+        [
+          42.35342788696289,
+          1075298.7712110928
+        ]
+      ],
+      "comparison": {
+        "exact_vertices": 106622,
+        "total_vertices": 106622,
+        "max_abs_error_mm": 0.0,
+        "predicted_positions_sha256": "f01c2fb59d465e7dc592d86721278d11104d473385d0733cb1330a6dcedc9f1f"
+      },
+      "reference_surface_sha256": "068bcf7db7517b77d45e66443fc06973df898ab56ed7b23861144652deef5034",
+      "seconds_excluding_io": {
+        "sigma_setup": 0.0,
+        "force": 16.844399221241474,
+        "average": 25.93703251052648,
+        "line": 0.3238647487014532
+      }
+    },
+    {
+      "epoch": 8,
+      "navgs": 4096,
+      "sigma": 4.0,
+      "starts_integration_call": false,
+      "dt": 95.29584503173828,
+      "line_samples": [
+        [
+          0.0,
+          1075298.7712110928
+        ],
+        [
+          0.08720150907353577,
+          1075273.5875894756
+        ],
+        [
+          0.8720150907353577,
+          1075038.3383533563
+        ],
+        [
+          8.720150907353577,
+          1072827.988529063
+        ],
+        [
+          87.20150907353577,
+          1061260.144763451
+        ],
+        [
+          872.0150907353577,
+          1766590.1484577884
+        ],
+        [
+          43.60075453676789,
+          1065450.996520393
+        ],
+        [
+          130.80226361030367,
+          1063127.8433800538
+        ],
+        [
+          95.29584503173828,
+          1061119.5513401043
+        ]
+      ],
+      "comparison": {
+        "exact_vertices": 106622,
+        "total_vertices": 106622,
+        "max_abs_error_mm": 0.0,
+        "predicted_positions_sha256": "0d08f5db481cfd9450923d63295a6b983d4bedd611795cfeda09d913ed5e9dba"
+      },
+      "reference_surface_sha256": "c26b35daa1d5496060266858497bcdffaf7cd69a8c9bf2d3ee1e3f0eb0528fd3",
+      "seconds_excluding_io": {
+        "sigma_setup": 0.0,
+        "force": 16.577795968391,
+        "average": 26.052484782412648,
+        "line": 0.35077065136283636
+      }
+    },
+    {
+      "epoch": 9,
+      "navgs": 4096,
+      "sigma": 4.0,
+      "starts_integration_call": false,
+      "dt": 41.303627014160156,
+      "line_samples": [
+        [
+          0.0,
+          1061119.5513401043
+        ],
+        [
+          0.07033103154568365,
+          1061094.518242844
+        ],
+        [
+          0.7033103154568365,
+          1060851.2595815787
+        ],
+        [
+          7.033103154568366,
+          1058619.3959602218
+        ],
+        [
+          70.33103154568366,
+          1057372.2996071982
+        ],
+        [
+          703.3103154568366,
+          2825017.377943165
+        ],
+        [
+          35.16551577284183,
+          1053165.721879551
+        ],
+        [
+          105.49654731852549,
+          1074684.78387522
+        ],
+        [
+          41.303627014160156,
+          1052971.5858168178
+        ]
+      ],
+      "comparison": {
+        "exact_vertices": 106622,
+        "total_vertices": 106622,
+        "max_abs_error_mm": 0.0,
+        "predicted_positions_sha256": "f814de97d0ac5cb727274f6615ab7235c0aee5240343d20dc9987742fb892b01"
+      },
+      "reference_surface_sha256": "b6f64ae929398f75f4aec35a3bcd4c60c8dab2620b965e8d36a105cbabf32cf2",
+      "seconds_excluding_io": {
+        "sigma_setup": 0.0,
+        "force": 17.317753995768726,
+        "average": 26.422536845318973,
+        "line": 0.39397404342889786
+      }
+    }
+  ],
+  "first_mismatching_epoch": null,
+  "last_surface_vs_final": {
+    "exact_vertices": 0,
+    "total_vertices": 106622,
+    "max_abs_error_mm": 10.939934253692627,
+    "predicted_positions_sha256": "f814de97d0ac5cb727274f6615ab7235c0aee5240343d20dc9987742fb892b01"
+  },
+  "candidate_surface_sha256": "c229b473028bd0cc2cd74b74898879c8d6c9200b9246762af11c1793dddef1ef",
+  "candidate_last_epoch": 9
+}
