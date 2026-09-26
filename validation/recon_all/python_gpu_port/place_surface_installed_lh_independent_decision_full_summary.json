@@ -1,0 +1,108 @@
+{
+  "scope": "Fixed LH pial optimizer; independent SSE/RMS decisions 1..41; installed log only post-decision reference",
+  "sha256": {
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/place_surface_installed_lh_independent_decision_step21_report.json": "f5544b82afe21d772249a8c3d3a6b51ce475421fb64576ee80f30fb55ba3fd93",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/place_surface_installed_lh_independent_decision_step22_41_area_reset_report.json": "a8284d1393e3f738683b706f4b95b9652c56a1264046344fbefa4074b79ca3ea",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_official_run/objective_probe.log": "3f1cfc3114350782ad8605fad3c73548eb7c1caf0afa43d5e2b936b051fcf7fb",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/independent_lh_pial_decision_20260926/lh.step37.npz": "0d1337a644c912e8476ce1e721319bd48356523251f12493fdbeaced1e98f540"
+  },
+  "pass_endpoints": [
+    26,
+    32,
+    36,
+    41
+  ],
+  "decision_matches": 41,
+  "decision_steps": 41,
+  "accepted_objective_print_matches": 41,
+  "accepted_objective_print_mismatch_steps": [],
+  "pass_initial_objective_print_matches": 4,
+  "pass_initial_objective_print_mismatch_passes": [],
+  "reduction_objective_print_matches": 9,
+  "reduction_objective_print_mismatches": [
+    {
+      "outer_pass": 2,
+      "reduction": 1,
+      "python_print_rms_sse": [
+        "4.1444",
+        "587646.6"
+      ],
+      "native_print_rms_sse": [
+        "4.1444",
+        "587646.5"
+      ]
+    },
+    {
+      "outer_pass": 2,
+      "reduction": 2,
+      "python_print_rms_sse": [
+        "3.6820",
+        "515773.7"
+      ],
+      "native_print_rms_sse": [
+        "3.6820",
+        "515773.6"
+      ]
+    },
+    {
+      "outer_pass": 2,
+      "reduction": 3,
+      "python_print_rms_sse": [
+        "3.5604",
+        "498019.2"
+      ],
+      "native_print_rms_sse": [
+        "3.5604",
+        "498019.1"
+      ]
+    }
+  ],
+  "exact_ram_checkpoints": [
+    1,
+    2,
+    5,
+    10,
+    12,
+    13,
+    14,
+    20,
+    21,
+    26,
+    32,
+    36,
+    37,
+    41
+  ],
+  "ram_checkpoints": [
+    1,
+    2,
+    5,
+    10,
+    12,
+    13,
+    14,
+    20,
+    21,
+    26,
+    32,
+    36,
+    37,
+    41
+  ],
+  "step37_correct_reference": {
+    "exact_vertices": 106622,
+    "total_vertices": 106622,
+    "exact_components": 319866,
+    "total_components": 319866,
+    "sha256": "959e68c639c09d63646b65865883db2c8e228183d800fcfe6a71ee2516562119"
+  },
+  "step37_incompatible_reference": {
+    "exact_vertices": 14607,
+    "total_vertices": 106622,
+    "exact_components": 43834,
+    "total_components": 319866,
+    "sha256": "d77700e1ac3a4315b48d2fb9f2301e3836d00cd8eeaf3c74581c0f7a1acac3d1"
+  },
+  "decision_and_geometry_mismatch": null,
+  "objective_print_mismatch": "see fields above"
+}

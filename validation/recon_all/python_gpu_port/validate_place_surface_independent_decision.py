@@ -26,7 +26,7 @@ RAM = {
     26: "probe_installed_ram_official_pass0",
     32: "probe_installed_ram_official_pass1",
     36: "probe_installed_ram_official_pass2",
-    37: "probe_installed_ram_official_step37",
+    37: "probe_installed_ram_official_step37_limited",
     41: "probe_installed_ram_official_pass3",
 }
 
@@ -62,8 +62,8 @@ def main() -> None:
     parser.add_argument("--resume-step", type=int, default=0)
     parser.add_argument("--resume-report", type=Path)
     args = parser.parse_args()
-    if not 1 <= args.max_steps <= 41 or args.resume_step not in (0, 21):
-        parser.error("bounded diagnostic covers LH steps 1..41, resuming only at step 21")
+    if not 1 <= args.max_steps <= 41 or args.resume_step not in (0, 21, 37):
+        parser.error("bounded diagnostic covers LH steps 1..41, resuming at step 21 or 37")
     if args.resume_step >= args.max_steps or bool(args.resume_report) != bool(args.resume_step):
         parser.error("resume needs a prior independent report and a later maximum step")
 
@@ -206,8 +206,13 @@ def main() -> None:
     dt, reductions, outer_pass = 0.5, 0, 0
     if args.resume_step:
         prior = json.loads(args.resume_report.read_text())
-        if prior["first_mismatch"] is not None or prior["steps"][-1]["step"] != args.resume_step:
-            raise ValueError("resume report did not pass through the requested step")
+        if prior["steps"][-1]["step"] != args.resume_step:
+            raise ValueError("resume report did not reach the requested step")
+        if prior["first_mismatch"] is not None and not (
+                args.resume_step == 37
+                and prior["first_mismatch"]["reason"] == "coordinates"
+                and prior["first_mismatch"]["step"] == 37):
+            raise ValueError("resume report has an unresolved earlier mismatch")
         state = np.load(args.output_dir / f"lh.step{args.resume_step:02d}.npz")
         current, cropped = state["xyz"], state["cropped"]
         prior_trial = prior["steps"][-1]["trials"][-1]
@@ -215,11 +220,25 @@ def main() -> None:
         dt, reductions = prior_trial["next_dt"], prior_trial["reductions"]
         if compare(current, references[args.resume_step][1])["exact_vertices"] != len(current):
             raise ValueError("resume state differs from installed RAM checkpoint")
+        if args.resume_step == 37:
+            for pass_index, prior_step in enumerate((26, 32, 36), 1):
+                prior_xyz = np.load(args.output_dir / f"lh.step{prior_step:02d}.npz")["xyz"]
+                prior_normals = initial_vertex_normals(prior_xyz, faces)
+                sigma = 2.0 / (1 << pass_index)
+                n_averages = 16 >> pass_index
+                border = compute_border_values_first_pass(
+                    volume, aseg, prior_xyz, prior_normals, xyz, ripped,
+                    values, affine, thresholds, hemisphere=hemi, surface="pial",
+                    sigma=sigma,
+                )
+                values = average_marked_values(border[0], border[4], ripped, faces, 5)
+                original_area = surface_total_area(prior_xyz, faces)
+            outer_pass = 3
     report = {
         "scope": "Independent LH pial dt/reject decisions on fixed fs_sub01; bounded requested steps",
         "decision_inputs": "Python SSE/RMS from frozen MRI, white surface, target values and independently accepted geometry; no native log values influence dt or rejection",
         "native_reference_role": "Post-decision assertion of dt/reject and selected RAM coordinates only",
-        "source_rule": "check_tol=0, l_location=0, tol=1e-4, REDUCTION_PCT=0.5, MAX_REDUCTIONS=2",
+        "source_rule": "check_tol=0, l_location=0, tol=1e-4, REDUCTION_PCT=0.5, MAX_REDUCTIONS=2; orig_area reset at each MRISpositionSurface entry",
         "sha256": {str(path): digest(path) for path in (
             args.installed_binary, white, label, stats_path, brain_path,
             wm_path, aseg_path, args.native_log_reference,
@@ -229,6 +248,7 @@ def main() -> None:
         "resume_step": args.resume_step,
         "resume_state_sha256": digest(args.output_dir / f"lh.step{args.resume_step:02d}.npz") if args.resume_step else None,
         "resume_report_sha256": digest(args.resume_report) if args.resume_report else None,
+        "resume_prior_mismatch": prior["first_mismatch"] if args.resume_step else None,
         "steps": [],
         "first_mismatch": None,
     }
@@ -310,6 +330,7 @@ def main() -> None:
                 sigma=sigma,
             )
             values = average_marked_values(border[0], border[4], ripped, faces, 5)
+            original_area = surface_total_area(current, faces)
             next_initial = objective(current)
             last_sse, last_rms = next_initial["sse"], next_initial["rms"]
             dt, reductions = 0.5, 0
@@ -318,6 +339,7 @@ def main() -> None:
                 "after_step": step,
                 "sigma": sigma,
                 "gradient_averages": n_averages,
+                "orig_area": float(original_area),
                 "initial_objective": next_initial,
             })
     args.report.write_text(json.dumps(report, indent=2) + "\n")

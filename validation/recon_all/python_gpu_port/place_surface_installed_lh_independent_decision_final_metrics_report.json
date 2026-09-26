@@ -153,7 +153,7 @@
   },
   "other_vertex_metrics": {
     "curvature": {
-      "seconds": 0.6757000861689448,
+      "seconds": 0.6727901054546237,
       "candidate_sha256": "05f007fde7f770b84d476cd0b320aea7b002fc53f97cf9d85e9bc0b43e6031d7",
       "vertices": 106622,
       "exact_float32_vertices": 10616,
@@ -162,7 +162,7 @@
       "outliers_at_0.005_plus_0.001_relative": 0
     },
     "thickness": {
-      "seconds": 7.282617976889014,
+      "seconds": 6.679824537597597,
       "candidate_sha256": "0c6199de1267032e54cafb76f1a7f5b04ccede202743116dcfb1bb78e83b4062",
       "vertices": 106622,
       "exact_float32_vertices": 96806,
@@ -171,7 +171,7 @@
       "outliers_at_0.005_plus_0.001_relative": 0
     },
     "volume": {
-      "seconds": 0.05434328503906727,
+      "seconds": 0.04950589407235384,
       "candidate_sha256": "af58f4aab8f168a61484a98f3aabdab8055e4685cea86dae555c09d6651adca1",
       "vertices": 106622,
       "exact_float32_vertices": 66072,
@@ -180,5 +180,5 @@
       "outliers_at_0.005_plus_0.001_relative": 0
     }
   },
-  "independent_final_pial_sha256": "e6a02cf522af758006dcfcd9bbc50cad9df698ae14a2d9d801eaf36ab9a4b832"
+  "independent_final_pial_sha256": "d0c8fdb5b533080732b707cbe939c21476166fc6b8fd98c562e16c00bdf2a87f"
 }
