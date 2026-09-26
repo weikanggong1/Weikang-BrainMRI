@@ -2,11 +2,11 @@
   "fsl_version": "6.0.7.4",
   "torch_version": "2.5.1",
   "cuda_version": "11.8",
-  "gpu": "NVIDIA H100 PCIe",
-  "device": "cuda:0",
+  "gpu": null,
+  "device": "cpu",
   "precision": {
-    "cuda_execution": true,
-    "tf32_matmul_allowed": true,
+    "cuda_execution": false,
+    "tf32_matmul_allowed": false,
     "tf32_cudnn_allowed": true,
     "coordinate_and_cubic_dtype": "float64",
     "image_sampling_dtype": "float32",
@@ -17,17 +17,17 @@
   "cases": [
     {
       "case": "trilinear-warp-only",
-      "maximum_absolute_error": 0.00048828125,
-      "mean_absolute_error": 4.569245319740445e-05,
-      "different_voxels": 2221,
+      "maximum_absolute_error": 0.0003662109375,
+      "mean_absolute_error": 4.6656178493125765e-05,
+      "different_voxels": 2239,
       "tolerance": 0.0005,
       "passed": true
     },
     {
       "case": "trilinear-matrices",
       "maximum_absolute_error": 0.0003662109375,
-      "mean_absolute_error": 4.3779494715671913e-05,
-      "different_voxels": 2231,
+      "mean_absolute_error": 4.514783036475088e-05,
+      "different_voxels": 2251,
       "tolerance": 0.0005,
       "passed": true
     },
@@ -75,16 +75,16 @@
     {
       "case": "cubic-trilinear-warp-only",
       "maximum_absolute_error": 0.0003662109375,
-      "mean_absolute_error": 4.471914440977807e-05,
-      "different_voxels": 2190,
+      "mean_absolute_error": 4.539700115428251e-05,
+      "different_voxels": 2209,
       "tolerance": 0.0005,
       "passed": true
     },
     {
       "case": "cubic-trilinear-matrices",
-      "maximum_absolute_error": 0.00048828125,
-      "mean_absolute_error": 4.8005113414689605e-05,
-      "different_voxels": 2305,
+      "maximum_absolute_error": 0.0003662109375,
+      "mean_absolute_error": 4.8769221586339616e-05,
+      "different_voxels": 2327,
       "tolerance": 0.0005,
       "passed": true
     },
@@ -121,34 +121,21 @@
       "interpolation": "trilinear",
       "scope": "end-to-end process/API call including NIfTI read and write",
       "warmup_excluded": true,
-      "repeats": 3
+      "repeats": 1
     },
     "fsl_applywarp_cpu": {
       "samples_seconds": [
-        0.40734890196472406,
-        0.4187085940502584,
-        0.41792713617905974
+        0.41787354880943894
       ],
-      "median_seconds": 0.41792713617905974,
-      "minimum_seconds": 0.40734890196472406
+      "median_seconds": 0.41787354880943894,
+      "minimum_seconds": 0.41787354880943894
     },
     "torch_cpu": {
       "samples_seconds": [
-        0.38014883967116475,
-        0.39931986574083567,
-        0.3838240271434188
+        0.37214022129774094
       ],
-      "median_seconds": 0.3838240271434188,
-      "minimum_seconds": 0.38014883967116475
-    },
-    "torch_gpu": {
-      "samples_seconds": [
-        0.21618624730035663,
-        0.24145761597901583,
-        0.22065311390906572
-      ],
-      "median_seconds": 0.22065311390906572,
-      "minimum_seconds": 0.21618624730035663
+      "median_seconds": 0.37214022129774094,
+      "minimum_seconds": 0.37214022129774094
     }
   },
   "passed": true

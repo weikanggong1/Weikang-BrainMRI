@@ -90,5 +90,5 @@ GPU recon-all 的 13 个权重和辅助资源文件可单独配置：`python too
 ## 项目资料
 
 - 各功能的调用、输出、原版对应和数值比较见上表各子页；[代码结构](docs/ARCHITECTURE.md)说明共享接口。
-- [FastVBM 验证](validation/fast_vbm/README.md)、[模型及源码来源](docs/provenance.json)。
+- [非 recon-all 功能 benchmark 审计](validation/README.md)、[FastVBM 验证](validation/fast_vbm/README.md)、[模型及源码来源](docs/provenance.json)。
 - [第三方许可与引用](THIRD_PARTY_NOTICES.md)。
