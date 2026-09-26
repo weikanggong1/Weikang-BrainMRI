@@ -48,7 +48,8 @@ on the same Python-generated `nu.mgz` input, while differing from the archived
 full subject at 112 voxels ([report](CONNECTED_T1_NORMALIZE_20260926.md)).
 
 The currently open critical path includes full topology repair, complete
-white/pial placement, conventional sphere unfolding, independent
+white/pial placement, conventional sphere unfolding beyond the 33 LH and
+49 RH source-scheduled exact saved updates, independent
 registration stopping, and connected native-free orchestration. The bounded
 registration probes now match all RH smoothwm updates and the LH fold cleanup;
 the final LH overlap repair matches on both CPU and H100 CUDA. See

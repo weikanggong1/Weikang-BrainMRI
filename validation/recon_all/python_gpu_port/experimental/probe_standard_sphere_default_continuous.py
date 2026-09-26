@@ -23,6 +23,7 @@ from fnit.recon_all.sphere_standard_nonlinear import (
     nonlinear_epoch_gradient, nonlinear_epoch_line_search, one_ring_metric,
 )
 from fnit.recon_all.sphere_standard_python import project_before_standard_unfold
+from fnit.recon_all.sphere_standard_schedule import next_standard_sphere_scale
 from fnit.recon_all.sphere_standard_unfold import _face_geometry, first_epoch_gradient
 from probe_standard_sphere_continuous import _compare, _coordinate_sha
 from probe_standard_sphere_repair_next import _sha256
@@ -50,10 +51,14 @@ def main() -> None:
     parser.add_argument("snapshot_prefix", type=Path)
     parser.add_argument("--max-steps", type=int)
     parser.add_argument("--full-default-prefix", type=int)
+    parser.add_argument("--auto-schedule", action="store_true")
     parser.add_argument("--report", type=Path)
     parser.add_argument("--native-log", type=Path)
     parser.add_argument("--resume-from-report", type=Path)
+    parser.add_argument("--resume-exact-through", type=int)
     args = parser.parse_args()
+    if args.auto_schedule and (args.full_default_prefix is None or args.resume_from_report):
+        parser.error("--auto-schedule requires --full-default-prefix without resume")
     inflated, faces = fsio.read_geometry(str(args.inflated))
     smoothwm, smoothwm_faces = fsio.read_geometry(str(args.smoothwm))
     if not np.array_equal(faces, smoothwm_faces):
@@ -67,14 +72,21 @@ def main() -> None:
         stage, weight = (("initial_repair", 1e-6) if args.hemisphere == "lh"
                          else ("unfold_epoch_1", 0.1))
         schedule = [(stage, weight, 1024)] * args.full_default_prefix
-        if args.hemisphere == "lh" and args.full_default_prefix >= 4:
-            # The frozen -n25 native log switches to navgs=256 after update 2.
-            if args.full_default_prefix > 6:
-                parser.error("LH full-default schedule is verified only through update 5")
-            for index in range(3, args.full_default_prefix):
-                schedule[index] = (stage, weight, 256)
-        if args.hemisphere == "rh" and args.full_default_prefix > 9:
-            parser.error("RH full-default schedule is verified only through update 8")
+        if not args.auto_schedule:
+            if args.hemisphere == "lh" and args.full_default_prefix >= 4:
+                if args.full_default_prefix > 9:
+                    parser.error("LH fixed schedule is verified only through update 8")
+                for index in range(3, args.full_default_prefix):
+                    schedule[index] = (stage, weight, 256)
+                for index in range(6, args.full_default_prefix):
+                    schedule[index] = (stage, weight, 64)
+                if args.full_default_prefix >= 9:
+                    schedule[8] = (stage, weight, 16)
+            if args.hemisphere == "rh":
+                if args.full_default_prefix > 13:
+                    parser.error("RH fixed schedule is verified only through update 12")
+                if args.full_default_prefix >= 13:
+                    schedule[12] = (stage, weight, 256)
         native_capture = "threads=4 seed=1234 default niterations=25 write_iterations=1"
     if args.max_steps is not None:
         schedule = schedule[:args.max_steps]
@@ -90,11 +102,17 @@ def main() -> None:
         if previous["input_sha256"] != {"inflated": _sha256(args.inflated),
                                         "smoothwm": _sha256(args.smoothwm)}:
             raise ValueError("resume report has different original inputs")
+        verified_steps = previous["steps"]
+        if args.resume_exact_through is not None:
+            verified_steps = [step for step in verified_steps
+                              if step["index"] <= args.resume_exact_through]
+            if not verified_steps or verified_steps[-1]["index"] != args.resume_exact_through:
+                raise ValueError("requested exact resume index is absent")
         if any(step["output_comparison"]["exact_components"] !=
                step["output_comparison"]["total_components"]
-               for step in previous["steps"]):
+               for step in verified_steps):
             raise ValueError("resume report contains an unmatched update")
-        last = previous["steps"][-1]
+        last = verified_steps[-1]
         resume_index = last["index"] + 1
         if resume_index >= len(schedule):
             raise ValueError("resume report already reaches the requested boundary")
@@ -108,7 +126,8 @@ def main() -> None:
         resume = {"report_sha256": _sha256(args.resume_from_report),
                   "checkpoint_sha256": _sha256(checkpoint),
                   "python_coordinate_sha256": _coordinate_sha(xyz),
-                  "next_index": resume_index}
+                  "next_index": resume_index,
+                  "exact_through_index": last["index"]}
         projection_seconds = 0.0
     else:
         xyz = project_radially(project_before_standard_unfold(inflated), already_sphere=True)
@@ -142,6 +161,7 @@ def main() -> None:
               "resume_from": resume, "resume_load_seconds": resume_load_seconds,
               "matrix_seconds_including_jit": matrix_seconds,
               "one_ring_seconds": one_ring_seconds, "steps": []}
+    steps_at_scale = 0
     for index in range(resume_index, len(schedule)):
         stage, weight, averages = schedule[index]
         before_path = Path(f"{args.snapshot_prefix}{index:04d}")
@@ -253,6 +273,27 @@ def main() -> None:
             report["first_divergent_step"] = index
             report["first_divergence_phase"] = "update"
             break
+        if args.auto_schedule:
+            ending_sse = first_epoch_sse(
+                xyz, faces, offsets, neighbors, distances,
+                original_area, original_total, weight)["total"]
+            next_state = next_standard_sphere_scale(
+                stage, weight, averages, steps_at_scale,
+                search["starting_sse"]["total"], ending_sse,
+                search["selected_dt"])
+            step["scheduler"] = {"ending_sse": ending_sse,
+                                  "next_state": next_state}
+            if next_state is None:
+                report["first_pass_complete_at"] = index
+                break
+            if index + 1 < len(schedule):
+                schedule[index + 1] = next_state[:3]
+            steps_at_scale = next_state[3]
+    if args.auto_schedule:
+        used = [(step["stage"], step["distance_weight"], step["gradient_averages"])
+                for step in report["steps"]]
+        report["schedule_sha256"] = hashlib.sha256(json.dumps(used).encode()).hexdigest()
+        report["schedule_mode"] = "source_stopping_rule"
     output = json.dumps(report, indent=2) + "\n"
     if args.report:
         args.report.write_text(output)

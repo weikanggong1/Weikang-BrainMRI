@@ -331,17 +331,15 @@ native checkpoints exactly. The full post-averaging distance tables match
 native four-decimal diagnostics at all 8,268,920 LH and 8,183,354 RH ordered
 entries. Three sampled vertex rows also match every neighbor ID and native
 six-decimal distance; the full native dump does not include all IDs.
-The independent default-schedule Python replay now starts at the original
-`inflated` and `smoothwm` inputs. Its LH updates 0–3 and RH updates 0–6 match
-every saved native float32 coordinate component bitwise at every update,
-including LH negative-area repair and the transition to 256 gradient averages.
-SHA-checked resumes from those Python checkpoints also match LH updates 4–5
-and RH updates 7–8 component by component. The next LH/RH updates, complete
-unfolding, and final `sphere` files remain open. This validated path is
-CPU/Numba; upstream topology repair also remains open. See the
-[LH prefix](standard_sphere_full_default_prefix_lh_256.json),
-[RH prefix](standard_sphere_full_default_prefix_rh_seven.json), and
-[status](SPHERE_STANDARD_STATUS.md).
+The independent source-scheduled Python replay now starts at the original
+`inflated` and `smoothwm` inputs and chooses each gradient-average transition
+from its own SSE. All 33 saved LH updates and 49 saved RH updates match every
+native float32 vertex-coordinate component and ordered face. The frozen
+snapshot series stops before final `sphere` output, so complete unfolding
+remains open. This validated path is CPU/Numba; upstream topology repair also
+remains open. See the [LH report](standard_sphere_lh_auto_from_input_gpucw1.json),
+[RH report](standard_sphere_rh_auto_from_input_gpucw1.json), and
+[stage status](SPHERE_STANDARD_STATUS.md).
 
 In [`mris_fix_topology`](experimental/TOPOLOGY_FITNESS_SEARCH.md),
 the first candidate's structural patch, smoothing, and MRI coordinate

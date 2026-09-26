@@ -487,11 +487,10 @@ and input hashes, and per-step timings:
 | RH index 8 | 1024 / 1024 | 6436.5712890625 / 6436.571 | 4.32e-7 | 316,623 / 316,623 |
 
 The bounded native captures ended after six LH and nine RH line-search
-decisions, in 18.89 s and 20.86 s under shared headcw load. The next
-unverified updates are LH index 6 and RH index 9. Independent no-injection
-propagation from the original input remains measured through LH index 3
-and RH index 6; the later one-step replays have SHA-proven exact coordinate
-entry states. None of these timings is a matched benchmark.
+decisions, in 18.89 s and 20.86 s under shared headcw load. At that
+point, LH index 6 and RH index 9 were unverified. The initial no-injection
+propagation from the original input reached LH index 3 and RH index 6;
+the later one-step replays had SHA-proven exact coordinate entry states. None of these timings is a matched benchmark.
 
 The corrected Python CPU observations under shared headcw load include the
 original distance-matrix construction and one-ring setup times plus each
@@ -499,13 +498,55 @@ step's gradient, averaging, line-search, and projection times in the linked
 reports. These bounded prefixes do not establish a full-stage speed ratio.
 The isolated native full-stage LH/RH reference takes `252.20 s` / `113.20 s`
 on headcw and has bitwise-identical final ordered vertices, faces, and volume
-geometry to the archived official surfaces. The checkpoint-resumed Python path
-remains **open at RH update 9 and beyond LH update 5**; final Python spheres
-and downstream vertex measurements are not validated here. This sphere
-implementation runs on CPU Numba, not GPU.
+geometry to the archived official surfaces. The checkpoint-resumed path
+above was the previous boundary. The newer source-driven replay below extends
+it; final Python spheres and downstream
+vertex measurements remain unvalidated. This sphere implementation runs on
+CPU Numba, not GPU.
 
 The six focused line-search tests pass in the remote validation Python
 environment after the source-order correction, including a deterministic
 regression that distinguishes scalar and NumPy gradient reductions. The
 continuous probe and native capture script compile; no full recon-all or
 final Python sphere was run.
+
+## Source-driven default schedule from the original inputs
+
+The Python scheduler now applies the pinned FreeSurfer 8.2 source rule from
+[`MRISintegrate`](https://github.com/freesurfer/freesurfer/blob/d932c45/utils/mrisurf_integrate.cpp):
+for each gradient-average scale, finish when
+`100 * (old_sse - sse) / sse < 0.5 * sqrt((navgs + 1) / 1024)`, the selected
+time step is zero, or the scale reaches 25 updates. The next scale divides
+`navgs` by four. The initial negative-area coefficients come from
+[`mrisRemoveNegativeArea`](https://github.com/freesurfer/freesurfer/blob/d932c45/utils/mrisurf_deform.cpp).
+The independent scheduler is in
+[`sphere_standard_schedule.py`](../../../src/fnit/recon_all/sphere_standard_schedule.py).
+No native checkpoint supplies a coordinate or a scale decision during this
+replay; saved native snapshots are read only after each Python update to
+compare ordered vertices and faces.
+
+| Original-input gpucw1 CPU replay | LH | RH |
+| --- | ---: | ---: |
+| Consecutive saved updates checked | 33 (indices 0–32) | 49 (indices 0–48) |
+| Exact coordinate components at every update | 319,866 / 319,866 | 316,623 / 316,623 |
+| Exact ordered faces at every update | 213,240 / 213,240 | 211,078 / 211,078 |
+| First/last stage | initial repair / initial repair | first unfold / second unfold |
+| Original metric + one-ring setup, including JIT | 33.39 s | 33.62 s |
+| Sum of measured per-update CPU work | 123.85 s | 205.23 s |
+
+The LH repair scales switch at update indices 3, 6, 8, 10, 11, and 12;
+its next distance coefficient begins at index 13, and its third coefficient
+begins at index 30. RH first-unfold scales switch at indices 12, 19, 28,
+38, 41, and 43; its second unfold begins at index 48. These boundaries
+come from Python's own SSE and stopping rule. The complete per-update
+input/checkpoint hashes, coordinate comparisons, decisions, and timings are
+in the [LH report](standard_sphere_lh_auto_from_input_gpucw1.json) and
+[RH report](standard_sphere_rh_auto_from_input_gpucw1.json). The reported
+probe SHA-256 matches the committed validator, and the scheduler module's
+SHA-256 is `58e101cefcc9c25688d14794f021c0f598db53c6968d7c79e1835d023ac85b8d`.
+
+The timings exclude native-checkpoint reads, report serialization, and
+process startup; they are not paired with a native run on gpucw1. Native
+checks stop at the saved checkpoint limits. Completion of both conventional
+spheres, topology/white/pial linkage, and the end-to-end T1-to-metrics
+comparison remain open.
