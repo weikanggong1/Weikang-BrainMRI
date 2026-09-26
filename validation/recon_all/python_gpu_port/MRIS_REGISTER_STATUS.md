@@ -1039,10 +1039,16 @@ float32 step, the independently generated Python gradient and projection
 recover all 105,541 native vertices exactly; see the
 [continuation report](mris_register_rh_default_epoch0056_0058_continuous_headcw.json)
 and [step diagnostic](mris_register_rh_default_epoch0058_gradient_fit_headcw.json).
-This isolates the first RH mismatch to line-search scoring or its fitted
-step. The Python SSE evaluated on native `debug0058` coordinates is
-1,420,802.5928, while the native log prints 1,420,801.6. Changing the
-3×3 determinant summation order can happen to produce this one step, but
+This isolates the first RH mismatch to the line-search candidate. The initial
+report evaluated reloaded native coordinates as float64, yielding a misleading
+SSE of 1,420,802.5928. With the [corrected float32 reference](mris_register_rh_default_epoch0056_0058_float32_reference_headcw.json),
+Python obtains 1,420,801.6314 at the native `debug0058` surface, agreeing
+with the native one-decimal log value 1,420,801.6. The three bracket scores
+are ill-conditioned: lowering just the middle stored float32 SSE by 0.125
+changes the quadratic candidate from 1.7613636255 to the native
+1.8571428061. The native bracket SSE values have not been captured, so this
+is a sensitivity calculation, not a demonstrated cause. Changing the 3×3
+determinant summation order can happen to produce the native step here, but
 regresses 9 of 10 earlier exact native fits; it is not a valid correction.
 Negative-face repair, final `sphere.reg`, vertex and ROI metrics, and a
 connected GPU reconstruction remain unaccepted.

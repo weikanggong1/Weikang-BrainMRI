@@ -243,7 +243,7 @@ def main():
         line_sample_terms = trial_terms[first_sample:]
         reference_vertices, reference_faces = fsio.read_geometry(str(reference))
         assert np.array_equal(faces, reference_faces)
-        native_reference_sse = objective(torch.from_numpy(reference_vertices))
+        native_reference_sse = objective(torch.from_numpy(reference_vertices.astype(np.float32)))
         native_reference_terms = trial_terms[-1]
         report['continuation'].append({
             'epoch': epoch, 'dt': dt, 'gradient_averages': gradient_averages,

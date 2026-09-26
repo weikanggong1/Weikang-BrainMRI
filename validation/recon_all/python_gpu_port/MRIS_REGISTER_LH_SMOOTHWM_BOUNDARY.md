@@ -55,9 +55,16 @@ within an existing stage removes the duplicate projections and restores
 exact second-step parity. Starting the 256-average stage with one projection
 then matches `debug0059`; the same one-projection rule also matches every later normal pass through `debug0101`.
 
-The Python objective evaluated on native `debug0058` coordinates is
-1,418,709.5106 while the native status log prints 1,418,705.2; on native
-`debug0059` coordinates it is 1,412,846.3542 versus native printed
-1,412,847.0. These differences did not change the 45 checked coordinate updates, but
-independent stopping decisions and later stages remain open.
-The smoothwm raw-curvature fit currently uses CPU Numba for source-order matrix operations.
+The first continuation reports evaluated reloaded native vertices as
+float64 because that is the `nibabel` reader default. Their
+`native_reference_sse` fields therefore do **not** measure the float32
+registration objective and should not be compared with the native log.
+The [corrected probe](probe_mris_register_sno2_epoch.py) casts reference
+vertices to float32. Without rerunning the exact 45-step geometry, the
+[hash-linked score audit](mris_register_lh_default_epoch0057_0101_selected_score_audit_headcw.json)
+compares each selected float32 trial SSE with the
+[native one-decimal status log](mris_register_lh_default_native_run_headcw.log): the largest absolute difference is 0.3441 across 45 updates. For
+`debug0058`, the Python selected-trial SSE is 1,418,705.2775 versus the
+native printed 1,418,705.2. These comparisons do not establish bitwise SSE
+parity. The smoothwm raw-curvature fit currently uses CPU Numba for
+source-order matrix operations.
