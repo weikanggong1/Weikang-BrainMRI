@@ -1,6 +1,6 @@
 # White and pial placement: isolated numerical port status
 
-**Current result (2026-09-26):** On the fixed T1, LH pial placement independently computes all 41 optimizer decisions from Python SSE/RMS. All 41 decisions and 14 installed RAM checkpoints agree; the final optimizer state has 319,866/319,866 exact float32 coordinates. Medial-wall pinning and intersection repair then produce a final pial surface with 106,622/106,622 exact ordered vertices and exact faces. Per-vertex area, thickness, pial curvature, and volume have zero outliers under their stated tolerances. The RH final surface also matches all 105,541 vertices, but its replay still takes native dt/reject decisions as a diagnostic control. Both sides start from frozen official white surfaces and MRI inputs. Independent white placement, RH pial decisions, connected orchestration, and end-to-end recon-all remain open.
+**Current result (2026-09-26):** On the fixed T1, both LH and RH pial placement independently compute all 41 optimizer decisions from Python SSE/RMS. The installed decision logs enter only as post-decision assertions. LH matches 14 RAM checkpoints; RH matches its available steps 1, 2 and 41 RAM checkpoints. The final optimizer states have 319,866/319,866 and 316,623/316,623 exact float32 coordinates. Medial-wall pinning and intersection repair produce final pial surfaces with 106,622/106,622 LH and 105,541/105,541 RH exact ordered vertices and exact faces. Per-vertex area, thickness, pial curvature, and volume have zero outliers under their stated tolerances. Both sides start from frozen official white surfaces and MRI inputs. Independent white placement, connected orchestration, and end-to-end recon-all remain open.
 
 The earlier source-probe and first-difference sections below record the incremental diagnostic history. The bilateral installed-binary results near the end supersede their provisional acceptance statements.
 
@@ -274,6 +274,38 @@ An earlier comparison accidentally selected `probe_installed_ram_official_step37
 The [direct endpoint check](place_surface_installed_lh_independent_decision_final_metrics_report.json) consumes the independent step-41 state, pins the medial wall, repairs its two intersecting faces in one 100-step smoothing cycle, and compares the resulting `lh.pial` with the installed normal CLI: 106,622/106,622 vertices, 319,866/319,866 coordinate components, and ordered faces exact. Per-vertex `lh.area.pial`, `lh.thickness`, `lh.curv.pial`, and `lh.volume` have zero outliers under the established tolerances; maximum absolute differences are 9.54e−7 mm², 4.77e−7 mm, 4.54e−4, and 1.91e−6 mm³, respectively. The final check uses [the same isolated cleanup implementation](../../../src/fnit/recon_all/place_surface_final_cleanup.py) and the [final-boundary validator](validate_place_surface_installed_final_boundary.py) with `--optimizer-candidate` pointing to the independent output. The [decision branch tests](../../../tests/recon_all/test_place_surface_decision.py) passed 3/3 on headcw.
 
 This establishes a native-log-independent **LH pial optimizer and final pial endpoint** for one frozen subject. RH pial final geometry and vertex maps remain validated through the earlier log-guided control, and white placement and the complete recon-all chain have separate acceptance boundaries. These placement modules run on CPU NumPy/Numba; this result does not establish a GPU speedup.
+
+### Installed RH pial independent optimizer decisions, 2026-09-26
+
+The [bounded decision validator](validate_place_surface_independent_decision.py)
+now accepts `--hemisphere rh`, selects the RH frozen white/label/stats/MRI
+inputs, and compares only the three available installed RAM checkpoints at
+steps 1, 2, and 41. It computes its own SSE, RMS, `dt`, accept/reject
+outcome, and coordinates. The native log supplies only assertions after each
+decision; none of its decisions enters the candidate state. The RH path uses
+the [source-order collision retry and accepted-offset implementation](../../../src/fnit/recon_all/place_surface_collision.py)
+ported into this package. All 16 placement modules called by the validator
+now match the previously validated source modules byte for byte. The focused
+decision/step tests pass 4/4; the prior LH full replay was not repeated.
+
+The first RH step alone matched all 105,541 installed RAM vertices and
+316,623 coordinate components ([report](place_surface_rh_independent_decision_step1_headcw.json)).
+The fresh [41-step report](place_surface_rh_independent_decision_full_headcw.json)
+sets `first_mismatch=null`: **41/41 independently chosen decisions** agree
+with the installed log, including three rejected trials and outer-pass
+endpoints 26/31/35/41. Steps 1, 2 and 41 match every installed RAM vertex
+and float32 coordinate bit. The run uses frozen official `rh.white`, MRI,
+autodet thresholds and labels; it does not create the white surface.
+
+The [final-boundary check](place_surface_rh_independent_decision_final_metrics_headcw.json)
+starts from this independently chosen step-41 state, pins the medial wall,
+repairs intersections, then matches all 105,541 final installed `rh.pial`
+vertices, all 316,623 coordinate components and every ordered face exactly.
+The independently regenerated maps have zero outliers under the existing
+rules: `area.pial` maximum error 9.54e-7 mm², thickness 4.77e-7 mm,
+pial curvature 2.03e-4, and vertex volume 1.91e-6 mm³. This replaces the
+prior log-guided RH control for the decision/endpoint gate. White placement,
+connected orchestration and subject-level T1-to-metrics validation remain open.
 
 ## Time boundary
 

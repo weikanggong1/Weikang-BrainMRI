@@ -1,4 +1,4 @@
-"""Independent fixed-input LH pial dt/reject replay, bounded by requested steps."""
+"""Independent fixed-input pial dt/reject replay, bounded by requested steps."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ import nibabel as nib
 import numpy as np
 
 
-RAM = {
+RAM_LH = {
     1: "probe_installed_ram_official_step1_exact",
     2: "probe_installed_ram_official_step2_exact",
     5: "probe_installed_ram_official_step5",
@@ -28,6 +28,13 @@ RAM = {
     36: "probe_installed_ram_official_pass2",
     37: "probe_installed_ram_official_step37_limited",
     41: "probe_installed_ram_official_pass3",
+}
+
+
+RAM_RH = {
+    1: "probe_installed_rh_ram_official_step1_exact",
+    2: "probe_installed_rh_ram_official_step2_exact",
+    41: "probe_installed_rh_ram_official_pass3",
 }
 
 
@@ -58,14 +65,17 @@ def main() -> None:
     parser.add_argument("--installed-binary", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
+    parser.add_argument("--hemisphere", choices=("lh", "rh"), default="lh")
     parser.add_argument("--max-steps", type=int, default=1)
     parser.add_argument("--resume-step", type=int, default=0)
     parser.add_argument("--resume-report", type=Path)
     args = parser.parse_args()
     if not 1 <= args.max_steps <= 41 or args.resume_step not in (0, 21, 37):
-        parser.error("bounded diagnostic covers LH steps 1..41, resuming at step 21 or 37")
+        parser.error("bounded diagnostic covers steps 1..41, resuming at step 21 or 37")
     if args.resume_step >= args.max_steps or bool(args.resume_report) != bool(args.resume_step):
         parser.error("resume needs a prior independent report and a later maximum step")
+    if args.hemisphere == "rh" and args.resume_step:
+        parser.error("RH diagnostic currently runs from step 1")
 
     sys.path.insert(0, str(args.module))
     from fnit.recon_all.place_surface_border import compute_border_values_first_pass
@@ -88,10 +98,10 @@ def main() -> None:
     from fnit.recon_all.place_surface_step import unconstrained_step_with_offsets
     from fnit.recon_all.place_surface_volume import prepare_placement_volume
 
-    hemi = "lh"
-    white = args.subject / "surf/lh.white"
-    label = args.subject / "label/lh.cortex+hipamyg.label"
-    stats_path = args.subject / "surf/autodet.gw.stats.lh.dat"
+    hemi = args.hemisphere
+    white = args.subject / f"surf/{hemi}.white"
+    label = args.subject / f"label/{hemi}.cortex+hipamyg.label"
+    stats_path = args.subject / f"surf/autodet.gw.stats.{hemi}.dat"
     brain_path = args.subject / "mri/brain.finalsurfs.mgz"
     wm_path = args.subject / "mri/wm.mgz"
     aseg_path = args.subject / "mri/aseg.presurf.mgz"
@@ -190,10 +200,10 @@ def main() -> None:
         reference_rejected.update(int(index) for index in re.findall(
             r"RMS increased, rejecting step\n(\d{3}): dt:", chunk))
     references = {}
-    for step, directory in RAM.items():
+    for step, directory in (RAM_LH if hemi == "lh" else RAM_RH).items():
         if step > args.max_steps:
             continue
-        path = args.root / directory / "surf/lh.pial.ram"
+        path = args.root / directory / "surf" / f"{hemi}.pial.ram"
         native_xyz, native_faces = nib.freesurfer.read_geometry(path)
         if not np.array_equal(faces, native_faces):
             raise ValueError(f"step {step}: native ordered faces differ")
@@ -213,7 +223,7 @@ def main() -> None:
                 and prior["first_mismatch"]["reason"] == "coordinates"
                 and prior["first_mismatch"]["step"] == 37):
             raise ValueError("resume report has an unresolved earlier mismatch")
-        state = np.load(args.output_dir / f"lh.step{args.resume_step:02d}.npz")
+        state = np.load(args.output_dir / f"{hemi}.step{args.resume_step:02d}.npz")
         current, cropped = state["xyz"], state["cropped"]
         prior_trial = prior["steps"][-1]["trials"][-1]
         last_sse, last_rms = prior_trial["objective"]["sse"], prior_trial["objective"]["rms"]
@@ -222,7 +232,7 @@ def main() -> None:
             raise ValueError("resume state differs from installed RAM checkpoint")
         if args.resume_step == 37:
             for pass_index, prior_step in enumerate((26, 32, 36), 1):
-                prior_xyz = np.load(args.output_dir / f"lh.step{prior_step:02d}.npz")["xyz"]
+                prior_xyz = np.load(args.output_dir / f"{hemi}.step{prior_step:02d}.npz")["xyz"]
                 prior_normals = initial_vertex_normals(prior_xyz, faces)
                 sigma = 2.0 / (1 << pass_index)
                 n_averages = 16 >> pass_index
@@ -235,7 +245,7 @@ def main() -> None:
                 original_area = surface_total_area(prior_xyz, faces)
             outer_pass = 3
     report = {
-        "scope": "Independent LH pial dt/reject decisions on fixed fs_sub01; bounded requested steps",
+        "scope": f"Independent {hemi.upper()} pial dt/reject decisions on fixed fs_sub01; bounded requested steps",
         "decision_inputs": "Python SSE/RMS from frozen MRI, white surface, target values and independently accepted geometry; no native log values influence dt or rejection",
         "native_reference_role": "Post-decision assertion of dt/reject and selected RAM coordinates only",
         "source_rule": "check_tol=0, l_location=0, tol=1e-4, REDUCTION_PCT=0.5, MAX_REDUCTIONS=2; orig_area reset at each MRISpositionSurface entry",
@@ -246,7 +256,7 @@ def main() -> None:
         )},
         "initial_objective": initial,
         "resume_step": args.resume_step,
-        "resume_state_sha256": digest(args.output_dir / f"lh.step{args.resume_step:02d}.npz") if args.resume_step else None,
+        "resume_state_sha256": digest(args.output_dir / f"{hemi}.step{args.resume_step:02d}.npz") if args.resume_step else None,
         "resume_report_sha256": digest(args.resume_report) if args.resume_report else None,
         "resume_prior_mismatch": prior["first_mismatch"] if args.resume_step else None,
         "steps": [],
@@ -294,7 +304,7 @@ def main() -> None:
             report["first_mismatch"] = {"step": step, "reason": "all trials rejected"}
             break
         current = accepted
-        np.savez(args.output_dir / f"lh.step{step:02d}.npz", xyz=current, cropped=cropped)
+        np.savez(args.output_dir / f"{hemi}.step{step:02d}.npz", xyz=current, cropped=cropped)
         comparison = compare(current, references[step][1]) if step in references else None
         observed_reject = any(item["rejected"] for item in trials)
         schedule_match = (trials[-1]["dt"] == reference_dt[step]

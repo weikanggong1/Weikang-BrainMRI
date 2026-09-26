@@ -47,8 +47,10 @@ The following Python T1 normalization matched a fresh native command
 on the same Python-generated `nu.mgz` input, while differing from the archived
 full subject at 112 voxels ([report](CONNECTED_T1_NORMALIZE_20260926.md)).
 
-The currently open critical path includes full topology repair, complete
-white/pial placement, and connected native-free orchestration. The
+The currently open critical path includes full topology repair, independent
+white placement, and connected native-free orchestration. Both pial optimizers
+now independently select their full 41-step schedules and match final surfaces
+and vertex metrics when started from frozen official white surfaces. The
 standalone conventional-sphere stage now matches both final native meshes and volume geometry on the frozen subject;
 its optimization still runs on CPU/Numba and is not yet wired into a connected
 T1-to-metrics pipeline ([stage report](SPHERE_STANDARD_STATUS.md)). The

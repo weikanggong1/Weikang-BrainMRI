@@ -398,14 +398,14 @@ This is an intermediate installed-versus-source comparison, not the final
 `area.pial` map or a Python optimizer result; see the
 [area impact report](pial_source_vs_installed_vertex_area_20260926.json) and
 [comparison script](experimental/compare_pial_intermediate_area.py).
-The later independent LH pial replay now computes its own dt/reject schedule
-through all 41 steps from frozen official white/MRI inputs. All 41 decisions
-and 14 installed RAM checkpoints match; final pial ordered vertices and faces
-are exact, and every area, thickness, vertex-volume and pial-curvature map has
-zero outliers. Three of 12 rejected-trial SSE log values differ by 0.1 at
-printed precision without changing decisions. RH final geometry matches only
-under a native dt/reject diagnostic schedule. Independent white placement,
-RH pial decisions and connected orchestration remain open; see
+The independent bilateral pial replays now compute their own dt/reject
+schedules through all 41 steps from frozen official white/MRI inputs. All 41
+decisions per side and the available installed RAM checkpoints match; final
+pial ordered vertices and faces are exact, and every area, thickness,
+vertex-volume and pial-curvature map has zero outliers. Three of 12 LH
+rejected-trial SSE log values differ by 0.1 at printed precision without
+changing decisions. Independent white placement and connected orchestration
+remain open; see
 [`PLACE_SURFACE_WHITE_PIAL.md`](PLACE_SURFACE_WHITE_PIAL.md) and the
 [LH full summary](place_surface_installed_lh_independent_decision_full_summary.json).
 

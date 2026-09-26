@@ -254,7 +254,7 @@ def _candidate_collision(
     current: np.ndarray, triangles: np.ndarray, moved: np.ndarray,
     corners: np.ndarray, low: np.ndarray, high: np.ndarray,
     nearby: np.ndarray,
-) -> bool:
+) -> int:
     for face_id in nearby:
         face = triangles[face_id]
         touching = False
@@ -282,8 +282,8 @@ def _candidate_collision(
             for axis in range(3):
                 candidate[corner, axis] = current[face[corner], axis]
         if triangles_intersect(moved, candidate):
-            return True
-    return False
+            return int(face_id) + 1
+    return 0
 
 
 
@@ -325,12 +325,81 @@ def _project_close_neighbors(
     output[0], output[1], output[2] = odx, ody, odz
     return output, True
 
+def _sample_mht_voxels(triangle: np.ndarray) -> set[tuple[int, int, int]]:
+    """Sample a triangle into the pinned FreeSurfer 1 mm face-hash buckets."""
+    a, b, c = np.asarray(triangle, dtype=np.float64)
+    steps = max(1, int(np.ceil(2.0 * max(np.linalg.norm(a - b), np.linalg.norm(a - c)))))
+    db, dc = (a - b) / steps, (a - c) / steps
+    pb, pc = b.copy(), c.copy()
+    result: set[tuple[int, int, int]] = set()
+
+    def voxel(point: np.ndarray) -> tuple[int, int, int]:
+        return tuple(int(float(value) + 1000.0) for value in point)
+
+    def path(old: tuple[int, int, int], new: tuple[int, int, int]) -> None:
+        axes = [range(x, y + (1 if y >= x else -1), 1 if y >= x else -1)
+                for x, y in zip(old, new)]
+        for index, (x, y, z) in enumerate(
+            (x, y, z) for x in axes[0] for y in axes[1] for z in axes[2]
+        ):
+            if index:
+                result.add((x, y, z))
+
+    old_b = old_c = (0, 0, 0)
+    for main in range(steps + 1):
+        if main:
+            pb += db
+            pc += dc
+        vb, vc = voxel(pb), voxel(pc)
+        if main == 0:
+            result.update((vb, vc))
+        else:
+            if old_b != vb:
+                path(old_b, vb)
+            if old_c != vc:
+                path(old_c, vc)
+        old_b, old_c = vb, vc
+        if vb == vc:
+            continue
+        rung_steps = max(1, int(np.ceil(2.0 * np.linalg.norm(pc - pb))))
+        rung_delta = (pc - pb) * (0.9995 / rung_steps)
+        rung = pb.copy()
+        old = vb
+        for _ in range(rung_steps):
+            rung += rung_delta
+            new = voxel(rung)
+            if old != new:
+                path(old, new)
+                old = new
+    return result
+
+
+def _retry_face_in_mht(
+    moved: np.ndarray, other: int, faces: np.ndarray,
+    original: np.ndarray, trial: np.ndarray, current: np.ndarray,
+    order_rank: np.ndarray, current_rank: int,
+) -> bool:
+    """Replay the retained face-hash voxels for one candidate after a rejected trial."""
+    corners = faces[other]
+    stored = _sample_mht_voxels(trial[corners])
+    face_xyz = original[corners].copy()
+    prior = sorted((int(order_rank[vertex]), slot) for slot, vertex in enumerate(corners)
+                   if order_rank[vertex] < current_rank)
+    for _, slot in prior:
+        stored.difference_update(_sample_mht_voxels(face_xyz))
+        face_xyz[slot] = current[corners[slot]]
+        stored.update(_sample_mht_voxels(face_xyz))
+    return bool(stored.intersection(_sample_mht_voxels(moved)))
+
+
 def asynchronous_first_step(
     vertices: np.ndarray, faces: np.ndarray, proposed: np.ndarray,
     ripped: np.ndarray, *, limit: int | None = None,
     regions: tuple[int, ...] | None = None,
     fast: bool = True,
     offsets: np.ndarray | None = None,
+    accepted_offsets: np.ndarray | None = None,
+    stale_mht_trial: np.ndarray | None = None,
     ordered_neighbors: tuple[np.ndarray, np.ndarray] | None = None,
     min_neighbor_mm: float = 0.01,
 ) -> tuple[np.ndarray, np.ndarray]:
@@ -339,8 +408,13 @@ def asynchronous_first_step(
     `proposed` contains the clipped pre-collision endpoint. Optional `offsets`
     retain its unrounded float32 displacement for close-neighbor projection.
     The initial cKDTree is widened by 1 mm to cover all 0.3 mm moves.
+    `stale_mht_trial` reproduces face-bucket retention after a rejected trial.
     """
     xyz = np.asarray(vertices, dtype=np.float32)
+    if stale_mht_trial is not None and not fast:
+        raise ValueError("retained MHT replay requires fast collision mode")
+    if accepted_offsets is not None and offsets is None:
+        raise ValueError("accepted_offsets requires unrounded offsets")
     triangles = np.asarray(faces, dtype=np.int32)
     next_xyz = np.asarray(proposed, dtype=np.float32)
     geometry, _, vertex_svi = subvolume_assignment(xyz, triangles, next_xyz, ripped)
@@ -357,6 +431,9 @@ def asynchronous_first_step(
     ])
     if limit is not None:
         order = order[:limit]
+    order_rank = np.full(len(xyz), len(order), dtype=np.int32)
+    order_rank[order] = np.arange(len(order), dtype=np.int32)
+    trial = np.asarray(stale_mht_trial, dtype=np.float32) if stale_mht_trial is not None else None
     current = xyz.copy()
     original_triangles = xyz[triangles]
     initial_centers = original_triangles.mean(axis=1, dtype=np.float64)
@@ -373,6 +450,7 @@ def asynchronous_first_step(
         if np.array_equal(next_xyz[vertex], xyz[vertex]):
             continue
         endpoint = next_xyz[vertex]
+        final_offset = offsets[vertex] if offsets is not None else None
         if offsets is not None:
             projected, valid = _project_close_neighbors(
                 current, int(vertex), neighbor_indices, neighbor_valid,
@@ -382,6 +460,7 @@ def asynchronous_first_step(
             if not valid:
                 continue
             endpoint = np.float32(xyz[vertex] + projected)
+            final_offset = projected
         collision = False
         for face_id in incident[incident_offsets[vertex]:incident_offsets[vertex + 1]]:
             corners = triangles[face_id]
@@ -397,7 +476,20 @@ def asynchronous_first_step(
                 low, high = moved.min(axis=0), moved.max(axis=0)
             nearby = np.asarray(tree.query_ball_point(center, radius + maximum_radius + 1.0), dtype=np.int32)
             if fast:
-                collision = _candidate_collision(current, triangles, moved, corners, low, high, nearby)
+                hit = _candidate_collision(current, triangles, moved, corners, low, high, nearby)
+                if trial is None:
+                    collision = hit > 0
+                else:
+                    while hit:
+                        other = hit - 1
+                        if _retry_face_in_mht(
+                            moved, other, triangles, xyz, trial, current,
+                            order_rank, int(order_rank[vertex]),
+                        ):
+                            collision = True
+                            break
+                        nearby = nearby[np.flatnonzero(nearby == other)[0] + 1:]
+                        hit = _candidate_collision(current, triangles, moved, corners, low, high, nearby)
             else:
                 if len(nearby):
                     neighbors = triangles[nearby]
@@ -412,6 +504,11 @@ def asynchronous_first_step(
                             break
             if collision:
                 break
-        if not collision:
+        if collision:
+            if accepted_offsets is not None:
+                accepted_offsets[vertex] = 0.0
+        else:
             current[vertex] = endpoint
+            if accepted_offsets is not None:
+                accepted_offsets[vertex] = final_offset
     return current, order
