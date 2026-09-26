@@ -1,0 +1,184 @@
+{
+  "scope": "LH installed FreeSurfer 8.2.0-1 pial; optimizer candidate before pinning/intersection cleanup",
+  "optimizer_candidate_source": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/independent_lh_pial_decision_20260926/lh.step41.npz",
+  "sha256": {
+    "installed_optimizer_ram": "38d33e09d4b17073bd8814cbec3a1e1c08651d754d86e4824636421633952a94",
+    "python_optimizer_step41": "37fbae2a60a3a7122db4ec0b0503b6fba387929640e2b5b17dd779f9cdaa7d0e",
+    "installed_final_cli": "4bcd2b9ccd607db0e87b9e4da0d26cb55ac853a53b2bd0926cf17c63f73be76b",
+    "archived_pial_T1": "f7c61a103d48497d38fb46ff0495984624eba726f384473f5634a8d7102d66d5",
+    "archived_pial": "f7c61a103d48497d38fb46ff0495984624eba726f384473f5634a8d7102d66d5",
+    "archived_area_pial": "b3a1b4a64138e0776263f4b0943dbf363686c7295a27afd3119dd1ea2bfac851",
+    "archived_curv_pial": "d526ee9e2fa76a972d7c5e4252019a82aaeed2e1b1442d8b3acad5281ec1a69f",
+    "archived_thickness": "cd29acd6e1c14279fd0d25ee59bd464d88a3861a730d418f57a361cc8529935d",
+    "archived_volume": "19a63250cf4c967aabe07cc91890f49d806958fbe0c6edc832266cc670c154b5",
+    "white": "9c88a786c4a571c07d830b83fe647461b09fdacb63ff143670771340ef50b51c",
+    "cortex_label": "524245d2c800a7ff3fc8ba1d1fe04c02d09354bcc29e99cf3f64182c2f312506",
+    "placement_label": "03dfc76e15857a0e2b2f4e7ae751e6f657ae511df408016abe0430e6bd8ca6c2"
+  },
+  "ordered_faces_exact": true,
+  "medial_pin": {
+    "outside_cortex_vertices": 7685
+  },
+  "intersection_cleanup": {
+    "intersecting_faces_before": 2,
+    "intersecting_faces_after": 0,
+    "intersecting_faces_trace": [
+      2,
+      0
+    ],
+    "marked_vertices": 6,
+    "smoothed_vertices": 6,
+    "smoothing_cycles": 1,
+    "smoothing_iterations": 100
+  },
+  "mesh_comparisons": {
+    "python_optimizer_step41_vs_installed_optimizer_ram": {
+      "exact_vertices": 106622,
+      "total_vertices": 106622,
+      "exact_components": 319866,
+      "total_components": 319866,
+      "maximum_distance_mm": 0.0,
+      "p99_distance_mm": 0.0,
+      "first_different_vertices": []
+    },
+    "installed_optimizer_ram_vs_installed_final_cli": {
+      "exact_vertices": 104558,
+      "total_vertices": 106622,
+      "exact_components": 313674,
+      "total_components": 319866,
+      "maximum_distance_mm": 8.410009343728671,
+      "p99_distance_mm": 2.7596563037732667,
+      "first_different_vertices": [
+        35080,
+        35081,
+        35089,
+        35090,
+        35091,
+        35092,
+        35098,
+        35099,
+        35100,
+        35101,
+        35106,
+        35107
+      ]
+    },
+    "python_after_medial_pin_vs_installed_final_cli": {
+      "exact_vertices": 106616,
+      "total_vertices": 106622,
+      "exact_components": 319848,
+      "total_components": 319866,
+      "maximum_distance_mm": 3.362620997582927,
+      "p99_distance_mm": 0.0,
+      "first_different_vertices": [
+        61392,
+        61393,
+        61411,
+        62104,
+        92155,
+        103474
+      ]
+    },
+    "python_after_intersection_repair_vs_installed_final_cli": {
+      "exact_vertices": 106622,
+      "total_vertices": 106622,
+      "exact_components": 319866,
+      "total_components": 319866,
+      "maximum_distance_mm": 0.0,
+      "p99_distance_mm": 0.0,
+      "first_different_vertices": []
+    },
+    "installed_final_cli_vs_archived_pial_T1": {
+      "exact_vertices": 106622,
+      "total_vertices": 106622,
+      "exact_components": 319866,
+      "total_components": 319866,
+      "maximum_distance_mm": 0.0,
+      "p99_distance_mm": 0.0,
+      "first_different_vertices": []
+    },
+    "archived_pial_T1_vs_archived_pial": {
+      "exact_vertices": 106622,
+      "total_vertices": 106622,
+      "exact_components": 319866,
+      "total_components": 319866,
+      "maximum_distance_mm": 0.0,
+      "p99_distance_mm": 0.0,
+      "first_different_vertices": []
+    },
+    "python_optimizer_step41_vs_archived_pial": {
+      "exact_vertices": 104558,
+      "total_vertices": 106622,
+      "exact_components": 313674,
+      "total_components": 319866,
+      "maximum_distance_mm": 8.410009343728671,
+      "p99_distance_mm": 2.7596563037732667,
+      "first_different_vertices": [
+        35080,
+        35081,
+        35089,
+        35090,
+        35091,
+        35092,
+        35098,
+        35099,
+        35100,
+        35101,
+        35106,
+        35107
+      ]
+    }
+  },
+  "area_pial": {
+    "method": "same standalone vertex_area CPU kernel on candidate and archived final geometry",
+    "kernel_final_vs_official": {
+      "exact_vertices": 45199,
+      "max_abs_mm2": 9.5367431640625e-07
+    },
+    "candidate_vs_official": {
+      "exact_vertices": 44159,
+      "max_abs_mm2": 2.881490468978882,
+      "outliers_at_0.001_plus_0.001_relative_mm2": 2356
+    },
+    "after_pin_vs_official": {
+      "exact_vertices": 45195,
+      "max_abs_mm2": 2.8344643115997314,
+      "outliers_at_0.001_plus_0.001_relative_mm2": 18
+    },
+    "after_repair_vs_official": {
+      "exact_vertices": 45199,
+      "max_abs_mm2": 9.5367431640625e-07,
+      "outliers_at_0.001_plus_0.001_relative_mm2": 0
+    }
+  },
+  "other_vertex_metrics": {
+    "curvature": {
+      "seconds": 0.6757000861689448,
+      "candidate_sha256": "05f007fde7f770b84d476cd0b320aea7b002fc53f97cf9d85e9bc0b43e6031d7",
+      "vertices": 106622,
+      "exact_float32_vertices": 10616,
+      "maximum_absolute_error": 0.00045389682054519653,
+      "p99_absolute_error": 2.7102082967758083e-05,
+      "outliers_at_0.005_plus_0.001_relative": 0
+    },
+    "thickness": {
+      "seconds": 7.282617976889014,
+      "candidate_sha256": "0c6199de1267032e54cafb76f1a7f5b04ccede202743116dcfb1bb78e83b4062",
+      "vertices": 106622,
+      "exact_float32_vertices": 96806,
+      "maximum_absolute_error": 4.76837158203125e-07,
+      "p99_absolute_error": 2.384185791015625e-07,
+      "outliers_at_0.005_plus_0.001_relative": 0
+    },
+    "volume": {
+      "seconds": 0.05434328503906727,
+      "candidate_sha256": "af58f4aab8f168a61484a98f3aabdab8055e4685cea86dae555c09d6651adca1",
+      "vertices": 106622,
+      "exact_float32_vertices": 66072,
+      "maximum_absolute_error": 1.9073486328125e-06,
+      "p99_absolute_error": 4.76837158203125e-07,
+      "outliers_at_0.005_plus_0.001_relative": 0
+    }
+  },
+  "independent_final_pial_sha256": "e6a02cf522af758006dcfcd9bbc50cad9df698ae14a2d9d801eaf36ab9a4b832"
+}
