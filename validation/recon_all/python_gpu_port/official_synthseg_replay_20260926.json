@@ -1,0 +1,14 @@
+{
+  "scope": "fresh unmodified FreeSurfer 8.2 mri_synthseg --cpu --post versus archived official subject",
+  "input_sha256": "caf74b3a2a7c9929d280ac4db5bd80cc69a59ddbeca54af2884906cd8acf5de6",
+  "fresh_seg_sha256": "44bfd4d48098ad20bf068ed7f0abc80b7cd4c1f97ba0d12dd109a7ba018c6b8d",
+  "fresh_csv_sha256": "135ff5f32b8fc1418f14f998c409a67b2af823a802c87d06f621e0e5826424cd",
+  "fresh_posterior_sha256": "01723c5acf0723bafd2992d92c586b9f1ebf0954c2df1cd84405865f87fb4b4d",
+  "official_exit_status": 0,
+  "fresh_vs_archived_seg_shape_equal": true,
+  "fresh_vs_archived_seg_dtype_equal": true,
+  "fresh_vs_archived_seg_voxel_mismatches": 0,
+  "fresh_vs_archived_seg_affine_max_abs_error": 0.0,
+  "fresh_vs_archived_seg_mgh_header_equal": true,
+  "fresh_vs_archived_csv_byte_equal": true
+}

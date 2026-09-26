@@ -62,6 +62,7 @@ def postprocess_segmentation(
     content_slices: tuple[slice, slice, slice],
     *,
     fast: bool = False,
+    foreground_threshold: float = 0.25,
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """Apply official component filters, unpad, and return hard labels/posteriors.
 
@@ -76,7 +77,7 @@ def postprocess_segmentation(
     if fast:
         posterior = posterior[(slice(None), *content_slices)]
 
-    foreground = largest_connected_component(posterior[1:].sum(0) > 0.25)
+    foreground = largest_connected_component(posterior[1:].sum(0) > foreground_threshold)
     posterior[1:] *= foreground
     if fast:
         posterior[1:] *= posterior[1:] > 0.2

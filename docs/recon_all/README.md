@@ -63,13 +63,16 @@ pial 网格和逐顶点指标尚未通过。[T1 输入转换](../../validation/r
 MGH 头及仿射一致。该链输出止于 `orig.mgz`，已验证路径为 CPU。
 从这个 Python 生成的 `orig.mgz` 接续运行 PyTorch SynthStrip 也已在 CPU 上
 逐体素匹配官方 `synthstrip.mgz`，见[连续输入对照](../../validation/recon_all/python_gpu_port/connected_synthstrip_fs_sub01_report.json)。
-33 类 SynthSeg 的同一路径 CPU 测试受 headcw PyTorch `Conv3d` 故障阻断，
-[诊断记录](../../validation/recon_all/python_gpu_port/connected_synthseg_cpu_headcw_20260926.json)；
-该连接尚未在 GPU 上核验。
+33 类 SynthSeg 在同一 Python 输入上完成 H100 GPU 对照：关闭该阶段 cuDNN TF32 后，
+16,777,216 个硬分割体素、float32 类型和 MGH 头/体素载荷均与官方一致；
+经单体素临界阈值修正后，33 个软体积列最大差 0.05 mm³，仍有 7 列未达到
+现有 0.005 mm³ 统计表门槛；该修正仅在此输入上验证。
+详情见[连接式 GPU 验证](../../validation/recon_all/python_gpu_port/CONNECTED_SYNTHSEG_GPU_20260926.md)。
+headcw CPU 测试受 PyTorch `Conv3d` 故障及内存占用阻断，未重复。
 [现有混合版与未经修改的官方 FreeSurfer 被试比较](../../validation/recon_all/python_gpu_port/TRUE_OFFICIAL_BASELINE_20260926.md)
 显示 138 项中 110 项通过：双侧有序表面顶点、面及逐顶点指标一致，
 但 SynthSeg 软体积、SynthMorph 形变场和部分统计值仍不同。
-SynthSeg 标签存储类型已改为官方的 float32；该修改仍需在连接式 GPU 推理中复验。
+当前连接式 GPU 推理已核验该 float32 标签类型；软体积精度仍是开放项。
 连接链生成的 `nu.mgz` 已接续运行 PyTorch EntoWM：在固定 T1 上，
 [独立对照](../../validation/recon_all/python_gpu_port/CONNECTED_ENTOWM_20260926.md)
 的全部 16,777,216 个标签体素、MGH 头和体素载荷与官方归档一致，

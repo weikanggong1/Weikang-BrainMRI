@@ -74,4 +74,4 @@ fnit synthseg --i sub-01_T1w.nii.gz --o sub-01_synthseg.nii.gz \
 
 ## 验证边界
 
-公开 CLI 与 Python API 调用同一套 33 类推理与软体积代码，相应接口测试见 [`tests/synthseg_parc/`](../../tests/synthseg_parc/)。在一个 Python 输入链生成的 T1 上，关闭 SynthSeg 卷积 TF32 后，硬分割与原版 16,777,216 个体素全部一致；33 列软体积最大差 0.185 mm³，仍未达到现有 0.005 mm³ 统计表门槛。详见[同输入 GPU 对照](../../validation/recon_all/python_gpu_port/CONNECTED_SYNTHSEG_GPU_20260926.md)。其他被试未验收。
+公开 CLI 与 Python API 调用同一套 33 类推理与软体积代码，相应接口测试见 [`tests/synthseg_parc/`](../../tests/synthseg_parc/)。在一个 Python 输入链生成的 T1 上，关闭 SynthSeg 卷积 TF32 后，硬分割与原版 16,777,216 个体素全部一致；经单体素临界阈值修正后，33 列软体积最大差 0.05 mm³，仍有 7 列未达到现有 0.005 mm³ 统计表门槛。该修正仅在这一输入上验证。详见[同输入 GPU 对照](../../validation/recon_all/python_gpu_port/CONNECTED_SYNTHSEG_GPU_20260926.md)。其他被试未验收。

@@ -19,6 +19,8 @@ from .segment import SynthSegSegmenter
 
 # Cross-framework FP32 convolutions can reverse an almost exact SynthSeg tie.
 SYNTHSEG_TIE_EPSILON = 2 ** -20
+# Small FP32 threshold margin resolves one cross-framework foreground-mask tie.
+_SYNTHSEG_FOREGROUND_THRESHOLD = 0.2500001
 
 
 def _synthseg_index_with_numerical_ties(posterior: torch.Tensor) -> torch.Tensor:
@@ -108,7 +110,8 @@ class SynthSeg:
         prepared = preprocess_t1(image, device=self.device)
         posterior = self.segmenter.posterior(prepared.image)
         ordinary_labels, posterior = postprocess_segmentation(
-            posterior, self.segmenter.labels, self.topology, prepared.content_slices)
+            posterior, self.segmenter.labels, self.topology, prepared.content_slices,
+            foreground_threshold=_SYNTHSEG_FOREGROUND_THRESHOLD)
         labels = self.segmenter.labels[_synthseg_index_with_numerical_ties(posterior)]
         near_tie_voxels = int(torch.count_nonzero(labels != ordinary_labels))
         aligned_affine = prepared.aligned_affine.copy()

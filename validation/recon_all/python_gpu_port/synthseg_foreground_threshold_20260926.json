@@ -1,0 +1,215 @@
+{
+  "band": 1e-05,
+  "near_threshold_voxels": 11,
+  "rows": [
+    {
+      "aligned_voxel": [
+        26,
+        203,
+        42
+      ],
+      "original_voxel": [
+        229,
+        213,
+        203
+      ],
+      "torch_foreground_sum": 0.24999645352363586,
+      "numpy_foreground_sum": 0.24999646842479706,
+      "raw_background": 0.7500033974647522,
+      "raw_csf": 0.22465986013412476,
+      "official_post_foreground_sum": 0.0,
+      "official_post_background": 1.0,
+      "official_post_csf": 0.0
+    },
+    {
+      "aligned_voxel": [
+        42,
+        211,
+        40
+      ],
+      "original_voxel": [
+        213,
+        215,
+        211
+      ],
+      "torch_foreground_sum": 0.2500027120113373,
+      "numpy_foreground_sum": 0.2500027120113373,
+      "raw_background": 0.7499971389770508,
+      "raw_csf": 0.22502680122852325,
+      "official_post_foreground_sum": 0.0,
+      "official_post_background": 1.0,
+      "official_post_csf": 0.0
+    },
+    {
+      "aligned_voxel": [
+        62,
+        132,
+        155
+      ],
+      "original_voxel": [
+        193,
+        100,
+        132
+      ],
+      "torch_foreground_sum": 0.2500079572200775,
+      "numpy_foreground_sum": 0.2500079274177551,
+      "raw_background": 0.7499920725822449,
+      "raw_csf": 0.23920151591300964,
+      "official_post_foreground_sum": 0.24181488156318665,
+      "official_post_background": 0.758185088634491,
+      "official_post_csf": 0.24181488156318665
+    },
+    {
+      "aligned_voxel": [
+        79,
+        158,
+        103
+      ],
+      "original_voxel": [
+        176,
+        152,
+        158
+      ],
+      "torch_foreground_sum": 0.2500018775463104,
+      "numpy_foreground_sum": 0.2500018775463104,
+      "raw_background": 0.7499980330467224,
+      "raw_csf": 0.23626278340816498,
+      "official_post_foreground_sum": 0.23955516517162323,
+      "official_post_background": 0.7604448795318604,
+      "official_post_csf": 0.23955516517162323
+    },
+    {
+      "aligned_voxel": [
+        104,
+        126,
+        107
+      ],
+      "original_voxel": [
+        151,
+        148,
+        126
+      ],
+      "torch_foreground_sum": 0.25000008940696716,
+      "numpy_foreground_sum": 0.2500000596046448,
+      "raw_background": 0.7499998807907104,
+      "raw_csf": 0.23697161674499512,
+      "official_post_foreground_sum": 0.0,
+      "official_post_background": 1.0,
+      "official_post_csf": 0.0
+    },
+    {
+      "aligned_voxel": [
+        105,
+        167,
+        194
+      ],
+      "original_voxel": [
+        150,
+        61,
+        167
+      ],
+      "torch_foreground_sum": 0.24999003112316132,
+      "numpy_foreground_sum": 0.2499900460243225,
+      "raw_background": 0.7500098943710327,
+      "raw_csf": 0.24628469347953796,
+      "official_post_foreground_sum": 0.0,
+      "official_post_background": 1.0,
+      "official_post_csf": 0.0
+    },
+    {
+      "aligned_voxel": [
+        115,
+        88,
+        82
+      ],
+      "original_voxel": [
+        140,
+        173,
+        88
+      ],
+      "torch_foreground_sum": 0.2499929964542389,
+      "numpy_foreground_sum": 0.2499929964542389,
+      "raw_background": 0.750006914138794,
+      "raw_csf": 0.2215752899646759,
+      "official_post_foreground_sum": 0.0,
+      "official_post_background": 1.0,
+      "official_post_csf": 0.0
+    },
+    {
+      "aligned_voxel": [
+        126,
+        87,
+        194
+      ],
+      "original_voxel": [
+        129,
+        61,
+        87
+      ],
+      "torch_foreground_sum": 0.24999940395355225,
+      "numpy_foreground_sum": 0.24999938905239105,
+      "raw_background": 0.7500004768371582,
+      "raw_csf": 0.23479747772216797,
+      "official_post_foreground_sum": 0.0,
+      "official_post_background": 1.0,
+      "official_post_csf": 0.0
+    },
+    {
+      "aligned_voxel": [
+        151,
+        215,
+        37
+      ],
+      "original_voxel": [
+        104,
+        218,
+        215
+      ],
+      "torch_foreground_sum": 0.25000429153442383,
+      "numpy_foreground_sum": 0.25000429153442383,
+      "raw_background": 0.7499956488609314,
+      "raw_csf": 0.20887742936611176,
+      "official_post_foreground_sum": 0.0,
+      "official_post_background": 1.0,
+      "official_post_csf": 0.0
+    },
+    {
+      "aligned_voxel": [
+        179,
+        226,
+        38
+      ],
+      "original_voxel": [
+        76,
+        217,
+        226
+      ],
+      "torch_foreground_sum": 0.24999362230300903,
+      "numpy_foreground_sum": 0.24999363720417023,
+      "raw_background": 0.7500062584877014,
+      "raw_csf": 0.22897568345069885,
+      "official_post_foreground_sum": 0.0,
+      "official_post_background": 1.0,
+      "official_post_csf": 0.0
+    },
+    {
+      "aligned_voxel": [
+        195,
+        175,
+        60
+      ],
+      "original_voxel": [
+        60,
+        195,
+        175
+      ],
+      "torch_foreground_sum": 0.2500096559524536,
+      "numpy_foreground_sum": 0.2500096559524536,
+      "raw_background": 0.7499902248382568,
+      "raw_csf": 0.2429969310760498,
+      "official_post_foreground_sum": 0.0,
+      "official_post_background": 1.0,
+      "official_post_csf": 0.0
+    }
+  ]
+}
