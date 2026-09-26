@@ -1,0 +1,675 @@
+{
+  "scope": "Independent first-pass LH pial dt/reject decisions on fixed fs_sub01; bound 21 steps",
+  "decision_inputs": "Python SSE/RMS from frozen MRI, white surface, target values and independently accepted geometry; no native log values influence dt or rejection",
+  "native_reference_role": "Post-decision assertion of dt/reject and selected RAM coordinates only",
+  "source_rule": "check_tol=0, l_location=0, tol=1e-4, REDUCTION_PCT=0.5, MAX_REDUCTIONS=2",
+  "sha256": {
+    "/public/software/apps/Freesurfer/8.2.0-1/bin/mris_place_surface": "67139c3590f961f879a4214cd01f173b42986c7b178d1851dfa3f08e8acf12aa",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/surf/lh.white": "9c88a786c4a571c07d830b83fe647461b09fdacb63ff143670771340ef50b51c",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/label/lh.cortex+hipamyg.label": "03dfc76e15857a0e2b2f4e7ae751e6f657ae511df408016abe0430e6bd8ca6c2",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/surf/autodet.gw.stats.lh.dat": "10b313e9f29a9d6572f0aef4546d307f6514eaae44896fc19b4212891719c7d9",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/brain.finalsurfs.mgz": "796e295b88343a3c3c754fa63048be8c3fe7764b443ad909f9aebd564d762947",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/wm.mgz": "b190b1d8f9a4bf114c8a6623fdfd37cde0950de8f991b35243bccea46498ed5e",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_main_20260924/single_subjects/fs_sub01/mri/aseg.presurf.mgz": "263653b66a9aacba4d0d704781c6e67e581c86a9f99374e37d7e3f28d1674ce2",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_official_run/objective_probe.log": "3f1cfc3114350782ad8605fad3c73548eb7c1caf0afa43d5e2b936b051fcf7fb",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_ram_official_step1_exact/surf/lh.pial.ram": "cf4b4b37d14f7a042f22d80be5101a4013e07d94d2366f8c9fb927a3f6be1e10",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_ram_official_step2_exact/surf/lh.pial.ram": "36ee118a068d86405c5c606b7cf601ec3f88cb21be3320be4cf2e9406d6dfc12",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_ram_official_step5/surf/lh.pial.ram": "9fc65605fc09a5ec22d7f1b95ac857b3d35105ed4e841fe3d97150351ed53bfc",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_ram_official_step10/surf/lh.pial.ram": "d7f0fd34e18c10a925265338b06a12f60012e0ef93b3ff1c092773cb5ee06c6c",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_ram_official_step12/surf/lh.pial.ram": "a0f89c18ada08e4cd58ebc584188bad52a47488f2b2526c3ee2e4438808817d3",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_ram_official_step13/surf/lh.pial.ram": "88985da7fcadf61f1f08569b9702f29dc968ad1676174a9f7211b154b6a8f285",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_ram_official_step14/surf/lh.pial.ram": "5ef258dcb67d61bc459e2f30a1badf94312d4e93cdfe350a83322d81230be098",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_ram_official_step20_exact/surf/lh.pial.ram": "121afafd5a9d96a0227ead59c2d23121596426a687c196f20465bbb86b2fa109",
+    "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/place_surface_python_20260925/probe_installed_ram_official_step21_exact/surf/lh.pial.ram": "4b202f218e335f10cc5601928913cee98bc0b6f499d3ff2a762f794aca054ffd"
+  },
+  "initial_objective": {
+    "sse": 30943635.20565021,
+    "rms": 39.05922669761335,
+    "eligible_vertices": 100881,
+    "intensity_sse": 153906393.05213502,
+    "spring_energy": 541187.1003165314,
+    "total_area": 75302.5
+  },
+  "steps": [
+    {
+      "step": 1,
+      "trials": [
+        {
+          "attempt": 1,
+          "dt": 0.5,
+          "objective": {
+            "sse": 22077915.885083996,
+            "rms": 32.9571712215848,
+            "eligible_vertices": 100881,
+            "intensity_sse": 109574433.78675804,
+            "spring_energy": 547918.8481351947,
+            "total_area": 75924.609375
+          },
+          "reduced": false,
+          "rejected": false,
+          "next_dt": 0.5,
+          "reductions": 0,
+          "processed_vertices": 101000,
+          "cropped_vertices": 183
+        }
+      ],
+      "native_reference_dt": 0.5,
+      "native_reference_rejected": false,
+      "schedule_match": true,
+      "coordinate_comparison": {
+        "exact_vertices": 106622,
+        "total_vertices": 106622,
+        "exact_components": 319866,
+        "total_components": 319866,
+        "first_different_vertices": []
+      }
+    },
+    {
+      "step": 2,
+      "trials": [
+        {
+          "attempt": 1,
+          "dt": 0.5,
+          "objective": {
+            "sse": 15462865.791951962,
+            "rms": 27.536067085793658,
+            "eligible_vertices": 100881,
+            "intensity_sse": 76491504.08201036,
+            "spring_energy": 557461.7985352187,
+            "total_area": 76525.9921875
+          },
+          "reduced": false,
+          "rejected": false,
+          "next_dt": 0.5,
+          "reductions": 0,
+          "processed_vertices": 101000,
+          "cropped_vertices": 82
+        }
+      ],
+      "native_reference_dt": 0.5,
+      "native_reference_rejected": false,
+      "schedule_match": true,
+      "coordinate_comparison": {
+        "exact_vertices": 106622,
+        "total_vertices": 106622,
+        "exact_components": 319866,
+        "total_components": 319866,
+        "first_different_vertices": []
+      }
+    },
+    {
+      "step": 3,
+      "trials": [
+        {
+          "attempt": 1,
+          "dt": 0.5,
+          "objective": {
+            "sse": 10876687.183704391,
+            "rms": 23.03949660732212,
+            "eligible_vertices": 100881,
+            "intensity_sse": 53549491.40573322,
+            "spring_energy": 568175.4100374153,
+            "total_area": 76956.6875
+          },
+          "reduced": false,
+          "rejected": false,
+          "next_dt": 0.5,
+          "reductions": 0,
+          "processed_vertices": 101000,
+          "cropped_vertices": 111
+        }
+      ],
+      "native_reference_dt": 0.5,
+      "native_reference_rejected": false,
+      "schedule_match": true,
+      "coordinate_comparison": null
+    },
+    {
+      "step": 4,
+      "trials": [
+        {
+          "attempt": 1,
+          "dt": 0.5,
+          "objective": {
+            "sse": 7860788.02113582,
+            "rms": 19.524840491470453,
+            "eligible_vertices": 100881,
+            "intensity_sse": 38457793.90980391,
+            "spring_energy": 578256.4922630643,
+            "total_area": 77192.671875
+          },
+          "reduced": false,
+          "rejected": false,
+          "next_dt": 0.5,
+          "reductions": 0,
+          "processed_vertices": 101000,
+          "cropped_vertices": 260
+        }
+      ],
+      "native_reference_dt": 0.5,
+      "native_reference_rejected": false,
+      "schedule_match": true,
+      "coordinate_comparison": null
+    },
+    {
+      "step": 5,
+      "trials": [
+        {
+          "attempt": 1,
+          "dt": 0.5,
+          "objective": {
+            "sse": 5819003.814869519,
+            "rms": 16.730744920426588,
+            "eligible_vertices": 100881,
+            "intensity_sse": 28238390.163584895,
+            "spring_energy": 593898.4864502567,
+            "total_area": 78310.5703125
+          },
+          "reduced": false,
+          "rejected": false,
+          "next_dt": 0.5,
+          "reductions": 0,
+          "processed_vertices": 101000,
+          "cropped_vertices": 590
+        }
+      ],
+      "native_reference_dt": 0.5,
+      "native_reference_rejected": false,
+      "schedule_match": true,
+      "coordinate_comparison": {
+        "exact_vertices": 106622,
+        "total_vertices": 106622,
+        "exact_components": 319866,
+        "total_components": 319866,
+        "first_different_vertices": []
+      }
+    },
+    {
+      "step": 6,
+      "trials": [
+        {
+          "attempt": 1,
+          "dt": 0.5,
+          "objective": {
+            "sse": 4321335.020146027,
+            "rms": 14.33847000656664,
+            "eligible_vertices": 100881,
+            "intensity_sse": 20740298.52011695,
+            "spring_energy": 614927.6386490604,
+            "total_area": 80171.15625
+          },
+          "reduced": false,
+          "rejected": false,
+          "next_dt": 0.5,
+          "reductions": 0,
+          "processed_vertices": 101000,
+          "cropped_vertices": 1233
+        }
+      ],
+      "native_reference_dt": 0.5,
+      "native_reference_rejected": false,
+      "schedule_match": true,
+      "coordinate_comparison": null
+    },
+    {
+      "step": 7,
+      "trials": [
+        {
+          "attempt": 1,
+          "dt": 0.5,
+          "objective": {
+            "sse": 3217285.4258261705,
+            "rms": 12.27888030229175,
+            "eligible_vertices": 100881,
+            "intensity_sse": 15209919.312002959,
+            "spring_energy": 639065.7197348229,
+            "total_area": 82355.1015625
+          },
+          "reduced": false,
+          "rejected": false,
+          "next_dt": 0.5,
+          "reductions": 0,
+          "processed_vertices": 101000,
+          "cropped_vertices": 2011
+        }
+      ],
+      "native_reference_dt": 0.5,
+      "native_reference_rejected": false,
+      "schedule_match": true,
+      "coordinate_comparison": null
+    },
+    {
+      "step": 8,
+      "trials": [
+        {
+          "attempt": 1,
+          "dt": 0.5,
+          "objective": {
+            "sse": 2408689.6904629488,
+            "rms": 10.515979658034983,
+            "eligible_vertices": 100881,
+            "intensity_sse": 11156008.931436745,
+            "spring_energy": 664950.8768793816,
+            "total_area": 84635.3046875
+          },
+          "reduced": false,
+          "rejected": false,
+          "next_dt": 0.5,
+          "reductions": 0,
+          "processed_vertices": 101000,
+          "cropped_vertices": 2892
+        }
+      ],
+      "native_reference_dt": 0.5,
+      "native_reference_rejected": false,
+      "schedule_match": true,
+      "coordinate_comparison": null
+    },
+    {
+      "step": 9,
+      "trials": [
+        {
+          "attempt": 1,
+          "dt": 0.5,
+          "objective": {
+            "sse": 1844635.809760903,
+            "rms": 9.084549569798334,
+            "eligible_vertices": 100881,
+            "intensity_sse": 8325612.173632983,
+            "spring_energy": 690387.4504088983,
+            "total_area": 86881.3984375
+          },
+          "reduced": false,
+          "rejected": false,
+          "next_dt": 0.5,
+          "reductions": 0,
+          "processed_vertices": 101000,
+          "cropped_vertices": 3901
+        }
+      ],
+      "native_reference_dt": 0.5,
+      "native_reference_rejected": false,
+      "schedule_match": true,
+      "coordinate_comparison": null
+    },
+    {
+      "step": 10,
+      "trials": [
+        {
+          "attempt": 1,
+          "dt": 0.5,
+          "objective": {
+            "sse": 1450802.0802660715,
+            "rms": 7.931592148749038,
+            "eligible_vertices": 100881,
+            "intensity_sse": 6346439.247096159,
+            "spring_energy": 713161.5849674087,
+            "total_area": 88758.09375
+          },
+          "reduced": false,
+          "rejected": false,
+          "next_dt": 0.5,
+          "reductions": 0,
+          "processed_vertices": 101000,
+          "cropped_vertices": 4772
+        }
+      ],
+      "native_reference_dt": 0.5,
+      "native_reference_rejected": false,
+      "schedule_match": true,
+      "coordinate_comparison": {
+        "exact_vertices": 106622,
+        "total_vertices": 106622,
+        "exact_components": 319866,
+        "total_components": 319866,
+        "first_different_vertices": []
+      }
+    },
+    {
+      "step": 11,
+      "trials": [
+        {
+          "attempt": 1,
+          "dt": 0.5,
+          "objective": {
+            "sse": 1200215.453147988,
+            "rms": 7.100176605444303,
+            "eligible_vertices": 100881,
+            "intensity_sse": 5085664.202246766,
+            "spring_energy": 732435.5209879421,
+            "total_area": 90375.9765625
+          },
+          "reduced": false,
+          "rejected": false,
+          "next_dt": 0.5,
+          "reductions": 0,
+          "processed_vertices": 101000,
+          "cropped_vertices": 5330
+        }
+      ],
+      "native_reference_dt": 0.5,
+      "native_reference_rejected": false,
+      "schedule_match": true,
+      "coordinate_comparison": null
+    },
+    {
+      "step": 12,
+      "trials": [
+        {
+          "attempt": 1,
+          "dt": 0.5,
+          "objective": {
+            "sse": 1041102.543601474,
+            "rms": 6.5156406565711515,
+            "eligible_vertices": 100881,
+            "intensity_sse": 4282758.914515156,
+            "spring_energy": 747550.3178175476,
+            "total_area": 91507.203125
+          },
+          "reduced": false,
+          "rejected": false,
+          "next_dt": 0.5,
+          "reductions": 0,
+          "processed_vertices": 101000,
+          "cropped_vertices": 5802
+        }
+      ],
+      "native_reference_dt": 0.5,
+      "native_reference_rejected": false,
+      "schedule_match": true,
+      "coordinate_comparison": {
+        "exact_vertices": 106622,
+        "total_vertices": 106622,
+        "exact_components": 319866,
+        "total_components": 319866,
+        "first_different_vertices": []
+      }
+    },
+    {
+      "step": 13,
+      "trials": [
+        {
+          "attempt": 1,
+          "dt": 0.5,
+          "objective": {
+            "sse": 939610.6981686718,
+            "rms": 6.11261314077465,
+            "eligible_vertices": 100881,
+            "intensity_sse": 3769321.6595962206,
+            "spring_energy": 759645.0981798996,
+            "total_area": 92389.1796875
+          },
+          "reduced": false,
+          "rejected": false,
+          "next_dt": 0.5,
+          "reductions": 0,
+          "processed_vertices": 101000,
+          "cropped_vertices": 6254
+        }
+      ],
+      "native_reference_dt": 0.5,
+      "native_reference_rejected": false,
+      "schedule_match": true,
+      "coordinate_comparison": {
+        "exact_vertices": 106622,
+        "total_vertices": 106622,
+        "exact_components": 319866,
+        "total_components": 319866,
+        "first_different_vertices": []
+      }
+    },
+    {
+      "step": 14,
+      "trials": [
+        {
+          "attempt": 1,
+          "dt": 0.5,
+          "objective": {
+            "sse": 862802.7014441545,
+            "rms": 5.7880693447986,
+            "eligible_vertices": 100881,
+            "intensity_sse": 3379689.7128978427,
+            "spring_energy": 768793.3783672106,
+            "total_area": 92942.1953125
+          },
+          "reduced": false,
+          "rejected": false,
+          "next_dt": 0.5,
+          "reductions": 0,
+          "processed_vertices": 101000,
+          "cropped_vertices": 6554
+        }
+      ],
+      "native_reference_dt": 0.5,
+      "native_reference_rejected": false,
+      "schedule_match": true,
+      "coordinate_comparison": {
+        "exact_vertices": 106622,
+        "total_vertices": 106622,
+        "exact_components": 319866,
+        "total_components": 319866,
+        "first_different_vertices": []
+      }
+    },
+    {
+      "step": 15,
+      "trials": [
+        {
+          "attempt": 1,
+          "dt": 0.5,
+          "objective": {
+            "sse": 808039.5502743069,
+            "rms": 5.5443280393852445,
+            "eligible_vertices": 100881,
+            "intensity_sse": 3101038.905004067,
+            "spring_energy": 776726.3621681569,
+            "total_area": 93417.8125
+          },
+          "reduced": false,
+          "rejected": false,
+          "next_dt": 0.5,
+          "reductions": 0,
+          "processed_vertices": 101000,
+          "cropped_vertices": 6799
+        }
+      ],
+      "native_reference_dt": 0.5,
+      "native_reference_rejected": false,
+      "schedule_match": true,
+      "coordinate_comparison": null
+    },
+    {
+      "step": 16,
+      "trials": [
+        {
+          "attempt": 1,
+          "dt": 0.5,
+          "objective": {
+            "sse": 762205.9843713511,
+            "rms": 5.330978832193195,
+            "eligible_vertices": 100881,
+            "intensity_sse": 2866970.9653366785,
+            "spring_energy": 782606.5854450276,
+            "total_area": 93636.4765625
+          },
+          "reduced": false,
+          "rejected": false,
+          "next_dt": 0.5,
+          "reductions": 0,
+          "processed_vertices": 101000,
+          "cropped_vertices": 6901
+        }
+      ],
+      "native_reference_dt": 0.5,
+      "native_reference_rejected": false,
+      "schedule_match": true,
+      "coordinate_comparison": null
+    },
+    {
+      "step": 17,
+      "trials": [
+        {
+          "attempt": 1,
+          "dt": 0.5,
+          "objective": {
+            "sse": 731909.7818521558,
+            "rms": 5.184556960718593,
+            "eligible_vertices": 100881,
+            "intensity_sse": 2711644.042697904,
+            "spring_energy": 787966.5468023992,
+            "total_area": 93895.2734375
+          },
+          "reduced": false,
+          "rejected": false,
+          "next_dt": 0.5,
+          "reductions": 0,
+          "processed_vertices": 101000,
+          "cropped_vertices": 7125
+        }
+      ],
+      "native_reference_dt": 0.5,
+      "native_reference_rejected": false,
+      "schedule_match": true,
+      "coordinate_comparison": null
+    },
+    {
+      "step": 18,
+      "trials": [
+        {
+          "attempt": 1,
+          "dt": 0.5,
+          "objective": {
+            "sse": 706221.2788066247,
+            "rms": 5.056349528660203,
+            "eligible_vertices": 100881,
+            "intensity_sse": 2579191.2923580455,
+            "spring_energy": 792079.5042722966,
+            "total_area": 93987.75
+          },
+          "reduced": false,
+          "rejected": false,
+          "next_dt": 0.5,
+          "reductions": 0,
+          "processed_vertices": 101000,
+          "cropped_vertices": 7303
+        }
+      ],
+      "native_reference_dt": 0.5,
+      "native_reference_rejected": false,
+      "schedule_match": true,
+      "coordinate_comparison": null
+    },
+    {
+      "step": 19,
+      "trials": [
+        {
+          "attempt": 1,
+          "dt": 0.5,
+          "objective": {
+            "sse": 694012.4885145974,
+            "rms": 4.992932506204295,
+            "eligible_vertices": 100881,
+            "intensity_sse": 2514900.2805362917,
+            "spring_energy": 795742.92340812,
+            "total_area": 94101.4609375
+          },
+          "reduced": false,
+          "rejected": false,
+          "next_dt": 0.5,
+          "reductions": 0,
+          "processed_vertices": 101000,
+          "cropped_vertices": 7359
+        }
+      ],
+      "native_reference_dt": 0.5,
+      "native_reference_rejected": false,
+      "schedule_match": true,
+      "coordinate_comparison": null
+    },
+    {
+      "step": 20,
+      "trials": [
+        {
+          "attempt": 1,
+          "dt": 0.5,
+          "objective": {
+            "sse": 679248.299213531,
+            "rms": 4.915886151771886,
+            "eligible_vertices": 100881,
+            "intensity_sse": 2437883.8559132386,
+            "spring_energy": 798877.1740839365,
+            "total_area": 94157.1015625
+          },
+          "reduced": false,
+          "rejected": false,
+          "next_dt": 0.5,
+          "reductions": 0,
+          "processed_vertices": 101000,
+          "cropped_vertices": 7489
+        }
+      ],
+      "native_reference_dt": 0.5,
+      "native_reference_rejected": false,
+      "schedule_match": true,
+      "coordinate_comparison": {
+        "exact_vertices": 106622,
+        "total_vertices": 106622,
+        "exact_components": 319866,
+        "total_components": 319866,
+        "first_different_vertices": []
+      }
+    },
+    {
+      "step": 21,
+      "trials": [
+        {
+          "attempt": 1,
+          "dt": 0.5,
+          "objective": {
+            "sse": 680296.4424862671,
+            "rms": 4.918385351837747,
+            "eligible_vertices": 100881,
+            "intensity_sse": 2440363.2901645526,
+            "spring_energy": 801583.6962527134,
+            "total_area": 94204.671875
+          },
+          "reduced": true,
+          "rejected": true,
+          "next_dt": 0.25,
+          "reductions": 1,
+          "processed_vertices": 101000,
+          "cropped_vertices": 7619
+        },
+        {
+          "attempt": 2,
+          "dt": 0.25,
+          "objective": {
+            "sse": 551628.1127995456,
+            "rms": 4.2074667031329485,
+            "eligible_vertices": 100881,
+            "intensity_sse": 1785873.7515043179,
+            "spring_energy": 796987.4422233962,
+            "total_area": 92590.5546875
+          },
+          "reduced": false,
+          "rejected": false,
+          "next_dt": 0.25,
+          "reductions": 1,
+          "processed_vertices": 101000,
+          "cropped_vertices": 65
+        }
+      ],
+      "native_reference_dt": 0.25,
+      "native_reference_rejected": true,
+      "schedule_match": true,
+      "coordinate_comparison": {
+        "exact_vertices": 106622,
+        "total_vertices": 106622,
+        "exact_components": 319866,
+        "total_components": 319866,
+        "first_different_vertices": []
+      }
+    }
+  ],
+  "first_mismatch": null
+}
