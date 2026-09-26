@@ -57,8 +57,10 @@ def first_epoch_sse(vertices: np.ndarray, faces: np.ndarray,
     area_scale = float(np.float32(original_total_area / total_area))
     distance = _distance_sse(xyz, offsets, neighbors, original_distances, distance_scale)
     negative = _negative_area_sse(area, original_face_area, area_scale)
-    return {"total": distance_weight * distance + negative,
-            "weighted_distance": distance_weight * distance,
+    # INTEGRATION_PARMS stores l_dist as float before the double SSE product.
+    weight = float(np.float32(distance_weight))
+    return {"total": weight * distance + negative,
+            "weighted_distance": weight * distance,
             "negative_area": negative,
             "negative_faces": int(np.count_nonzero(area < 0)),
             "metric_negative_area_mm2": float(negative_area),
@@ -94,6 +96,12 @@ def _quadratic_fit_float32(times: list[float], scores: list[float]) -> tuple[flo
         [d*h - e*g, b*g - a*h, a*e - b*d]], np.float32)
     coeff = _matrix_multiply_float32(np.float32(inverse * inverse_det), right).ravel()
     return float(coeff[0]), float(coeff[1]), float(coeff[2])
+
+
+def _quadratic_candidate_allowed(a: float, predicted_dt: float, best_dt: float) -> bool:
+    return (abs(a) >= float(np.finfo(np.float32).eps)
+            and np.isfinite(predicted_dt)
+            and best_dt / 10 < predicted_dt < 10 * best_dt)
 
 
 def first_epoch_line_search(vertices: np.ndarray, gradient: np.ndarray,
@@ -151,7 +159,7 @@ def first_epoch_line_search(vertices: np.ndarray, gradient: np.ndarray,
     candidates = [{"dt": t, "sse": s} for t, s in zip(bracket_dt, bracket_sse)]
     candidates.append({"dt": 0.0, "sse": starting["total"]})
     predicted_dt = float(np.float32(-b / a))
-    if np.isfinite(predicted_dt) and best_dt / 10 < predicted_dt < 10 * best_dt:
+    if _quadratic_candidate_allowed(a, predicted_dt, best_dt):
         candidates.append({"dt": predicted_dt, "sse": trial(predicted_dt)["total"]})
     selected_index = int(np.argmin([entry["sse"] for entry in candidates]))
     return {"mean_delta": mean_delta, "max_delta": max_delta,

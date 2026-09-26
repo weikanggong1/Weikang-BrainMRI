@@ -1,0 +1,171 @@
+{
+  "reference_commit": "d932c45",
+  "hemisphere": "rh",
+  "first_divergent_update_index": 5,
+  "native_command": "mris_sphere -threads 4 -seed 1234 surf/rh.inflated rh.sphere",
+  "native_diagnostic_environment": [
+    "DIAG=0x10000040",
+    "DIAG_VERBOSE=1",
+    "FREESURFER_logSSE=1"
+  ],
+  "native_binary_sha256": "c34ca308a7fa03acdb3f689bf6125cf3d0198c37c3a62992a29f68e631c73612",
+  "native_logsse_sha256": "3847ab8e4917a6cc2ef68656808332005cf6a11a7c3bef7b9a78f985db5b2ec6",
+  "native_hex_mean_diagnostic_binary_sha256": "38fa812c8532861af39db7a9cfd1df93b6bd7bba12d220180af9490100218c05",
+  "native_hex_mean_log_sha256": "3cc6251c1698e2e3afa0b1fc377bb94d9d62c2c14408d33af7246809081cb265",
+  "input_sha256": {
+    "inflated": "27c87284c27be6ef65ad1d71bfb922dd1b31b9a4ca352d04c55c1cad30fe41c3",
+    "smoothwm": "b67ceb95069d865bb11f6c2b20bac99eab9f19982b73d3c9c43735b7bedbe7ca"
+  },
+  "native_before_checkpoint_sha256": "770dd76c4282e684c2ae8cb6d8644ab994bde5392dec7aafa90f36dd486bead6",
+  "native_after_checkpoint_sha256": "1925058fd029011d2660f3cec2aba16a4835c99197e0c8995d99c111934f3f98",
+  "implementation_sha256": {
+    "average": "f79dc72a574d3bef756f06b97ab2546d35662c1d6acbd769e034fa542d84bd78",
+    "metric": "04a10a70277301cbf337b97513e6cfe9957845e89ca6a0c4045eea2dce70fb1d",
+    "gradient": "7bcc38e10fd08475d7894fba38ca8e71a67c8590103ca77daf82e9ec53462c4f",
+    "line_search": "c7883a0b6f225c91d2183c56109b77713cd7b4c9951199e787c415587f5dbfce",
+    "nonlinear": "6af16329a6f3432b315a3eedd7df92acf9072fa2f19c2bed6a41bef74bfbc601",
+    "probe": "8208734d03377f56f673a5dd31ce7509dac8da3b47068d33770100cf02d0f5e1"
+  },
+  "complete_original_target_distance_report": "standard_sphere_exact_metric_rh.json",
+  "python_exact_continuous_updates": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "sixth_input_comparison": {
+    "exact_components": 316623,
+    "total_components": 316623,
+    "vertices_le_1e-5_mm": 105541,
+    "vertices": 105541,
+    "max_error_mm": 0.0,
+    "rms_error_mm": 0.0,
+    "worst_vertex": 0
+  },
+  "native_sixth_line_search": "sses: 768850.99  764907.67  764608.97  776441.47  764291.20  min 4 (2796.162)",
+  "native_selected_candidate_index": 4,
+  "native_selected_dt_printed": 2796.162,
+  "native_bracket_sse_quadratic_replay_dt_float32": 2796.162353515625,
+  "python_selected_candidate_index": 4,
+  "python_selected_dt": 2797.545166015625,
+  "native_mean_delta_from_hex_log": 0.0004620478309032569,
+  "python_mean_delta": 0.00046204783090324913,
+  "candidate_components": [
+    {
+      "candidate_index": 0,
+      "native_logSSE_id": 64,
+      "dt_python": 1082.1390482941101,
+      "native": {
+        "weighted_distance": 768850.979884,
+        "negative_area": 0.010127,
+        "total": 768850.99001
+      },
+      "python": {
+        "weighted_distance": 768850.9798837483,
+        "negative_area": 0.010126746885312008,
+        "total": 768850.9900104952
+      },
+      "native_minus_python_total": -4.952307790517807e-07,
+      "same_candidate_dt": true
+    },
+    {
+      "candidate_index": 1,
+      "native_logSSE_id": 62,
+      "dt_python": 2164.2780965882203,
+      "native": {
+        "weighted_distance": 764907.660951,
+        "negative_area": 0.010133,
+        "total": 764907.671084
+      },
+      "python": {
+        "weighted_distance": 764907.6609509239,
+        "negative_area": 0.010132990316616889,
+        "total": 764907.6710839142
+      },
+      "native_minus_python_total": 8.579809218645096e-08,
+      "same_candidate_dt": true
+    },
+    {
+      "candidate_index": 2,
+      "native_logSSE_id": 65,
+      "dt_python": 3246.4171448823304,
+      "native": {
+        "weighted_distance": 764608.958705,
+        "negative_area": 0.010139,
+        "total": 764608.968844
+      },
+      "python": {
+        "weighted_distance": 764608.9585282421,
+        "negative_area": 0.010139366844661539,
+        "total": 764608.9686676089
+      },
+      "native_minus_python_total": 0.0001763910986483097,
+      "same_candidate_dt": true
+    },
+    {
+      "candidate_index": 3,
+      "native_logSSE_id": 58,
+      "dt_python": 0.0,
+      "native": {
+        "weighted_distance": 776441.462321,
+        "negative_area": 0.009089,
+        "total": 776441.47141
+      },
+      "python": {
+        "weighted_distance": 776441.4623207402,
+        "negative_area": 0.009088903646507053,
+        "total": 776441.4714096439
+      },
+      "native_minus_python_total": 3.561144694685936e-07,
+      "same_candidate_dt": true
+    },
+    {
+      "candidate_index": 4,
+      "native_logSSE_id": 66,
+      "dt_python": 2797.545166015625,
+      "native": {
+        "weighted_distance": 764291.193065,
+        "negative_area": 0.010137,
+        "total": 764291.203202
+      },
+      "python": {
+        "weighted_distance": 764290.7049883842,
+        "negative_area": 0.010136690751416837,
+        "total": 764290.715125075
+      },
+      "native_minus_python_total": 0.4880769250448793,
+      "same_candidate_dt": false
+    }
+  ],
+  "output_comparison": {
+    "exact_components": 1906,
+    "total_components": 316623,
+    "vertices_le_1e-5_mm": 3,
+    "vertices": 105541,
+    "max_error_mm": 0.0020217211729758656,
+    "rms_error_mm": 0.0006909341077940749,
+    "worst_vertex": 55763
+  },
+  "scalar_dt_fit": {
+    "dt": 2796.162366573361,
+    "comparison": {
+      "exact_components": 315470,
+      "total_components": 316623,
+      "vertices_le_1e-5_mm": 105539,
+      "vertices": 105541,
+      "max_error_mm": 1.1444091796875e-05,
+      "rms_error_mm": 1.8829575722059282e-07,
+      "worst_vertex": 18502
+    }
+  },
+  "first_unresolved_boundary": "candidate 2 native distance SSE exceeds Python by 0.000176758; Python source-order versus alternate double reductions differs by less than 2e-8 unweighted, independent C++ reproduces all Python current arcs, native one/four threads agree to six decimals, and projection displacement totals agree to six decimals. The native trial internal coordinates or current metric remain to be isolated.",
+  "native_one_thread_logsse_sha256": "e58c9a2de6218efbe492e559d3483fe684c48393ac8291d5c93b523387557a9a",
+  "native_four_and_one_thread_candidate2_weighted_distance_same_six_decimals": true,
+  "python_reduction_audit": "standard_sphere_full_default_rh_update5_reduction.json",
+  "python_unweighted_sse_reduction_range": 1.955777406692505e-08,
+  "independent_cpp_current_arcs_bitwise_equal_entries": 8183354,
+  "independent_cpp_unweighted_sse": 7646089.47134681,
+  "native_projection_total_distance_mm_six_decimals": 33001.337048,
+  "python_projection_total_distance_mm": 33001.33704772654
+}

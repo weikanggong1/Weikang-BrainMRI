@@ -1,0 +1,21 @@
+{
+  "dt": 3246.4171448823304,
+  "projection_total_distance_mm": 33001.33704772654,
+  "score": {
+    "total": 764608.9686676089,
+    "weighted_distance": 764608.9585282421,
+    "negative_area": 0.010139366844661539,
+    "negative_faces": 2,
+    "metric_negative_area_mm2": 0.0007023890502750874,
+    "distance_scale": 0.7299312715314472,
+    "area_scale": 0.5327996611595154
+  },
+  "unweighted_distance": 7646089.471346809,
+  "sequential_row_sum": 7646089.471346809,
+  "numpy_row_sum": 7646089.471346789,
+  "fsum_row_sum": 7646089.47134679,
+  "round_robin_4_sum": 7646089.471346796,
+  "contiguous_4_sum": 7646089.47134679,
+  "n_edges": 8183354,
+  "n_vertices": 105541
+}

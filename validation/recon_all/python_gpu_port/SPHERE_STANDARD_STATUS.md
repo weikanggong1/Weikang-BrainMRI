@@ -259,9 +259,10 @@ volume-geometry check, pass (`6 passed`) in the remote Python environment.
 
 **Open boundary:** this validates one deliberately shortened, isolated
 `MRISunfold` pass and its written LH/RH surfaces. The standard recon-all
-`mris_sphere` run uses further iterations/passes; its final conventional
-`sphere` surfaces and downstream cortical vertex metrics have not been
-matched. The Python path here runs on CPU with Numba, not GPU.
+`mris_sphere` run uses up to 25 integrations at each average level and a
+subsequent overlap-removal stage; its final conventional `sphere` surfaces
+and downstream cortical vertex metrics have not been matched by Python.
+The Python path here runs on CPU with Numba, not GPU.
 
 To repeat the isolated diagnostic, use the frozen `inflated` and `smoothwm`
 files from one subject. The native diagnostic deliberately returns status 1
@@ -278,3 +279,151 @@ PYTHONPATH=src python validation/recon_all/python_gpu_port/experimental/benchmar
 ```
 
 Use the corresponding right-hemisphere paths for RH.
+
+## Standard-parameter full native baseline and exact original metric
+
+A separate isolated run uses the recon-all command parameters (`-threads 4
+-seed 1234`) on copied `fs_sub01` inputs. `-w 25 -v 0` saves sparse
+checkpoints but does not alter the final ordered geometry. Its two final
+surfaces agree with the read-only official archived `sphere` files in every
+float32 vertex coordinate, every ordered face, and every volume-geometry
+byte. Creation stamps and provenance tags differ, so whole-file SHA256
+values differ. [LH audit](full_native_audit_lh.json) and
+[RH audit](full_native_audit_rh.json) include the copied-input SHA256 values,
+final-section hashes, checkpoint indices, native log SHA256, and wall time.
+
+| Full conventional native baseline on headcw, four threads | LH | RH |
+| --- | ---: | ---: |
+| Ordered coordinate components equal to official | 319,866 / 319,866 | 316,623 / 316,623 |
+| Ordered faces equal to official | 213,240 / 213,240 | 211,078 / 211,078 |
+| Volume geometry bytes equal to official | yes | yes |
+| Isolated native wall time | 252.20 s | 113.20 s |
+
+For an exact original-distance audit, a **diagnostic copy** of the native
+executable changes only the unique `FS_MEASURE_DISTANCES` format string from
+`%2.4f  %2.4f` to `%2.9g  %2.9g`. Nine significant decimal digits round-trip
+each float32; the installed binary, official subject, and algorithm are
+unchanged. Reading the second column in native source order and casting to
+float32 gives a bitwise comparison with the complete Python CSR distance
+array **after reciprocal averaging**:
+
+| Original metric, all entries | LH | RH |
+| --- | ---: | ---: |
+| Native and Python float32 values bitwise equal | 8,268,920 / 8,268,920 | 8,183,354 / 8,183,354 |
+| Maximum absolute/ULP difference | 0 / 0 | 0 / 0 |
+| Native isolated sample and text export | 15.35 s | 13.94 s |
+| Python metric build including JIT | 15.36 s | 16.13 s |
+
+The [LH exact-metric report](standard_sphere_exact_metric_lh.json) and
+[RH exact-metric report](standard_sphere_exact_metric_rh.json) contain native
+text and diagnostic-binary SHA256 values. Native timing includes writing
+roughly 180 MB of text, while Python timing excludes that write; it is not a
+paired algorithm speed benchmark. The target distances are no longer an
+unresolved source of the first optimization difference.
+
+## Historical bounded default-average optimization prefix
+
+The reports in this section were generated before the float32-stored
+`l_dist` correction below. They document the earlier diagnostic branch and
+are not current parity claims.
+
+The `-n 1 -w 1 -remove_negative 0` native diagnostic preserves the default
+1024 initial gradient averages but advances each average level after one
+integration. It is a separate branch from the 25-iteration standard command:
+its first update agrees with the full native run, while its second saved
+surface differs from the full run on both hemispheres. The
+[bounded LH](standard_sphere_default_continuous_lh.json) and
+[bounded RH](standard_sphere_default_continuous_rh.json) reports start from
+the original `inflated` files, propagate only Python coordinates, and hash
+all inputs, implementation modules, and saved native checkpoints.
+
+FreeSurfer's `mrisLineMinimize` omits the predicted quadratic trial when
+`|a| < FLT_EPSILON`. Enforcing this source gate removes an LH branch
+error at `initial_repair` average 64: 15 consecutive bounded LH updates
+(indices 0–14) now match every float32 coordinate component. The next LH
+bounded mismatch is index 15, `initial_repair` average 256 in the third
+ratio sweep: selected Python dt 60496.0078125 versus native 60487.953,
+maximum vertex error 0.002994 mm. Holding the Python gradient fixed and
+fitting only dt to the native checkpoint brings all 106,622 vertices within
+0.00001 mm (max 0.000008543 mm). RH matches the first bounded update exactly;
+its second update, `unfold_epoch_1` average 256, selects Python dt
+905.4383545 versus native 905.111, producing maximum vertex error
+0.004337 mm. Fitting only dt gives maximum 0.000010957 mm, with 105,537 /
+105,541 vertices within 0.00001 mm. These fitted steps are diagnostics,
+not inputs to the continuous Python chain.
+
+At the RH second bounded update, the Python negative-area SSE agrees with
+native `FREESURFER_logSSE` to six printed decimals for the starting state
+and three bracket trials. Distance SSE differs by approximately 0.014–0.017
+across those trials. Independent C++ code using the pinned `XYZApproxAngle`
+formula produces the same 8,183,354 current spherical arc float32 values as
+Python, bitwise, at the saved starting surface. The remaining difference
+is under investigation in native update-state or distance-error evaluation;
+it is large enough to change the float32 quadratic fit. The bounded Python
+path remains on CPU. It does not provide a full-stage speed or accuracy claim.
+
+## Standard 25-iteration continuous prefix
+
+The default `mris_sphere -threads 4 -seed 1234` performs up to 25 updates
+inside one integration at each average level. An isolated `-w 1` native
+capture saved consecutive checkpoints on copied inputs without changing the
+integration count. The Python replay projects at integration entry and after
+each update, without adding an entry projection inside the same integration.
+The source-hashed [LH](standard_sphere_full_default_prefix_lh.json) and
+[RH](standard_sphere_full_default_prefix_rh.json) reports propagate Python
+coordinates from the original `inflated` and `smoothwm` inputs; they do not
+inject native checkpoints.
+
+The native `INTEGRATION_PARMS::l_dist` is float32. The Python SSE originally
+multiplied by a double `0.1`, adding 0.013–0.021 to the RH second-update
+bracket comparison and changing its quadratic dt. Casting the weight to
+float32 before the double SSE product makes the starting and three bracket
+scores agree with native to at most `2.3e-7` in the earlier second-update
+diagnostic. The original trial distances at vertex 0 also matched bitwise in
+a diagnostic binary that printed hexadecimal floats. The
+[resolved-weight audit](standard_sphere_full_default_rh_weight_resolution.json)
+retains the before/after values and hashes.
+
+| Full-default 1024-average continuous prefix | LH | RH |
+| --- | ---: | ---: |
+| Complete original target-distance matrix exact | 8,268,920 / 8,268,920 | 8,183,354 / 8,183,354 |
+| Exact ordered float32 coordinates, updates | 0–2 (3 steps) | 0–4 (5 steps) |
+| First unverified update | 3, no native checkpoint captured | 5, numerical first difference |
+
+At **RH update 5**, the input still matches all 316,623 native coordinate
+components. The native and Python line searches both select candidate 4, but
+the native printed dt is `2796.162` versus Python `2797.545166015625`.
+Their first two bracket SSE scores differ by less than `5e-7`; the third
+trial's native distance SSE is `0.000176758` larger, changing the float32
+quadratic fit. Substituting all three native bracket scores into the Python
+quadratic fit reproduces dt `2796.162353515625`. The selected Python update
+has a `0.00202172 mm` maximum vertex error; fitting only dt to the native
+checkpoint leaves `0.000011444 mm` maximum error and 105,539 / 105,541
+vertices within `0.00001 mm`. The fit is diagnostic and does not feed the
+continuous chain. The [new RH first-difference audit](standard_sphere_full_default_rh_first_difference.json)
+records each SSE component, exact native diagnostic hashes, input/checkpoint
+hashes, the gradient mean, and candidate decisions. The independent
+[reduction audit](standard_sphere_full_default_rh_update5_reduction.json)
+shows that serial, NumPy, accurate, and four-way sums of the same 105,541
+vertex SSE values span only `1.96e-8` before the `0.1f` weight. An independent
+C++ kernel matches all 8,183,354 Python current arc distances bitwise at
+this trial. Native one- and four-thread distance SSE agree to six decimals;
+the native/Python aggregate projection displacements are `33001.337048` /
+`33001.337047727 mm`. These checks do not explain the `0.000176758` distance
+SSE gap by simple reduction order. The native trial's internal coordinates
+or current metric remain to be isolated.
+
+The corrected Python CPU observations under shared headcw load include the
+original distance-matrix construction and one-ring setup times plus each
+step's gradient, averaging, line-search, and projection times in the linked
+reports. These bounded prefixes do not establish a full-stage speed ratio.
+The isolated native full-stage LH/RH reference takes `252.20 s` / `113.20 s`
+on headcw and has bitwise-identical final ordered vertices, faces, and volume
+geometry to the archived official surfaces. The continuous Python path
+remains **open at RH update 5 and beyond LH update 2**; final Python spheres
+and downstream vertex measurements are not validated here. This sphere
+implementation runs on CPU Numba, not GPU.
+
+The eleven focused standard-sphere tests pass in the remote validation Python
+environment after the weight correction. The continuous probe and native
+capture script compile; no full recon-all or final Python sphere was run.

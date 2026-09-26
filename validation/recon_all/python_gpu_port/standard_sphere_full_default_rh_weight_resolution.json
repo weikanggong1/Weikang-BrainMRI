@@ -1,0 +1,155 @@
+{
+  "reference_commit": "d932c45",
+  "hemisphere": "rh",
+  "isolated_native_command": "mris_sphere -threads 4 -seed 1234 surf/rh.inflated rh.sphere",
+  "diagnostic_environment": [
+    "DIAG=0x10000040",
+    "DIAG_VERBOSE=1",
+    "FREESURFER_logSSE=1"
+  ],
+  "native_binary_sha256": "c34ca308a7fa03acdb3f689bf6125cf3d0198c37c3a62992a29f68e631c73612",
+  "native_second_step_input_checkpoint_sha256": "ddc255f29325889d465416adf4fb22cfdf066eb030d4949fe72effedf15654b0",
+  "input_sha256": {
+    "inflated": "27c87284c27be6ef65ad1d71bfb922dd1b31b9a4ca352d04c55c1cad30fe41c3",
+    "smoothwm": "b67ceb95069d865bb11f6c2b20bac99eab9f19982b73d3c9c43735b7bedbe7ca"
+  },
+  "target_distance_report": "standard_sphere_exact_metric_rh.json",
+  "probe_implementation_sha256": {
+    "average": "f79dc72a574d3bef756f06b97ab2546d35662c1d6acbd769e034fa542d84bd78",
+    "metric": "04a10a70277301cbf337b97513e6cfe9957845e89ca6a0c4045eea2dce70fb1d",
+    "gradient": "7bcc38e10fd08475d7894fba38ca8e71a67c8590103ca77daf82e9ec53462c4f",
+    "line_search": "118a81d096436ec4425b0bbfaff9050a55396483ba4ccb66f4e6aeea52354302",
+    "nonlinear": "6af16329a6f3432b315a3eedd7df92acf9072fa2f19c2bed6a41bef74bfbc601",
+    "probe": "9b6c8eefbd2fd05a728ec54a3f22232ecabae1ba7dca1f1f061fef325bf7241e"
+  },
+  "native_logsse_sha256": "dc65f18463812742ce19a57a637aa85b0244185ed25667fe3fbb6036ef7b97fa",
+  "native_capture_script_sha256": "244ad193ca463b3bb8784a4787fe252b8e5cf69713bd665649ee04792c5399f6",
+  "native_capture_wall_seconds_shared_load": 13.781494,
+  "captured_line_search_decisions": 2,
+  "native_second_decision": "sses: 911608.35  1022486.08  1420187.81  1123688.72  908363.31  min 4 (2989.136)",
+  "native_selected_candidate_index": 4,
+  "native_selected_dt_printed": 2989.136,
+  "native_bracket_sse_quadratic_replay_dt_float32": 2989.13623046875,
+  "python_selected_dt": 2989.109619140625,
+  "python_selected_candidate_index": 4,
+  "candidate_components": [
+    {
+      "candidate_index": 0,
+      "dt_python": 2684.776483805354,
+      "native_logSSE_id": 20,
+      "native": {
+        "weighted_distance": 911608.34386,
+        "negative_area": 0.00905,
+        "total": 911608.35291
+      },
+      "python": {
+        "weighted_distance": 911608.3302759735,
+        "negative_area": 0.009049948812385774,
+        "total": 911608.3393259223
+      },
+      "native_minus_python_total": 0.013584077707491815,
+      "comparable_dt": true
+    },
+    {
+      "candidate_index": 1,
+      "dt_python": 5369.552967610708,
+      "native_logSSE_id": 19,
+      "native": {
+        "weighted_distance": 1022486.083387,
+        "negative_area": 0.0,
+        "total": 1022486.083387
+      },
+      "python": {
+        "weighted_distance": 1022486.0681507847,
+        "negative_area": 0.0,
+        "total": 1022486.0681507847
+      },
+      "native_minus_python_total": 0.015236215316690505,
+      "comparable_dt": true
+    },
+    {
+      "candidate_index": 2,
+      "dt_python": 8054.3294514160625,
+      "native_logSSE_id": 21,
+      "native": {
+        "weighted_distance": 1420179.382214,
+        "negative_area": 8.432647,
+        "total": 1420187.814861
+      },
+      "python": {
+        "weighted_distance": 1420179.361051763,
+        "negative_area": 8.432646689620826,
+        "total": 1420187.7936984526
+      },
+      "native_minus_python_total": 0.02116254740394652,
+      "comparable_dt": true
+    },
+    {
+      "candidate_index": 3,
+      "dt_python": 0.0,
+      "native_logSSE_id": 11,
+      "native": {
+        "weighted_distance": 1123633.892474,
+        "negative_area": 54.830163,
+        "total": 1123688.722638
+      },
+      "python": {
+        "weighted_distance": 1123633.8757309744,
+        "negative_area": 54.83016336556632,
+        "total": 1123688.7058943398
+      },
+      "native_minus_python_total": 0.016743660205975175,
+      "comparable_dt": true
+    },
+    {
+      "candidate_index": 4,
+      "dt_python": 2989.109619140625,
+      "native_logSSE_id": 22,
+      "native": {
+        "weighted_distance": 908363.296601,
+        "negative_area": 0.009047,
+        "total": 908363.305649
+      },
+      "python": {
+        "weighted_distance": 908363.2317142176,
+        "negative_area": 0.009047267687544871,
+        "total": 908363.2407614853
+      },
+      "native_minus_python_total": 0.06488751468714327,
+      "comparable_dt": false
+    }
+  ],
+  "output_comparison": {
+    "exact_components": 25080,
+    "total_components": 316623,
+    "vertices_le_1e-5_mm": 5386,
+    "vertices": 105541,
+    "max_error_mm": 0.0001392756367761893,
+    "rms_error_mm": 5.5341872436250506e-05,
+    "worst_vertex": 24090
+  },
+  "scalar_dt_fit": {
+    "dt": 2989.1362421976864,
+    "comparison": {
+      "exact_components": 313553,
+      "total_components": 316623,
+      "vertices_le_1e-5_mm": 105534,
+      "vertices": 105541,
+      "max_error_mm": 1.1444091796875e-05,
+      "rms_error_mm": 3.8575038645727094e-07,
+      "worst_vertex": 15878
+    }
+  },
+  "first_difference": "identical second-step input and candidate index; candidate distance SSE changes the float32 quadratic dt before coordinate update",
+  "native_capture_script_reproduced_identical_log_sha256": true,
+  "resolution": "Cast INTEGRATION_PARMS l_dist to float32 before multiplying double distance SSE.",
+  "corrected_source_sha256": "c7883a0b6f225c91d2183c56109b77713cd7b4c9951199e787c415587f5dbfce",
+  "continuous_exact_updates_after_resolution": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "next_first_difference_report": "standard_sphere_full_default_rh_first_difference.json"
+}

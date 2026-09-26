@@ -1,6 +1,12 @@
 """Pinned FreeSurfer 8.2 first-epoch float32 quadratic-fit regression."""
 
-from fnit.recon_all.sphere_standard_line_search import _quadratic_fit_float32
+import math
+
+import numpy as np
+
+from fnit.recon_all.sphere_standard_line_search import (
+    _quadratic_candidate_allowed, _quadratic_fit_float32, first_epoch_sse,
+)
 
 
 def test_first_epoch_vnl_quadratic_fit_both_hemispheres():
@@ -16,3 +22,41 @@ def test_first_epoch_vnl_quadratic_fit_both_hemispheres():
                  2582398.5766699687]
     assert _quadratic_fit_float32(right_dt, right_sse) == (
         436.0, -7688.0, 2661536.0)
+
+
+def test_default_lh_quadratic_prediction_uses_native_fzero_gate():
+    # This coefficient came from the frozen LH avg=64 checkpoint.
+    assert not _quadratic_candidate_allowed(
+        4.759931471198797e-08, 2558.2783203125, 3146.0320535722835)
+    assert _quadratic_candidate_allowed(
+        0.24169921875, 905.4383544921875, 322.8860656758059)
+
+
+def test_full_default_rh_second_step_native_sse_reproduces_native_dt():
+    # Native logSSE bracket at the first divergent continuous update.
+    dt = [2684.776483805354, 5369.552967610708, 8054.3294514160625]
+    sse = [911608.352910, 1022486.083387, 1420187.814861]
+    a, b, _ = _quadratic_fit_float32(dt, sse)
+    assert (a, b) == (0.019896268844604492, -59.47265625)
+    assert float(np.float32(-b / a)) == 2989.13623046875
+
+
+def test_first_epoch_sse_uses_native_float32_distance_weight():
+    vertices = np.asarray([[100, 0, 0], [0, 100, 0]], np.float32)
+    result = first_epoch_sse(
+        vertices, np.empty((0, 3), np.int32),
+        np.asarray([0, 1, 2], np.int64), np.asarray([1, 0], np.int32),
+        np.zeros(2, np.float32), np.empty(0, np.float32),
+        np.float32(4 * math.pi * 10000), 0.1)
+    arc = float(np.float32(np.float32(math.pi / 2) * np.float32(100)))
+    expected = float(np.float32(0.1)) * (2 * arc * arc)
+    assert result["weighted_distance"] == expected
+    assert result["total"] == expected
+
+
+def test_full_default_rh_sixth_native_sse_reproduces_native_dt():
+    dt = [1082.1390482941101, 2164.2780965882203, 3246.4171448823304]
+    sse = [768850.990010, 764907.671084, 764608.968844]
+    a, b, c = _quadratic_fit_float32(dt, sse)
+    assert (a, b, c) == (0.0015506744384765625, -4.3359375, 776408.0)
+    assert float(np.float32(-b / a)) == 2796.162353515625
