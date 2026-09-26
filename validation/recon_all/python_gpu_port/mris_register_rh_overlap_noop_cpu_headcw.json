@@ -1,0 +1,16 @@
+{
+  "input_sha256": "09f55e3561d3fd00f39fe6e9077b8291c27318134c65f60269fb6a98404fcf08",
+  "native_final_sha256": "0e2a10093721f2f75f7460c559aa982560abd44662a9dac16865d42cb419fa8b",
+  "native_log_sha256": "2d840b4d5d2fc708fb19b2bc7f328c497e63a849348d197e80e73806bba75ffe",
+  "device": "cpu",
+  "start_iteration": 97,
+  "native_count_entries": 0,
+  "python_count_entries": 0,
+  "first_count_mismatch": null,
+  "negative_after_last_step": 0,
+  "exact_vertices": 105541,
+  "total_vertices": 105541,
+  "max_abs_error": 0.0,
+  "p95_abs_error": 0.0,
+  "seconds_excluding_io": 0.016652247868478298
+}

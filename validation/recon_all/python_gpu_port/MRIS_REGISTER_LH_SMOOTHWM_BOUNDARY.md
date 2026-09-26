@@ -1,4 +1,4 @@
-# LH independent smoothwm curvature and 45 exact normal updates
+# LH independent smoothwm curvature, fold cleanup and overlap repair
 
 The frozen `fs_sub01` LH `smoothwm`, original sphere, exact Python sulc
 `debug0056` seed and atlas have SHA-256 values in the paired JSON reports.
@@ -40,8 +40,8 @@ Each resumed run verifies that its starting native checkpoint has the same
 coordinate-array SHA-256 as the preceding independently computed Python
 state and the same file SHA-256 as the preceding report. Native intermediate
 coordinates are not injected during a run. The probe receives the averaging
-schedule observed in the native log; independent stopping decisions and the
-following negative-face repair remain unverified. The sum of measured CPU
+schedule observed in the native log. The later fold cleanup and negative-face
+repair are checked below; independent stopping decisions remain unverified. The sum of measured CPU
 update times across these segments is about 763 s, excluding each segment's
 repeated setup and file I/O. This is not a matched native or GPU benchmark.
 
@@ -68,3 +68,57 @@ compares each selected float32 trial SSE with the
 native printed 1,418,705.2. These comparisons do not establish bitwise SSE
 parity. The smoothwm raw-curvature fit currently uses CPU Numba for
 source-order matrix operations.
+
+## Fold cleanup after `debug0101`
+
+The [native default run](mris_register_lh_fold_overlap_native_run_gpucw1.log)
+starts the additional fold cleanup because the normal path has 193 negative
+triangles. Pinned `mrisurf_integrate.cpp` multiplies nonlinear area weight by
+100, divides percentage area, distance, correlation and spring weights by
+100, and starts a 64-average integration stage. The Python/PyTorch distance
+and area helpers now accept these weights while retaining their original
+defaults. The continuation restores the sigma-0.5 grids from the exact
+`debug0094` seed. Its [101 resume proof](mris_register_lh_resume94_101_proven.json)
+and [102 resume proof](mris_register_lh_resume94_102_proven.json) link the
+saved input, checkpoint and coordinate SHA-256 values.
+
+The [first fold report](mris_register_lh_fold_cleanup_epoch0102_gpucw1.json)
+independently selects `dt=5.583333492279053` and matches native
+`debug0102` at all 106,622 ordered vertices. The [continuous report](mris_register_lh_fold_cleanup_epoch0103_0107_gpucw1.json)
+then matches all five `debug0103`–`debug0107` surfaces at 106,622/106,622
+vertices each, maximum error 0 mm. It also checks all ordered faces. Native
+`debug0103` has `dt=0` inside the same 64-average integration call; exactly
+one terminal sphere projection reproduces every vertex. Projecting again
+at the start of this step caused an earlier 1.91e-6 mm discrepancy.
+
+## Final negative-face smoothing
+
+The native call enters `MRISremoveOverlapWithSmoothing` at 137 negative
+triangles after `debug0107`. The new
+[`remove_overlap_sphere`](../../../src/fnit/recon_all/mris_register_overlap.py)
+uses ordered one-ring neighbors, source-order double accumulation of vertex
+displacements, float32 stored updates, radial projection, and the native
+marked-neighborhood and stopping rules. The
+[replay probe](probe_mris_register_overlap.py) starts from the frozen native
+`debug0107` and compares every iteration to the native log. On gpucw1,
+**all 102 negative-triangle counts matched**, the final count was zero, and
+the final sphere matched the official `lh.sphere.reg` at **106,622/106,622
+ordered vertices and all faces**, maximum error 0 mm. Both CPU and H100 CUDA
+passed on the same input:
+
+| gpucw1 device | Repair compute, excluding I/O and tensor staging | Exact vertices |
+| --- | ---: | ---: |
+| [4-thread CPU](mris_register_lh_overlap_cpu_gpucw1.json) | 6.390 s | 106,622 / 106,622 |
+| [H100 CUDA](mris_register_lh_overlap_cuda_gpucw1.json) | 2.874 s | 106,622 / 106,622 |
+
+This is one matched-host observation: CUDA was 2.22 times as fast for this
+repair computation, including neighbor construction and 102 updates. It is
+not a native-vs-Python or full recon-all timing comparison. The RH native
+repair has zero negative triangles; the
+[PyTorch no-op check](mris_register_rh_overlap_noop_cpu_headcw.json) returns
+all 105,541 final vertices exactly in 0.017 s CPU compute.
+
+The fold cleanup and repair have each passed against native checkpoints.
+The tests used native snapshots as their starting inputs and do not replace
+a connected T1-to-`sphere.reg` run. The native iteration/averaging schedule
+still supplies the bounded registration probe.

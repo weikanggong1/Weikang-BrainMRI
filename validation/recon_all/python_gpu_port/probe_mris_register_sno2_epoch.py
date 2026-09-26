@@ -54,7 +54,7 @@ def main():
     parser.add_argument('--native-prefix', type=Path)
     parser.add_argument('--hemisphere', choices=('lh', 'rh'), default='lh')
     parser.add_argument('--first-epoch', type=int)
-    parser.add_argument('--next-epochs', type=int, choices=range(45), default=0)
+    parser.add_argument('--next-epochs', type=int, choices=range(51), default=0)
     parser.add_argument('--resume-epoch', type=int)
     parser.add_argument('--resume-report', type=Path)
     parser.add_argument('--dump-mismatch', type=Path)
@@ -121,6 +121,8 @@ def main():
     active = torch.arange(neighbors.shape[1])[None, :] < degrees[:, None]
 
     trial_terms = []
+    l_parea, l_nlarea, l_dist = 0.2, 1.0, 5.0
+    l_corr, l_spring = float(np.float32(0.05)), 0.5
 
     def objective(trial):
         terms = first_registration_sse(trial, triangles, neighbors, degrees,
@@ -129,9 +131,11 @@ def main():
                                        original_area, total_area, return_terms=True)
         trial_distances = sphere_arc_distances(trial, neighbors, degrees)
         spring_sse = area_scale * float(((trial_distances.double() ** 2) * active).sum())
-        weighted = {'sse_area': terms['sse_area'], 'sse_nl_area': terms['sse_nl_area'],
-                    'sse_dist': terms['sse_dist'], 'sse_corr': float(np.float32(0.05)) * terms['sse_corr'],
-                    'sse_spring': 0.5 * spring_sse}
+        weighted = {'sse_area': (l_parea / 0.2) * terms['sse_area'],
+                    'sse_nl_area': l_nlarea * terms['sse_nl_area'],
+                    'sse_dist': (l_dist / 5.0) * terms['sse_dist'],
+                    'sse_corr': l_corr * terms['sse_corr'],
+                    'sse_spring': l_spring * spring_sse}
         weighted['total'] = sum(weighted.values())
         trial_terms.append(weighted)
         return weighted['total']
@@ -224,23 +228,35 @@ def main():
                 current, blur_atlas_frame(raw_mean, sigma)))
             mean_grid = parameterize_curvature(current, mean_curve)
             variance_grid = blur_atlas_frame(raw_variance, sigma)
+        fold_cleanup = args.hemisphere == 'lh' and epoch >= 102
+        if fold_cleanup:
+            l_parea = float(np.float32(np.float32(0.2) / 100))
+            l_nlarea = 100.0
+            l_dist = float(np.float32(np.float32(5.0) / 100))
+            l_corr = float(np.float32(np.float32(0.05) / 100))
+            l_spring = float(np.float32(np.float32(0.5) / 100))
         if args.hemisphere == 'lh':
-            integration_start = epoch in (59, 60, 69, 75, 78, 80) or 81 <= epoch <= 101
+            integration_start = (epoch in (59, 60, 69, 75, 78, 80)
+                                 or 81 <= epoch <= 102 or 104 <= epoch <= 107)
         else:
             integration_start = epoch in (58, 59, 67, 70, 73, 75) or 77 <= epoch <= 97
         projected = project_sphere(current) if integration_start else current
         normals = sphere_vertex_normals(projected, triangles)
         distances = sphere_arc_distances(projected, neighbors, degrees)
         avg_vertex_dist = float(distances.double().sum() / degrees.sum())
-        force = first_area_gradient(vertices, original, projected, triangles,
-                                    first_distance_gradient(vertices, original, projected,
-                                                            triangles, project=False), project=False)
+        force = first_area_gradient(
+            vertices, original, projected, triangles,
+            first_distance_gradient(vertices, original, projected, triangles,
+                                    project=False, weight=l_dist),
+            project=False, l_nlarea=l_nlarea, l_parea=l_parea)
         e1, e2 = tangent_basis(normals)
         force = correlation_gradient_add(force, projected, curvature, e1, e2,
-                                         mean_grid, variance_grid, avg_vertex_dist, l_corr=0.05)
+                                         mean_grid, variance_grid, avg_vertex_dist, l_corr=l_corr)
         force_seconds = perf_counter() - epoch_start
         if args.hemisphere == 'lh':
-            if epoch >= 81:
+            if fold_cleanup:
+                gradient_averages = (64, 64, 16, 4, 1, 0)[epoch - 102]
+            elif epoch >= 81:
                 gradient_averages = (1024, 256, 64, 16, 4, 1, 0)[(epoch - 81) % 7]
             else:
                 gradient_averages = (1024 if epoch == 58 else 256 if epoch == 59 else
@@ -254,7 +270,7 @@ def main():
                                  4 if epoch <= 72 else 1 if epoch <= 74 else 0)
         averaged = average_gradients(force, neighbors, degrees, gradient_averages)
         force = spring_gradient_add(averaged, projected, neighbors, degrees,
-                                    dist_scale, 0.5)
+                                    dist_scale, l_spring)
         average_seconds = perf_counter() - epoch_start - force_seconds
         first_sample = len(trial_terms)
         dt, samples = first_registration_line_search(projected, force, objective)

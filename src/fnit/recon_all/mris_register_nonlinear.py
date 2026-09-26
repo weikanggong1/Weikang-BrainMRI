@@ -148,8 +148,9 @@ def registration_total_area() -> float:
 def first_distance_gradient(input_sphere: torch.Tensor,
                             original_surface: torch.Tensor,
                             registered_sphere: torch.Tensor,
-                            faces: torch.Tensor, *, project: bool = True) -> torch.Tensor:
-    """First distance-force gradient from the frozen registration surface inputs."""
+                            faces: torch.Tensor, *, project: bool = True,
+                            weight: float = 5.0) -> torch.Tensor:
+    """Distance-force gradient from the frozen registration surface inputs."""
     input_sphere = input_sphere.float()
     original_surface = original_surface.float()
     registered_sphere = (project_sphere(registered_sphere.float()) if project
@@ -161,7 +162,7 @@ def first_distance_gradient(input_sphere: torch.Tensor,
     return distance_gradient(registered_sphere, normals, neighbors, degrees,
                              current, original, three_hop_avg_nbrs(neighbors, degrees),
                              registration_orig_area(input_sphere, faces),
-                             registration_total_area(), 5.0)
+                             registration_total_area(), weight)
 
 
 @torch.no_grad()
@@ -188,8 +189,9 @@ def face_area_normals(positions: torch.Tensor, faces: torch.Tensor,
 def area_gradient_add(gradient: torch.Tensor, positions: torch.Tensor,
                       faces: torch.Tensor, current_areas: torch.Tensor,
                       original_areas: torch.Tensor, face_normals: torch.Tensor,
-                      orig_area: float, total_area: float) -> torch.Tensor:
-    """Add first nonlinear and percentage area forces in native face order."""
+                      orig_area: float, total_area: float, *,
+                      l_nlarea: float = 1.0, l_parea: float = 0.2) -> torch.Tensor:
+    """Add nonlinear and percentage area forces in native face order."""
     first = positions[faces[:, 1]] - positions[faces[:, 0]]
     second = positions[faces[:, 2]] - positions[faces[:, 0]]
 
@@ -204,12 +206,12 @@ def area_gradient_add(gradient: torch.Tensor, positions: torch.Tensor,
     scale = _float32(_float32(orig_area) / _float32(total_area))
     scaled_nonlinear = float(scale) * current_areas.double()
     ratio = scaled_nonlinear.clamp(-40.0, 40.0)
-    delta_nonlinear = (1.0 / (1.0 + torch.exp(10.0 * ratio))) * (
+    delta_nonlinear = (_float32(l_nlarea) / (1.0 + torch.exp(10.0 * ratio))) * (
         scaled_nonlinear - original_areas.double())
     nonlinear = torch.stack(((corner0.double() * delta_nonlinear[:, None]).float(),
                              (-second_cross.double() * delta_nonlinear[:, None]).float(),
                              (first_cross.double() * delta_nonlinear[:, None]).float()), dim=1)
-    delta_percent = 0.2 * (current_areas * scale - original_areas)
+    delta_percent = _float32(l_parea) * (current_areas * scale - original_areas)
     percent = torch.stack((corner0 * delta_percent[:, None],
                            second_cross * (-delta_percent)[:, None],
                            first_cross * delta_percent[:, None]), dim=1)
@@ -240,7 +242,8 @@ def first_area_gradient(input_sphere: torch.Tensor,
                         original_surface: torch.Tensor,
                         registered_sphere: torch.Tensor, faces: torch.Tensor,
                         gradient_after_distance: torch.Tensor, *,
-                        project: bool = True) -> torch.Tensor:
+                        project: bool = True, l_nlarea: float = 1.0,
+                        l_parea: float = 0.2) -> torch.Tensor:
     """First area-force update following the native-free distance gradient."""
     input_sphere = input_sphere.float()
     original_surface = original_surface.float()
@@ -251,7 +254,8 @@ def first_area_gradient(input_sphere: torch.Tensor,
     return area_gradient_add(gradient_after_distance, positions, faces,
                              current_areas, original_areas, face_normals,
                              registration_orig_area(input_sphere, faces),
-                             registration_total_area())
+                             registration_total_area(),
+                             l_nlarea=l_nlarea, l_parea=l_parea)
 
 
 @torch.no_grad()

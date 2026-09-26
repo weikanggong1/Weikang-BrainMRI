@@ -418,10 +418,13 @@ in the spring SSE. A later `debug0083` discrepancy came from using double
 all 42 consecutive RH smoothwm checkpoints `debug0056`–`debug0097` match
 105,541/105,541 ordered vertices and all faces at every update. The native
 RH final `sphere.reg` has the same vertices, faces and volume geometry as
-`debug0097`; its negative-face repair loop was a no-op. The native averaging
-schedule is supplied to this bounded probe. Independent stopping, LH
-fold removal and repair, and a connected full reconstruction remain open;
-see
+`debug0097`; its negative-face repair loop was a no-op. On LH, the six
+fold-cleanup surfaces `debug0102`–`debug0107` also match every ordered vertex
+and face. A PyTorch repair from frozen native `debug0107` matched all 102
+negative-triangle counts and the official final sphere at all 106,622
+vertices on both CPU and H100 CUDA. The native averaging schedule is supplied
+to these bounded probes. Independent stopping and a connected full
+reconstruction remain open; see
 [`MRIS_REGISTER_STATUS.md`](MRIS_REGISTER_STATUS.md), the
 [RH SVD correction](MRIS_REGISTER_RH_RAW_H_SVD_MATCH.md), and the
 [LH continuation boundary](MRIS_REGISTER_LH_SMOOTHWM_BOUNDARY.md).

@@ -1126,6 +1126,7 @@ and face bytes. Their [volume geometry fields](mris_register_rh_final_volume_inf
 also match; only trailing provenance bytes differ. The native RH run had
 zero negative triangles at the final repair call, which makes that loop a
 no-op. The bounded Python trajectory therefore reaches the official RH
-final geometry on this subject. Independent stage stopping, the LH
-fold-removal and negative-face repair, vertex/ROI metrics, and a connected
+final geometry on this subject. The [LH fold and overlap report](MRIS_REGISTER_LH_SMOOTHWM_BOUNDARY.md)
+now covers its six additional updates and final repair at exact ordered
+vertices. Independent stage stopping, vertex/ROI metrics, and a connected
 native-free GPU reconstruction still require acceptance.

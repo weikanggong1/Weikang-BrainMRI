@@ -77,8 +77,8 @@ at all 105,541 ordered vertices per update; see the
 [native RH58 fit](mris_register_rh_default_epoch0058_native_line_fit_gpucw1.json),
 [RH83 fit](mris_register_rh_default_epoch0083_native_line_fit_gpucw1.json)
 and [corrected continuation](mris_register_rh_default_epoch0083_0097_lcorr_f32_gpucw1.json).
-Final `sphere.reg`, end-to-end reconstruction, vertex/ROI metrics and an
-end-to-end GPU timing comparison remain open.
+The bounded RH path reaches the official final sphere geometry. End-to-end
+reconstruction, vertex/ROI metrics and a full GPU timing comparison remain open.
 
 ## Archived evidence hashes
 
