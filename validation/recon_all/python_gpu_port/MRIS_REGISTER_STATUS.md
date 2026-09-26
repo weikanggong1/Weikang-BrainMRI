@@ -1026,34 +1026,49 @@ smoothwm update (`debug0056`) matches **105,541/105,541** native saved vertices
 with maximum error 0 mm and identical `dt=2.542891502380371`.
 
 The corrected raw H fit uses CPU Numba inside the Python/PyTorch stage.
-The [LH continuation audit](MRIS_REGISTER_LH_SMOOTHWM_BOUNDARY.md) now matches
+The [LH continuation audit](MRIS_REGISTER_LH_SMOOTHWM_BOUNDARY.md) matches
 all 106,622 raw H values and all 45 consecutive normal smoothwm surfaces,
 `debug0057`–`debug0101`, at every ordered vertex and face. The stage schedule
-is read from the native log; independent stopping remains unverified. The
-right hemisphere matches `debug0056`–`debug0057` at all 105,541 vertices but
-diverges at the first 256-average update, `debug0058`. Its Python quadratic
-candidate is `1.7613636255264282` versus the native step
-`1.8571428060531616`; the resulting surface has 0/105,541 exact vertices
-and a maximum 0.0137939453125 mm coordinate difference. At the native
-float32 step, the independently generated Python gradient and projection
-recover all 105,541 native vertices exactly; see the
-[continuation report](mris_register_rh_default_epoch0056_0058_continuous_headcw.json)
-and [step diagnostic](mris_register_rh_default_epoch0058_gradient_fit_headcw.json).
-This isolates the first RH mismatch to the line-search candidate. The initial
-report evaluated reloaded native coordinates as float64, yielding a misleading
-SSE of 1,420,802.5928. With the [corrected float32 reference](mris_register_rh_default_epoch0056_0058_float32_reference_headcw.json),
-Python obtains 1,420,801.6314 at the native `debug0058` surface, agreeing
-with the native one-decimal log value 1,420,801.6. The three bracket scores
-are ill-conditioned: lowering just the middle stored float32 SSE by 0.125
-changes the quadratic candidate from 1.7613636255 to the native
-1.8571428061. The native bracket SSE values have not been captured, so this
-is a sensitivity calculation, not a demonstrated cause. Changing the 3×3
-determinant summation order can happen to produce the native step here, but
-regresses 9 of 10 earlier exact native fits; it is not a valid correction.
-A [short independent continuation](mris_register_rh_default_epoch0056_0061_divergence_headcw.json)
-kept the Python coordinates after the RH `debug0058` mismatch. Maximum
-coordinate error grew to 0.1183, 0.1278 and 0.1981 mm at `debug0059`,
-`debug0060` and `debug0061`; each has 0/105,541 exact vertices. This rules
-out immediate recovery at the following three checkpoints and does not
-validate the later RH path. Negative-face repair, final `sphere.reg`, vertex and ROI metrics, and a
-connected GPU reconstruction remain unaccepted.
+is read from the native log; independent stopping remains unverified.
+
+### RH `debug0058` line-search correction
+
+The prior RH `debug0056`–`debug0057` continuation was exact but selected
+`dt=1.7613636255264282` at `debug0058`, versus the installed
+`1.8571428060531616`. A gpucw1 FreeSurfer 8.2.0-1 GDB run captured the
+three native bracket SSEs at the actual fit, using the same binary, input
+sphere, atlas and four threads. The [capture and comparison](mris_register_rh_default_epoch0058_native_line_fit_gpucw1.json)
+retain the native matrix, inverse, RHS, coefficients, input hashes, source
+script and full log hashes. The [raw fit log](mris_register_rh_default_epoch0058_native_line_fit_gpucw1.log)
+and [compressed FreeSurfer SSE-term log](mris_register_rh_default_epoch0058_native_sse_terms_gpucw1.log.gz)
+are included for audit.
+
+| Trial dt | Native SSE | Old Python SSE | Corrected Python SSE | Native/corrected float32 SSE |
+| ---: | ---: | ---: | ---: | ---: |
+| 0.2409516472 | 1,425,277.594681 | 1,425,277.602511 | 1,425,277.594677 | 1,425,277.625 |
+| 0.4819032944 | 1,424,246.309728 | 1,424,246.317522 | 1,424,246.309692 | 1,424,246.250 |
+| 0.7228549416 | 1,423,340.796671 | 1,423,340.804469 | 1,423,340.796641 | 1,423,340.750 |
+
+The old middle score rounded to `1,424,246.375` in float32, one 0.125 ULP
+above the native value. FreeSurfer's SSE-term log attributes almost all of
+the roughly 0.0078 double-score difference to the spring term. Its area
+ratio is stored as float32 before that term accumulates; the Python probe
+used a double ratio. Casting that one ratio to float32 changes neither the
+previously exact force nor its float32 `dist_scale`, but aligns all three
+stored scores and restores the native quadratic candidate. This is a
+source-derived and empirically checked precision fix, not a change to the
+matrix inverse order. The [fixed RH report](mris_register_rh_default_epoch0056_0058_area_scale_fixed_gpucw1.json)
+shows `debug0056`, `debug0057`, and `debug0058` each match **105,541/105,541
+ordered native vertices**, maximum coordinate error 0 mm, with the same
+native-selected step at each update. The [resumed RH report](mris_register_rh_default_epoch0059_0066_area_scale_fixed_gpucw1.json)
+then matches all eight consecutive `debug0059`–`debug0066` checkpoints at
+105,541/105,541 ordered vertices each, with maximum coordinate error 0 mm.
+The fixed probe uses the native raw H array as a controlled input; its
+independent production computation was separately shown to match the same
+full-array hash. The integration schedule is still read from the native log.
+
+The earlier [unfixed continuation](mris_register_rh_default_epoch0056_0061_divergence_headcw.json)
+shows why this 0.125 ULP mattered: its coordinate error reached 0.1981 mm
+by `debug0061`. It is retained as pre-fix evidence. RH epochs after `debug0066`, negative-face repair, final `sphere.reg`,
+vertex and ROI metrics, and a connected GPU reconstruction still require
+acceptance.

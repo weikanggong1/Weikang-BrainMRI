@@ -85,7 +85,7 @@ def main():
     original_areas, _ = face_area_normals(original, triangles)
     original_area = registration_orig_area(vertices, triangles)
     total_area = registration_total_area()
-    area_scale = original_area / total_area
+    area_scale = float(np.float32(original_area / total_area))
     dist_scale = torch.tensor(math.sqrt(area_scale), dtype=torch.float32)
     atlas = tifffile.imread(args.atlas)
     raw = torch.from_numpy(np.fromfile(args.raw_curvature, dtype='<f4').copy())

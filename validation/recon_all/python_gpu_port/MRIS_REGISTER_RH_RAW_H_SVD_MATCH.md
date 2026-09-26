@@ -71,8 +71,9 @@ vertices alone, are the acceptance evidence.
 
 The corrected independent LH raw H and all 45 normal smoothwm updates have
 passed; see the [LH continuation report](MRIS_REGISTER_LH_SMOOTHWM_BOUNDARY.md).
-RH also matches `debug0057`, then diverges at the `debug0058` line-search
-step; see the [stage report](mris_register_rh_default_epoch0056_0058_continuous_headcw.json).
+The later RH `debug0058` line-search divergence was traced to the spring
+SSE area-ratio precision. The corrected probe matches `debug0056`–`debug0058`
+at all 105,541 ordered vertices; see the [native fit and corrected comparison](mris_register_rh_default_epoch0058_native_line_fit_gpucw1.json).
 Final `sphere.reg`, end-to-end reconstruction, vertex/ROI metrics and an
 end-to-end GPU timing comparison remain open.
 

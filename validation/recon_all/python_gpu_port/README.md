@@ -411,13 +411,13 @@ nonlinear epochs match every saved ordered vertex checkpoint through LH
 `debug0056` and RH `debug0055`. Both independently computed raw smoothwm
 curvature arrays match native bitwise: 106,622/106,622 LH and 105,541/105,541
 RH values. The LH normal smoothwm path matches all 45 consecutive saved
-surfaces, `debug0057`–`debug0101`, at every ordered vertex and face. RH
-matches `debug0056`–`debug0057` and first diverges at the `debug0058`
-line-search step; applying the native float32 step to the independently
-computed force reproduces all RH vertices exactly. Short independent
-continuation reaches 0.1981 mm maximum error by `debug0061`. The native averaging
-schedule is supplied to this bounded probe. Negative-face repair, final
-`sphere.reg`, and independent stopping remain open; see
+surfaces, `debug0057`–`debug0101`, at every ordered vertex and face. The
+RH `debug0058` line-search discrepancy came from a float32 area-ratio boundary
+in the spring SSE. After correction, all 11 consecutive RH smoothwm
+checkpoints `debug0056`–`debug0066` match every one of the 105,541 ordered
+vertices. The native averaging schedule is supplied to this bounded probe.
+Later RH epochs, negative-face repair, final `sphere.reg`, and independent
+stopping remain open; see
 [`MRIS_REGISTER_STATUS.md`](MRIS_REGISTER_STATUS.md), the
 [RH SVD correction](MRIS_REGISTER_RH_RAW_H_SVD_MATCH.md), and the
 [LH continuation boundary](MRIS_REGISTER_LH_SMOOTHWM_BOUNDARY.md).
