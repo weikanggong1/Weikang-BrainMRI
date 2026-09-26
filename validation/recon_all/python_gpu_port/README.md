@@ -414,7 +414,8 @@ RH values. The LH normal smoothwm path matches all 45 consecutive saved
 surfaces, `debug0057`–`debug0101`, at every ordered vertex and face. RH
 matches `debug0056`–`debug0057` and first diverges at the `debug0058`
 line-search step; applying the native float32 step to the independently
-computed force reproduces all RH vertices exactly. The native averaging
+computed force reproduces all RH vertices exactly. Short independent
+continuation reaches 0.1981 mm maximum error by `debug0061`. The native averaging
 schedule is supplied to this bounded probe. Negative-face repair, final
 `sphere.reg`, and independent stopping remain open; see
 [`MRIS_REGISTER_STATUS.md`](MRIS_REGISTER_STATUS.md), the

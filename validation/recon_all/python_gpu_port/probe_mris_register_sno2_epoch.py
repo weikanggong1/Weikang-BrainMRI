@@ -58,6 +58,7 @@ def main():
     parser.add_argument('--resume-epoch', type=int)
     parser.add_argument('--resume-report', type=Path)
     parser.add_argument('--dump-mismatch', type=Path)
+    parser.add_argument('--continue-on-mismatch', action='store_true')
     args = parser.parse_args()
     if args.next_epochs and (args.native_prefix is None or args.first_epoch not in (56, 57)):
         parser.error('--next-epochs requires --native-prefix and first smoothwm epoch 56 or 57')
@@ -261,7 +262,8 @@ def main():
                                     projected=projected.cpu().numpy(),
                                     gradient=force.cpu().numpy(),
                                     reference=reference_vertices.astype(np.float32))
-            break
+            if not args.continue_on_mismatch:
+                break
     args.report.write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps({'dt': dt, 'seconds': report['seconds_excluding_io'],
                       'checks': {name: (item['exact_vertices'], item['max_abs_error'])

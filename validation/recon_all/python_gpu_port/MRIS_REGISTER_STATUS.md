@@ -1050,5 +1050,10 @@ changes the quadratic candidate from 1.7613636255 to the native
 is a sensitivity calculation, not a demonstrated cause. Changing the 3×3
 determinant summation order can happen to produce the native step here, but
 regresses 9 of 10 earlier exact native fits; it is not a valid correction.
-Negative-face repair, final `sphere.reg`, vertex and ROI metrics, and a
+A [short independent continuation](mris_register_rh_default_epoch0056_0061_divergence_headcw.json)
+kept the Python coordinates after the RH `debug0058` mismatch. Maximum
+coordinate error grew to 0.1183, 0.1278 and 0.1981 mm at `debug0059`,
+`debug0060` and `debug0061`; each has 0/105,541 exact vertices. This rules
+out immediate recovery at the following three checkpoints and does not
+validate the later RH path. Negative-face repair, final `sphere.reg`, vertex and ROI metrics, and a
 connected GPU reconstruction remain unaccepted.
