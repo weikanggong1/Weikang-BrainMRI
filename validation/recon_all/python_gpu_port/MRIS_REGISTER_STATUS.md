@@ -1128,5 +1128,43 @@ zero negative triangles at the final repair call, which makes that loop a
 no-op. The bounded Python trajectory therefore reaches the official RH
 final geometry on this subject. The [LH fold and overlap report](MRIS_REGISTER_LH_SMOOTHWM_BOUNDARY.md)
 now covers its six additional updates and final repair at exact ordered
-vertices. Independent stage stopping, vertex/ROI metrics, and a connected
-native-free GPU reconstruction still require acceptance.
+vertices. The source-stopping audit below resolves the average/sigma decisions
+on the saved trajectory; a continuous native-free registration invocation,
+vertex/ROI metrics, and connected T1 reconstruction still require acceptance.
+
+
+## Source-derived smoothwm stopping and sigma schedule
+
+Pinned FreeSurfer `MRISintegrate` compares
+`100 × (starting_sse − ending_sse) / ending_sse` with
+`tol × sqrt((navgs + 1) / 1024)`, and advances when the value is smaller,
+`dt` is zero, or 25 updates have run at the scale. Smoothwm registration uses
+`tol=1.0`; LH fold cleanup uses `tol=0.1`. The
+[Python scheduler](../../../src/fnit/recon_all/mris_register_schedule.py)
+advances `1024 → 256 → 64 → 16 → 4 → 1 → 0`, then switches to the next
+blur sigma `4 → 2 → 1 → 0.5`. After the last sigma, the source enters
+64-average fold cleanup only if negative faces remain.
+
+The [saved-score audit](mris_register_source_schedule_audit.json) reads the
+already exact bilateral Python trajectory reports. It uses their **selected
+float32 trial SSE**, not the older float64 reevaluation of a reopened native
+surface. It predicts all 50 LH and 41 RH saved update states, including
+whether the next update projects at a new scale; both final updates
+independently satisfy the source stopping rule. The LH/RH fold branch counts
+(193/0) in this retrospective audit come from the pinned native logs. The
+[reproducible auditor](experimental/audit_mris_register_source_schedule.py)
+records every input-report hash and predicted decision. No deformation was
+rerun for this 91-decision audit.
+
+The existing [registration probe](probe_mris_register_sno2_epoch.py) now has
+an opt-in `--source-schedule` mode. It computes the next average count,
+sigma, projection boundary and fold branch from its own scores and current
+mesh. A bounded LH run started from the native `debug0056` file, whose
+ordered geometry had separately matched the Python sulc seed exactly. It
+used the independently computed raw smoothwm curvature and matched native
+`debug0057`–`debug0060` at all 106,622 vertices; the three new decisions were
+`1024 → 256 → 64 → 64`. See the
+[LH runtime report](mris_register_lh_source_schedule_first4_headcw.json).
+Three focused scheduler tests pass. The source-scheduled mode has not yet run
+continuously through the final bilateral `sphere.reg` files. The older
+bounded geometry replays retain their logged schedule by default.

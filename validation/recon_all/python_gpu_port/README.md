@@ -422,9 +422,11 @@ RH final `sphere.reg` has the same vertices, faces and volume geometry as
 fold-cleanup surfaces `debug0102`–`debug0107` also match every ordered vertex
 and face. A PyTorch repair from frozen native `debug0107` matched all 102
 negative-triangle counts and the official final sphere at all 106,622
-vertices on both CPU and H100 CUDA. The native averaging schedule is supplied
-to these bounded probes. Independent stopping and a connected full
-reconstruction remain open; see
+vertices on both CPU and H100 CUDA. The prior bounded geometry replays use
+the native averaging schedule. A source-rule audit predicts all 91 saved
+bilateral smoothwm decisions, and a short LH runtime check reproduces the
+first four meshes with Python-selected averages. A continuous bilateral
+source-scheduled invocation and connected full reconstruction remain open; see
 [`MRIS_REGISTER_STATUS.md`](MRIS_REGISTER_STATUS.md), the
 [RH SVD correction](MRIS_REGISTER_RH_RAW_H_SVD_MATCH.md), and the
 [LH continuation boundary](MRIS_REGISTER_LH_SMOOTHWM_BOUNDARY.md).

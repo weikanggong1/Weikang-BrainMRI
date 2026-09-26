@@ -120,5 +120,8 @@ all 105,541 final vertices exactly in 0.017 s CPU compute.
 
 The fold cleanup and repair have each passed against native checkpoints.
 The tests used native snapshots as their starting inputs and do not replace
-a connected T1-to-`sphere.reg` run. The native iteration/averaging schedule
-still supplies the bounded registration probe.
+a connected T1-to-`sphere.reg` run. The original bounded geometry replay
+uses the native iteration schedule. A separate source-rule audit now matches
+all saved bilateral schedule decisions, and an opt-in LH runtime check
+reproduces the first four smoothwm surfaces; see
+[the schedule result](MRIS_REGISTER_STATUS.md#source-derived-smoothwm-stopping-and-sigma-schedule).

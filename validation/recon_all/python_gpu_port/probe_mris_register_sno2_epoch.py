@@ -24,6 +24,7 @@ from fnit.recon_all.mris_register_nonlinear import (
     spring_gradient_add, tangent_basis,
 )
 from fnit.recon_all.mris_register_parameterization import parameterize_curvature
+from fnit.recon_all.mris_register_schedule import next_smoothwm_scale
 
 
 def compare(candidate, reference_file):
@@ -59,6 +60,7 @@ def main():
     parser.add_argument('--resume-report', type=Path)
     parser.add_argument('--dump-mismatch', type=Path)
     parser.add_argument('--continue-on-mismatch', action='store_true')
+    parser.add_argument('--source-schedule', action='store_true')
     args = parser.parse_args()
     if args.next_epochs and (args.native_prefix is None or args.first_epoch not in (56, 57)):
         parser.error('--next-epochs requires --native-prefix and first smoothwm epoch 56 or 57')
@@ -68,6 +70,8 @@ def main():
         parser.error('RH fixed schedule ends at epoch 97')
     if (args.resume_epoch is None) != (args.resume_report is None):
         parser.error('--resume-epoch and --resume-report must be supplied together')
+    if args.source_schedule and args.resume_report is not None:
+        parser.error('--source-schedule requires an original first-epoch start')
     torch.set_num_threads(4)
     start = perf_counter()
     sphere, faces = fsio.read_geometry(str(args.sphere))
@@ -171,6 +175,14 @@ def main():
               'checkpoints': checks}
     report['continuation'] = []
     current = predicted
+    if args.source_schedule:
+        first_selected_sse = min(samples, key=lambda sample: abs(sample[0] - dt))[1]
+        previous_source_state = ('smoothwm', 0, 1024, 0)
+        source_state = next_smoothwm_scale(
+            *previous_source_state, samples[0][1], first_selected_sse, dt)
+        if source_state is None:
+            raise ValueError('first smoothwm update unexpectedly ended registration')
+        report['schedule_mode'] = 'source_stopping_rule'
     first_epoch = args.first_epoch or 0
     start_epoch = first_epoch + 1
     sigma_starts = ({81: 2.0, 88: 1.0, 95: 0.5} if args.hemisphere == 'lh'
@@ -219,8 +231,16 @@ def main():
             report['resume']['sigma_seed_sha256'] = sigma_hash
     for epoch in range(start_epoch, first_epoch + args.next_epochs + 1):
         epoch_start = perf_counter()
-        if epoch in sigma_starts:
-            sigma = sigma_starts[epoch]
+        if args.source_schedule:
+            stage, sigma_index, gradient_averages, _ = source_state
+            sigma_changed = sigma_index != previous_source_state[1]
+            if sigma_changed:
+                sigma = (4.0, 2.0, 1.0, 0.5)[sigma_index]
+        else:
+            sigma_changed = epoch in sigma_starts
+            if sigma_changed:
+                sigma = sigma_starts[epoch]
+        if sigma_changed:
             source_grid = parameterize_curvature(current, normalized)
             curvature = normalize_mean_curvature(sample_atlas_on_canonical_sphere(
                 current, blur_atlas_frame(source_grid, sigma)))
@@ -228,14 +248,17 @@ def main():
                 current, blur_atlas_frame(raw_mean, sigma)))
             mean_grid = parameterize_curvature(current, mean_curve)
             variance_grid = blur_atlas_frame(raw_variance, sigma)
-        fold_cleanup = args.hemisphere == 'lh' and epoch >= 102
+        fold_cleanup = (stage == 'fold_cleanup' if args.source_schedule else
+                        args.hemisphere == 'lh' and epoch >= 102)
         if fold_cleanup:
             l_parea = float(np.float32(np.float32(0.2) / 100))
             l_nlarea = 100.0
             l_dist = float(np.float32(np.float32(5.0) / 100))
             l_corr = float(np.float32(np.float32(0.05) / 100))
             l_spring = float(np.float32(np.float32(0.5) / 100))
-        if args.hemisphere == 'lh':
+        if args.source_schedule:
+            integration_start = source_state[:3] != previous_source_state[:3]
+        elif args.hemisphere == 'lh':
             integration_start = (epoch in (59, 60, 69, 75, 78, 80)
                                  or 81 <= epoch <= 102 or 104 <= epoch <= 107)
         else:
@@ -253,7 +276,9 @@ def main():
         force = correlation_gradient_add(force, projected, curvature, e1, e2,
                                          mean_grid, variance_grid, avg_vertex_dist, l_corr=l_corr)
         force_seconds = perf_counter() - epoch_start
-        if args.hemisphere == 'lh':
+        if args.source_schedule:
+            gradient_averages = source_state[2]
+        elif args.hemisphere == 'lh':
             if fold_cleanup:
                 gradient_averages = (64, 64, 16, 4, 1, 0)[epoch - 102]
             elif epoch >= 81:
@@ -276,6 +301,15 @@ def main():
         dt, samples = first_registration_line_search(projected, force, objective)
         current = apply_spherical_gradient(projected, force, dt)
         line_seconds = perf_counter() - epoch_start - force_seconds - average_seconds
+        if args.source_schedule:
+            chosen_sse = min(samples, key=lambda sample: abs(sample[0] - dt))[1]
+            negative_faces = 0
+            if stage == 'smoothwm' and sigma_index == 3 and not gradient_averages:
+                signed_area, _ = face_area_normals(current, triangles, signed_sphere=True)
+                negative_faces = int((signed_area < 0).sum())
+            next_source_state = next_smoothwm_scale(
+                *source_state, samples[0][1], chosen_sse, dt,
+                negative_faces=negative_faces)
         reference = Path(f'{args.native_prefix}{epoch:04d}')
         result = compare(current, reference)
         line_sample_terms = trial_terms[first_sample:]
@@ -283,7 +317,7 @@ def main():
         assert np.array_equal(faces, reference_faces)
         native_reference_sse = objective(torch.from_numpy(reference_vertices.astype(np.float32)))
         native_reference_terms = trial_terms[-1]
-        report['continuation'].append({
+        row = {
             'epoch': epoch, 'dt': dt, 'gradient_averages': gradient_averages,
             'integration_start_projection': integration_start, 'line_samples': samples,
             'line_sample_terms': line_sample_terms,
@@ -291,8 +325,14 @@ def main():
             'native_reference_terms': native_reference_terms,
             'seconds_excluding_io': {'force': force_seconds, 'average_and_spring': average_seconds,
                                      'line': line_seconds},
-            'saved_surface': result})
+            'saved_surface': result}
+        if args.source_schedule:
+            row['next_source_state'] = next_source_state
+        report['continuation'].append(row)
         print(json.dumps({'epoch': epoch, 'dt': dt, 'saved_surface': result}), flush=True)
+        if args.source_schedule:
+            previous_source_state = source_state
+            source_state = next_source_state
         if result['exact_vertices'] != len(current):
             if args.dump_mismatch is not None:
                 np.savez_compressed(args.dump_mismatch,
@@ -301,6 +341,8 @@ def main():
                                     reference=reference_vertices.astype(np.float32))
             if not args.continue_on_mismatch:
                 break
+        if args.source_schedule and source_state is None:
+            break
     args.report.write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps({'dt': dt, 'seconds': report['seconds_excluding_io'],
                       'checks': {name: (item['exact_vertices'], item['max_abs_error'])
