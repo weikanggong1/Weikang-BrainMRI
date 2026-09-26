@@ -1168,3 +1168,57 @@ used the independently computed raw smoothwm curvature and matched native
 Three focused scheduler tests pass. The source-scheduled mode has not yet run
 continuously through the final bilateral `sphere.reg` files. The older
 bounded geometry replays retain their logged schedule by default.
+
+## Continuous source-scheduled smoothwm stage and callable API
+
+The [`run_register_smoothwm` API](../../../src/fnit/recon_all/mris_register_smoothwm_run.py)
+now takes an ordered conventional `sphere`, `smoothwm`, an exact sulc-pass
+seed, and the 2.86 MB folding-atlas TIFF. It independently computes raw
+`smoothwm` curvature, selects every scale from its own SSE, runs the nonlinear
+updates, performs negative-face repair, and writes the final sphere and
+volume geometry. It invokes no FreeSurfer executable. The same module has a
+`python -m fnit.recon_all.mris_register_smoothwm_run` CLI; the caller supplies
+the completed sulc update count as `--seed-iteration`.
+
+On the frozen `fs_sub01`, the independent raw-curvature arrays matched the
+installed FreeSurfer float32 arrays by SHA-256 and at every vertex. Starting
+from the saved LH `debug0056` and RH `debug0055` sulc meshes, whose geometry
+was separately reproduced by Python, a **single continuous** source-scheduled
+run matched all 51 LH and 42 RH official smoothwm/fold checkpoints at every
+ordered vertex, with maximum error 0 mm. Both schedules terminated from the
+Python SSE rather than an official log. The [LH trajectory](mris_register_lh_source_schedule_full_independent_headcw.json)
+and [RH trajectory](mris_register_rh_source_schedule_full_independent_gpucw1.json)
+retain every selected step, scale decision, native reference hash, coordinate
+hash and timing. Native checkpoint meshes were read for comparison only.
+
+Separate [LH](mris_register_lh_smoothwm_api_headcw.json) and
+[RH](mris_register_rh_smoothwm_api_headcw.json) calls of the installed API
+computed raw curvature again and wrote final `sphere.reg` files. The
+[independent LH comparator](mris_register_lh_smoothwm_api_final_compare_headcw.json)
+and [RH comparator](mris_register_rh_smoothwm_api_final_compare_headcw.json)
+found 106,622/106,622 and 105,541/105,541 exact ordered vertices,
+identical ordered faces and volume geometry, and all 51/42 selected steps
+identical to the separate continuous probes. LH ran all 102 overlap repair
+updates; RH had no negative triangles. File hashes differ because the Python
+writer uses its own provenance stamp.
+
+The two API calls took 876.99 s LH and 797.29 s RH on headcw, including input
+and output I/O and with four PyTorch CPU threads. Their integration portions
+were 860.03 s and 782.46 s; final repair took 2.86 s and 0.01 s. The
+separate LH checkpoint probe spent 756.39 of 816.29 s of recorded update
+compute in force construction. Earlier official logs report approximately
+154.08 s LH and 146.88 s RH for **complete** native registration, which also
+includes rigid and sulc passes. These are different stage boundaries and
+shared-host load conditions; they do not establish a matched speed ratio.
+
+A [paired first-force CPU/CUDA0 diagnostic](mris_register_lh_first_force_cpu_cuda0_gpucw1.json)
+on gpucw1 with float32 and TF32 enabled took 32.76 s CPU and 33.58 s CUDA,
+excluding tensor transfer. The maximum force difference was 1.55e-5;
+106,615/106,622 vertices were within 1e-5. This direct CUDA substitution
+has not been adopted. Force construction repeatedly builds ordered topology
+and is the measured optimization target.
+
+This is an exact **smoothwm continuation from a sulc seed**, not a connected
+`sphere`-to-`sphere.reg` entry point or T1-to-metrics pipeline. The sulc pass
+still needs a production native-free runner with independent stopping, and the
+upstream topology, white/pial and whole-subject acceptance gates remain open.

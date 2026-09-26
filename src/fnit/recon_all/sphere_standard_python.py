@@ -30,31 +30,32 @@ def project_before_standard_unfold(vertices: np.ndarray) -> np.ndarray:
 
 
 def write_standard_sphere_surface(output: str | Path, vertices: np.ndarray,
-                                  faces: np.ndarray, inflated: str | Path) -> None:
+                                  faces: np.ndarray, source_surface: str | Path,
+                                  *, create_stamp: str = "created by Python conventional sphere") -> None:
     """Write sphere coordinates while preserving input volume geometry bytes.
 
     FreeSurfer stores volume geometry as text after the triangle arrays.
     Nibabel's formatter rounds that text, so retain the original block.
     Later FreeSurfer provenance tags are deliberately not copied.
     """
-    with Path(inflated).open("rb") as stream:
+    with Path(source_surface).open("rb") as stream:
         if stream.read(3) != b"\xff\xff\xfe":
-            raise ValueError("inflated input is not a triangle surface")
+            raise ValueError("source surface is not a triangle surface")
         stream.readline()
         stream.readline()
         nvertices, nfaces = struct.unpack(">ii", stream.read(8))
         if nvertices != len(vertices) or nfaces != len(faces):
-            raise ValueError("inflated input topology differs")
+            raise ValueError("source surface topology differs")
         stream.seek(12 * (nvertices + nfaces), 1)
         footer = stream.read()
     if footer:
         cras = footer.find(b"cras   =")
         if cras < 0:
-            raise ValueError("inflated input has an incomplete volume geometry block")
+            raise ValueError("source surface has an incomplete volume geometry block")
         footer = footer[:footer.index(b"\n", cras) + 1]
     fsio.write_geometry(str(output), np.asarray(vertices, np.float32),
                         np.asarray(faces, np.int32),
-                        create_stamp="created by Python conventional sphere")
+                        create_stamp=create_stamp)
     with Path(output).open("ab") as stream:
         stream.write(footer)
 

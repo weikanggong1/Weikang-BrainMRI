@@ -48,13 +48,14 @@ on the same Python-generated `nu.mgz` input, while differing from the archived
 full subject at 112 voxels ([report](CONNECTED_T1_NORMALIZE_20260926.md)).
 
 The currently open critical path includes full topology repair, complete
-white/pial placement, independent registration stopping, and connected
+white/pial placement, the production sulc registration runner, and connected
 native-free orchestration. The standalone conventional-sphere stage now
 matches both final native meshes and volume geometry on the frozen subject;
 its optimization still runs on CPU/Numba and is not yet wired into a connected
-T1-to-metrics pipeline ([stage report](SPHERE_STANDARD_STATUS.md)). The bounded
-registration probes now match all RH smoothwm updates and the LH fold cleanup;
-the final LH overlap repair matches on both CPU and H100 CUDA. See
+T1-to-metrics pipeline ([stage report](SPHERE_STANDARD_STATUS.md)). The
+continuous source-scheduled smoothwm stage now matches all LH/RH updates and
+generates both final registered spheres from exact sulc seeds; the final
+LH overlap repair matches on both CPU and H100 CUDA. See
 [the stage report](MRIS_REGISTER_STATUS.md). The stage inventory in
 [README.md](README.md) states which individual boundaries already pass.
 

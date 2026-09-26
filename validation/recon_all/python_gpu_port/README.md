@@ -89,9 +89,10 @@ Python API and compiled ANTs/ITK on CPU. It matched all 16,777,216 voxels,
 the affine, and the MGH header on the frozen input. One same-host native/Python
 pair took 27.58/28.25 s. The trailing MGH metadata differs by one byte.
 See [`ANTS_DENOISE_STATUS.md`](ANTS_DENOISE_STATUS.md). The optional
-`recon-all-python-stages` dependency group lists its tested ANTsPy version
-and the separately tested SimpleITK N4 version; the combined environment and
-end-to-end Python runner have not yet been validated.
+`recon-all-python-stages` dependency group lists its tested ANTsPy version,
+the separately tested SimpleITK N4 version, and the TIFF reader for spherical
+registration; the combined environment and end-to-end Python runner have not
+yet been validated.
 
 The two standalone T1 intensity normalization translations now match their
 respective native stages on frozen `fs_sub01` inputs. The first `mri_normalize
@@ -429,7 +430,12 @@ vertices on both CPU and H100 CUDA. The prior bounded geometry replays use
 the native averaging schedule. A source-rule audit predicts all 91 saved
 bilateral smoothwm decisions, and a short LH runtime check reproduces the
 first four meshes with Python-selected averages. A continuous bilateral
-source-scheduled invocation and connected full reconstruction remain open; see
+source-scheduled smoothwm invocation now matches all 51 LH and 42 RH saved
+meshes. A separate callable Python/CLI stage generates
+both final registered spheres with exact ordered geometry and matching volume
+geometry from exact sulc seeds. Its 4-thread CPU calls took 876.99 s LH and
+797.29 s RH; a direct CUDA force trial showed no speed gain. The production
+sulc runner and connected full reconstruction remain open; see
 [`MRIS_REGISTER_STATUS.md`](MRIS_REGISTER_STATUS.md), the
 [RH SVD correction](MRIS_REGISTER_RH_RAW_H_SVD_MATCH.md), and the
 [LH continuation boundary](MRIS_REGISTER_LH_SMOOTHWM_BOUNDARY.md).

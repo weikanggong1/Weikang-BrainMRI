@@ -1,0 +1,13 @@
+{
+  "cuda_device": "cuda:0",
+  "dtype": "float32",
+  "tf32": true,
+  "vertices": 106622,
+  "exact_vertices": 3161,
+  "within_1e-5_vertices": 106615,
+  "within_1e-4_vertices": 106622,
+  "max_abs_error": 1.547113060951233e-05,
+  "p95_abs_error": 5.792826414108276e-07,
+  "cpu_force_seconds": 32.755586300976574,
+  "gpu_force_seconds_excluding_transfer": 33.580468295142055
+}
