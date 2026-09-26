@@ -120,7 +120,10 @@ def first_epoch_line_search(vertices: np.ndarray, gradient: np.ndarray,
                                + grad[:, 1] * grad[:, 1])
                     + grad[:, 2] * grad[:, 2])
     lengths = np.sqrt(sq.astype(np.float64))
-    mean_delta = float(np.sum(lengths, dtype=np.float64) / len(lengths))
+    sum_delta = 0.0
+    for length in lengths:
+        sum_delta += float(length)  # Native mrisLineMinimize accumulates by vertex order.
+    mean_delta = sum_delta / len(lengths)
     max_delta = float(np.max(lengths))
     min_dt = 0.001 / mean_delta
     max_dt = 12.2 / mean_delta

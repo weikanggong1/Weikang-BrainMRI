@@ -1,0 +1,203 @@
+{
+  "reference_commit": "d932c45",
+  "hemisphere": "rh",
+  "update_index": 5,
+  "native_binary_sha256": "c34ca308a7fa03acdb3f689bf6125cf3d0198c37c3a62992a29f68e631c73612",
+  "input_sha256": {
+    "inflated": "27c87284c27be6ef65ad1d71bfb922dd1b31b9a4ca352d04c55c1cad30fe41c3",
+    "smoothwm": "b67ceb95069d865bb11f6c2b20bac99eab9f19982b73d3c9c43735b7bedbe7ca"
+  },
+  "native_before_checkpoint_sha256": "770dd76c4282e684c2ae8cb6d8644ab994bde5392dec7aafa90f36dd486bead6",
+  "native_after_checkpoint_sha256": "1925058fd029011d2660f3cec2aba16a4835c99197e0c8995d99c111934f3f98",
+  "native_logsse_sha256": "3847ab8e4917a6cc2ef68656808332005cf6a11a7c3bef7b9a78f985db5b2ec6",
+  "native_probe_sha256": "48aa5c6b24078537ea2b051dadca2b1b48738ff99cc6fd1b125ce5a33616992d",
+  "corrected_line_search_sha256": "68cb48f89f4ceaa59e7238e81314bb12777182e599f705c042bbd056fe786d34",
+  "native_gdb_command": "FREESURFER_logSSE=1 DIAG=0x10000040 DIAG_VERBOSE=1 gdb -batch -x capture_standard_sphere_trial_memory.py --args mris_sphere -threads 4 -seed 1234 surf/rh.inflated rh.sphere",
+  "native_capture_breakpoint": "0x4ac8f0, 65th logSSE call; stopped before complete mris_sphere",
+  "native_gdb_isolated_wall_seconds": 20.91,
+  "native_memory_struct_offsets_bytes": {
+    "MRIS_vertices_topology": 32,
+    "MRIS_vertices": 40,
+    "VERTEX_stride": 464,
+    "VERTEX_xyz": 24,
+    "VERTEX_dx_dy_dz": 96,
+    "VERTEX_tx_ty_tz": 160,
+    "VERTEX_TOPOLOGY_stride": 48,
+    "VERTEX_TOPOLOGY_vtotal": 38
+  },
+  "native_capture": {
+    "logSSE_hit": 65,
+    "mris_address": "0xfb29f00",
+    "vertex_count": 105541,
+    "distance_count": 8183354,
+    "capture_seconds": 0.9452561251819134,
+    "sha256": {
+      "native_xyz.bin": "83d9baad090599144028bcfec7cc7027e146b900a07609ecabda83476eeaba35",
+      "native_before.bin": "73c69cb214228e2ce82b2b3c6f388ad0f2cda7396640ca8696dafd803e91bfe7",
+      "native_gradient.bin": "cb00ebf7331cae348dfa608aed4051d8d1f3b97f3beab05790ecc579cea669eb",
+      "native_offsets.bin": "1480cf5ea251cb6d60fc635ea168ca210dc92fbf03c38488ceadcb46499ba8ac",
+      "native_current.bin": "85efc4826e875c900b94f768e51d3498087dc3b003fd05a657092ca4735aafa3",
+      "native_target.bin": "b030949fe14c3de9fcc2f439c6c8bf8103a1cf4b84260278b6379ea77425ebea"
+    }
+  },
+  "native_vs_prior_python_trial": {
+    "native_offsets_equal_python": true,
+    "xyz_exact_components": 316622,
+    "xyz_total_components": 316623,
+    "first_xyz_difference": {
+      "vertex": 83527,
+      "component": 0,
+      "native": -16.84377098083496,
+      "python": -16.843772888183594,
+      "native_bits": "0xc186c00b",
+      "python_bits": "0xc186c00c"
+    },
+    "current_distance_exact_entries": 8183344,
+    "current_distance_total_entries": 8183354,
+    "current_distance_first_difference": {
+      "row": 81939,
+      "column": 66,
+      "neighbor": 83527,
+      "native": 6.2268781661987305,
+      "python": 6.226782321929932
+    },
+    "current_distance_max_abs_difference_mm": 0.00046753883361816406,
+    "differing_arc_endpoints": [
+      [
+        81939,
+        83527
+      ],
+      [
+        83511,
+        83527
+      ],
+      [
+        83511,
+        83527
+      ],
+      [
+        83527,
+        84210
+      ],
+      [
+        83527,
+        94904
+      ],
+      [
+        83527,
+        84802
+      ],
+      [
+        83869,
+        83527
+      ],
+      [
+        83879,
+        83527
+      ],
+      [
+        84210,
+        83527
+      ],
+      [
+        84489,
+        83527
+      ]
+    ],
+    "target_distance_exact_entries": 8183354,
+    "target_distance_total_entries": 8183354,
+    "mean_delta_native_order": 0.0004620478309032569,
+    "mean_delta_native_order_hex": "0x1.e47e052aab40fp-12",
+    "mean_delta_numpy_pairwise": 0.00046204783090324913,
+    "mean_delta_numpy_pairwise_hex": "0x1.e47e052aab380p-12",
+    "native_bracket2_dt": 3246.417144882276,
+    "python_bracket2_dt": 3246.4171448823304,
+    "bracket2_dt_delta": -5.4569682106375694e-11,
+    "v83527_preprojection_native_bits": "0xc186b9fb",
+    "v83527_preprojection_python_bits": "0xc186b9fc",
+    "reprojected_native_dt_exact_components": 316623,
+    "weighted_distance_score_delta_from_differing_arcs_at_python_scale": 0.00017628122906837332
+  },
+  "native_mean_delta_hex_from_unmodified_binary": "0x1.e47e052aab40fp-12",
+  "source_order_fix": "Replace NumPy pairwise sum of gradient norms with serial double accumulation in native vertex order.",
+  "fixed_single_checkpoint": {
+    "reference_commit": "d932c45",
+    "hemisphere": "rh",
+    "update_index": 5,
+    "native_logSSE_hit": 65,
+    "source_line_search_sha256": "68cb48f89f4ceaa59e7238e81314bb12777182e599f705c042bbd056fe786d34",
+    "input_checkpoint_sha256": "770dd76c4282e684c2ae8cb6d8644ab994bde5392dec7aafa90f36dd486bead6",
+    "output_checkpoint_sha256": "1925058fd029011d2660f3cec2aba16a4835c99197e0c8995d99c111934f3f98",
+    "native_before_matches_checkpoint": true,
+    "gradient_from": "isolated native GDB captured VERTEX dx/dy/dz",
+    "search_seconds": 1.2471604328602552,
+    "mean_delta": 0.0004620478309032569,
+    "mean_delta_hex": "0x1.e47e052aab40fp-12",
+    "bracket_sse": [
+      {
+        "dt": 1082.139048294092,
+        "sse": 768850.9900104952
+      },
+      {
+        "dt": 2164.278096588184,
+        "sse": 764907.6710839142
+      },
+      {
+        "dt": 3246.417144882276,
+        "sse": 764608.9688438899
+      }
+    ],
+    "selected_index": 4,
+    "selected_dt": 2796.162353515625,
+    "exact_components": 316623,
+    "total_components": 316623,
+    "vertices_within_1e_5mm": 105541,
+    "max_vertex_error_mm": 0.0,
+    "worst_vertex": 0
+  },
+  "python_gradient_vs_native_capture": {
+    "gradient_exact_components": 316623,
+    "gradient_total_components": 316623,
+    "first_gradient_difference_component": null,
+    "gradient_seconds": 2.9046007730066776,
+    "average_seconds": 0.3613687725737691,
+    "geometry_distance_weight": 0.1
+  },
+  "continuous_chain": {
+    "report": "standard_sphere_full_default_prefix_rh_serial_mean.json",
+    "report_sha256": "551c5562f1d7a7e68af8acaa6b29975b0682c8dbfec5e8de2f4689d78943ba38",
+    "steps_tested": 6,
+    "exact_components_by_update": [
+      316623,
+      316623,
+      316623,
+      316623,
+      316623,
+      316623
+    ],
+    "total_components_by_update": [
+      316623,
+      316623,
+      316623,
+      316623,
+      316623,
+      316623
+    ],
+    "selected_dt_by_update": [
+      3059.284423828125,
+      2989.13623046875,
+      3676.998046875,
+      3016.1455078125,
+      4114.71728515625,
+      2796.162353515625
+    ],
+    "first_divergent_step": null,
+    "first_unverified_update": 6,
+    "original_metric_build_seconds_including_jit": 15.868479968048632,
+    "update5_gradient_seconds": 1.014269396662712,
+    "update5_average_seconds": 0.3673578882589936,
+    "update5_search_seconds": 0.5131067102774978,
+    "update5_projection_seconds": 0.002901739440858364
+  },
+  "limits": "Only RH original-input continuous updates 0-5 and isolated native RH update5 are checked. LH beyond update2 and RH update6 onward, full Python sphere outputs, and final cortical metrics remain unverified. Times are shared-headcw observations, not matched speed comparisons."
+}

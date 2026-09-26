@@ -5,7 +5,8 @@ import math
 import numpy as np
 
 from fnit.recon_all.sphere_standard_line_search import (
-    _quadratic_candidate_allowed, _quadratic_fit_float32, first_epoch_sse,
+    _quadratic_candidate_allowed, _quadratic_fit_float32, first_epoch_line_search,
+    first_epoch_sse,
 )
 
 
@@ -60,3 +61,26 @@ def test_full_default_rh_sixth_native_sse_reproduces_native_dt():
     a, b, c = _quadratic_fit_float32(dt, sse)
     assert (a, b, c) == (0.0015506744384765625, -4.3359375, 776408.0)
     assert float(np.float32(-b / a)) == 2796.162353515625
+
+
+def test_line_search_uses_native_vertex_order_for_mean_gradient():
+    n = 128
+    vertices = np.zeros((n, 3), np.float32)
+    vertices[:, 0] = 100
+    gradient = np.zeros_like(vertices)
+    gradient[:, 1] = np.asarray(
+        [10.0 ** (-2 - i % 8) for i in range(n)], np.float32)
+    sq = np.float32(np.float32(gradient[:, 0] ** 2 + gradient[:, 1] ** 2)
+                    + gradient[:, 2] ** 2)
+    lengths = np.sqrt(sq.astype(np.float64))
+    native_sum = 0.0
+    for length in lengths:
+        native_sum += float(length)
+    result = first_epoch_line_search(
+        vertices, gradient, np.empty((0, 3), np.int32),
+        np.zeros(n + 1, np.int64), np.empty(0, np.int32),
+        np.empty(0, np.float32), np.empty(0, np.float32), np.float32(1),
+        objective=lambda xyz: {"total": float(np.sum(
+            xyz[:, 1].astype(np.float64) ** 2))})
+    assert result["mean_delta"] == native_sum / n
+    assert result["mean_delta"] != float(np.sum(lengths, dtype=np.float64) / n)

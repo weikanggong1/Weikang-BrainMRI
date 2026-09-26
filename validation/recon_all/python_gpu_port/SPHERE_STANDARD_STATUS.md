@@ -387,31 +387,55 @@ retains the before/after values and hashes.
 | Full-default 1024-average continuous prefix | LH | RH |
 | --- | ---: | ---: |
 | Complete original target-distance matrix exact | 8,268,920 / 8,268,920 | 8,183,354 / 8,183,354 |
-| Exact ordered float32 coordinates, updates | 0–2 (3 steps) | 0–4 (5 steps) |
-| First unverified update | 3, no native checkpoint captured | 5, numerical first difference |
+| Exact ordered float32 coordinates, updates | 0–2 (3 steps) | 0–5 (6 steps) |
+| First unverified update | 3, no native checkpoint captured | 6, not yet compared |
 
-At **RH update 5**, the input still matches all 316,623 native coordinate
-components. The native and Python line searches both select candidate 4, but
-the native printed dt is `2796.162` versus Python `2797.545166015625`.
-Their first two bracket SSE scores differ by less than `5e-7`; the third
-trial's native distance SSE is `0.000176758` larger, changing the float32
-quadratic fit. Substituting all three native bracket scores into the Python
-quadratic fit reproduces dt `2796.162353515625`. The selected Python update
-has a `0.00202172 mm` maximum vertex error; fitting only dt to the native
-checkpoint leaves `0.000011444 mm` maximum error and 105,539 / 105,541
-vertices within `0.00001 mm`. The fit is diagnostic and does not feed the
-continuous chain. The [new RH first-difference audit](standard_sphere_full_default_rh_first_difference.json)
-records each SSE component, exact native diagnostic hashes, input/checkpoint
-hashes, the gradient mean, and candidate decisions. The independent
-[reduction audit](standard_sphere_full_default_rh_update5_reduction.json)
-shows that serial, NumPy, accurate, and four-way sums of the same 105,541
-vertex SSE values span only `1.96e-8` before the `0.1f` weight. An independent
-C++ kernel matches all 8,183,354 Python current arc distances bitwise at
-this trial. Native one- and four-thread distance SSE agree to six decimals;
-the native/Python aggregate projection displacements are `33001.337048` /
-`33001.337047727 mm`. These checks do not explain the `0.000176758` distance
-SSE gap by simple reduction order. The native trial's internal coordinates
-or current metric remain to be isolated.
+Before the source-order correction, **RH update 5** was the first numerical
+mismatch. Its input and original target-distance matrix were exact, but the
+third line-search bracket had native/Python distance SSE `764608.958705` /
+`764608.958528` and the selected Python dt was `2797.545166015625` versus
+native printed `2796.162`. The historical
+[first-difference](standard_sphere_full_default_rh_first_difference.json) and
+[reduction](standard_sphere_full_default_rh_update5_reduction.json) audits
+retain that failed run.
+
+An isolated GDB probe stopped the installed native binary at its 65th
+`logSSE` call, immediately after computing the third bracket trial. It read
+all 105,541 ordered trial vertices and all 8,183,354 ordered current and
+target distances from native memory. The target distances match Python
+bitwise. Only vertex 83,527's x coordinate differs by one float32 ULP
+(`0xc186c00b` native versus `0xc186c00c` Python); 10 current distances
+differ, and each touches that vertex. Recomputing those 10 spherical arcs
+from each trial mesh reproduces both sides exactly. They account for the
+distance-SSE discrepancy, before the quadratic fit.
+
+The pinned `mrisLineMinimize` source accumulates gradient magnitudes in
+vertex order using a scalar double sum. The Python code used NumPy's pairwise
+sum. The native and corrected scalar mean are both
+`0x1.e47e052aab40fp-12`; the old NumPy mean was
+`0x1.e47e052aab380p-12`. This changes the third bracket dt by
+`5.46e-11`, exactly crossing the float32 rounding boundary for that one
+coordinate. With the native dt, the independently projected trial mesh
+matches all 316,623 coordinates bitwise. The correction is a source-order
+sum in `sphere_standard_line_search.py`; no dt or vertex value is hardcoded.
+The [native memory audit](standard_sphere_full_default_rh_update5_trial_memory.json)
+records input and checkpoint hashes, captured binary-array hashes, all
+entry counts, and the first differing values. Its
+[GDB probe](experimental/capture_standard_sphere_trial_memory.py) runs on a
+copy of the surfaces and stops before the full command finishes.
+
+With the correction, the Python gradient at RH update 5 matches all
+316,623 native gradient components. The three bracket SSE scores agree with
+native to six printed decimals, the selected dt is
+`2796.162353515625`, and the independently updated mesh matches the native
+saved checkpoint in all 316,623 coordinate components. The
+[continuous six-update report](standard_sphere_full_default_prefix_rh_serial_mean.json)
+replays updates 0–5 from the original `inflated` and `smoothwm` inputs,
+without injecting any native checkpoint; every update is bitwise exact.
+The bounded GDB capture took 20.91 s, the isolated corrected line search
+1.25 s, and the continuous probe's original metric build 15.87 s on a
+shared headcw node. These are observations with different workloads, not a
+matched speed comparison.
 
 The corrected Python CPU observations under shared headcw load include the
 original distance-matrix construction and one-ring setup times plus each
@@ -420,10 +444,12 @@ reports. These bounded prefixes do not establish a full-stage speed ratio.
 The isolated native full-stage LH/RH reference takes `252.20 s` / `113.20 s`
 on headcw and has bitwise-identical final ordered vertices, faces, and volume
 geometry to the archived official surfaces. The continuous Python path
-remains **open at RH update 5 and beyond LH update 2**; final Python spheres
+remains **open at RH update 6 and beyond LH update 2**; final Python spheres
 and downstream vertex measurements are not validated here. This sphere
 implementation runs on CPU Numba, not GPU.
 
-The eleven focused standard-sphere tests pass in the remote validation Python
-environment after the weight correction. The continuous probe and native
-capture script compile; no full recon-all or final Python sphere was run.
+The six focused line-search tests pass in the remote validation Python
+environment after the source-order correction, including a deterministic
+regression that distinguishes scalar and NumPy gradient reductions. The
+continuous probe and native capture script compile; no full recon-all or
+final Python sphere was run.
