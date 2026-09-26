@@ -1,4 +1,4 @@
-"""Capture two isolated native mris_sphere line searches with SSE terms."""
+"""Capture a bounded number of native mris_sphere line searches with SSE terms."""
 
 from __future__ import annotations
 
@@ -18,6 +18,7 @@ def main() -> None:
     parser.add_argument("smoothwm", type=Path)
     parser.add_argument("license", type=Path)
     parser.add_argument("output", type=Path)
+    parser.add_argument("--decisions", type=int, default=2)
     args = parser.parse_args()
     surf = args.output / "surf"
     surf.mkdir(parents=True, exist_ok=True)
@@ -42,7 +43,7 @@ def main() -> None:
                 if line.startswith("sses:"):
                     decisions += 1
                     log.flush()
-                    if decisions == 2:
+                    if decisions == args.decisions:
                         break
                 if time.monotonic() - started > 90:
                     break
@@ -52,8 +53,8 @@ def main() -> None:
     (args.output / "capture_summary.txt").write_text(
         f"line_search_decisions={decisions}\n"
         f"wall_seconds={time.monotonic() - started:.6f}\n")
-    if decisions != 2:
-        raise RuntimeError("native run ended before the second line search")
+    if decisions != args.decisions:
+        raise RuntimeError("native run ended before the requested line search")
 
 
 if __name__ == "__main__":

@@ -66,6 +66,11 @@ def main() -> None:
         stage, weight = (("initial_repair", 1e-6) if args.hemisphere == "lh"
                          else ("unfold_epoch_1", 0.1))
         schedule = [(stage, weight, 1024)] * args.full_default_prefix
+        if args.hemisphere == "lh" and args.full_default_prefix >= 4:
+            # The frozen -n25 native log switches to navgs=256 after update 2.
+            if args.full_default_prefix > 4:
+                parser.error("LH full-default schedule is verified only through update 3")
+            schedule[3] = (stage, weight, 256)
         native_capture = "threads=4 seed=1234 default niterations=25 write_iterations=1"
     if args.max_steps is not None:
         schedule = schedule[:args.max_steps]

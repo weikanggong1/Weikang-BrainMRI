@@ -331,11 +331,15 @@ native checkpoints exactly. The full post-averaging distance tables match
 native four-decimal diagnostics at all 8,268,920 LH and 8,183,354 RH ordered
 entries. Three sampled vertex rows also match every neighbor ID and native
 six-decimal distance; the full native dump does not include all IDs.
-The isolated first `MRISunfold` line search now independently selects the
-native candidates (LH 2, RH 4); all 212,163 ordered vertices after the first
-update are within 1e-5 mm of the native snapshots. This replay starts from
-native negative-area-repair checkpoints. Repair, later unfolding iterations,
-and final `sphere` files remain open. Upstream topology repair also remains open.
+The independent default-schedule Python replay now starts at the original
+`inflated` and `smoothwm` inputs. Its LH updates 0–3 and RH updates 0–6 match
+every saved native float32 coordinate component bitwise at every update,
+including LH negative-area repair and the transition to 256 gradient averages.
+The next LH/RH updates, complete unfolding, and final `sphere` files remain
+open. This validated path is CPU/Numba; upstream topology repair also remains
+open. See the [LH prefix](standard_sphere_full_default_prefix_lh_256.json),
+[RH prefix](standard_sphere_full_default_prefix_rh_seven.json), and
+[status](SPHERE_STANDARD_STATUS.md).
 
 In [`mris_fix_topology`](experimental/TOPOLOGY_FITNESS_SEARCH.md),
 the first candidate's structural patch, smoothing, and MRI coordinate

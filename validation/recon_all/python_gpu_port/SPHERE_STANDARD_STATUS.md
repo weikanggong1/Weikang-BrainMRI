@@ -369,10 +369,13 @@ inside one integration at each average level. An isolated `-w 1` native
 capture saved consecutive checkpoints on copied inputs without changing the
 integration count. The Python replay projects at integration entry and after
 each update, without adding an entry projection inside the same integration.
-The source-hashed [LH](standard_sphere_full_default_prefix_lh.json) and
-[RH](standard_sphere_full_default_prefix_rh.json) reports propagate Python
-coordinates from the original `inflated` and `smoothwm` inputs; they do not
-inject native checkpoints.
+The source-hashed [LH four-update](standard_sphere_full_default_prefix_lh_256.json)
+and [RH seven-update](standard_sphere_full_default_prefix_rh_seven.json)
+reports propagate Python coordinates from the original `inflated` and
+`smoothwm` inputs; they do not inject native checkpoints. The earlier
+[LH three-update](standard_sphere_full_default_prefix_lh.json) and
+[RH five-update](standard_sphere_full_default_prefix_rh.json) reports
+remain as historical bounded snapshots.
 
 The native `INTEGRATION_PARMS::l_dist` is float32. The Python SSE originally
 multiplied by a double `0.1`, adding 0.013–0.021 to the RH second-update
@@ -387,8 +390,8 @@ retains the before/after values and hashes.
 | Full-default 1024-average continuous prefix | LH | RH |
 | --- | ---: | ---: |
 | Complete original target-distance matrix exact | 8,268,920 / 8,268,920 | 8,183,354 / 8,183,354 |
-| Exact ordered float32 coordinates, updates | 0–2 (3 steps) | 0–5 (6 steps) |
-| First unverified update | 3, no native checkpoint captured | 6, not yet compared |
+| Exact ordered float32 coordinates, updates | 0–3 (4 steps) | 0–6 (7 steps) |
+| First unverified update | 4, not yet compared | 7, not yet compared |
 
 Before the source-order correction, **RH update 5** was the first numerical
 mismatch. Its input and original target-distance matrix were exact, but the
@@ -437,6 +440,23 @@ The bounded GDB capture took 20.91 s, the isolated corrected line search
 shared headcw node. These are observations with different workloads, not a
 matched speed comparison.
 
+The next saved RH update, index 6, also matches: its input and output are
+both exact in 316,623 / 316,623 float32 coordinate components; Python
+selects `dt=4875.181640625`. The first RH update not compared is index 7.
+For LH, the native verbose log switches from `navgs=1024` to `navgs=256`
+after update 2 (`tol=2.505e-01`). Treating index 3 as another 1024-average
+update incorrectly selected `dt=0` and missed the native surface by up to
+1.12164 mm. With the logged 256-average stage and its entry projection,
+the continuous Python chain matches all 319,866 / 319,866 float32 coordinate
+components through LH update 3; Python selects `dt=34098.9043711711`
+versus native printed `34098.904`. The bounded four-decision native capture
+used copied inputs, ended after the fourth `sses:` line in 17.10 s, and its
+log SHA256 is `d48f9399baa9c577c51815303fedbffcfcb1b9da068a010a3a2941b110e3de7c`.
+The paired LH index-3 checkpoint SHA256 values are `850f08e2be639d2fe2c2f617d32bb31ec9732d154505831ee70cae332132145b`
+and `71a897f12406d5600e425f1b1fdd15a33a3d2c0d232d65518870cb14d8360a9f`.
+The first LH update not compared is index 4. The timing is again a shared-node
+observation, not a benchmark.
+
 The corrected Python CPU observations under shared headcw load include the
 original distance-matrix construction and one-ring setup times plus each
 step's gradient, averaging, line-search, and projection times in the linked
@@ -444,7 +464,7 @@ reports. These bounded prefixes do not establish a full-stage speed ratio.
 The isolated native full-stage LH/RH reference takes `252.20 s` / `113.20 s`
 on headcw and has bitwise-identical final ordered vertices, faces, and volume
 geometry to the archived official surfaces. The continuous Python path
-remains **open at RH update 6 and beyond LH update 2**; final Python spheres
+remains **open at RH update 7 and beyond LH update 3**; final Python spheres
 and downstream vertex measurements are not validated here. This sphere
 implementation runs on CPU Numba, not GPU.
 

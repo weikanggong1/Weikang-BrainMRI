@@ -48,9 +48,9 @@ fnit-setup-recon-all-assets --dest /path/to/recon_all_assets --verify-only
 首轮下载约 796.17 MiB，实际使用文件共 328.73 MiB；安装器逐文件校验大小与
 SHA-256，数据保存在包外。此资产入口尚未接入完整 Python recon-all 调度。
 [常规球面](../../validation/recon_all/python_gpu_port/SPHERE_STANDARD_STATUS.md)
-已完成双侧全距离表对照；隔离首轮展开的独立步长搜索与双侧全部顶点坐标误差
-也通过 `1×10⁻⁵ mm` 数值门槛。该首轮使用原生负面积修复检查点；后续轮次
-和最终 `sphere` 文件仍未通过。
+已完成双侧距离表对照；从原始输入连续计算的 LH 更新 0–3、RH 更新 0–6 在
+每一轮与原生检查点的全部 `float32` 顶点坐标逐位一致。剩余更新及最终
+`sphere` 文件仍未验收；当前实现为 CPU/Numba。
 拓扑修复、完整表面优化与配准、
 原生无依赖调度仍待完成。[pial 安装版首差报告](../../validation/recon_all/python_gpu_port/place_surface_installed_first_difference_report.json)
 已定位第 1 步的 1 ULP 接受坐标差及后续近零邻点判定放大；官方最终
