@@ -336,8 +336,11 @@ now runs from the original `inflated` and `smoothwm` inputs through all 243 LH
 and 134 RH source-scheduled updates to final `sphere` files, without native
 checkpoints. Both final outputs match the official ordered vertex bytes, face
 bytes, and volume geometry exactly on the frozen subject. The standalone
-headcw CPU runs took 372.82 s LH and 220.17 s RH including I/O; their final
-fold cleanup also passed separately on H100 CUDA. Gradients, metric sampling,
+headcw CPU runs took 372.82 s LH and 220.17 s RH including I/O, versus
+240.64 s and 109.72 s for fresh same-input native stages on headcw. The
+observed Python/native ratios are 1.55× LH and 2.01× RH; thread settings and
+shared-host load were not controlled. Final fold cleanup also passed
+separately on H100 CUDA. Gradients, metric sampling,
 and line search still use CPU/Numba, and upstream topology repair remains open.
 See the [LH API audit](standard_sphere_lh_api_headcw_file_audit.json),
 [RH API audit](standard_sphere_rh_api_headcw_file_audit.json), and

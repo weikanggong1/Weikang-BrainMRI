@@ -607,10 +607,29 @@ python -m fnit.recon_all.sphere_standard_run \
 
 `--finish-device` affects only the final overlap cleanup. Metric sampling,
 gradients, line search, and schedule currently use CPU/Numba; this is not a
-full-GPU implementation. The native complete-capture times (381.18 s LH,
-200.28 s RH on gpucw1) include writing every intermediate snapshot and are
-not matched speed comparators for the headcw API times. A controlled
-same-host stage benchmark remains pending. These two exact sphere outputs do
-not establish a native-free T1-to-surface-to-thickness reconstruction; the
-upstream topology and white/pial stages and downstream registration and
-vertex-metric release gates remain open.
+full-GPU implementation. The native complete-capture times (381.18 s LH, 200.28 s RH on gpucw1)
+include writing every intermediate snapshot and are not speed comparators.
+A separate same-input, same-host headcw native run without snapshot writes
+passed the same byte-level geometry audit for each hemisphere:
+
+| Headcw conventional sphere, including I/O | LH | RH |
+| --- | ---: | ---: |
+| Native FreeSurfer 8.2, four threads | 240.64 s | 109.72 s |
+| Independent Python CPU API | 372.82 s | 220.17 s |
+| Observed Python/native ratio | 1.55× | 2.01× |
+
+The [benchmark report](standard_sphere_stage_benchmark_headcw.json) links
+input hashes, native log/time-record hashes, bilateral
+[LH](standard_sphere_native_benchmark_lh_headcw_audit.json) and
+[RH](standard_sphere_native_benchmark_rh_headcw_audit.json) output audits,
+and Python times for metric construction, each optimization stage, and final
+cleanup. The calls ran sequentially on a shared host. Native used four
+threads; Python used the environment's default CPU thread settings and
+Numba JIT. The ratios are observed stage timings, not a controlled
+thread-matched speed claim. Python currently spends 349.62 s LH and
+202.39 s RH in optimization updates, the largest cost.
+
+These two exact sphere outputs do not establish a native-free
+T1-to-surface-to-thickness reconstruction; the upstream topology and
+white/pial stages and downstream registration and vertex-metric release
+gates remain open.
