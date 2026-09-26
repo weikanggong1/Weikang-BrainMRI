@@ -18,6 +18,8 @@ class PreprocessedT1:
     aligned_affine: np.ndarray
     original_shape: tuple[int, int, int]
     content_slices: tuple[slice, slice, slice]
+    volume_affine: np.ndarray
+    voxel_volume_mm3: float
 
 
 def _smooth_downsample(image: torch.Tensor, sigmas: np.ndarray) -> torch.Tensor:
@@ -113,6 +115,8 @@ def preprocess_t1(path: str | Path, device="cpu", min_pad: int = 128) -> Preproc
     image = torch.as_tensor(data, device=device)
     if np.any((voxsize > 1.05) | (voxsize < 0.95)):
         image, affine = _resample_1mm(image, affine)
+        voxsize = np.ones(3)
+    volume_affine = affine.copy()
     image, aligned_affine = _align_ras(image, affine)
     limits = torch.quantile(image.flatten(), torch.tensor([0.005, 0.995],
                            dtype=image.dtype, device=image.device))
@@ -128,4 +132,5 @@ def preprocess_t1(path: str | Path, device="cpu", min_pad: int = 128) -> Preproc
     aligned_affine = aligned_affine.copy()
     aligned_affine[:3, 3] -= aligned_affine[:3, :3] @ np.asarray(before)
     return PreprocessedT1(image, source.affine.copy(), aligned_affine,
-                          original_shape, content)
+                          original_shape, content, volume_affine,
+                          float(np.prod(voxsize)))

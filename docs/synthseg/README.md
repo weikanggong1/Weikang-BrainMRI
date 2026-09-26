@@ -30,7 +30,7 @@ print(result.total_intracranial_mm3, result.volumes_mm3)
 
 `result.segmentation` 是 `surfa.Volume`，默认位于 SynthSeg 预处理后的 RAS 方向、约 1 mm 网格。标签编号为整数值，按原版文件格式以 `float32` 保存。`model(image, keep_geometry=True)` 会将标签以最近邻法重采样到输入网格。`color_lut="/path/to/FreeSurferColorLUT.txt"` 可选地附加色表；默认不读取 FreeSurfer 文件。
 
-`result.volumes_mm3` 是 `{前景标签编号: 软体积}`，`result.total_intracranial_mm3` 是所有前景软体积之和，均在预处理后的网格计算并保留三位小数；`result.label_names` 对应 32 个前景结构名。CSV 列顺序、总量和近似并列标签规则与本仓库 GPU recon-all 的 `mri_synthseg` 入口相同。`result.near_tie_voxels` 记录近似并列规则相对于普通 `argmax` 更改的体素数。
+`result.volumes_mm3` 是 `{前景标签编号: 软体积}`，`result.total_intracranial_mm3` 是所有前景软体积之和，后验概率先恢复到输入方向，再按原版 NumPy float32 顺序求和并保留三位小数；`result.label_names` 对应 32 个前景结构名。CSV 列顺序、总量和近似并列标签规则与本仓库 GPU recon-all 的 `mri_synthseg` 入口相同。`result.near_tie_voxels` 记录近似并列规则相对于普通 `argmax` 更改的体素数。
 
 ## 原版命令与参数对应
 
@@ -74,4 +74,4 @@ fnit synthseg --i sub-01_T1w.nii.gz --o sub-01_synthseg.nii.gz \
 
 ## 验证边界
 
-公开 CLI 与 Python API 调用同一套 33 类推理与软体积代码，相应接口测试见 [`tests/synthseg_parc/`](../../tests/synthseg_parc/)。当前独立接口的验证范围是单幅 T1 的输出 shape、几何、标签集合、软体积和 CLI/Python 一致性。
+公开 CLI 与 Python API 调用同一套 33 类推理与软体积代码，相应接口测试见 [`tests/synthseg_parc/`](../../tests/synthseg_parc/)。在一个 Python 输入链生成的 T1 上，关闭 SynthSeg 卷积 TF32 后，硬分割与原版 16,777,216 个体素全部一致；33 列软体积最大差 0.185 mm³，仍未达到现有 0.005 mm³ 统计表门槛。详见[同输入 GPU 对照](../../validation/recon_all/python_gpu_port/CONNECTED_SYNTHSEG_GPU_20260926.md)。其他被试未验收。

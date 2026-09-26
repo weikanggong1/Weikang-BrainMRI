@@ -36,6 +36,10 @@ A connected Python T1-to-N4 run matched a fresh same-host FreeSurfer N4
 voxel for voxel, but differed from the archived unmodified official full run
 at 34/16,777,216 voxels; see [the report](CONNECTED_N4_20260926.md).
 That archival discrepancy remains open for the strict volume gate.
+The connected SynthSeg H100 comparison matched all 16,777,216 hard labels
+only with SynthSeg cuDNN TF32 disabled. Its 33 soft-volume columns still differ
+by up to 0.185 mm³, above the existing 0.005 mm³ stats tolerance; see
+[the report](CONNECTED_SYNTHSEG_GPU_20260926.md). The CSV gate remains open.
 The following Python T1 normalization matched a fresh native command
 on the same Python-generated `nu.mgz` input, while differing from the archived
 full subject at 112 voxels ([report](CONNECTED_T1_NORMALIZE_20260926.md)).

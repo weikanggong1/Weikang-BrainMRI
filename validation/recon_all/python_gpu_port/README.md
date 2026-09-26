@@ -60,13 +60,16 @@ so this is not a paired speed comparison. See the
 [`connected SynthStrip report`](connected_synthstrip_fs_sub01_report.json)
 and [`replay script`](experimental/compare_connected_synthstrip.py).
 
-A follow-on **CPU-only** 33-class SynthSeg connection test did not produce an
-output on headcw: this environment's oneDNN `Conv3d` path segfaulted; disabling
-oneDNN consumed 142,340,328 KiB RSS and was stopped. The independently
-validated CUDA SynthSeg path is unchanged, but it has not yet been run from
-this Python-generated `orig.mgz` in a connected chain. The downloaded external
-color LUT had the same SHA-256 as the frozen official data. See the
-[`CPU diagnostic report`](connected_synthseg_cpu_headcw_20260926.json).
+The connected 33-class SynthSeg path was then run on H100 CUDA 1 from the
+Python-generated `orig.mgz`. Full float32 cuDNN inference matched the true
+official segmentation at all 16,777,216 voxels, including dtype and MGH
+header/payload. With TF32 enabled, 166 labels differed. After matching the
+official NumPy posterior reduction order, the 33 soft-volume columns differ
+by at most 0.185 mm³; seven exceed the existing 0.005 mm³ stats tolerance.
+The strict CSV gate remains open. The independent headcw CPU attempt had
+previously failed or consumed excessive RAM; it was not repeated. See the
+[connected GPU report](CONNECTED_SYNTHSEG_GPU_20260926.md) and
+[CPU diagnostic](connected_synthseg_cpu_headcw_20260926.json).
 
 The Python/SimpleITK N4 correction plus Python wrapper reproduced a **fresh**
 official `orig.mgz → nu.mgz` run on headcw, including every voxel, header,

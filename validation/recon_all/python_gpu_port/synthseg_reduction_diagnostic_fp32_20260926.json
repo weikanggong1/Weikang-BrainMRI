@@ -1,0 +1,851 @@
+{
+  "input": "orig.mgz",
+  "reference": "/cwStorage/home/gongwk/Notebook_code/freesurfer_synth/work/reconall_benchmark_pair_ac_20260924/official_subjects/a_official/stats/synthseg.vol.csv",
+  "device": "cuda:1",
+  "seconds": 4.156962423119694,
+  "posterior_dtype": "float32",
+  "posterior_shape": [
+    256,
+    256,
+    256,
+    33
+  ],
+  "orientation_transform": [
+    [
+      0.0,
+      -1.0
+    ],
+    [
+      2.0,
+      1.0
+    ],
+    [
+      1.0,
+      -1.0
+    ]
+  ],
+  "determinant_mm3": 0.9999997615814388,
+  "header_spacing_mm3": 1.0,
+  "candidate_reductions": {
+    "torch_aligned_determinant": {
+      "max_abs_difference_mm3": 464.80000000004657,
+      "total_intracranial_difference_mm3": 464.80000000004657,
+      "exact_columns": 0,
+      "differing_columns": [
+        {
+          "name": "total intracranial",
+          "reference_mm3": 1280294.2,
+          "candidate_mm3": 1280759.0,
+          "difference_mm3": 464.80000000004657
+        },
+        {
+          "name": "left cerebral white matter",
+          "reference_mm3": 176618.66,
+          "candidate_mm3": 176678.953125,
+          "difference_mm3": 60.29312499999651
+        },
+        {
+          "name": "left cerebral cortex",
+          "reference_mm3": 188723.61,
+          "candidate_mm3": 188753.296875,
+          "difference_mm3": 29.68687500001397
+        },
+        {
+          "name": "left lateral ventricle",
+          "reference_mm3": 9425.01,
+          "candidate_mm3": 9440.6796875,
+          "difference_mm3": 15.669687499999782
+        },
+        {
+          "name": "left inferior lateral ventricle",
+          "reference_mm3": 646.426,
+          "candidate_mm3": 647.218994140625,
+          "difference_mm3": 0.7929941406249554
+        },
+        {
+          "name": "left cerebellum white matter",
+          "reference_mm3": 14189.765,
+          "candidate_mm3": 14189.7548828125,
+          "difference_mm3": -0.010117187499417923
+        },
+        {
+          "name": "left cerebellum cortex",
+          "reference_mm3": 40219.887,
+          "candidate_mm3": 40219.90625,
+          "difference_mm3": 0.019249999997555278
+        },
+        {
+          "name": "left thalamus",
+          "reference_mm3": 5483.218,
+          "candidate_mm3": 5483.18115234375,
+          "difference_mm3": -0.036847656249847205
+        },
+        {
+          "name": "left caudate",
+          "reference_mm3": 3291.105,
+          "candidate_mm3": 3291.093017578125,
+          "difference_mm3": -0.01198242187501819
+        },
+        {
+          "name": "left putamen",
+          "reference_mm3": 4249.776,
+          "candidate_mm3": 4249.7548828125,
+          "difference_mm3": -0.02111718749983993
+        },
+        {
+          "name": "left pallidum",
+          "reference_mm3": 1364.662,
+          "candidate_mm3": 1364.6590576171875,
+          "difference_mm3": -0.002942382812534561
+        },
+        {
+          "name": "3rd ventricle",
+          "reference_mm3": 1066.305,
+          "candidate_mm3": 1066.303955078125,
+          "difference_mm3": -0.0010449218750636646
+        },
+        {
+          "name": "4th ventricle",
+          "reference_mm3": 1497.181,
+          "candidate_mm3": 1497.177978515625,
+          "difference_mm3": -0.0030214843750400178
+        },
+        {
+          "name": "brain-stem",
+          "reference_mm3": 16700.074,
+          "candidate_mm3": 16699.740234375,
+          "difference_mm3": -0.33376562500052387
+        },
+        {
+          "name": "left hippocampus",
+          "reference_mm3": 3723.981,
+          "candidate_mm3": 3723.965087890625,
+          "difference_mm3": -0.015912109375221917
+        },
+        {
+          "name": "left amygdala",
+          "reference_mm3": 1441.72,
+          "candidate_mm3": 1441.717041015625,
+          "difference_mm3": -0.002958984375027285
+        },
+        {
+          "name": "csf",
+          "reference_mm3": 346910.94,
+          "candidate_mm3": 347196.6875,
+          "difference_mm3": 285.7474999999977
+        },
+        {
+          "name": "left accumbens area",
+          "reference_mm3": 568.508,
+          "candidate_mm3": 568.5070190429688,
+          "difference_mm3": -0.0009809570312881988
+        },
+        {
+          "name": "left ventral DC",
+          "reference_mm3": 3013.397,
+          "candidate_mm3": 3013.389892578125,
+          "difference_mm3": -0.007107421874934516
+        },
+        {
+          "name": "right cerebral white matter",
+          "reference_mm3": 180470.39,
+          "candidate_mm3": 180492.734375,
+          "difference_mm3": 22.34437499998603
+        },
+        {
+          "name": "right cerebral cortex",
+          "reference_mm3": 192556.17,
+          "candidate_mm3": 192602.234375,
+          "difference_mm3": 46.064374999987194
+        },
+        {
+          "name": "right lateral ventricle",
+          "reference_mm3": 8845.799,
+          "candidate_mm3": 8849.25390625,
+          "difference_mm3": 3.4549062499991123
+        },
+        {
+          "name": "right inferior lateral ventricle",
+          "reference_mm3": 611.715,
+          "candidate_mm3": 612.4860229492188,
+          "difference_mm3": 0.7710229492187182
+        },
+        {
+          "name": "right cerebellum white matter",
+          "reference_mm3": 14457.709,
+          "candidate_mm3": 14457.599609375,
+          "difference_mm3": -0.10939062500074215
+        },
+        {
+          "name": "right cerebellum cortex",
+          "reference_mm3": 40978.336,
+          "candidate_mm3": 40978.89453125,
+          "difference_mm3": 0.5585312499970314
+        },
+        {
+          "name": "right thalamus",
+          "reference_mm3": 5396.774,
+          "candidate_mm3": 5396.7421875,
+          "difference_mm3": -0.03181250000034197
+        },
+        {
+          "name": "right caudate",
+          "reference_mm3": 3492.768,
+          "candidate_mm3": 3492.763916015625,
+          "difference_mm3": -0.004083984375029104
+        },
+        {
+          "name": "right putamen",
+          "reference_mm3": 4267.663,
+          "candidate_mm3": 4267.6298828125,
+          "difference_mm3": -0.03311718749955617
+        },
+        {
+          "name": "right pallidum",
+          "reference_mm3": 1347.579,
+          "candidate_mm3": 1347.5760498046875,
+          "difference_mm3": -0.0029501953124508873
+        },
+        {
+          "name": "right hippocampus",
+          "reference_mm3": 3827.973,
+          "candidate_mm3": 3827.9541015625,
+          "difference_mm3": -0.018898437499956344
+        },
+        {
+          "name": "right amygdala",
+          "reference_mm3": 1469.336,
+          "candidate_mm3": 1469.333984375,
+          "difference_mm3": -0.002015625000012733
+        },
+        {
+          "name": "right accumbens area",
+          "reference_mm3": 457.457,
+          "candidate_mm3": 457.4580078125,
+          "difference_mm3": 0.0010078125000063665
+        },
+        {
+          "name": "right ventral DC",
+          "reference_mm3": 2980.347,
+          "candidate_mm3": 2980.337890625,
+          "difference_mm3": -0.009109375000207365
+        }
+      ]
+    },
+    "numpy_aligned_determinant": {
+      "max_abs_difference_mm3": 41.12124999999651,
+      "total_intracranial_difference_mm3": -32.949999999953434,
+      "exact_columns": 0,
+      "differing_columns": [
+        {
+          "name": "total intracranial",
+          "reference_mm3": 1280294.2,
+          "candidate_mm3": 1280261.25,
+          "difference_mm3": -32.949999999953434
+        },
+        {
+          "name": "left cerebral white matter",
+          "reference_mm3": 176618.66,
+          "candidate_mm3": 176659.78125,
+          "difference_mm3": 41.12124999999651
+        },
+        {
+          "name": "left cerebral cortex",
+          "reference_mm3": 188723.61,
+          "candidate_mm3": 188706.0,
+          "difference_mm3": -17.60999999998603
+        },
+        {
+          "name": "left lateral ventricle",
+          "reference_mm3": 9425.01,
+          "candidate_mm3": 9435.1923828125,
+          "difference_mm3": 10.182382812499782
+        },
+        {
+          "name": "left inferior lateral ventricle",
+          "reference_mm3": 646.426,
+          "candidate_mm3": 646.426025390625,
+          "difference_mm3": 2.539062495543476e-05
+        },
+        {
+          "name": "left cerebellum white matter",
+          "reference_mm3": 14189.765,
+          "candidate_mm3": 14189.9189453125,
+          "difference_mm3": 0.15394531250058208
+        },
+        {
+          "name": "left cerebellum cortex",
+          "reference_mm3": 40219.887,
+          "candidate_mm3": 40219.66796875,
+          "difference_mm3": -0.21903125000244472
+        },
+        {
+          "name": "left thalamus",
+          "reference_mm3": 5483.218,
+          "candidate_mm3": 5483.21923828125,
+          "difference_mm3": 0.0012382812501527951
+        },
+        {
+          "name": "left caudate",
+          "reference_mm3": 3291.105,
+          "candidate_mm3": 3291.097900390625,
+          "difference_mm3": -0.00709960937501819
+        },
+        {
+          "name": "left putamen",
+          "reference_mm3": 4249.776,
+          "candidate_mm3": 4249.77783203125,
+          "difference_mm3": 0.001832031250160071
+        },
+        {
+          "name": "left pallidum",
+          "reference_mm3": 1364.662,
+          "candidate_mm3": 1364.6610107421875,
+          "difference_mm3": -0.0009892578125345608
+        },
+        {
+          "name": "3rd ventricle",
+          "reference_mm3": 1066.305,
+          "candidate_mm3": 1066.3060302734375,
+          "difference_mm3": 0.0010302734374363354
+        },
+        {
+          "name": "4th ventricle",
+          "reference_mm3": 1497.181,
+          "candidate_mm3": 1497.178955078125,
+          "difference_mm3": -0.0020449218750400178
+        },
+        {
+          "name": "brain-stem",
+          "reference_mm3": 16700.074,
+          "candidate_mm3": 16700.048828125,
+          "difference_mm3": -0.02517187500052387
+        },
+        {
+          "name": "left hippocampus",
+          "reference_mm3": 3723.981,
+          "candidate_mm3": 3723.97509765625,
+          "difference_mm3": -0.005902343750221917
+        },
+        {
+          "name": "left amygdala",
+          "reference_mm3": 1441.72,
+          "candidate_mm3": 1441.718017578125,
+          "difference_mm3": -0.001982421875027285
+        },
+        {
+          "name": "csf",
+          "reference_mm3": 346910.94,
+          "candidate_mm3": 346879.4375,
+          "difference_mm3": -31.50250000000233
+        },
+        {
+          "name": "left accumbens area",
+          "reference_mm3": 568.508,
+          "candidate_mm3": 568.5070190429688,
+          "difference_mm3": -0.0009809570312881988
+        },
+        {
+          "name": "left ventral DC",
+          "reference_mm3": 3013.397,
+          "candidate_mm3": 3013.40087890625,
+          "difference_mm3": 0.0038789062500654836
+        },
+        {
+          "name": "right cerebral white matter",
+          "reference_mm3": 180470.39,
+          "candidate_mm3": 180433.796875,
+          "difference_mm3": -36.59312500001397
+        },
+        {
+          "name": "right cerebral cortex",
+          "reference_mm3": 192556.17,
+          "candidate_mm3": 192571.328125,
+          "difference_mm3": 15.158124999987194
+        },
+        {
+          "name": "right lateral ventricle",
+          "reference_mm3": 8845.799,
+          "candidate_mm3": 8831.9013671875,
+          "difference_mm3": -13.897632812500888
+        },
+        {
+          "name": "right inferior lateral ventricle",
+          "reference_mm3": 611.715,
+          "candidate_mm3": 611.5819702148438,
+          "difference_mm3": -0.13302978515628183
+        },
+        {
+          "name": "right cerebellum white matter",
+          "reference_mm3": 14457.709,
+          "candidate_mm3": 14457.63671875,
+          "difference_mm3": -0.07228125000074215
+        },
+        {
+          "name": "right cerebellum cortex",
+          "reference_mm3": 40978.336,
+          "candidate_mm3": 40978.74609375,
+          "difference_mm3": 0.4100937499970314
+        },
+        {
+          "name": "right thalamus",
+          "reference_mm3": 5396.774,
+          "candidate_mm3": 5396.77392578125,
+          "difference_mm3": -7.421875034197001e-05
+        },
+        {
+          "name": "right caudate",
+          "reference_mm3": 3492.768,
+          "candidate_mm3": 3492.77587890625,
+          "difference_mm3": 0.007878906249970896
+        },
+        {
+          "name": "right putamen",
+          "reference_mm3": 4267.663,
+          "candidate_mm3": 4267.66015625,
+          "difference_mm3": -0.0028437499995561666
+        },
+        {
+          "name": "right pallidum",
+          "reference_mm3": 1347.579,
+          "candidate_mm3": 1347.5780029296875,
+          "difference_mm3": -0.0009970703124508873
+        },
+        {
+          "name": "right hippocampus",
+          "reference_mm3": 3827.973,
+          "candidate_mm3": 3827.968017578125,
+          "difference_mm3": -0.004982421874956344
+        },
+        {
+          "name": "right amygdala",
+          "reference_mm3": 1469.336,
+          "candidate_mm3": 1469.3360595703125,
+          "difference_mm3": 5.9570312487267074e-05
+        },
+        {
+          "name": "right accumbens area",
+          "reference_mm3": 457.457,
+          "candidate_mm3": 457.4580078125,
+          "difference_mm3": 0.0010078125000063665
+        },
+        {
+          "name": "right ventral DC",
+          "reference_mm3": 2980.347,
+          "candidate_mm3": 2980.344970703125,
+          "difference_mm3": -0.002029296875207365
+        }
+      ]
+    },
+    "numpy_restored_determinant": {
+      "max_abs_difference_mm3": 0.0912499999976717,
+      "total_intracranial_difference_mm3": -0.07499999995343387,
+      "exact_columns": 0,
+      "differing_columns": [
+        {
+          "name": "total intracranial",
+          "reference_mm3": 1280294.2,
+          "candidate_mm3": 1280294.125,
+          "difference_mm3": -0.07499999995343387
+        },
+        {
+          "name": "left cerebral white matter",
+          "reference_mm3": 176618.66,
+          "candidate_mm3": 176618.625,
+          "difference_mm3": -0.03500000000349246
+        },
+        {
+          "name": "left cerebral cortex",
+          "reference_mm3": 188723.61,
+          "candidate_mm3": 188723.546875,
+          "difference_mm3": -0.06312499998603016
+        },
+        {
+          "name": "left lateral ventricle",
+          "reference_mm3": 9425.01,
+          "candidate_mm3": 9425.005859375,
+          "difference_mm3": -0.004140625000218279
+        },
+        {
+          "name": "left inferior lateral ventricle",
+          "reference_mm3": 646.426,
+          "candidate_mm3": 646.4249877929688,
+          "difference_mm3": -0.0010122070312945652
+        },
+        {
+          "name": "left cerebellum white matter",
+          "reference_mm3": 14189.765,
+          "candidate_mm3": 14189.7646484375,
+          "difference_mm3": -0.0003515624994179234
+        },
+        {
+          "name": "left cerebellum cortex",
+          "reference_mm3": 40219.887,
+          "candidate_mm3": 40219.88671875,
+          "difference_mm3": -0.00028125000244472176
+        },
+        {
+          "name": "left thalamus",
+          "reference_mm3": 5483.218,
+          "candidate_mm3": 5483.2158203125,
+          "difference_mm3": -0.002179687499847205
+        },
+        {
+          "name": "left caudate",
+          "reference_mm3": 3291.105,
+          "candidate_mm3": 3291.10400390625,
+          "difference_mm3": -0.00099609375001819
+        },
+        {
+          "name": "left putamen",
+          "reference_mm3": 4249.776,
+          "candidate_mm3": 4249.77587890625,
+          "difference_mm3": -0.00012109374983992893
+        },
+        {
+          "name": "left pallidum",
+          "reference_mm3": 1364.662,
+          "candidate_mm3": 1364.6619873046875,
+          "difference_mm3": -1.2695312534560799e-05
+        },
+        {
+          "name": "3rd ventricle",
+          "reference_mm3": 1066.305,
+          "candidate_mm3": 1066.3050537109375,
+          "difference_mm3": 5.371093743633537e-05
+        },
+        {
+          "name": "4th ventricle",
+          "reference_mm3": 1497.181,
+          "candidate_mm3": 1497.1810302734375,
+          "difference_mm3": 3.0273437459982233e-05
+        },
+        {
+          "name": "brain-stem",
+          "reference_mm3": 16700.074,
+          "candidate_mm3": 16700.072265625,
+          "difference_mm3": -0.001734375000523869
+        },
+        {
+          "name": "left hippocampus",
+          "reference_mm3": 3723.981,
+          "candidate_mm3": 3723.97998046875,
+          "difference_mm3": -0.0010195312502219167
+        },
+        {
+          "name": "left amygdala",
+          "reference_mm3": 1441.72,
+          "candidate_mm3": 1441.719970703125,
+          "difference_mm3": -2.929687502728484e-05
+        },
+        {
+          "name": "csf",
+          "reference_mm3": 346910.94,
+          "candidate_mm3": 346911.03125,
+          "difference_mm3": 0.0912499999976717
+        },
+        {
+          "name": "left accumbens area",
+          "reference_mm3": 568.508,
+          "candidate_mm3": 568.5079956054688,
+          "difference_mm3": -4.3945312881987775e-06
+        },
+        {
+          "name": "left ventral DC",
+          "reference_mm3": 3013.397,
+          "candidate_mm3": 3013.39599609375,
+          "difference_mm3": -0.0010039062499345164
+        },
+        {
+          "name": "right cerebral white matter",
+          "reference_mm3": 180470.39,
+          "candidate_mm3": 180470.359375,
+          "difference_mm3": -0.03062500001396984
+        },
+        {
+          "name": "right cerebral cortex",
+          "reference_mm3": 192556.17,
+          "candidate_mm3": 192556.109375,
+          "difference_mm3": -0.060625000012805685
+        },
+        {
+          "name": "right lateral ventricle",
+          "reference_mm3": 8845.799,
+          "candidate_mm3": 8845.796875,
+          "difference_mm3": -0.002125000000887667
+        },
+        {
+          "name": "right inferior lateral ventricle",
+          "reference_mm3": 611.715,
+          "candidate_mm3": 611.7150268554688,
+          "difference_mm3": 2.6855468718167685e-05
+        },
+        {
+          "name": "right cerebellum white matter",
+          "reference_mm3": 14457.709,
+          "candidate_mm3": 14457.7060546875,
+          "difference_mm3": -0.0029453125007421477
+        },
+        {
+          "name": "right cerebellum cortex",
+          "reference_mm3": 40978.336,
+          "candidate_mm3": 40978.32421875,
+          "difference_mm3": -0.01178125000296859
+        },
+        {
+          "name": "right thalamus",
+          "reference_mm3": 5396.774,
+          "candidate_mm3": 5396.77294921875,
+          "difference_mm3": -0.00105078125034197
+        },
+        {
+          "name": "right caudate",
+          "reference_mm3": 3492.768,
+          "candidate_mm3": 3492.76806640625,
+          "difference_mm3": 6.640624997089617e-05
+        },
+        {
+          "name": "right putamen",
+          "reference_mm3": 4267.663,
+          "candidate_mm3": 4267.662109375,
+          "difference_mm3": -0.0008906249995561666
+        },
+        {
+          "name": "right pallidum",
+          "reference_mm3": 1347.579,
+          "candidate_mm3": 1347.5780029296875,
+          "difference_mm3": -0.0009970703124508873
+        },
+        {
+          "name": "right hippocampus",
+          "reference_mm3": 3827.973,
+          "candidate_mm3": 3827.971923828125,
+          "difference_mm3": -0.0010761718749563443
+        },
+        {
+          "name": "right amygdala",
+          "reference_mm3": 1469.336,
+          "candidate_mm3": 1469.3360595703125,
+          "difference_mm3": 5.9570312487267074e-05
+        },
+        {
+          "name": "right accumbens area",
+          "reference_mm3": 457.457,
+          "candidate_mm3": 457.4570007324219,
+          "difference_mm3": 7.324218813664629e-07
+        },
+        {
+          "name": "right ventral DC",
+          "reference_mm3": 2980.347,
+          "candidate_mm3": 2980.345947265625,
+          "difference_mm3": -0.0010527343752073648
+        }
+      ]
+    },
+    "numpy_restored_header_spacing": {
+      "max_abs_difference_mm3": 0.1849999999976717,
+      "total_intracranial_difference_mm3": 0.17500000004656613,
+      "exact_columns": 0,
+      "differing_columns": [
+        {
+          "name": "total intracranial",
+          "reference_mm3": 1280294.2,
+          "candidate_mm3": 1280294.375,
+          "difference_mm3": 0.17500000004656613
+        },
+        {
+          "name": "left cerebral white matter",
+          "reference_mm3": 176618.66,
+          "candidate_mm3": 176618.671875,
+          "difference_mm3": 0.01187499999650754
+        },
+        {
+          "name": "left cerebral cortex",
+          "reference_mm3": 188723.61,
+          "candidate_mm3": 188723.59375,
+          "difference_mm3": -0.01624999998603016
+        },
+        {
+          "name": "left lateral ventricle",
+          "reference_mm3": 9425.01,
+          "candidate_mm3": 9425.0078125,
+          "difference_mm3": -0.0021875000002182787
+        },
+        {
+          "name": "left inferior lateral ventricle",
+          "reference_mm3": 646.426,
+          "candidate_mm3": 646.4249877929688,
+          "difference_mm3": -0.0010122070312945652
+        },
+        {
+          "name": "left cerebellum white matter",
+          "reference_mm3": 14189.765,
+          "candidate_mm3": 14189.767578125,
+          "difference_mm3": 0.0025781250005820766
+        },
+        {
+          "name": "left cerebellum cortex",
+          "reference_mm3": 40219.887,
+          "candidate_mm3": 40219.89453125,
+          "difference_mm3": 0.007531249997555278
+        },
+        {
+          "name": "left thalamus",
+          "reference_mm3": 5483.218,
+          "candidate_mm3": 5483.2177734375,
+          "difference_mm3": -0.0002265624998472049
+        },
+        {
+          "name": "left caudate",
+          "reference_mm3": 3291.105,
+          "candidate_mm3": 3291.10498046875,
+          "difference_mm3": -1.9531250018189894e-05
+        },
+        {
+          "name": "left putamen",
+          "reference_mm3": 4249.776,
+          "candidate_mm3": 4249.77587890625,
+          "difference_mm3": -0.00012109374983992893
+        },
+        {
+          "name": "left pallidum",
+          "reference_mm3": 1364.662,
+          "candidate_mm3": 1364.6619873046875,
+          "difference_mm3": -1.2695312534560799e-05
+        },
+        {
+          "name": "3rd ventricle",
+          "reference_mm3": 1066.305,
+          "candidate_mm3": 1066.3050537109375,
+          "difference_mm3": 5.371093743633537e-05
+        },
+        {
+          "name": "4th ventricle",
+          "reference_mm3": 1497.181,
+          "candidate_mm3": 1497.1810302734375,
+          "difference_mm3": 3.0273437459982233e-05
+        },
+        {
+          "name": "brain-stem",
+          "reference_mm3": 16700.074,
+          "candidate_mm3": 16700.076171875,
+          "difference_mm3": 0.002171874999476131
+        },
+        {
+          "name": "left hippocampus",
+          "reference_mm3": 3723.981,
+          "candidate_mm3": 3723.98095703125,
+          "difference_mm3": -4.296875022191671e-05
+        },
+        {
+          "name": "left amygdala",
+          "reference_mm3": 1441.72,
+          "candidate_mm3": 1441.719970703125,
+          "difference_mm3": -2.929687502728484e-05
+        },
+        {
+          "name": "csf",
+          "reference_mm3": 346910.94,
+          "candidate_mm3": 346911.125,
+          "difference_mm3": 0.1849999999976717
+        },
+        {
+          "name": "left accumbens area",
+          "reference_mm3": 568.508,
+          "candidate_mm3": 568.5079956054688,
+          "difference_mm3": -4.3945312881987775e-06
+        },
+        {
+          "name": "left ventral DC",
+          "reference_mm3": 3013.397,
+          "candidate_mm3": 3013.39599609375,
+          "difference_mm3": -0.0010039062499345164
+        },
+        {
+          "name": "right cerebral white matter",
+          "reference_mm3": 180470.39,
+          "candidate_mm3": 180470.40625,
+          "difference_mm3": 0.01624999998603016
+        },
+        {
+          "name": "right cerebral cortex",
+          "reference_mm3": 192556.17,
+          "candidate_mm3": 192556.15625,
+          "difference_mm3": -0.013750000012805685
+        },
+        {
+          "name": "right lateral ventricle",
+          "reference_mm3": 8845.799,
+          "candidate_mm3": 8845.798828125,
+          "difference_mm3": -0.00017187500088766683
+        },
+        {
+          "name": "right inferior lateral ventricle",
+          "reference_mm3": 611.715,
+          "candidate_mm3": 611.7150268554688,
+          "difference_mm3": 2.6855468718167685e-05
+        },
+        {
+          "name": "right cerebellum white matter",
+          "reference_mm3": 14457.709,
+          "candidate_mm3": 14457.7099609375,
+          "difference_mm3": 0.0009609374992578523
+        },
+        {
+          "name": "right cerebellum cortex",
+          "reference_mm3": 40978.336,
+          "candidate_mm3": 40978.3359375,
+          "difference_mm3": -6.25000029685907e-05
+        },
+        {
+          "name": "right thalamus",
+          "reference_mm3": 5396.774,
+          "candidate_mm3": 5396.77392578125,
+          "difference_mm3": -7.421875034197001e-05
+        },
+        {
+          "name": "right caudate",
+          "reference_mm3": 3492.768,
+          "candidate_mm3": 3492.76904296875,
+          "difference_mm3": 0.0010429687499708962
+        },
+        {
+          "name": "right putamen",
+          "reference_mm3": 4267.663,
+          "candidate_mm3": 4267.6640625,
+          "difference_mm3": 0.0010625000004438334
+        },
+        {
+          "name": "right pallidum",
+          "reference_mm3": 1347.579,
+          "candidate_mm3": 1347.5789794921875,
+          "difference_mm3": -2.0507812450887286e-05
+        },
+        {
+          "name": "right hippocampus",
+          "reference_mm3": 3827.973,
+          "candidate_mm3": 3827.972900390625,
+          "difference_mm3": -9.960937495634425e-05
+        },
+        {
+          "name": "right amygdala",
+          "reference_mm3": 1469.336,
+          "candidate_mm3": 1469.3360595703125,
+          "difference_mm3": 5.9570312487267074e-05
+        },
+        {
+          "name": "right accumbens area",
+          "reference_mm3": 457.457,
+          "candidate_mm3": 457.4570007324219,
+          "difference_mm3": 7.324218813664629e-07
+        },
+        {
+          "name": "right ventral DC",
+          "reference_mm3": 2980.347,
+          "candidate_mm3": 2980.346923828125,
+          "difference_mm3": -7.617187520736479e-05
+        }
+      ]
+    }
+  }
+}

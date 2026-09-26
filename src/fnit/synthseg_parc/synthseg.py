@@ -13,7 +13,7 @@ import torch
 
 from ..weights import resolve_weights
 from .postprocess import postprocess_segmentation
-from .preprocess import preprocess_t1
+from .preprocess import _ras_axes, preprocess_t1
 from .segment import SynthSegSegmenter
 
 
@@ -24,6 +24,38 @@ SYNTHSEG_TIE_EPSILON = 2 ** -20
 def _synthseg_index_with_numerical_ties(posterior: torch.Tensor) -> torch.Tensor:
     peak = posterior.amax(dim=0, keepdim=True)
     return (posterior >= peak - SYNTHSEG_TIE_EPSILON).to(torch.uint8).argmax(dim=0)
+
+
+def _restore_posterior_orientation(posterior: np.ndarray,
+                                   reference_affine: np.ndarray) -> np.ndarray:
+    """Apply mri_synthseg's axis swaps and flips before its NumPy reduction."""
+    floating_affine = np.eye(4)
+    reference_axes = _ras_axes(reference_affine)
+    floating_axes = _ras_axes(floating_affine)
+    floating_affine[:, reference_axes] = floating_affine[:, floating_axes]
+    for axis in range(3):
+        if floating_axes[axis] != reference_axes[axis]:
+            posterior = np.swapaxes(posterior, floating_axes[axis], reference_axes[axis])
+            other = np.where(floating_axes == reference_axes[axis])[0]
+            floating_axes[other], floating_axes[axis] = (
+                floating_axes[axis], floating_axes[other])
+    directions = np.sum(floating_affine[:3, :3] * reference_affine[:3, :3], axis=0)
+    for axis in range(3):
+        if directions[axis] < 0:
+            posterior = np.flip(posterior, axis=axis)
+            floating_affine[:, axis] *= -1
+    return posterior
+
+
+def _official_soft_volumes(posterior: torch.Tensor, reference_affine: np.ndarray,
+                           voxel_volume_mm3: float) -> np.ndarray:
+    # Keep channels last and C-contiguous, as in the official Keras output.
+    spatial = torch.empty((*posterior.shape[1:], posterior.shape[0]),
+                          dtype=posterior.dtype, device="cpu")
+    spatial.copy_(posterior.permute(1, 2, 3, 0))
+    restored = _restore_posterior_orientation(spatial.numpy(), reference_affine)
+    soft = np.sum(restored[..., 1:], axis=(0, 1, 2))
+    return np.around(np.concatenate(([np.sum(soft)], soft)) * voxel_volume_mm3, 3)
 
 
 @dataclass
@@ -91,11 +123,8 @@ class SynthSeg:
         if color_lut is not None:
             segmentation.labels = sf.load_label_lookup(str(color_lut))
 
-        # The official CSV reports the sum of foreground posteriors, rounded
-        # after conversion to mm3, on the unpadded aligned grid.
-        soft = posterior[1:].sum(dim=(1, 2, 3)).cpu().numpy()
-        voxel_volume = abs(np.linalg.det(aligned_affine[:3, :3]))
-        values = np.around(np.concatenate(([soft.sum()], soft)) * voxel_volume, 3)
+        values = _official_soft_volumes(posterior, prepared.volume_affine,
+                                        prepared.voxel_volume_mm3)
         volumes = {label: float(value) for label, value in zip(self.label_ids, values[1:])}
         return SynthSegResult(segmentation, volumes, float(values[0]),
                               self.label_names, near_tie_voxels)

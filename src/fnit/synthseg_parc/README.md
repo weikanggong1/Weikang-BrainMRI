@@ -20,3 +20,5 @@ result.write_volumes_csv("subject_T1w.nii.gz", "subject_synthseg.vol.csv")
 单被试 CLI、原版 `mri_synthseg` 参数对应、权重和验证边界见
 [功能说明](../../../docs/synthseg/README.md)。GPU recon-all 中的使用方式见
 [recon-all 说明](../../../docs/recon_all/README.md)。
+
+同输入原版对照见 [CUDA 验证记录](../../../validation/recon_all/python_gpu_port/CONNECTED_SYNTHSEG_GPU_20260926.md)。

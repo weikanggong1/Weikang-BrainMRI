@@ -46,6 +46,7 @@ def test_independent_api_uses_one_weight_directory_and_recon_soft_volumes(tmp_pa
     prepared = SimpleNamespace(
         image=torch.zeros((2, 2, 2)), aligned_affine=np.diag([2., 1., 1., 1.]),
         content_slices=(slice(0, 2),) * 3,
+        volume_affine=np.diag([2., 1., 1., 1.]), voxel_volume_mm3=2.0,
     )
     monkeypatch.setattr(synthseg, "SynthSegSegmenter", FakeSegmenter)
     monkeypatch.setattr(synthseg, "preprocess_t1", lambda image, device: prepared)
