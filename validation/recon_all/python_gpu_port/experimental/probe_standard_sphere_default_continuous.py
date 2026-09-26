@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import sys
 import time
 from pathlib import Path
 
@@ -12,6 +13,7 @@ import nibabel.freesurfer.io as fsio
 import numpy as np
 
 from fnit.recon_all.sphere_python import project_radially
+from fnit.recon_all.sphere_standard_finish import finish_standard_sphere
 from fnit.recon_all.sphere_standard_average import average_standard_gradient
 from fnit.recon_all.sphere_standard_line_search import (
     first_epoch_line_search, first_epoch_sse,
@@ -20,13 +22,17 @@ from fnit.recon_all.sphere_standard_metric import (
     average_standard_metric, sample_standard_metric_matrix,
 )
 from fnit.recon_all.sphere_standard_nonlinear import (
-    nonlinear_epoch_gradient, nonlinear_epoch_line_search, one_ring_metric,
+    nonlinear_epoch_gradient, nonlinear_epoch_line_search, nonlinear_epoch_sse,
+    one_ring_metric,
 )
-from fnit.recon_all.sphere_standard_python import project_before_standard_unfold
+from fnit.recon_all.sphere_standard_python import (
+    project_before_standard_unfold, write_standard_sphere_surface,
+)
 from fnit.recon_all.sphere_standard_schedule import next_standard_sphere_scale
 from fnit.recon_all.sphere_standard_unfold import _face_geometry, first_epoch_gradient
 from probe_standard_sphere_continuous import _compare, _coordinate_sha
 from probe_standard_sphere_repair_next import _sha256
+from audit_standard_sphere_file import _sections
 
 
 def _schedule(hemisphere: str) -> list[tuple[str, float, int]]:
@@ -56,9 +62,14 @@ def main() -> None:
     parser.add_argument("--native-log", type=Path)
     parser.add_argument("--resume-from-report", type=Path)
     parser.add_argument("--resume-exact-through", type=int)
+    parser.add_argument("--output-sphere", type=Path)
+    parser.add_argument("--native-final", type=Path)
+    parser.add_argument("--finish-device", default="cpu")
     args = parser.parse_args()
-    if args.auto_schedule and (args.full_default_prefix is None or args.resume_from_report):
-        parser.error("--auto-schedule requires --full-default-prefix without resume")
+    if args.auto_schedule and args.full_default_prefix is None:
+        parser.error("--auto-schedule requires --full-default-prefix")
+    if args.output_sphere and (not args.auto_schedule or not args.native_final):
+        parser.error("--output-sphere requires --auto-schedule and --native-final")
     inflated, faces = fsio.read_geometry(str(args.inflated))
     smoothwm, smoothwm_faces = fsio.read_geometry(str(args.smoothwm))
     if not np.array_equal(faces, smoothwm_faces):
@@ -92,6 +103,7 @@ def main() -> None:
         schedule = schedule[:args.max_steps]
     resume_index = 0
     resume = None
+    steps_at_scale = 0
     t0 = time.perf_counter()
     if args.resume_from_report:
         if args.full_default_prefix is None:
@@ -114,6 +126,14 @@ def main() -> None:
             raise ValueError("resume report contains an unmatched update")
         last = verified_steps[-1]
         resume_index = last["index"] + 1
+        if args.auto_schedule:
+            next_state = last.get("scheduler", {}).get("next_state")
+            if next_state is None:
+                raise ValueError("resume report lacks a pending source-scheduled scale")
+            schedule[last["index"]] = (last["stage"], last["distance_weight"],
+                                        last["gradient_averages"])
+            schedule[resume_index] = tuple(next_state[:3])
+            steps_at_scale = next_state[3]
         if resume_index >= len(schedule):
             raise ValueError("resume report already reaches the requested boundary")
         checkpoint = Path(f"{args.snapshot_prefix}{resume_index:04d}")
@@ -156,14 +176,18 @@ def main() -> None:
                   "gradient": _sha256(Path(first_epoch_gradient.__code__.co_filename)),
                   "line_search": _sha256(Path(first_epoch_line_search.__code__.co_filename)),
                   "nonlinear": _sha256(Path(nonlinear_epoch_gradient.__code__.co_filename)),
+                  "finish": _sha256(Path(finish_standard_sphere.__code__.co_filename)),
+                  "scheduler": _sha256(Path(next_standard_sphere_scale.__code__.co_filename)),
                   "probe": _sha256(Path(__file__))},
               "projection_seconds": projection_seconds,
               "resume_from": resume, "resume_load_seconds": resume_load_seconds,
               "matrix_seconds_including_jit": matrix_seconds,
               "one_ring_seconds": one_ring_seconds, "steps": []}
-    steps_at_scale = 0
     for index in range(resume_index, len(schedule)):
         stage, weight, averages = schedule[index]
+        if args.auto_schedule:
+            print(f"sphere update {index}: {stage}, navgs={averages}",
+                  file=sys.stderr, flush=True)
         before_path = Path(f"{args.snapshot_prefix}{index:04d}")
         after_path = Path(f"{args.snapshot_prefix}{index + 1:04d}")
         if not before_path.exists() or not after_path.exists():
@@ -274,9 +298,14 @@ def main() -> None:
             report["first_divergence_phase"] = "update"
             break
         if args.auto_schedule:
-            ending_sse = first_epoch_sse(
-                xyz, faces, offsets, neighbors, distances,
-                original_area, original_total, weight)["total"]
+            if stage == "nonlinear_repair":
+                ending_sse = nonlinear_epoch_sse(
+                    xyz, faces, local_offsets, local_neighbors,
+                    local_distances, original_total, weight)["total"]
+            else:
+                ending_sse = first_epoch_sse(
+                    xyz, faces, offsets, neighbors, distances,
+                    original_area, original_total, weight)["total"]
             next_state = next_standard_sphere_scale(
                 stage, weight, averages, steps_at_scale,
                 search["starting_sse"]["total"], ending_sse,
@@ -284,7 +313,7 @@ def main() -> None:
             step["scheduler"] = {"ending_sse": ending_sse,
                                   "next_state": next_state}
             if next_state is None:
-                report["first_pass_complete_at"] = index
+                report["source_integration_complete_at"] = index
                 break
             if index + 1 < len(schedule):
                 schedule[index + 1] = next_state[:3]
@@ -294,10 +323,37 @@ def main() -> None:
                 for step in report["steps"]]
         report["schedule_sha256"] = hashlib.sha256(json.dumps(used).encode()).hexdigest()
         report["schedule_mode"] = "source_stopping_rule"
+    if args.output_sphere:
+        if "source_integration_complete_at" not in report or "first_divergent_step" in report:
+            report["final_output_skipped"] = "integration did not finish with exact checkpoints"
+        else:
+            t0 = time.perf_counter()
+            finished, negative_counts = finish_standard_sphere(
+                xyz, faces,
+                start_iteration=report["source_integration_complete_at"] + 1,
+                device=args.finish_device)
+            report["finish_seconds_including_device_transfer"] = time.perf_counter() - t0
+            write_standard_sphere_surface(args.output_sphere, finished, faces, args.inflated)
+            written = _sections(args.output_sphere)
+            native = _sections(args.native_final)
+            report["final_output"] = {
+                "device": args.finish_device,
+                "negative_counts": negative_counts,
+                "python": written,
+                "native": native,
+                "ordered_vertices_exact": written["xyz_sha256"] == native["xyz_sha256"],
+                "ordered_faces_exact": written["faces_sha256"] == native["faces_sha256"],
+                "volume_geometry_exact": (
+                    written["volume_info_sha256"] == native["volume_info_sha256"]),
+            }
     output = json.dumps(report, indent=2) + "\n"
     if args.report:
         args.report.write_text(output)
     print(output)
+    if args.output_sphere and ("final_output" not in report or not all(
+            report["final_output"][key] for key in (
+                "ordered_vertices_exact", "ordered_faces_exact", "volume_geometry_exact"))):
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

@@ -331,14 +331,16 @@ native checkpoints exactly. The full post-averaging distance tables match
 native four-decimal diagnostics at all 8,268,920 LH and 8,183,354 RH ordered
 entries. Three sampled vertex rows also match every neighbor ID and native
 six-decimal distance; the full native dump does not include all IDs.
-The independent source-scheduled Python replay now starts at the original
-`inflated` and `smoothwm` inputs and chooses each gradient-average transition
-from its own SSE. All 33 saved LH updates and 49 saved RH updates match every
-native float32 vertex-coordinate component and ordered face. The frozen
-snapshot series stops before final `sphere` output, so complete unfolding
-remains open. This validated path is CPU/Numba; upstream topology repair also
-remains open. See the [LH report](standard_sphere_lh_auto_from_input_gpucw1.json),
-[RH report](standard_sphere_rh_auto_from_input_gpucw1.json), and
+The independent [Python stage API](../../../src/fnit/recon_all/sphere_standard_run.py)
+now runs from the original `inflated` and `smoothwm` inputs through all 243 LH
+and 134 RH source-scheduled updates to final `sphere` files, without native
+checkpoints. Both final outputs match the official ordered vertex bytes, face
+bytes, and volume geometry exactly on the frozen subject. The standalone
+headcw CPU runs took 372.82 s LH and 220.17 s RH including I/O; their final
+fold cleanup also passed separately on H100 CUDA. Gradients, metric sampling,
+and line search still use CPU/Numba, and upstream topology repair remains open.
+See the [LH API audit](standard_sphere_lh_api_headcw_file_audit.json),
+[RH API audit](standard_sphere_rh_api_headcw_file_audit.json), and
 [stage status](SPHERE_STANDARD_STATUS.md).
 
 In [`mris_fix_topology`](experimental/TOPOLOGY_FITNESS_SEARCH.md),

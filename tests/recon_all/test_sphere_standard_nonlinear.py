@@ -6,7 +6,7 @@ import numpy as np
 
 from fnit.recon_all.smooth_surface_python import ordered_neighbors
 from fnit.recon_all.sphere_standard_nonlinear import (
-    _nonlinear_area_sse, one_ring_metric,
+    _nonlinear_area_sse, nonlinear_epoch_sse, one_ring_metric,
 )
 
 
@@ -33,3 +33,15 @@ def test_nonlinear_area_sse_uses_native_logistic_area_penalty():
                    for a in area)
     assert math.isclose(_nonlinear_area_sse(area, 1.0, 10.0), expected,
                         rel_tol=0, abs_tol=1e-12)
+
+
+def test_nonlinear_sse_uses_native_float32_distance_weight():
+    vertices = np.asarray([[100, 0, 0], [0, 100, 0]], np.float32)
+    result = nonlinear_epoch_sse(
+        vertices, np.empty((0, 3), np.int32),
+        np.asarray([0, 1, 2], np.int64), np.asarray([1, 0], np.int32),
+        np.zeros(2, np.float32), np.float32(4 * math.pi * 10000), 0.1)
+    arc = float(np.float32(np.float32(math.pi / 2) * np.float32(100)))
+    expected = float(np.float32(0.1)) * (2 * arc * arc)
+    assert result["weighted_distance"] == expected
+    assert result["total"] == expected

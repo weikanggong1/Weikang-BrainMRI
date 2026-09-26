@@ -161,7 +161,7 @@ def first_epoch_line_search(vertices: np.ndarray, gradient: np.ndarray,
     a, b, c = _quadratic_fit_float32(bracket_dt, bracket_sse)
     candidates = [{"dt": t, "sse": s} for t, s in zip(bracket_dt, bracket_sse)]
     candidates.append({"dt": 0.0, "sse": starting["total"]})
-    predicted_dt = float(np.float32(-b / a))
+    predicted_dt = float(np.float32(-b / a)) if a else float("nan")
     if _quadratic_candidate_allowed(a, predicted_dt, best_dt):
         candidates.append({"dt": predicted_dt, "sse": trial(predicted_dt)["total"]})
     selected_index = int(np.argmin([entry["sse"] for entry in candidates]))

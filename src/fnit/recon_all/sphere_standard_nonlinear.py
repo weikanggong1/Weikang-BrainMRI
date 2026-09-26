@@ -144,6 +144,9 @@ def nonlinear_epoch_sse(vertices: np.ndarray, faces: np.ndarray,
     distance = _distance_sse(xyz, offsets, neighbors, original_distances,
                              distance_scale)
     nonlinear = _nonlinear_area_sse(area, area_scale, k)
+    # Native INTEGRATION_PARMS stores both weights as float32.
+    distance_weight = float(np.float32(distance_weight))
+    nonlinear_weight = float(np.float32(nonlinear_weight))
     return {"total": distance_weight * distance + nonlinear_weight * nonlinear,
             "weighted_distance": distance_weight * distance,
             "weighted_nonlinear_area": nonlinear_weight * nonlinear,

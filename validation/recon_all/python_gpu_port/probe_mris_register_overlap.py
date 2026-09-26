@@ -13,6 +13,7 @@ import torch
 
 from fnit.recon_all.mris_register_nonlinear import face_area_normals
 from fnit.recon_all.mris_register_overlap import remove_overlap_sphere
+from fnit.recon_all.sphere_standard_finish import finish_standard_sphere
 
 
 def main() -> None:
@@ -21,6 +22,7 @@ def main() -> None:
         parser.add_argument(name, type=Path)
     parser.add_argument('--start-iteration', type=int, required=True)
     parser.add_argument('--device', default='cpu')
+    parser.add_argument('--final-projection', action='store_true')
     args = parser.parse_args()
 
     torch.set_num_threads(4)
@@ -28,17 +30,23 @@ def main() -> None:
     reference, reference_faces = fsio.read_geometry(str(args.native_final))
     if not np.array_equal(faces, reference_faces):
         raise ValueError('input and native final faces differ')
-    source = torch.from_numpy(original.astype(np.float32)).to(args.device)
-    triangles = torch.from_numpy(faces.astype(np.int64)).to(args.device)
+    if not args.final_projection:
+        source = torch.from_numpy(original.astype(np.float32)).to(args.device)
+        triangles = torch.from_numpy(faces.astype(np.int64)).to(args.device)
     matches = re.findall(r'(?m)^(\d+): dt=([0-9.]+),\s+(\d+) negative triangles',
                          args.native_log.read_text())
     native = [(int(epoch), float(dt), int(count)) for epoch, dt, count in matches
               if int(epoch) >= args.start_iteration]
     start = perf_counter()
-    result, history = remove_overlap_sphere(source, triangles,
-                                            start_iteration=args.start_iteration)
+    if args.final_projection:
+        result, history = finish_standard_sphere(
+            original, faces, start_iteration=args.start_iteration,
+            device=args.device)
+    else:
+        result, history = remove_overlap_sphere(
+            source, triangles, start_iteration=args.start_iteration)
+        result = result.cpu().numpy()
     seconds = perf_counter() - start
-    result = result.cpu().numpy()
     error = np.abs(result - reference)
     area, _ = face_area_normals(torch.from_numpy(result),
                                 torch.from_numpy(faces.astype(np.int64)), signed_sphere=True)
@@ -47,6 +55,7 @@ def main() -> None:
         'native_final_sha256': hashlib.sha256(args.native_final.read_bytes()).hexdigest(),
         'native_log_sha256': hashlib.sha256(args.native_log.read_bytes()).hexdigest(),
         'device': str(args.device), 'start_iteration': args.start_iteration,
+        'final_projection_applied': args.final_projection,
         'native_count_entries': len(native), 'python_count_entries': len(history),
         'first_count_mismatch': next((entry[0] for entry, observed in zip(native, history)
                                       if entry[2] != observed), None),
