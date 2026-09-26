@@ -51,7 +51,12 @@ def main():
         parser.add_argument(name, type=Path)
     parser.add_argument('--native-line-gradient', type=Path)
     parser.add_argument('--skip-native-checkpoints', action='store_true')
+    parser.add_argument('--native-prefix', type=Path)
+    parser.add_argument('--first-epoch', type=int)
+    parser.add_argument('--next-epochs', type=int, choices=(0, 1), default=0)
     args = parser.parse_args()
+    if args.next_epochs and (args.native_prefix is None or args.first_epoch not in (56, 57)):
+        parser.error('--next-epochs requires --native-prefix and first smoothwm epoch 56 or 57')
     torch.set_num_threads(4)
     start = perf_counter()
     sphere, faces = fsio.read_geometry(str(args.sphere))
@@ -149,6 +154,39 @@ def main():
                                        'average': average_seconds, 'spring': spring_seconds,
                                        'line': line_seconds},
               'checkpoints': checks}
+    report['continuation'] = []
+    current = predicted
+    first_epoch = args.first_epoch or 0
+    for epoch in range(first_epoch + 1, first_epoch + args.next_epochs + 1):
+        epoch_start = perf_counter()
+        projected = current
+        normals = sphere_vertex_normals(projected, triangles)
+        distances = sphere_arc_distances(projected, neighbors, degrees)
+        avg_vertex_dist = float(distances.double().sum() / degrees.sum())
+        force = first_area_gradient(vertices, original, current, triangles,
+                                    first_distance_gradient(vertices, original, current, triangles))
+        e1, e2 = tangent_basis(normals)
+        force = correlation_gradient_add(force, projected, curvature, e1, e2,
+                                         mean_grid, variance_grid, avg_vertex_dist, l_corr=0.05)
+        force_seconds = perf_counter() - epoch_start
+        averaged = average_gradients(force, neighbors, degrees, 1024)
+        force = spring_gradient_add(averaged, projected, neighbors, degrees,
+                                    dist_scale, 0.5)
+        average_seconds = perf_counter() - epoch_start - force_seconds
+        first_sample = len(trial_terms)
+        dt, samples = first_registration_line_search(projected, force, objective)
+        current = apply_spherical_gradient(projected, force, dt)
+        reference = Path(f'{args.native_prefix}{epoch:04d}')
+        result = compare(current, reference)
+        report['continuation'].append({
+            'epoch': epoch, 'dt': dt, 'line_samples': samples,
+            'line_sample_terms': trial_terms[first_sample:],
+            'seconds_excluding_io': {'force': force_seconds, 'average_and_spring': average_seconds,
+                                     'line': perf_counter() - epoch_start - force_seconds - average_seconds},
+            'saved_surface': result})
+        print(json.dumps({'epoch': epoch, 'dt': dt, 'saved_surface': result}), flush=True)
+        if result['exact_vertices'] != len(current):
+            break
     args.report.write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps({'dt': dt, 'seconds': report['seconds_excluding_io'],
                       'checks': {name: (item['exact_vertices'], item['max_abs_error'])

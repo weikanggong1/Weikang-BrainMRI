@@ -1025,7 +1025,11 @@ From the independently exact last sulc seed, the corrected first RH default
 smoothwm update (`debug0056`) matches **105,541/105,541** native saved vertices
 with maximum error 0 mm and identical `dt=2.542891502380371`.
 
-The corrected RH raw H fit uses CPU Numba inside the Python/PyTorch stage;
-its independent LH counterpart has not been rerun. Later default updates,
+The corrected raw H fit uses CPU Numba inside the Python/PyTorch stage.
+The [LH independent retest](MRIS_REGISTER_LH_SMOOTHWM_BOUNDARY.md) now
+matches all 106,622 raw H values and all 106,622 vertices of the first
+`debug0057` update. Its continuously propagated next update, `debug0058`,
+is the first current mismatch: 18/106,622 ordered vertices exact, maximum
+coordinate error 0.00157928466796875 mm. Later default updates,
 negative-face repair, final `sphere.reg`, vertex and ROI metrics, and a full
 GPU speed claim remain unaccepted.

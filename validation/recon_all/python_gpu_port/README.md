@@ -408,14 +408,15 @@ RH pial decisions and connected orchestration remain open; see
 For spherical registration, the independent PyTorch sigma-4 rigid search
 matches every ordered vertex and face on both hemispheres. The default sulc
 nonlinear epochs match every saved ordered vertex checkpoint through LH
-`debug0056` and RH `debug0055`. The RH raw smoothwm curvature now matches
-105,541/105,541 vertices bitwise using the source-order VNL inverse and
-Hessian eigenvalue mean; its independently computed first smoothwm update,
-`debug0056`, also matches every ordered vertex. LH first smoothwm update is
-exact only when native raw curvature is supplied as a diagnostic input.
-Later updates and final `sphere.reg` remain open; see
-[`MRIS_REGISTER_STATUS.md`](MRIS_REGISTER_STATUS.md) and the
-[RH SVD correction](MRIS_REGISTER_RH_RAW_H_SVD_MATCH.md).
+`debug0056` and RH `debug0055`. Both independently computed raw smoothwm curvature arrays match native
+bitwise: 106,622/106,622 LH and 105,541/105,541 RH values. The first
+smoothwm updates, LH `debug0057` and RH `debug0056`, match every ordered
+vertex. The continuously propagated LH `debug0058` differs at 106,604/106,622
+vertices, maximum coordinate error 0.00157928466796875 mm. Later updates
+and final `sphere.reg` remain open; see
+[`MRIS_REGISTER_STATUS.md`](MRIS_REGISTER_STATUS.md), the
+[RH SVD correction](MRIS_REGISTER_RH_RAW_H_SVD_MATCH.md), and the
+[LH continuation boundary](MRIS_REGISTER_LH_SMOOTHWM_BOUNDARY.md).
 
 The complete isolated `mris_ca_label` Python CPU stage now reads all six fixed
 GCS atlases and produces LH/RH DK, Destrieux and DKT annotation files byte

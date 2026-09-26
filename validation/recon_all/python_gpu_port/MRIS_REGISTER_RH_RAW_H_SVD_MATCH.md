@@ -69,10 +69,11 @@ and existing [single-epoch comparator](probe_mris_register_sno2_epoch.py).
 The full-array production and epoch reports, rather than the two selected
 vertices alone, are the acceptance evidence.
 
-The corrected independent raw H has been checked on **RH only**. LH raw H
-and its first independent smoothwm update have not been rerun with this fix.
-Later registration updates, final `sphere.reg`, end-to-end reconstruction,
-vertex/ROI metrics and an end-to-end GPU timing comparison remain open.
+The corrected independent LH raw H and first smoothwm update have now
+also passed; see the [LH continuation boundary](MRIS_REGISTER_LH_SMOOTHWM_BOUNDARY.md).
+The next LH update differs. Later registration updates, final `sphere.reg`,
+end-to-end reconstruction, vertex/ROI metrics and an end-to-end GPU timing
+comparison remain open.
 
 ## Archived evidence hashes
 
