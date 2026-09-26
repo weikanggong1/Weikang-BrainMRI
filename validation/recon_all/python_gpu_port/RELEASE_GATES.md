@@ -48,8 +48,10 @@ on the same Python-generated `nu.mgz` input, while differing from the archived
 full subject at 112 voxels ([report](CONNECTED_T1_NORMALIZE_20260926.md)).
 
 The currently open critical path includes full topology repair, complete
-white/pial placement, conventional sphere unfolding, later nonlinear sphere
-registration, and connected native-free orchestration. The stage inventory in
+white/pial placement, conventional sphere unfolding, the LH registration
+fold-removal and negative-face repair, independent stage stopping, and
+connected native-free orchestration. The bounded RH normal registration
+now matches all 42 smoothwm updates; see [the stage report](MRIS_REGISTER_STATUS.md). The stage inventory in
 [README.md](README.md) states which individual boundaries already pass.
 
 The [subject comparator](compare_complete_subject.py) checks 138 outputs in

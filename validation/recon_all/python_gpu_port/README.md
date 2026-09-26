@@ -412,12 +412,16 @@ nonlinear epochs match every saved ordered vertex checkpoint through LH
 curvature arrays match native bitwise: 106,622/106,622 LH and 105,541/105,541
 RH values. The LH normal smoothwm path matches all 45 consecutive saved
 surfaces, `debug0057`–`debug0101`, at every ordered vertex and face. The
-RH `debug0058` line-search discrepancy came from a float32 area-ratio boundary
-in the spring SSE. After correction, all 11 consecutive RH smoothwm
-checkpoints `debug0056`–`debug0066` match every one of the 105,541 ordered
-vertices. The native averaging schedule is supplied to this bounded probe.
-Later RH epochs, negative-face repair, final `sphere.reg`, and independent
-stopping remain open; see
+RH `debug0058` line-search discrepancy came from the float32 area ratio
+in the spring SSE. A later `debug0083` discrepancy came from using double
+`0.05` for a native float32 correlation weight. With both precision fixes,
+all 42 consecutive RH smoothwm checkpoints `debug0056`–`debug0097` match
+105,541/105,541 ordered vertices and all faces at every update. The native
+RH final `sphere.reg` has the same vertices, faces and volume geometry as
+`debug0097`; its negative-face repair loop was a no-op. The native averaging
+schedule is supplied to this bounded probe. Independent stopping, LH
+fold removal and repair, and a connected full reconstruction remain open;
+see
 [`MRIS_REGISTER_STATUS.md`](MRIS_REGISTER_STATUS.md), the
 [RH SVD correction](MRIS_REGISTER_RH_RAW_H_SVD_MATCH.md), and the
 [LH continuation boundary](MRIS_REGISTER_LH_SMOOTHWM_BOUNDARY.md).

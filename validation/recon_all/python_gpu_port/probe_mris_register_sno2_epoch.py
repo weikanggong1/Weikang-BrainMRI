@@ -130,7 +130,7 @@ def main():
         trial_distances = sphere_arc_distances(trial, neighbors, degrees)
         spring_sse = area_scale * float(((trial_distances.double() ** 2) * active).sum())
         weighted = {'sse_area': terms['sse_area'], 'sse_nl_area': terms['sse_nl_area'],
-                    'sse_dist': terms['sse_dist'], 'sse_corr': 0.05 * terms['sse_corr'],
+                    'sse_dist': terms['sse_dist'], 'sse_corr': float(np.float32(0.05)) * terms['sse_corr'],
                     'sse_spring': 0.5 * spring_sse}
         weighted['total'] = sum(weighted.values())
         trial_terms.append(weighted)
@@ -169,6 +169,8 @@ def main():
     current = predicted
     first_epoch = args.first_epoch or 0
     start_epoch = first_epoch + 1
+    sigma_starts = ({81: 2.0, 88: 1.0, 95: 0.5} if args.hemisphere == 'lh'
+                    else {77: 2.0, 84: 1.0, 91: 0.5})
     if args.resume_report is not None:
         previous = json.loads(args.resume_report.read_text())
         last = previous['continuation'][-1]
@@ -190,10 +192,29 @@ def main():
         report['resume'] = {'report_sha256': hashlib.sha256(args.resume_report.read_bytes()).hexdigest(),
                             'checkpoint_sha256': hashlib.sha256(checkpoint.read_bytes()).hexdigest(),
                             'coordinate_sha256': resumed_hash, 'epoch': args.resume_epoch}
+        sigma_epoch = max((number for number in sigma_starts if number <= args.resume_epoch), default=None)
+        if sigma_epoch is not None:
+            sigma_seed_path = Path(f'{args.native_prefix}{sigma_epoch - 1:04d}')
+            sigma_seed, sigma_faces = fsio.read_geometry(str(sigma_seed_path))
+            sigma_hash = hashlib.sha256(sigma_seed_path.read_bytes()).hexdigest()
+            seed_row = next((row for row in previous['continuation']
+                             if row['epoch'] == sigma_epoch - 1), None)
+            if (seed_row is None or seed_row['saved_surface']['exact_vertices'] != len(current)
+                    or seed_row['saved_surface']['reference_sha256'] != sigma_hash
+                    or not np.array_equal(faces, sigma_faces)):
+                raise ValueError('resume report does not prove the sigma-stage seed')
+            sigma_seed = torch.from_numpy(sigma_seed.astype(np.float32))
+            sigma = sigma_starts[sigma_epoch]
+            source_grid = parameterize_curvature(sigma_seed, normalized)
+            curvature = normalize_mean_curvature(sample_atlas_on_canonical_sphere(
+                sigma_seed, blur_atlas_frame(source_grid, sigma)))
+            mean_curve = normalize_mean_curvature(sample_atlas_on_canonical_sphere(
+                sigma_seed, blur_atlas_frame(raw_mean, sigma)))
+            mean_grid = parameterize_curvature(sigma_seed, mean_curve)
+            variance_grid = blur_atlas_frame(raw_variance, sigma)
+            report['resume']['sigma_seed_sha256'] = sigma_hash
     for epoch in range(start_epoch, first_epoch + args.next_epochs + 1):
         epoch_start = perf_counter()
-        sigma_starts = ({81: 2.0, 88: 1.0, 95: 0.5} if args.hemisphere == 'lh'
-                        else {77: 2.0, 84: 1.0, 91: 0.5})
         if epoch in sigma_starts:
             sigma = sigma_starts[epoch]
             source_grid = parameterize_curvature(current, normalized)

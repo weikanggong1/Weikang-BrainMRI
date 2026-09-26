@@ -1069,6 +1069,63 @@ full-array hash. The integration schedule is still read from the native log.
 
 The earlier [unfixed continuation](mris_register_rh_default_epoch0056_0061_divergence_headcw.json)
 shows why this 0.125 ULP mattered: its coordinate error reached 0.1981 mm
-by `debug0061`. It is retained as pre-fix evidence. RH epochs after `debug0066`, negative-face repair, final `sphere.reg`,
-vertex and ROI metrics, and a connected GPU reconstruction still require
-acceptance.
+by `debug0061`. It is retained as pre-fix evidence.
+
+### RH `debug0067`–`debug0097`: complete normal smoothwm updates
+
+The [continuous continuation](mris_register_rh_default_epoch0067_0083_first_difference_gpucw1.json)
+resumes from the exact `debug0066` checkpoint and matches each of the 16
+`debug0067`–`debug0082` saved surfaces at **105,541/105,541 ordered vertices**,
+maximum coordinate error 0 mm. This crosses the sigma-2 switch at
+`debug0077`. The [sigma-2 resume check](mris_register_rh_default_epoch0083_sigma2_resume_gpucw1.json)
+reconstructs that switch from the exact `debug0076` seed and reproduces the
+continuous `debug0083` trial SSEs and selected step exactly. The probe now
+restores this stage state when resuming after a sigma switch.
+
+At `debug0083`, the [native GDB fit and comparison](mris_register_rh_default_epoch0083_native_line_fit_gpucw1.json)
+show the first new decision mismatch. The first bracket SSE is
+1,333,351.6875719244 native versus 1,333,351.6874348717 Python; these
+round to 1,333,351.75 and 1,333,351.625 in float32. The middle and upper
+bracket SSEs round identically. Native selects `dt=0.04196085984684431`;
+Python selects `0.04296875`. The Python saved surface matches 488/105,541
+vertices, with maximum error 0.0008392334 mm. Applying the **native** step
+to the Python projected surface and gradient produces the native checkpoint
+at all 105,541 vertices exactly. This isolates the observed output mismatch
+to the selected step; the score terms were audited next.
+
+The [native SSE log](mris_register_rh_default_epoch0083_native_sse_terms_gpucw1.log.gz)
+and [source-order summation check](mris_register_rh_default_epoch0083_sse_order_gpucw1.log)
+localize the small score difference to percentage area, spring and correlation
+terms. Sequential Python sums of the already computed per-face and per-vertex
+terms did not close it. The native-step replay is a diagnostic, not an
+independent registration result.
+
+FreeSurfer's `INTEGRATION_PARMS::l_corr` is a `float`; `MRIScomputeSSE`
+promotes that stored value to double when weighting the term. The probe had
+multiplied by Python's double `0.05`. Using the float32-stored coefficient
+changes the three `debug0083` bracket scores to 1,333,351.6876297435,
+1,333,308.4455033988 and 1,333,274.7667974494. Their float32 values
+now match the three native fit inputs exactly; the remaining double-score
+differences do not alter the decision. The [independent corrected run](mris_register_rh_default_epoch0083_0097_lcorr_f32_gpucw1.json)
+selects native `dt=0.04196085984684431` at `debug0083`, then matches every
+`debug0083`–`debug0097` surface at **105,541/105,541 ordered vertices and all
+faces**, maximum coordinate error 0 mm. No native step is injected. Its
+15 decisions and complete saved-surface comparisons match the earlier
+native-step diagnostic trajectory.
+
+The weight correction cannot change the 27 already matched `debug0056`–
+`debug0082` updates: the [saved-sample attestation](mris_register_rh_lcorr_f32_prior_epochs_attestation.json)
+checks all 243 prior line-search samples and finds no change in any float32
+fit input or pairwise score ordering. This is a source-equivalent decision
+audit, not a repeated 27-update run. Thus the complete bounded RH smoothwm
+path, `debug0056`–`debug0097`, matches every saved vertex and face.
+
+The [native final-surface check](mris_register_rh_final_surface_vs_debug0097_gpucw1.json)
+shows that native `rh.sphere.reg` and `debug0097` have identical coordinate
+and face bytes. Their [volume geometry fields](mris_register_rh_final_volume_info_compare_headcw.json)
+also match; only trailing provenance bytes differ. The native RH run had
+zero negative triangles at the final repair call, which makes that loop a
+no-op. The bounded Python trajectory therefore reaches the official RH
+final geometry on this subject. Independent stage stopping, the LH
+fold-removal and negative-face repair, vertex/ROI metrics, and a connected
+native-free GPU reconstruction still require acceptance.

@@ -1,0 +1,24 @@
+{
+  "reference": "FreeSurfer 8.2.0-1 completed fs_sub01 RH sphere registration",
+  "artifacts": {
+    "final": {
+      "file_sha256": "0e2a10093721f2f75f7460c559aa982560abd44662a9dac16865d42cb419fa8b",
+      "vertices": 105541,
+      "faces": 211078,
+      "coordinate_bytes_sha256": "30e35c55d3c4d9faf518c2360d66f4cc323cd6467632005e6ad9d9802381bdc8",
+      "face_bytes_sha256": "29a81cb5e7d5c8dea84ba6a9e2abdeb49cfb6d59ba07604f3cbfe932ec86adf4",
+      "metadata_bytes_after_geometry": 3311
+    },
+    "debug0097": {
+      "file_sha256": "09f55e3561d3fd00f39fe6e9077b8291c27318134c65f60269fb6a98404fcf08",
+      "vertices": 105541,
+      "faces": 211078,
+      "coordinate_bytes_sha256": "30e35c55d3c4d9faf518c2360d66f4cc323cd6467632005e6ad9d9802381bdc8",
+      "face_bytes_sha256": "29a81cb5e7d5c8dea84ba6a9e2abdeb49cfb6d59ba07604f3cbfe932ec86adf4",
+      "metadata_bytes_after_geometry": 3145
+    }
+  },
+  "coordinate_and_face_bytes_identical": true,
+  "scope": "The native default RH registration has zero negative triangles; this checks its final geometry equals debug0097, not the independent Python trajectory.",
+  "volume_info_equal": true
+}
